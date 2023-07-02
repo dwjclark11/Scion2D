@@ -4,6 +4,73 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <SOIL/SOIL.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+class Camera2D
+{
+private:
+	int m_Width, m_Height;
+	float m_Scale;
+
+	glm::vec2 m_Position;
+	glm::mat4 m_CameraMatrix, m_OrthoProjection;
+
+	bool m_bNeedsUpdate;
+
+public:
+	Camera2D()
+		: Camera2D(640, 480)
+	{
+
+	}
+
+	Camera2D(int width, int height)
+		: m_Width{width}, m_Height{height}, m_Scale{1.f}
+	, m_Position{ glm::vec2{0} }, m_CameraMatrix{ 1.f }, m_OrthoProjection{ 1.f }, m_bNeedsUpdate{ true }
+	{
+		// Init ortho projection
+		m_OrthoProjection = glm::ortho(
+			0.f,							// Left
+			static_cast<float>(m_Width),	// Right
+			static_cast<float>(m_Height),	// Top
+			0.f,							// Bottom
+			0.f,							// Near
+			1.f								// Far
+		);
+	}
+	
+	inline void SetScale(float scale) { m_Scale = scale; m_bNeedsUpdate = true; }
+
+	inline glm::mat4 GetCameraMatrix() { return m_CameraMatrix; }
+	
+	void Update()
+	{
+		if (!m_bNeedsUpdate)
+			return;
+		// Translate
+		glm::vec3 translate{ -m_Position.x, -m_Position.y, 0.f };
+		m_CameraMatrix = glm::translate(m_OrthoProjection, translate);
+
+		// Scale
+		glm::vec3 scale{ m_Scale, m_Scale, 0.f };
+		m_CameraMatrix *= glm::scale(glm::mat4(1.f), scale);
+
+		m_bNeedsUpdate = false;
+	}
+};
+
+struct UVs
+{
+	float u, v, width, height;
+	UVs()
+		: u{ 0.f }, v{ 0.f }, width{ 0.f }, height{ 0.f }
+	{
+
+	}
+};
+
+
 
 bool LoadTexture(const std::string& filepath, int& width, int& height, bool blended)
 {
@@ -103,7 +170,7 @@ int main()
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
 	// Create the Window
-	SCION_WINDOWING::Window window("Test Window", 480, 480, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, true, SDL_WINDOW_OPENGL);
+	SCION_WINDOWING::Window window("Test Window", 640, 480, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, true, SDL_WINDOW_OPENGL);
 
 	if (!window.GetWindow())
 	{
@@ -133,6 +200,10 @@ int main()
 		return -1;
 	}
 
+	// Enable Alpha Blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// Temporarily load a texture
 	// First create the texture ID and gen/bind the texture
 	GLuint texID;
@@ -149,6 +220,19 @@ int main()
 		return -1;
 	}
 
+	// Let's make some temporary UVs
+	UVs uvs{};
+
+	auto generateUVs = [&](float startX, float startY, float spriteWidth, float spriteHeight)
+	{
+		uvs.width = spriteWidth / width;
+		uvs.height = spriteHeight / height;
+
+		uvs.u = startX * uvs.width;
+		uvs.v = startY * uvs.height;
+	};
+
+	generateUVs(0, 28, 16, 16);
 
 	// Create vertices for a Quad
 	//float vertices[] =
@@ -162,10 +246,10 @@ int main()
 	// Swapped tex coords
 	float vertices[] =
 	{
-		-0.5f, 0.5f, 0.0f,	0.f, 0.f,	// TL
-		0.5f, 0.5f, 0.0f,	1.f, 0.f,	// TR
-		0.5f, -0.5f, 0.0f,  1.f, 1.f,	// BR
-		-0.5f, -0.5f, 0.0f, 0.f, 1.f	// BL
+		10.f, 26.f, 0.0f,	uvs.u, (uvs.v + uvs.height),					// TL
+		10.f, 10.f, 0.0f,	uvs.u, uvs.v,									// BL
+		26.f, 10.f, 0.0f,  (uvs.u + uvs.width), uvs.v,						// BR
+		26.f, 26.f, 0.0f, (uvs.u + uvs.width), (uvs.v + uvs.height)			// TR
 	};
 
 
@@ -175,15 +259,20 @@ int main()
 		2, 3, 0
 	};
 	
+	// Create a temp camera
+	Camera2D camera{};
+	camera.SetScale(5.f);
+
 	// Create a temp vertex source
 	const char* vertexSource =
 		"#version 450 core\n"
 		"layout (location = 0) in vec3 aPosition;\n"
 		"layout (location = 1) in vec2 aTexCoords;\n"
 		"out vec2 fragUVs;\n"
+		"uniform mat4 uProjection;\n"
 		"void main()\n"
 		"{\n"
-		"    gl_Position = vec4(aPosition, 1.0);\n"
+		"    gl_Position = uProjection * vec4(aPosition, 1.0);\n"
 		"    fragUVs = aTexCoords;\n"
 		"}\0";
 
@@ -355,10 +444,16 @@ int main()
 			window.GetHeight()
 		);
 
-		glClearColor(0.f, 0.f, 0.f, 1.f);
+		glClearColor(1.f, 1.f, 1.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
+
+		auto projection = camera.GetCameraMatrix();
+
+		GLuint location = glGetUniformLocation(shaderProgram, "uProjection");
+
+		glUniformMatrix4fv(location, 1, GL_FALSE, &projection[0][0]);
 
 		glActiveTexture(GL_TEXTURE0); 
 		glBindTexture(GL_TEXTURE_2D, texID);
@@ -368,6 +463,8 @@ int main()
 
 		glBindVertexArray(0);
 		SDL_GL_SwapWindow(window.GetWindow().get());
+
+		camera.Update();
 	}
 
 	std::cout << "Closing!" << std::endl;
