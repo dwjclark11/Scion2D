@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SCION_EDITOR", "SCION_EDITO
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SOIL", "SOIL\SOIL.vcxproj", "{5358DC1E-FC64-41EE-A180-DC28344028DC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SCION_RENDERING", "SCION_RENDERING\SCION_RENDERING.vcxproj", "{F4E7F6AD-7F77-4592-8F6D-0B812015D805}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +63,14 @@ Global
 		{5358DC1E-FC64-41EE-A180-DC28344028DC}.Release|x64.Build.0 = Release|x64
 		{5358DC1E-FC64-41EE-A180-DC28344028DC}.Release|x86.ActiveCfg = Release|Win32
 		{5358DC1E-FC64-41EE-A180-DC28344028DC}.Release|x86.Build.0 = Release|Win32
+		{F4E7F6AD-7F77-4592-8F6D-0B812015D805}.Debug|x64.ActiveCfg = Debug|x64
+		{F4E7F6AD-7F77-4592-8F6D-0B812015D805}.Debug|x64.Build.0 = Debug|x64
+		{F4E7F6AD-7F77-4592-8F6D-0B812015D805}.Debug|x86.ActiveCfg = Debug|Win32
+		{F4E7F6AD-7F77-4592-8F6D-0B812015D805}.Debug|x86.Build.0 = Debug|Win32
+		{F4E7F6AD-7F77-4592-8F6D-0B812015D805}.Release|x64.ActiveCfg = Release|x64
+		{F4E7F6AD-7F77-4592-8F6D-0B812015D805}.Release|x64.Build.0 = Release|x64
+		{F4E7F6AD-7F77-4592-8F6D-0B812015D805}.Release|x86.ActiveCfg = Release|Win32
+		{F4E7F6AD-7F77-4592-8F6D-0B812015D805}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
