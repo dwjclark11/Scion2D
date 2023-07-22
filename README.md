@@ -11,23 +11,21 @@ engines out there; however, I find it more fun to try to build your own, learn f
   
 **OpenGL**
   * We will be doing all of our graphics with OpenGL, maybe change to vulkan as my skills with graphics increase.
-  
+
 **Glad**
   * We will be using Glad as our OpenGL Loader library.
-    
+  
 **ENTT**
   * For our Entity Component System, we will be using the wonderful ENTT library.
   * We will also be making use of ENTT's meta reflection functionality.
-    
+  
 **Box2D**
   * For our physics, we will be creating a nice wrapper around Box2D.
-    
+  
 **Lua**
   * The scripting language of choice for us will be Lua.
   * Lua is easy to use and understand, I also have more experience with setting lua up and using it.
-    
+  
 **Sol**
   * We will be using the wonderful Sol3 library to bind our lua functions, user types, etc.
   * Sol is very easy to use and works great.
-
-
