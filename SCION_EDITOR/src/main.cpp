@@ -8,6 +8,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <Rendering/Essentials/ShaderLoader.h>
 
+#include <Logger/Logger.h>
+
+
 class Camera2D
 {
 private:
@@ -88,7 +91,7 @@ bool LoadTexture(const std::string& filepath, int& width, int& height, bool blen
 	// Check to see if the image is successful
 	if (!image)
 	{
-		std::cout << "SOIL failed to load image [" << filepath << "] -- " << SOIL_last_result();
+		std::cout << "SOIL failed to load image [" << filepath << "] -- " << SOIL_last_result() << std::endl;
 		return false;
 	}
 
@@ -135,6 +138,8 @@ bool LoadTexture(const std::string& filepath, int& width, int& height, bool blen
 
 int main()
 {
+	SCION_INIT_LOGS(true, true);
+
 	bool running{ true };
 
 	// Init SDL
@@ -217,13 +222,14 @@ int main()
 	// Now we can load the texture
 	if (!LoadTexture("assets/textures/castle.png", width, height, false))
 	{
-		std::cout << "Failed to load the texture!\n";
+		SCION_ERROR("Failed to load the texture!");
 		return -1;
 	}
 
 	// Let's make some temporary UVs
 	UVs uvs{};
-
+	SCION_LOG("Loaded Texture: [width = {0}, height = {1}]", width, height);
+	SCION_WARN("Loaded Texture: [width = {0}, height ={1}]", width, height);
 	auto generateUVs = [&](float startX, float startY, float spriteWidth, float spriteHeight)
 	{
 		uvs.width = spriteWidth / width;
