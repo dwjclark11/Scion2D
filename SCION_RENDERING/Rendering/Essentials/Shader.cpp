@@ -1,6 +1,6 @@
 #include "Shader.h"
 #include <iostream>
-
+#include <Logger/Logger.h>
 namespace SCION_RENDERING {
 
 	GLuint Shader::GetUniformLocation(const std::string& uniformName)
@@ -13,7 +13,7 @@ namespace SCION_RENDERING {
 
 		if (location == GL_INVALID_INDEX)
 		{
-			std::cout << "Uniform [" << uniformName << "] not found in the shader!" << std::endl;
+			SCION_ERROR("Uniform [{0}] not found in the shader!", uniformName);
 			return -1;
 		}
 
