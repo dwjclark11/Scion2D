@@ -8,63 +8,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <Rendering/Essentials/ShaderLoader.h>
 #include <Rendering/Essentials/TextureLoader.h>
-
+#include <Rendering/Essentials/Vertex.h>
+#include <Rendering/Core/Camera2D.h>
 #include <Logger/Logger.h>
 
 
-class Camera2D
-{
-private:
-	int m_Width, m_Height;
-	float m_Scale;
-
-	glm::vec2 m_Position;
-	glm::mat4 m_CameraMatrix, m_OrthoProjection;
-
-	bool m_bNeedsUpdate;
-
-public:
-	Camera2D()
-		: Camera2D(640, 480)
-	{
-
-	}
-
-	Camera2D(int width, int height)
-		: m_Width{width}, m_Height{height}, m_Scale{1.f}
-	, m_Position{ glm::vec2{0} }, m_CameraMatrix{ 1.f }, m_OrthoProjection{ 1.f }, m_bNeedsUpdate{ true }
-	{
-		// Init ortho projection
-		m_OrthoProjection = glm::ortho(
-			0.f,							// Left
-			static_cast<float>(m_Width),	// Right
-			static_cast<float>(m_Height),	// Top
-			0.f,							// Bottom
-			0.f,							// Near
-			1.f								// Far
-		);
-	}
-	
-	inline void SetScale(float scale) { m_Scale = scale; m_bNeedsUpdate = true; }
-
-	inline glm::mat4 GetCameraMatrix() { return m_CameraMatrix; }
-	
-	void Update()
-	{
-		if (!m_bNeedsUpdate)
-			return;
-		// Translate
-		glm::vec3 translate{ -m_Position.x, -m_Position.y, 0.f };
-		m_CameraMatrix = glm::translate(m_OrthoProjection, translate);
-
-		// Scale
-		glm::vec3 scale{ m_Scale, m_Scale, 0.f };
-		m_CameraMatrix *= glm::scale(glm::mat4(1.f), scale);
-
-		m_bNeedsUpdate = false;
-	}
-};
-
+/*
+* This is just a temporary struct. We will be replacing this with the SpriteComponent later on
+*/
 struct UVs
 {
 	float u, v, width, height;
@@ -83,11 +34,10 @@ int main()
 	bool running{ true };
 
 	// Init SDL
-	
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
 		std::string error = SDL_GetError();
-		std::cout << "Failed to initialize SDL: " << error << std::endl;
+		SCION_ERROR("Failed to initialize SDL: {0}", error);
 		running = false;
 		return -1;
 	}
@@ -96,7 +46,7 @@ int main()
 	if (SDL_GL_LoadLibrary(NULL) != 0)
 	{
 		std::string error = SDL_GetError();
-		std::cout << "Failed to Open GL Library: " << error << std::endl;
+		SCION_ERROR("Failed to Open GL Library: {0}", error);
 		running = false;
 		return -1;
 	}
@@ -120,7 +70,7 @@ int main()
 
 	if (!window.GetWindow())
 	{
-		std::cout << "Failed to create the window!" << std::endl;
+		SCION_ERROR("Failed to create the window!");
 		return -1;
 	}
 
@@ -130,7 +80,7 @@ int main()
 	if (!window.GetGLContext())
 	{
 		std::string error = SDL_GetError();
-		std::cout << "Failed to create OpenGL context: " << error << "\n";
+		SCION_ERROR("Failed to create OpenGL context: {0}", error);
 		running = false;
 		return -1;
 	}
@@ -141,7 +91,7 @@ int main()
 	// Initialize Glad
 	if (gladLoadGLLoader(SDL_GL_GetProcAddress) == 0)
 	{
-		std::cout << "Failed to LoadGL --> GLAD" << std::endl;
+		SCION_ERROR("Failed to LoadGL --> GLAD");
 		running = false;
 		return -1;
 	}
@@ -160,38 +110,41 @@ int main()
 	}
 
 	// Let's make some temporary UVs
-	UVs uvs{};
+	UVs uVs{};
 	SCION_LOG("Loaded Texture: [width = {0}, height = {1}]", texture->GetWidth(), texture->GetHeight());
 	SCION_WARN("Loaded Texture: [width = {0}, height = {1}]", texture->GetWidth(), texture->GetHeight());
 
 	auto generateUVs = [&](float startX, float startY, float spriteWidth, float spriteHeight)
 	{
-		uvs.width = spriteWidth / texture->GetWidth();
-		uvs.height = spriteHeight / texture->GetHeight();
+		uVs.width = spriteWidth / texture->GetWidth();
+		uVs.height = spriteHeight / texture->GetHeight();
 
-		uvs.u = startX * uvs.width;
-		uvs.v = startY * uvs.height;
+		uVs.u = startX * uVs.width;
+		uVs.v = startY * uVs.height;
 	};
 
 	generateUVs(0, 28, 16, 16);
 
-	// Create vertices for a Quad
-	//float vertices[] =
-	//{
-	//	-0.5f, 0.5f, 0.0f,	0.f, 1.f,	// TL
-	//	0.5f, 0.5f, 0.0f,	1.f, 1.f,	// TR
-	//	0.5f, -0.5f, 0.0f,  1.f, 0.f,	// BR
-	//	-0.5f, -0.5f, 0.0f, 0.f, 0.f	// BL
-	//};
-	
-	// Swapped tex coords
-	float vertices[] =
-	{
-		10.f, 26.f, 0.0f,	uvs.u, (uvs.v + uvs.height),					// TL
-		10.f, 10.f, 0.0f,	uvs.u, uvs.v,									// BL
-		26.f, 10.f, 0.0f,  (uvs.u + uvs.width), uvs.v,						// BR
-		26.f, 26.f, 0.0f, (uvs.u + uvs.width), (uvs.v + uvs.height)			// TR
-	};
+	// These are all test values to be removed	
+	std::vector<SCION_RENDERING::Vertex> vertices{};
+	SCION_RENDERING::Vertex vTL{}, vTR{}, vBL{}, vBR{};
+
+	vTL.position = glm::vec2{ 10.f, 26.f };
+	vTL.uvs = glm::vec2{ uVs.u, (uVs.v + uVs.height) };
+
+	vTR.position = glm::vec2{ 10.f, 10.f };
+	vTR.uvs = glm::vec2{ uVs.u, uVs.v };
+
+	vBL.position = glm::vec2{ 26.f, 10.f };
+	vBL.uvs = glm::vec2{ (uVs.u + uVs.width), uVs.v };
+
+	vBR.position = glm::vec2{ 26.f, 26.f };
+	vBR.uvs = glm::vec2{ (uVs.u + uVs.width), (uVs.v + uVs.height) };
+
+	vertices.push_back(vTL);
+	vertices.push_back(vTR);
+	vertices.push_back(vBL);
+	vertices.push_back(vBR);
 
 
 	GLuint indices[] =
@@ -201,7 +154,7 @@ int main()
 	};
 	
 	// Create a temp camera
-	Camera2D camera{};
+	SCION_RENDERING::Camera2D camera{};
 	camera.SetScale(5.f);
 
 	// Create out first shader
@@ -209,10 +162,9 @@ int main()
 
 	if (!shader)
 	{
-		std::cout << "Failed to create the shader!" << std::endl;
+		SCION_ERROR("Failed to create the shader!");
 		return -1;
 	}
-
 
 	// Now we will have to create the vertex array object and the vertex buffer object
 	GLuint VAO, VBO, IBO;
@@ -228,29 +180,29 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	glBufferData(
-		GL_ARRAY_BUFFER,						// The target buffer type
-		sizeof(vertices) * 3 * sizeof(float),	// The size in bytes of the buffer object's new data store
-		vertices,								// A pointer to the data that will be copied into the data store
-		GL_STATIC_DRAW							// The expected usage pattern of the data store
+		GL_ARRAY_BUFFER,										// The target buffer type
+		vertices.size() * sizeof(SCION_RENDERING::Vertex),		// The size in bytes of the buffer object's new data store
+		vertices.data(),										// A pointer to the data that will be copied into the data store
+		GL_STATIC_DRAW											// The expected usage pattern of the data store
 	);
 
 	glGenBuffers(1, &IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 
 	glBufferData(
-		GL_ELEMENT_ARRAY_BUFFER,				// The target buffer type
-		6 * sizeof(GLuint),	// The size in bytes of the buffer object's new data store
-		indices,								// A pointer to the data that will be copied into the data store
-		GL_STATIC_DRAW							// The expected usage pattern of the data store
+		GL_ELEMENT_ARRAY_BUFFER,								// The target buffer type
+		6 * sizeof(GLuint),										// The size in bytes of the buffer object's new data store
+		indices,												// A pointer to the data that will be copied into the data store
+		GL_STATIC_DRAW											// The expected usage pattern of the data store
 	);
 
 	glVertexAttribPointer(
-		0,										// Attribute 0	-- The layout position in the shader
-		3,										// Size			-- Number of components per vertex
-		GL_FLOAT,								// Type			-- The data type of the above components
-		GL_FALSE,								// Normalized	-- Specifies if fixed-point data values should be normalized
-		5 * sizeof(float),						// Stride		-- Specifies the byte offset between consecutive attributes
-		(void*)0								// Pointer		-- Specifies the offset of the first component
+		0,														// Attribute 0	-- The layout position in the shader
+		2,														// Size			-- Number of components per vertex
+		GL_FLOAT,												// Type			-- The data type of the above components
+		GL_FALSE,												// Normalized	-- Specifies if fixed-point data values should be normalized
+		sizeof(SCION_RENDERING::Vertex),						// Stride		-- Specifies the byte offset between consecutive attributes
+		(void*)offsetof(SCION_RENDERING::Vertex, position)		// Pointer		-- Specifies the offset of the first component
 	);
 
 	glEnableVertexAttribArray(0);
@@ -260,12 +212,22 @@ int main()
 		2,
 		GL_FLOAT,
 		GL_FALSE,
-		5 * sizeof(float),
-		reinterpret_cast<void*>(sizeof(float) * 3)		// This the offset of the positional data to the first UV coordinate
+		sizeof(SCION_RENDERING::Vertex),
+		(void*)offsetof(SCION_RENDERING::Vertex, uvs)			// This the offset of the positional data to the first UV coordinate
 	);
 	
 	glEnableVertexAttribArray(1);
 
+	glVertexAttribPointer(
+		2,
+		4,
+		GL_UNSIGNED_BYTE,
+		GL_TRUE,
+		sizeof(SCION_RENDERING::Vertex),
+		(void*)offsetof(SCION_RENDERING::Vertex, color)			// This the offset of the positional data to the first UV coordinate
+	);
+
+	glEnableVertexAttribArray(2);
 	glBindVertexArray(0);
 
 	SDL_Event event{};
@@ -319,6 +281,6 @@ int main()
 		shader->Disable();
 	}
 
-	std::cout << "Closing!" << std::endl;
+	SCION_LOG("Closing!");
 	return 0;
 }

@@ -10,6 +10,12 @@ namespace SCION_RENDERING {
 
 	public:
 		TextureLoader() = delete;
+
+		/*
+		* @brief Loads a new texture into open GL and creates a new Texture object
+		* @params Takes in the type of texture to be created and a string for the filepath of the texture.
+		* @return Returns a shared_ptr<Texture> if successful, nullptr otherwise.
+		*/
 		static std::shared_ptr<Texture> Create(Texture::TextureType type, const std::string& texturePath);
 	};
 }
