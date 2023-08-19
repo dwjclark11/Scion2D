@@ -17,14 +17,24 @@ namespace SCION_RENDERING {
 	public:
 		Camera2D();
 		Camera2D(int width, int height);
+		~Camera2D() = default;
+		/*
+		* @brief Updates the camera's position, scale,
+		* and rotation if needed. If there has been no changes,
+		* no updates occur
+		*/
 		void Update();
-
+		
 		inline void SetPosition(glm::vec2 newPosition) { m_Position = newPosition; m_bNeedsUpdate = true; }
 		inline void SetScale(float scale) { m_Scale = scale; m_bNeedsUpdate = true; }
 
 		inline const glm::vec2 GetPosition() const { return m_Position; }
 		inline const float GetScale() const { return m_Scale; }
 
+		/*
+		* @brief Get the camera projection based on the orthographic projection matrix.
+		* @return Returns the camera matrix glm::mat4
+		*/
 		inline glm::mat4 GetCameraMatrix() { return m_CameraMatrix; }
 	};
 }
