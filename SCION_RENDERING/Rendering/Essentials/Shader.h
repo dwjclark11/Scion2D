@@ -15,6 +15,7 @@ namespace SCION_RENDERING {
 
 		GLuint GetUniformLocation(const std::string& uniformName);
 	public:
+		Shader();
 		Shader(GLuint program, const std::string vertexPath, const std::string& fragmentPath);
 		~Shader();
 

@@ -22,6 +22,12 @@ namespace SCION_RENDERING {
 		return location;
 	}
 
+	Shader::Shader()
+		: Shader(0, "", "")
+	{
+
+	}
+
 	Shader::Shader(GLuint program, const std::string vertexPath, const std::string& fragmentPath)
 		: m_ShaderProgramID{program}, m_sVertexPath{vertexPath}, m_sFragmentPath{fragmentPath}
 	{

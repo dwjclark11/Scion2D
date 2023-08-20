@@ -17,6 +17,9 @@
 #include <Core/ECS/Components/Identification.h>
 #include <Core/ECS/Components/TransformComponent.h>
 
+#include <Core/Resources/AssetManager.h>
+
+
 int main()
 {
 	SCION_INIT_LOGS(true, true);
@@ -90,17 +93,24 @@ int main()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Add temp texture
-	auto texture = SCION_RENDERING::TextureLoader::Create(SCION_RENDERING::Texture::TextureType::PIXEL, "./assets/textures/castle.png");
-
-	if (!texture)
+	auto assetManager = std::make_shared<SCION_RESOURCES::AssetManager>();
+	if (!assetManager)
 	{
-		SCION_ERROR("Failed to create the texure!");
+		SCION_ERROR("Failed to create the asset manager!");
 		return -1;
 	}
 
-	SCION_LOG("Loaded Texture: [width = {0}, height = {1}]", texture->GetWidth(), texture->GetHeight());
-	SCION_WARN("Loaded Texture: [width = {0}, height = {1}]", texture->GetWidth(), texture->GetHeight());
+	if (!assetManager->AddTexture("castle", "./assets/textures/castle.png", true))
+	{
+		SCION_ERROR("Failed to create and add the texture");
+		return -1;
+	}
+
+	// Add temp texture
+	auto texture = assetManager->GetTexture("castle");
+
+	SCION_LOG("Loaded Texture: [width = {0}, height = {1}]", texture.GetWidth(), texture.GetHeight());
+	SCION_WARN("Loaded Texture: [width = {0}, height = {1}]", texture.GetWidth(), texture.GetHeight());
 
 	auto pRegistry = std::make_unique<SCION_CORE::ECS::Registry>();
 
@@ -122,7 +132,7 @@ int main()
 		}
 	);
 	
-	sprite.generate_uvs(texture->GetWidth(), texture->GetHeight());
+	sprite.generate_uvs(texture.GetWidth(), texture.GetHeight());
 
 	// These are all test values to be removed	
 	std::vector<SCION_RENDERING::Vertex> vertices{};
@@ -159,10 +169,16 @@ int main()
 	SCION_RENDERING::Camera2D camera{};
 	camera.SetScale(15.f);
 
-	// Create out first shader
-	auto shader = SCION_RENDERING::ShaderLoader::Create("assets/shaders/basicShader.vert", "assets/shaders/basicShader.frag");
+	if (!assetManager->AddShader("basic", "assets/shaders/basicShader.vert", "assets/shaders/basicShader.frag"))
+	{
+		SCION_ERROR("Failed to add the shader to the asset manager");
+		return -1;
+	}
 
-	if (!shader)
+	// Create out first shader
+	auto shader = assetManager->GetShader("basic");
+
+	if (shader.ShaderProgramID() == 0)
 	{
 		SCION_ERROR("Failed to create the shader!");
 		return -1;
@@ -263,15 +279,15 @@ int main()
 
 		glClearColor(1.f, 1.f, 1.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		shader->Enable();
+		shader.Enable();
 		glBindVertexArray(VAO);
 
 		auto projection = camera.GetCameraMatrix();
 
-		shader->SetUniformMat4("uProjection", projection);
+		shader.SetUniformMat4("uProjection", projection);
 
 		glActiveTexture(GL_TEXTURE0); 
-		glBindTexture(GL_TEXTURE_2D, texture->GetID());
+		glBindTexture(GL_TEXTURE_2D, texture.GetID());
 
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
@@ -280,7 +296,7 @@ int main()
 		SDL_GL_SwapWindow(window.GetWindow().get());
 
 		camera.Update();
-		shader->Disable();
+		shader.Disable();
 	}
 
 	SCION_LOG("Closing!");

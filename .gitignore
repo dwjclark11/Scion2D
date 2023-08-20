@@ -397,5 +397,7 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# Folders Filter
-[Aa]ssets/
+# Folders Filter -- Filter textures, soundfx, and music -- Those are only used for testing
+**/[Tt]extures/
+**/[Ss]oundfx/
+**/[Mm]usic/
