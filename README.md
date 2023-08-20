@@ -37,17 +37,17 @@ that we will need in the Game Engine. They both will have some shared libraries;
 used inside an actual exported game. 
 
 The projects will be as follows:
-* GLAD - This will be build as a static library
-* SOIL - Soil is the texture loading library we will be using - Built as a static library
-* ImGui -
-* SCION_EDITOR - 
-* SCION_RENDERING -
-* SCION_UTILITIES -
-* SCION_WINDOW -
-* SCION_PHYSICS -
-* SCION_CORE -
-* SCION_LOGGER -
-* SCION_SOUNDS
-* SCION_FILESYSTEM
+* ***GLAD*** - This will be build as a static library
+* ***SOIL*** - Soil is the texture loading library we will be using - Built as a static library
+* ***ImGui*** - Dear ImGui will be used in the editor to allow us to have docking, file management, and it is really easy to use.
+* ***SCION_EDITOR*** - The editor will have a built in tilemap editor, scene hierarchy for game objects/entities, and allow us to export the game.
+* ***SCION_RENDERING*** - Contains all the necessary graphics classes - Textures, shaders, framebuffer, batch renderer, camera, and more.
+* ***SCION_UTILITIES*** - Utility classes and functions that will be useful everywhere. 
+* ***SCION_WINDOW*** - Windowing uses SDL to create the window, also to handle inputs - Keyboard, mouse, and gamepad.
+* ***SCION_PHYSICS*** - Box2D will be used for our physics. This will contain wrapper classes around box2D bodies, world, etc.
+* ***SCION_CORE*** - The core will be what binds everything together. ECS wrapper classes, Asset management, Scripting, will all be in the core.
+* ***SCION_LOGGER*** - The logger to be used throughout the engine to log errors, information, and warnings.
+* ***SCION_SOUNDS*** - This will have wrapper classes around SDL Mixer for Sound FX and Music
+* ***SCION_FILESYSTEM*** - 
 
 Readme is still under construction
