@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SOIL\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\SCION_CORE;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir).\Dependencies\SDL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SOIL\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\SCION_CORE;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir).\Dependencies\SDL\lib;$(SolutionDir).\Dependencies\lua_53\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SOIL\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\SCION_CORE;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir).\Dependencies\SDL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SOIL\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\SCION_CORE;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir).\Dependencies\SDL\lib;$(SolutionDir).\Dependencies\lua_53\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -117,7 +117,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;opengl32.lib;lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -135,7 +135,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;opengl32.lib;lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -166,6 +166,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\scripts\main.lua" />
     <None Include="assets\shaders\basicShader.frag" />
     <None Include="assets\shaders\basicShader.vert" />
   </ItemGroup>

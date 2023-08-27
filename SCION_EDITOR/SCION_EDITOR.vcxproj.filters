@@ -25,6 +25,7 @@
   <ItemGroup>
     <None Include="assets\shaders\basicShader.vert" />
     <None Include="assets\shaders\basicShader.frag" />
+    <None Include="assets\scripts\main.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
