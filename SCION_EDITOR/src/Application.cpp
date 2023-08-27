@@ -17,6 +17,8 @@
 #include <Core/ECS/Components/TransformComponent.h>
 #include <Core/Resources/AssetManager.h>
 
+#include <Core/Systems/ScriptingSystem.h>
+
 namespace SCION_EDITOR {
 
     bool Application::Initialize()
@@ -94,13 +96,13 @@ namespace SCION_EDITOR {
 		if (!assetManager)
 		{
 			SCION_ERROR("Failed to create the asset manager!");
-			return -1;
+			return false;
 		}
 
 		if (!assetManager->AddTexture("castle", "./assets/textures/castle.png", true))
 		{
 			SCION_ERROR("Failed to create and add the texture");
-			return -1;
+			return false;
 		}
 
 		// Add temp texture
@@ -161,6 +163,42 @@ namespace SCION_EDITOR {
 			0, 1, 2,
 			2, 3, 0
 		};
+
+		// Create the lua state
+		auto lua = std::make_shared<sol::state>();
+
+		if (!lua)
+		{
+			SCION_ERROR("Failed to create the lua state!");
+			return false;
+		}
+
+		lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::table, sol::lib::io, sol::lib::string);
+
+		if (!m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua))
+		{
+			SCION_ERROR("Failed to add the sol::state to the registry context!");
+			return false;
+		}
+		
+		auto scriptSystem = std::make_shared<SCION_CORE::Systems::ScriptingSystem>(*m_pRegistry);
+		if (!scriptSystem)
+		{
+			SCION_ERROR("Failed to create the script system!");
+			return false;
+		}
+		
+		if (!scriptSystem->LoadMainScript(*lua))
+		{
+			SCION_ERROR("Failed to load the main lua script!");
+			return false;
+		}
+		
+		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>(scriptSystem))
+		{
+			SCION_ERROR("Failed to add the script system to the registry context!");
+			return false;
+		}
 
 		// Create a temp camera
 		auto camera = std::make_shared<SCION_RENDERING::Camera2D>();
@@ -245,6 +283,8 @@ namespace SCION_EDITOR {
 
 		glEnableVertexAttribArray(2);
 		glBindVertexArray(0);
+
+		return true;
     }
 
     bool Application::LoadShaders()
@@ -296,6 +336,9 @@ namespace SCION_EDITOR {
 		}
 		
 		camera->Update();
+
+		auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
+		scriptSystem->Update();
     }
 
     void Application::Render()
@@ -329,6 +372,8 @@ namespace SCION_EDITOR {
 		const auto& texture = assetManager->GetTexture("castle");
 		glBindTexture(GL_TEXTURE_2D, texture.GetID());
 
+		auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
+		scriptSystem->Render();
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
@@ -354,10 +399,6 @@ namespace SCION_EDITOR {
     {
 		static Application app{};
 		return app;
-    }
-
-    Application::~Application()
-	{
     }
 
     void Application::Run()

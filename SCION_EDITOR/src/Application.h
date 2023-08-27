@@ -26,10 +26,13 @@ namespace SCION_EDITOR {
 		void CleanUp();
 
 		Application();
+		~Application() = default;
+		Application(const Application&) = delete;
+		Application& operator=(const Application&) = delete;
+
 	public:
 		static Application& GetInstance();
-		~Application();
-
+		
 		void Run();
 	};
 }
