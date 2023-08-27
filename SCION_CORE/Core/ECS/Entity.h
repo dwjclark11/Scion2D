@@ -12,8 +12,12 @@ namespace SCION_CORE::ECS {
 	public:
 		Entity(Registry& registry);
 		Entity(Registry& registry, const std::string& name = "", const std::string& group = "");
+
+		Entity(Registry& registry, const entt::entity& entity);
 		~Entity() = default;
 
+		inline const std::string& GetName() const { return m_sName; }
+		inline const std::string& GetGroup() const { return m_sGroup; }
 		/*
 		* @brief Destroys the underlying entt::entity. This will remove the entity from the
 		* the registry. USE WITH CAUTION!! Please ensure that there are no other references to

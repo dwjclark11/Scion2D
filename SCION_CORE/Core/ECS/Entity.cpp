@@ -17,4 +17,14 @@ namespace SCION_CORE::ECS {
 				.entity_id = static_cast<int32_t>(m_Entity)
 			});
 	}
+	Entity::Entity(Registry& registry, const entt::entity& entity)
+		: m_Registry(registry), m_Entity(entity), m_sName{""}, m_sGroup{""}
+	{
+		if (HasComponent<Identification>())
+		{
+			const auto& id = GetComponent<Identification>();
+			m_sName = id.name;
+			m_sGroup = id.group;
+		}
+	}
 }
