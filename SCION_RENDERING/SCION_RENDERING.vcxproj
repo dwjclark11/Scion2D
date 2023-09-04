@@ -146,6 +146,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Rendering\Core\BatchRenderer.h" />
     <ClInclude Include="Rendering\Core\Camera2D.h" />
     <ClInclude Include="Rendering\Essentials\Shader.h" />
     <ClInclude Include="Rendering\Essentials\ShaderLoader.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="Rendering\Essentials\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Rendering\Core\BatchRenderer.cpp" />
     <ClCompile Include="Rendering\Core\Camera2D.cpp" />
     <ClCompile Include="Rendering\Essentials\Shader.cpp" />
     <ClCompile Include="Rendering\Essentials\ShaderLoader.cpp" />

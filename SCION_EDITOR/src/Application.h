@@ -13,8 +13,6 @@ namespace SCION_EDITOR {
 		SDL_Event m_Event;
 		bool m_bIsRunning;
 		
-		// TEMP for testing
-		GLuint VAO, VBO, IBO;
 	private:
 		bool Initialize();
 		bool LoadShaders();
