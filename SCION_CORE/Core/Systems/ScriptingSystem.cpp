@@ -1,7 +1,12 @@
 #include "ScriptingSystem.h"
 #include "../ECS/Components/ScriptComponent.h"
+#include "../ECS/Components/TransformComponent.h"
+#include "../ECS/Components/SpriteComponent.h"
 #include "../ECS/Entity.h"
+
 #include <Logger/Logger.h>
+
+using namespace SCION_CORE::ECS;
 
 namespace SCION_CORE::Systems {
 
@@ -105,5 +110,15 @@ namespace SCION_CORE::Systems {
 				SCION_ERROR("Error running the Render script: {0}", err.what());
 			}
 		}
+	}
+
+	void ScriptingSystem::RegisterLuaBindings(sol::state& lua, SCION_CORE::ECS::Registry& registry)
+	{
+		Entity::CreateLuaEntityBind(lua, registry);
+		TransformComponent::CreateLuaTransformBind(lua);
+		SpriteComponent::CreateSpriteLuaBind(lua, registry);
+
+		Entity::RegisterMetaComponent<TransformComponent>();
+		Entity::RegisterMetaComponent<SpriteComponent>();
 	}
 }

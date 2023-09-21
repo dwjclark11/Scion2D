@@ -1,5 +1,6 @@
 #pragma once
 #include "Registry.h"
+#include <sol/sol.hpp>
 
 namespace SCION_CORE::ECS {
 	class Entity
@@ -38,6 +39,11 @@ namespace SCION_CORE::ECS {
 		*/
 		inline entt::registry& GetRegistry() { return m_Registry.GetRegistry(); }
 
+		static void CreateLuaEntityBind(sol::state& lua, Registry& registry);
+
+		template <typename TComponent>
+		static void RegisterMetaComponent();
+
 		/*
 		* @brief Add a component to entity.
 		* @tparam Takes a TComponent parameter and the arguments neeeded to
@@ -65,6 +71,10 @@ namespace SCION_CORE::ECS {
 		template <typename TComponent>
 		void RemoveComponent();
 	};
+
+	template <typename TComponent>
+	auto add_component(Entity& entity, const sol::table& comp, sol::this_state s);
+	
 }
 
 #include "Entity.inl"

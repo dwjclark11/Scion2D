@@ -106,40 +106,7 @@ namespace SCION_EDITOR {
 			return false;
 		}
 
-		// Add temp texture
-		auto texture = assetManager->GetTexture("castle");
-
-		SCION_LOG("Loaded Texture: [width = {0}, height = {1}]", texture.GetWidth(), texture.GetHeight());
-		SCION_WARN("Loaded Texture: [width = {0}, height = {1}]", texture.GetWidth(), texture.GetHeight());
-
 		m_pRegistry = std::make_unique<SCION_CORE::ECS::Registry>();
-
-		SCION_CORE::ECS::Entity entity1{*m_pRegistry, "Ent1", "Test"};
-
-		auto& transform = entity1.AddComponent<SCION_CORE::ECS::TransformComponent>(SCION_CORE::ECS::TransformComponent{
-			.position = glm::vec2{ 10.f, 10.f },
-				.scale = glm::vec2{ 3.f, 3.f },
-				.rotation = 0.f
-		}
-		);
-
-		auto& sprite = entity1.AddComponent<SCION_CORE::ECS::SpriteComponent>(SCION_CORE::ECS::SpriteComponent{
-			.width = 16.f,
-				.height = 16.f,
-				.color = SCION_RENDERING::Color{ .r = 255, .g = 0, .b = 255, .a = 255 },
-				.start_x = 0,
-				.start_y = 28,
-				.layer = 0,
-				.texture_name = "castle"
-		}
-		);
-
-		sprite.generate_uvs(texture.GetWidth(), texture.GetHeight());
-
-		auto& id = entity1.GetComponent<SCION_CORE::ECS::Identification>();
-		SCION_LOG("Name: {0}, GROUP: {1}, ID: {2}", id.name, id.group, id.entity_id);
-
-
 
 		// Create the lua state
 		auto lua = std::make_shared<sol::state>();
@@ -164,13 +131,7 @@ namespace SCION_EDITOR {
 			SCION_ERROR("Failed to create the script system!");
 			return false;
 		}
-		
-		if (!scriptSystem->LoadMainScript(*lua))
-		{
-			SCION_ERROR("Failed to load the main lua script!");
-			return false;
-		}
-		
+				
 		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>(scriptSystem))
 		{
 			SCION_ERROR("Failed to add the script system to the registry context!");
@@ -190,7 +151,6 @@ namespace SCION_EDITOR {
 			return false;
 		}
 
-
 		// Create a temp camera
 		auto camera = std::make_shared<SCION_RENDERING::Camera2D>();
 		
@@ -209,6 +169,14 @@ namespace SCION_EDITOR {
 		if (!LoadShaders())
 		{
 			SCION_ERROR("Failed to load the shaders!");
+			return false;
+		}
+
+		SCION_CORE::Systems::ScriptingSystem::RegisterLuaBindings(*lua, *m_pRegistry);
+
+		if (!scriptSystem->LoadMainScript(*lua))
+		{
+			SCION_ERROR("Failed to load the main lua script!");
 			return false;
 		}
 
@@ -267,36 +235,6 @@ namespace SCION_EDITOR {
 
 		auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
 		scriptSystem->Update();
-
-		auto view = m_pRegistry->GetRegistry().view<SCION_CORE::ECS::TransformComponent, SCION_CORE::ECS::SpriteComponent>();
-
-		static float rotation{ 0.f };
-		static float x_pos{ 10.f };
-		static bool bMoveRight{ true };
-
-		if (rotation >= 360.f)
-			rotation = 0.f;
-
-		if (bMoveRight && x_pos < 300.f)
-			x_pos += 3;
-		else if (bMoveRight && x_pos >= 300.f)
-			bMoveRight = false;
-
-		if (!bMoveRight && x_pos > 10.f)
-			x_pos -= 3;
-		else if (!bMoveRight && x_pos <= 10.f)
-			bMoveRight = true;
-
-		for (const auto& entity : view)
-		{
-			SCION_CORE::ECS::Entity ent{*m_pRegistry, entity};
-			auto& transform = ent.GetComponent<SCION_CORE::ECS::TransformComponent>();
-
-			transform.rotation = rotation;
-			transform.position.x = x_pos;
-		}
-		
-		rotation += bMoveRight ? 9 : -9;
     }
 
     void Application::Render()

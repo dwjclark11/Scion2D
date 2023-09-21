@@ -162,13 +162,17 @@
     <ClInclude Include="Core\ECS\Components\SpriteComponent.h" />
     <ClInclude Include="Core\ECS\Components\TransformComponent.h" />
     <ClInclude Include="Core\ECS\Entity.h" />
+    <ClInclude Include="Core\ECS\MetaUtilities.h" />
     <ClInclude Include="Core\ECS\Registry.h" />
     <ClInclude Include="Core\Resources\AssetManager.h" />
     <ClInclude Include="Core\Systems\RenderSystem.h" />
     <ClInclude Include="Core\Systems\ScriptingSystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\ECS\Components\SpriteComponent.cpp" />
+    <ClCompile Include="Core\ECS\Components\TransformComponent.cpp" />
     <ClCompile Include="Core\ECS\Entity.cpp" />
+    <ClCompile Include="Core\ECS\MetaUtilities.cpp" />
     <ClCompile Include="Core\ECS\Registry.cpp" />
     <ClCompile Include="Core\Resources\AssetManager.cpp" />
     <ClCompile Include="Core\Systems\RenderSystem.cpp" />

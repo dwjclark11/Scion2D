@@ -42,6 +42,9 @@
     <ClInclude Include="Core\Systems\RenderSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core\ECS\MetaUtilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\ECS\Registry.cpp">
@@ -57,6 +60,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Systems\RenderSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ECS\MetaUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ECS\Components\TransformComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ECS\Components\SpriteComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
