@@ -76,5 +76,8 @@
     <None Include="Core\ECS\Entity.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="Core\ECS\Registry.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
