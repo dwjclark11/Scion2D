@@ -4,6 +4,8 @@
 #include "../ECS/Components/SpriteComponent.h"
 #include "../ECS/Entity.h"
 
+#include "../Scripting/GlmLuaBindings.h"
+
 #include <Logger/Logger.h>
 
 using namespace SCION_CORE::ECS;
@@ -114,6 +116,8 @@ namespace SCION_CORE::Systems {
 
 	void ScriptingSystem::RegisterLuaBindings(sol::state& lua, SCION_CORE::ECS::Registry& registry)
 	{
+		SCION_CORE::Scripting::GLMBindings::CreateGLMBindings(lua);
+
 		Registry::CreateLuaRegistryBind(lua, registry);
 		Entity::CreateLuaEntityBind(lua, registry);
 		TransformComponent::CreateLuaTransformBind(lua);
