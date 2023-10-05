@@ -19,6 +19,7 @@
 
 #include <Core/Systems/ScriptingSystem.h>
 #include <Core/Systems/RenderSystem.h>
+#include <Core/Systems/AnimationSystem.h>
 
 namespace SCION_EDITOR {
 
@@ -106,6 +107,12 @@ namespace SCION_EDITOR {
 			return false;
 		}
 
+		if (!assetManager->AddTexture("red_player", "./assets/textures/red_player.png", true))
+		{
+			SCION_ERROR("Failed to create and add the texture");
+			return false;
+		}
+
 		m_pRegistry = std::make_unique<SCION_CORE::ECS::Registry>();
 
 		// Create the lua state
@@ -148,6 +155,19 @@ namespace SCION_EDITOR {
 		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderSystem>>(renderSystem))
 		{
 			SCION_ERROR("Failed to add the render system to the registry context!");
+			return false;
+		}
+
+		auto animationSystem = std::make_shared<SCION_CORE::Systems::AnimationSystem>(*m_pRegistry);
+		if (!animationSystem)
+		{
+			SCION_ERROR("Failed to create the animation system!");
+			return false;
+		}
+
+		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::AnimationSystem>>(animationSystem))
+		{
+			SCION_ERROR("Failed to add the animation system to the registry context!");
 			return false;
 		}
 
@@ -235,6 +255,9 @@ namespace SCION_EDITOR {
 
 		auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
 		scriptSystem->Update();
+
+		auto& animationSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::AnimationSystem>>();
+		animationSystem->Update();
     }
 
     void Application::Render()

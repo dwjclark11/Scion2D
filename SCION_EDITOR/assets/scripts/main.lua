@@ -7,6 +7,10 @@ local transform = gEntity:add_component(
 )
 
 gEntity2:add_component(Transform(200, 100, 10, 10, 0))
+local sprite2 = gEntity2:add_component(Sprite("red_player", 32.0, 32.0, 0, 2, 0))
+sprite2:generate_uvs()
+
+gEntity2:add_component(Animation(6, 15, 0, true))
 
 local sprite = gEntity:add_component(
 	Sprite("castle", 16.0, 16.0, 0, 28, 0)
