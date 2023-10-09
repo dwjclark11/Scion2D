@@ -6,6 +6,7 @@
 #include "../ECS/Entity.h"
 
 #include "../Scripting/GlmLuaBindings.h"
+#include "../Scripting/InputManager.h"
 
 #include <Logger/Logger.h>
 
@@ -118,6 +119,7 @@ namespace SCION_CORE::Systems {
 	void ScriptingSystem::RegisterLuaBindings(sol::state& lua, SCION_CORE::ECS::Registry& registry)
 	{
 		SCION_CORE::Scripting::GLMBindings::CreateGLMBindings(lua);
+		SCION_CORE::InputManager::CreateLuaInputBindings(lua);
 
 		Registry::CreateLuaRegistryBind(lua, registry);
 		Entity::CreateLuaEntityBind(lua, registry);

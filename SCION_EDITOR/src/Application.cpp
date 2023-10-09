@@ -21,6 +21,10 @@
 #include <Core/Systems/RenderSystem.h>
 #include <Core/Systems/AnimationSystem.h>
 
+#include <Core/Scripting/InputManager.h>
+#include <Windowing/Inputs/Keyboard.h>
+
+
 namespace SCION_EDITOR {
 
     bool Application::Initialize()
@@ -224,6 +228,9 @@ namespace SCION_EDITOR {
 
     void Application::ProcessEvents()
     {
+		auto& inputManager = SCION_CORE::InputManager::GetInstance();
+		auto& keyboard = inputManager.GetKeyboard();
+
 		// Process Events
 		while (SDL_PollEvent(&m_Event))
 		{
@@ -235,6 +242,10 @@ namespace SCION_EDITOR {
 			case SDL_KEYDOWN:
 				if (m_Event.key.keysym.sym == SDLK_ESCAPE)
 					m_bIsRunning = false;
+				keyboard.OnKeyPressed(m_Event.key.keysym.sym);
+				break;
+			case SDL_KEYUP:
+				keyboard.OnKeyReleased(m_Event.key.keysym.sym);
 				break;
 			default:
 				break;
@@ -258,6 +269,11 @@ namespace SCION_EDITOR {
 
 		auto& animationSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::AnimationSystem>>();
 		animationSystem->Update();
+
+		// Update inputs
+		auto& inputManager = SCION_CORE::InputManager::GetInstance();
+		auto& keyboard = inputManager.GetKeyboard();
+		keyboard.Update();
     }
 
     void Application::Render()

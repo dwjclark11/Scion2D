@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_WINDOW;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir).\Dependencies\lua_53\lib;$(SolutionDir).\Dependencies\SDL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_WINDOW;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir).\Dependencies\lua_53\lib;$(SolutionDir).\Dependencies\SDL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -152,6 +152,9 @@
     <ProjectReference Include="..\SCION_RENDERING\SCION_RENDERING.vcxproj">
       <Project>{f4e7f6ad-7f77-4592-8f6d-0b812015d805}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\SCION_WINDOW\SCION_WINDOW.vcxproj">
+      <Project>{087a6a3a-1033-4fab-873a-5a4c856d6e0f}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\SOIL\SOIL.vcxproj">
       <Project>{5358dc1e-fc64-41ee-a180-dc28344028dc}</Project>
     </ProjectReference>
@@ -167,6 +170,7 @@
     <ClInclude Include="Core\ECS\Registry.h" />
     <ClInclude Include="Core\Resources\AssetManager.h" />
     <ClInclude Include="Core\Scripting\GlmLuaBindings.h" />
+    <ClInclude Include="Core\Scripting\InputManager.h" />
     <ClInclude Include="Core\Systems\AnimationSystem.h" />
     <ClInclude Include="Core\Systems\RenderSystem.h" />
     <ClInclude Include="Core\Systems\ScriptingSystem.h" />
@@ -180,6 +184,7 @@
     <ClCompile Include="Core\ECS\Registry.cpp" />
     <ClCompile Include="Core\Resources\AssetManager.cpp" />
     <ClCompile Include="Core\Scripting\GlmLuaBindings.cpp" />
+    <ClCompile Include="Core\Scripting\InputManager.cpp" />
     <ClCompile Include="Core\Systems\AnimationSystem.cpp" />
     <ClCompile Include="Core\Systems\RenderSystem.cpp" />
     <ClCompile Include="Core\Systems\ScriptingSystem.cpp" />

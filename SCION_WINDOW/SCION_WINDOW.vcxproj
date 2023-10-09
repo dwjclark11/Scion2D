@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir).\SCION_UTILITIES\;$(SolutionDir).\Dependencies\SDL\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\SCION_UTILITIES\;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_LOGGER\Logger;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir).\Dependencies\SDL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir).\SCION_UTILITIES\;$(SolutionDir).\Dependencies\SDL\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\SCION_UTILITIES\;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_LOGGER\Logger;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir).\Dependencies\SDL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -143,14 +143,22 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Windowing\Inputs\Button.h" />
+    <ClInclude Include="Windowing\Inputs\Keyboard.h" />
+    <ClInclude Include="Windowing\Inputs\Keys.h" />
     <ClInclude Include="Windowing\Window\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SCION_LOGGER\SCION_LOGGER.vcxproj">
+      <Project>{fd6b5ddd-ab4d-42fd-94d1-743406818fd7}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\SCION_UTILITIES\SCION_UTILITIES.vcxproj">
       <Project>{7554576b-897a-4cd6-b89f-26bcc61cb401}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Windowing\Inputs\Button.cpp" />
+    <ClCompile Include="Windowing\Inputs\Keyboard.cpp" />
     <ClCompile Include="Windowing\Window\Window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
