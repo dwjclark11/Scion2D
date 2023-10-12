@@ -146,6 +146,8 @@
     <ClInclude Include="Windowing\Inputs\Button.h" />
     <ClInclude Include="Windowing\Inputs\Keyboard.h" />
     <ClInclude Include="Windowing\Inputs\Keys.h" />
+    <ClInclude Include="Windowing\Inputs\Mouse.h" />
+    <ClInclude Include="Windowing\Inputs\MouseButtons.h" />
     <ClInclude Include="Windowing\Window\Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="Windowing\Inputs\Button.cpp" />
     <ClCompile Include="Windowing\Inputs\Keyboard.cpp" />
+    <ClCompile Include="Windowing\Inputs\Mouse.cpp" />
     <ClCompile Include="Windowing\Window\Window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
