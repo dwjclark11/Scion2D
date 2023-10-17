@@ -11,7 +11,10 @@ namespace SCION_UTIL {
 }
 
 typedef std::shared_ptr<SDL_GameController> Controller;
-static Controller make_shared_controller(SDL_GameController* controller);
+static Controller make_shared_controller(SDL_GameController* controller)
+{
+	return std::shared_ptr<SDL_GameController>(controller, SCION_UTIL::SDL_Destroyer{});
+}
 
 typedef std::shared_ptr<SDL_Cursor> Cursor;
 static Cursor make_shared_cursor(SDL_Cursor* cursor);

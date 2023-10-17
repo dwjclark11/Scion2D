@@ -24,6 +24,7 @@
 #include <Core/Scripting/InputManager.h>
 #include <Windowing/Inputs/Keyboard.h>
 #include <Windowing/Inputs/Mouse.h>
+#include <Windowing/Inputs/Gamepad.h>
 
 
 namespace SCION_EDITOR {
@@ -65,8 +66,8 @@ namespace SCION_EDITOR {
 		// Create the Window
 		m_pWindow = std::make_unique<SCION_WINDOWING::Window>(
 			"Test Window", 
-			640, 480, 
-			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+			1920, 1080, 
+			0, 0, 
 			true, SDL_WINDOW_OPENGL);
 
 		if (!m_pWindow->GetWindow())
@@ -261,6 +262,25 @@ namespace SCION_EDITOR {
 				break;
 			case SDL_MOUSEMOTION:
 				mouse.SetMouseMoving(true);
+				break;
+			case SDL_CONTROLLERBUTTONDOWN:
+				inputManager.GamepadBtnPressed(m_Event);
+				break;
+			case SDL_CONTROLLERBUTTONUP:
+				inputManager.GamepadBtnReleased(m_Event);
+				break;
+			case SDL_CONTROLLERDEVICEADDED:
+				inputManager.AddGamepad(m_Event.jdevice.which);
+				break;
+			case SDL_CONTROLLERDEVICEREMOVED:
+				inputManager.RemoveGamepad(m_Event.jdevice.which);
+				break;
+			case SDL_JOYAXISMOTION:
+				inputManager.GamepadAxisValues(m_Event);
+				break;
+			case SDL_JOYHATMOTION:
+				inputManager.GamepadHatValues(m_Event);
+				break;
 			default:
 				break;
 			}
@@ -290,6 +310,8 @@ namespace SCION_EDITOR {
 		keyboard.Update();
 		auto& mouse = inputManager.GetMouse();
 		mouse.Update();
+
+		inputManager.UpdateGamepads();
     }
 
     void Application::Render()

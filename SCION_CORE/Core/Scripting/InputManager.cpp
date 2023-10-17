@@ -1,4 +1,6 @@
 #include "InputManager.h"
+#include <Logger/Logger.h>
+#include <ScionUtilities/SDL_Wrappers.h>
 
 namespace SCION_CORE {
 
@@ -109,6 +111,34 @@ namespace SCION_CORE {
         lua.set("RIGHT_BTN", SCION_MOUSE_RIGHT);
     }
 
+    void InputManager::RegisterGamepadBtnNames(sol::state& lua)
+    {
+        lua.set("GP_BTN_A", SCION_GP_BTN_A);
+        lua.set("GP_BTN_B", SCION_GP_BTN_B);
+        lua.set("GP_BTN_X", SCION_GP_BTN_X);
+        lua.set("GP_BTN_Y", SCION_GP_BTN_Y);
+
+        lua.set("GP_BTN_BACK", SCION_GP_BTN_BACK);
+        lua.set("GP_BTN_GUIDE", SCION_GP_BTN_GUIDE);
+        lua.set("GP_BTN_START", SCION_GP_BTN_START);
+
+        lua.set("GP_LSTICK", SCION_GP_BTN_LSTICK);
+        lua.set("GP_RSTICK", SCION_GP_BTN_RSTICK);
+        lua.set("GP_LSHOULDER", SCION_GP_BTN_LSHOULDER);
+        lua.set("GP_RSHOULDER", SCION_GP_BTN_RSHOULDER);
+
+        lua.set("DPAD_UP", SCION_GP_BTN_DPAD_UP);
+        lua.set("DPAD_DOWN", SCION_GP_BTN_DPAD_DOWN);
+        lua.set("DPAD_LEFT", SCION_GP_BTN_DPAD_LEFT);
+        lua.set("DPAD_RIGHT", SCION_GP_BTN_DPAD_RIGHT);
+
+        lua.set("AXIS_X1", 0); lua.set("AXIS_Y1", 1);
+        lua.set("AXIS_X2", 2); lua.set("AXIS_Y2", 3);
+
+        // Bottom triggers
+        lua.set("AXIS_Z1", 4); lua.set("AXIS_Z2", 5);
+    }
+
 	InputManager& InputManager::GetInstance()
 	{
 		static InputManager instance{};
@@ -119,6 +149,7 @@ namespace SCION_CORE {
 	{
         RegisterLuaKeyNames(lua);
         RegisterMouseBtnNames(lua);
+        RegisterGamepadBtnNames(lua);
 
         auto& inputManager = GetInstance();
         auto& keyboard = inputManager.GetKeyboard();
@@ -143,5 +174,177 @@ namespace SCION_CORE {
             "wheel_x", [&]() { return mouse.GetMouseWheelX(); },
             "wheel_y", [&]() { return mouse.GetMouseWheelY(); }
         );
+
+        lua.new_usertype<Gamepad>(
+            "Gamepad",
+            sol::no_constructor,
+            "just_pressed", [&](int index, int btn) {
+                auto gamepad = inputManager.GetController(index);
+                if (!gamepad)
+                {
+                    SCION_ERROR("Invalid Gamepad index [{}] provided or gamepad is not plugged in!", index);
+                    return false;
+                }
+                return gamepad->IsBtnJustPressed(btn);
+            },
+            "just_released", [&](int index, int btn) {
+                auto gamepad = inputManager.GetController(index);
+                if (!gamepad)
+                {
+                    SCION_ERROR("Invalid Gamepad index [{}] provided or gamepad is not plugged in!", index);
+                    return false;
+                }
+                return gamepad->IsBtnJustReleased(btn);
+            },
+            "pressed", [&](int index, int btn) {
+                auto gamepad = inputManager.GetController(index);
+                if (!gamepad)
+                {
+                    SCION_ERROR("Invalid Gamepad index [{}] provided or gamepad is not plugged in!", index);
+                    return false;
+                }
+                return gamepad->IsBtnPressed(btn);
+            },
+            "get_axis_position", [&](int index, int axis) {
+                auto gamepad = inputManager.GetController(index);
+                if (!gamepad)
+                {
+                    SCION_ERROR("Invalid Gamepad index [{}] provided or gamepad is not plugged in!", index);
+                    return Sint16{ 0 };
+                }
+                return gamepad->GetAxisPosition(axis);
+            },
+            "get_hat_value", [&](int index) {
+                auto gamepad = inputManager.GetController(index);
+                if (!gamepad)
+                {
+                    SCION_ERROR("Invalid Gamepad index [{}] provided or gamepad is not plugged in!", index);
+                    return Uint8{ 0 };
+                }
+                return gamepad->GetJoystickHatValue();
+            }
+        );
 	}
+    std::shared_ptr<Gamepad> InputManager::GetController(int index)
+    {
+        auto gamepadItr = m_mapGameControllers.find(index);
+        if (gamepadItr == m_mapGameControllers.end())
+        {
+            SCION_ERROR("Failed to get gamepad at index [{}] -- Does not exist!", index);
+            return nullptr;
+        }
+
+        return gamepadItr->second;
+    }
+
+    bool InputManager::AddGamepad(Sint32 gamepadIndex)
+    {
+        if (m_mapGameControllers.size() >= MAX_CONTROLLERS)
+        {
+            SCION_ERROR("Trying to add too many controllers! Max Controllers allowed = {}", MAX_CONTROLLERS);
+            return false;
+        }
+
+        std::shared_ptr<Gamepad> gamepad{nullptr};
+        try
+        {
+            gamepad = std::make_shared<Gamepad>(
+                std::move(make_shared_controller(SDL_GameControllerOpen(gamepadIndex))));
+        }
+        catch (...)
+        {
+            std::string error{SDL_GetError()};
+            SCION_ERROR("Failed to Open gamepad device -- {}", error);
+            return false;
+        }
+
+        for (int i = 1; i <= MAX_CONTROLLERS; i++)
+        {
+            if (m_mapGameControllers.contains(i))
+                continue;
+
+            m_mapGameControllers.emplace(i, std::move(gamepad));
+            SCION_LOG("Gamepad [{}] was added at index [{}]", gamepadIndex, i);
+            return true;
+        }
+
+        SCION_ASSERT(false && "Failed to add the new controller!");
+        SCION_ERROR("Failed to add the new controller!");
+        return false;
+    }
+
+    bool InputManager::RemoveGamepad(Sint32 gamepadID)
+    {
+        auto gamepadRemoved = std::erase_if(m_mapGameControllers,
+            [&](auto& gamepad) {
+                return gamepad.second->CheckJoystickID(gamepadID);
+            }
+        );
+
+        if (gamepadRemoved > 0)
+        {
+            SCION_LOG("Gamepad Removed -- [{}]", gamepadID);
+            return true;
+        }
+
+        SCION_ASSERT(false && "Failed to remove Gamepad must not have been mapped!");
+        SCION_ERROR("Failed to remove Gamepad [{}] must not have been mapped!", gamepadID);
+        return false;
+    }
+
+    void InputManager::GamepadBtnPressed(const SDL_Event& event)
+    {
+        for (const auto& [index, gamepad] : m_mapGameControllers)
+        {
+            if (gamepad && gamepad->CheckJoystickID(event.jdevice.which))
+            {
+                gamepad->OnBtnPressed(event.cbutton.button);
+                break;
+            }
+        }
+    }
+
+    void InputManager::GamepadBtnReleased(const SDL_Event& event)
+    {
+        for (const auto& [index, gamepad] : m_mapGameControllers)
+        {
+            if (gamepad && gamepad->CheckJoystickID(event.jdevice.which))
+            {
+                gamepad->OnBtnReleased(event.cbutton.button);
+                break;
+            }
+        }
+    }
+    void InputManager::GamepadAxisValues(const SDL_Event& event)
+    {
+        for (const auto& [index, gamepad] : m_mapGameControllers)
+        {
+            if (gamepad && gamepad->CheckJoystickID(event.jdevice.which))
+            {
+                gamepad->SetAxisPositionValue(event.jaxis.axis, event.jaxis.value);
+                break;
+            }
+        }
+    }
+
+    void InputManager::GamepadHatValues(const SDL_Event& event)
+    {
+        for (const auto& [index, gamepad] : m_mapGameControllers)
+        {
+            if (gamepad && gamepad->CheckJoystickID(event.jdevice.which))
+            {
+                gamepad->SetJoystickHatValue(event.jhat.value);
+                break;
+            }
+        }
+    }
+
+    void InputManager::UpdateGamepads()
+    {
+        for (const auto& [index, gamepad] : m_mapGameControllers)
+        {
+            if (gamepad)
+                gamepad->Update();
+        }
+    }
 }

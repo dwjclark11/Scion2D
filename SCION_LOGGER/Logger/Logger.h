@@ -28,6 +28,8 @@
 * the arguments
 */
 #define SCION_ERROR(x, ...) SCION_LOGGER::Logger::GetInstance().Error(std::source_location::current(), x, __VA_ARGS__);
+
+#define SCION_ASSERT(x) assert(x);
 #define SCION_INIT_LOGS(console, retain) SCION_LOGGER::Logger::GetInstance().Init(console, retain);
 
 namespace SCION_LOGGER {

@@ -1,12 +1,11 @@
 -- Main Lua Script!
-
 gEntity = Entity("TestEntity", "Groupy")
 gEntity2 = Entity("BigTesty", "Groupy")
 local transform = gEntity:add_component(
-	Transform(vec2(100, 100), vec2(10, 10), 0)
+	Transform(vec2(100, 100), vec2(4, 4), 0)
 )
 
-gEntity2:add_component(Transform(200, 100, 10, 10, 0))
+gEntity2:add_component(Transform(200, 100, 4, 4, 0))
 local sprite2 = gEntity2:add_component(Sprite("red_player", 32.0, 32.0, 0, 2, 0))
 sprite2:generate_uvs()
 
@@ -84,6 +83,7 @@ main = {
 
 			transform.scale = vec2(scale, scale)
 
+			-- [[
 			if Keyboard.pressed(KEY_W) then 
 				print("Key W was just pressed")
 			elseif Keyboard.pressed(KEY_S) then 
@@ -102,11 +102,21 @@ main = {
 				print("Mouse RIGHT Button Pressed") 
 			end
 
-			local mouse_x, mouse_y = Mouse.screen_position()
-			--print("Mouse pos[" ..mouse_x ..", " ..mouse_y .."]")
+			local rstick_LR = Gamepad.get_axis_position(1, 2)
+			print("RSTICK LR value: " ..rstick_LR)
+			local rstick_UD = Gamepad.get_axis_position(1, 3)
+			print("RSTICK UD value: " ..rstick_UD)
 
-			local wheel_y = Mouse.wheel_y()
-			print("Wheel Y: " ..wheel_y)
+			local lstick_LR = Gamepad.get_axis_position(1, 0)
+			print("LSTICK LR value: " ..lstick_LR)
+			local lstick_UD = Gamepad.get_axis_position(1, 1)
+			print("LSTICK UD value: " ..lstick_UD)
+
+			local lTrigger = Gamepad.get_axis_position(1, 4)
+			print("LTrigger value: " ..lTrigger)
+			local rTrigger = Gamepad.get_axis_position(1, 5)
+			print("RTrigger value: " ..rTrigger)
+			--]]
 		end
 	},
 	[2] = {
