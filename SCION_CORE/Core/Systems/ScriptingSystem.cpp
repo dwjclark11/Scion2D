@@ -7,7 +7,7 @@
 
 #include "../Scripting/GlmLuaBindings.h"
 #include "../Scripting/InputManager.h"
-
+#include "../Resources/AssetManager.h"
 #include <Logger/Logger.h>
 
 using namespace SCION_CORE::ECS;
@@ -120,7 +120,8 @@ namespace SCION_CORE::Systems {
 	{
 		SCION_CORE::Scripting::GLMBindings::CreateGLMBindings(lua);
 		SCION_CORE::InputManager::CreateLuaInputBindings(lua);
-
+		SCION_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
+		
 		Registry::CreateLuaRegistryBind(lua, registry);
 		Entity::CreateLuaEntityBind(lua, registry);
 		TransformComponent::CreateLuaTransformBind(lua);
@@ -135,5 +136,26 @@ namespace SCION_CORE::Systems {
 		Registry::RegisterMetaComponent<SpriteComponent>();
 		Registry::RegisterMetaComponent<AnimationComponent>();
 
+	}
+
+
+	void ScriptingSystem::RegisterLuaFunctions(sol::state& lua)
+	{
+		lua.set_function(
+			"run_script", [&](const std::string& path)
+			{
+				try
+				{
+					lua.safe_script_file(path);
+				}
+				catch (const sol::error& error)
+				{
+					SCION_ERROR("Error loading Lua Script: {}", error.what());
+					return false;
+				}
+
+				return true;
+			}
+		);
 	}
 }
