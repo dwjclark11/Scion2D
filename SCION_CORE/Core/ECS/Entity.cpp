@@ -40,6 +40,9 @@ namespace SCION_CORE::ECS {
 			sol::factories(
 				[&](const std::string& name, const std::string& group) {
 					return Entity{ registry, name, group };
+				},
+				[&](std::int32_t id) {
+					return Entity{ registry, static_cast<entt::entity>(id) };
 				}
 			),
 			"add_component", [](Entity& entity, const sol::table& comp, sol::this_state s) -> sol::object {
