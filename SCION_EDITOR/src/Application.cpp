@@ -66,8 +66,8 @@ namespace SCION_EDITOR {
 		// Create the Window
 		m_pWindow = std::make_unique<SCION_WINDOWING::Window>(
 			"Test Window", 
-			1920, 1080, 
-			0, 0, 
+			640, 480, 
+			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			true, SDL_WINDOW_OPENGL);
 
 		if (!m_pWindow->GetWindow())
@@ -104,18 +104,6 @@ namespace SCION_EDITOR {
 		if (!assetManager)
 		{
 			SCION_ERROR("Failed to create the asset manager!");
-			return false;
-		}
-
-		if (!assetManager->AddTexture("castle", "./assets/textures/castle.png", true))
-		{
-			SCION_ERROR("Failed to create and add the texture");
-			return false;
-		}
-
-		if (!assetManager->AddTexture("red_player", "./assets/textures/red_player.png", true))
-		{
-			SCION_ERROR("Failed to create and add the texture");
 			return false;
 		}
 
@@ -199,6 +187,7 @@ namespace SCION_EDITOR {
 		}
 
 		SCION_CORE::Systems::ScriptingSystem::RegisterLuaBindings(*lua, *m_pRegistry);
+		SCION_CORE::Systems::ScriptingSystem::RegisterLuaFunctions(*lua);
 
 		if (!scriptSystem->LoadMainScript(*lua))
 		{
