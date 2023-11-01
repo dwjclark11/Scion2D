@@ -6,6 +6,9 @@
 #include <Rendering/Essentials/Shader.h>
 #include <Rendering/Essentials/Texture.h>
 
+#include "../ECS/Registry.h"
+#include <sol/sol.hpp>
+
 namespace SCION_RESOURCES {
 
 	class AssetManager
@@ -51,5 +54,7 @@ namespace SCION_RESOURCES {
 		* @return Returns the desired shader if it exists, else returns an empty Shader object
 		*/
 		SCION_RENDERING::Shader& GetShader(const std::string& shaderName);
+
+		static void CreateLuaAssetManager(sol::state& lua, SCION_CORE::ECS::Registry& registry);
 	};
 }

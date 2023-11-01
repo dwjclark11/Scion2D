@@ -75,4 +75,22 @@ namespace SCION_RESOURCES {
 
         return *shaderItr->second;
     }
+    void AssetManager::CreateLuaAssetManager(sol::state& lua, SCION_CORE::ECS::Registry& registry)
+    {
+        auto& asset_manager = registry.GetContext<std::shared_ptr<AssetManager>>();
+        if (!asset_manager)
+        {
+            SCION_ERROR("Failed to bind the asset manager to lua - Does not exist in the registry!");
+            return;
+        }
+
+        lua.new_usertype<AssetManager>(
+            "AssetManager",
+            sol::no_constructor,
+            "add_texture", [&](const std::string& assetName, const std::string& filepath, bool pixel_art)
+            {
+                return asset_manager->AddTexture(assetName, filepath, pixel_art);
+            }
+        );
+    }
 }
