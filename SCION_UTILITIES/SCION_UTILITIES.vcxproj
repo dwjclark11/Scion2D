@@ -144,9 +144,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ScionUtilities\SDL_Wrappers.h" />
+    <ClInclude Include="ScionUtilities\Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScionUtilities\SDL_Wrappers.cpp" />
+    <ClCompile Include="ScionUtilities\Timer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

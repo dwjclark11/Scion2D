@@ -9,6 +9,7 @@
 #include "../Scripting/InputManager.h"
 #include "../Resources/AssetManager.h"
 #include <Logger/Logger.h>
+#include <ScionUtilities/Timer.h>
 
 using namespace SCION_CORE::ECS;
 
@@ -116,12 +117,36 @@ namespace SCION_CORE::Systems {
 		}
 	}
 
+	auto create_timer = [](sol::state& lua) {
+		using namespace SCION_UTIL;
+		lua.new_usertype<Timer>(
+			"Timer",
+			sol::call_constructor,
+			sol::factories([]() {return Timer{}; }),
+			"start", &Timer::Start,
+			"stop", &Timer::Stop,
+			"pause", &Timer::Pause,
+			"resume", &Timer::Resume,
+			"is_paused", &Timer::IsPaused,
+			"is_running", &Timer::IsRunning,
+			"elapsed_ms", &Timer::ElapsedMS,
+			"elapsed_sec", &Timer::ElapsedSec,
+			"restart", [](Timer& timer) {
+				if (timer.IsRunning())
+					timer.Stop();
+
+				timer.Start();
+			}
+		);
+	};
 	void ScriptingSystem::RegisterLuaBindings(sol::state& lua, SCION_CORE::ECS::Registry& registry)
 	{
 		SCION_CORE::Scripting::GLMBindings::CreateGLMBindings(lua);
 		SCION_CORE::InputManager::CreateLuaInputBindings(lua);
 		SCION_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
 		
+		create_timer(lua);
+
 		Registry::CreateLuaRegistryBind(lua, registry);
 		Entity::CreateLuaEntityBind(lua, registry);
 		TransformComponent::CreateLuaTransformBind(lua);
