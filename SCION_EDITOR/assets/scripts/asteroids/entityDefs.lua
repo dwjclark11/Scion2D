@@ -18,7 +18,9 @@ AsteroidDefs =
 				layer = 2
 			}
 		},
-		type = "big"
+		type = "big",
+		min_speed = -2,
+		max_speed = 5,
 	},
 	asteroid_small = 
 	{
@@ -38,7 +40,9 @@ AsteroidDefs =
 				layer = 2
 			}
 		},
-		type = "small"
+		type = "small",
+		min_speed = -5,
+		max_speed = 5,
 	},
 }
 
