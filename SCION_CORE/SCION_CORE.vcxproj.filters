@@ -57,6 +57,12 @@
     <ClInclude Include="Core\Scripting\InputManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core\ECS\Components\BoxColliderComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ECS\Components\CircleColliderComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\ECS\Registry.cpp">
@@ -93,6 +99,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Scripting\InputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ECS\Components\BoxColliderComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ECS\Components\CircleColliderComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

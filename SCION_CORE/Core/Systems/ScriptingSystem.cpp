@@ -3,6 +3,8 @@
 #include "../ECS/Components/TransformComponent.h"
 #include "../ECS/Components/SpriteComponent.h"
 #include "../ECS/Components/AnimationComponent.h"
+#include "../ECS/Components/BoxColliderComponent.h"
+#include "../ECS/Components/CircleColliderComponent.h"
 #include "../ECS/Entity.h"
 
 #include "../Scripting/GlmLuaBindings.h"
@@ -152,15 +154,20 @@ namespace SCION_CORE::Systems {
 		TransformComponent::CreateLuaTransformBind(lua);
 		SpriteComponent::CreateSpriteLuaBind(lua, registry);
 		AnimationComponent::CreateAnimationLuaBind(lua);
+		BoxColliderComponent::CreateLuaBoxColliderBind(lua);
+		CircleColliderComponent::CreateLuaCircleColliderBind(lua);
 
 		Entity::RegisterMetaComponent<TransformComponent>();
 		Entity::RegisterMetaComponent<SpriteComponent>();
 		Entity::RegisterMetaComponent<AnimationComponent>();
+		Entity::RegisterMetaComponent<BoxColliderComponent>();
+		Entity::RegisterMetaComponent<CircleColliderComponent>();
 		
 		Registry::RegisterMetaComponent<TransformComponent>();
 		Registry::RegisterMetaComponent<SpriteComponent>();
 		Registry::RegisterMetaComponent<AnimationComponent>();
-
+		Registry::RegisterMetaComponent<BoxColliderComponent>();
+		Registry::RegisterMetaComponent<CircleColliderComponent>();
 	}
 
 

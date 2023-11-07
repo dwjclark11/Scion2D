@@ -164,6 +164,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\ECS\Components\AnimationComponent.h" />
+    <ClInclude Include="Core\ECS\Components\BoxColliderComponent.h" />
+    <ClInclude Include="Core\ECS\Components\CircleColliderComponent.h" />
     <ClInclude Include="Core\ECS\Components\Identification.h" />
     <ClInclude Include="Core\ECS\Components\ScriptComponent.h" />
     <ClInclude Include="Core\ECS\Components\SpriteComponent.h" />
@@ -180,6 +182,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\ECS\Components\AnimationComponent.cpp" />
+    <ClCompile Include="Core\ECS\Components\BoxColliderComponent.cpp" />
+    <ClCompile Include="Core\ECS\Components\CircleColliderComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\SpriteComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\TransformComponent.cpp" />
     <ClCompile Include="Core\ECS\Entity.cpp" />
