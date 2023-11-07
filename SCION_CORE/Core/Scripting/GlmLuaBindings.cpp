@@ -1,5 +1,6 @@
 #include "GlmLuaBindings.h"
 #include <glm/glm.hpp>
+#include <glm/gtx/norm.hpp>
 
 namespace SCION_CORE::Scripting {
 
@@ -44,7 +45,9 @@ namespace SCION_CORE::Scripting {
 			sol::meta_function::multiplication, vec2_multiply_overloads,
 			sol::meta_function::division, vec2_divide_overloads,
 			sol::meta_function::addition, vec2_addition_overloads,
-			sol::meta_function::subtraction, vec2_subtraction_overloads
+			sol::meta_function::subtraction, vec2_subtraction_overloads,
+			"length", [](const glm::vec2& v) { return glm::length(v); },
+			"lengthSq", [](const glm::vec2& v) { return glm::length2(v); }
 		);
 	}
 
