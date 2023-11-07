@@ -31,6 +31,7 @@
     <None Include="assets\scripts\asteroids\assetDefs.lua" />
     <None Include="assets\scripts\asteroids\ship.lua" />
     <None Include="assets\scripts\asteroids\asteroid.lua" />
+    <None Include="assets\scripts\asteroids\collision_system.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">

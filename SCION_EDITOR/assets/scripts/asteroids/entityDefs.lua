@@ -16,6 +16,9 @@ AsteroidDefs =
 				height = 80,
 				start_x = 0, start_y = 0,
 				layer = 2
+			},
+			circle_collider = {
+				radius = 40
 			}
 		},
 		type = "big",
@@ -38,6 +41,9 @@ AsteroidDefs =
 				height = 32,
 				start_x = 0, start_y = 0,
 				layer = 2
+			},
+			circle_collider = {
+				radius = 16
 			}
 		},
 		type = "small",
@@ -64,6 +70,9 @@ ShipDefs =
 				height = 96,
 				start_x = 0, start_y = 0,
 				layer = 2
+			},
+			circle_collider = {
+				radius = 40
 			}
 		}
 	}

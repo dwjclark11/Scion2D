@@ -47,6 +47,14 @@ function LoadEntity(def)
 		sprite:generate_uvs()
 	end
 
+	if def.components.circle_collider then
+		newEntity:add_component(
+			CircleCollider(
+				def.components.circle_collider.radius
+			)
+		)
+	end
+
 	return newEntity:id()
 end
 
