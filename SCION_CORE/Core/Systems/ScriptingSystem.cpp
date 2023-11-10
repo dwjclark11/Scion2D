@@ -124,7 +124,7 @@ namespace SCION_CORE::Systems {
 		lua.new_usertype<Timer>(
 			"Timer",
 			sol::call_constructor,
-			sol::factories([]() {return Timer{}; }),
+			sol::constructors<Timer()>(),
 			"start", &Timer::Start,
 			"stop", &Timer::Stop,
 			"pause", &Timer::Pause,
