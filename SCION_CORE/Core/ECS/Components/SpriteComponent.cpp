@@ -6,6 +6,20 @@ using namespace SCION_RESOURCES;
 
 void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind(sol::state& lua, SCION_CORE::ECS::Registry& registry)
 {
+	lua.new_usertype<SCION_RENDERING::Color>(
+		"Color",
+		sol::call_constructor,
+		sol::factories(
+			[](GLubyte r, GLubyte g, GLubyte b, GLubyte a) {
+				return SCION_RENDERING::Color{.r = r, .g = g, .b = b, .a = a};
+			}
+		),
+		"r", &SCION_RENDERING::Color::r,
+		"g", &SCION_RENDERING::Color::g,
+		"b", &SCION_RENDERING::Color::b,
+		"a", &SCION_RENDERING::Color::a
+	);
+
 	lua.new_usertype<SpriteComponent>(
 		"Sprite",
 		"type_id", &entt::type_hash<SpriteComponent>::value,
@@ -30,6 +44,7 @@ void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind(sol::state& lua, SCIO
 		"start_x", &SpriteComponent::start_x,
 		"start_y", &SpriteComponent::start_y,
 		"layer", &SpriteComponent::layer,
+		"color", &SpriteComponent::color,
 		"generate_uvs", [&](SpriteComponent& sprite) {
 			auto& assetManager = registry.GetContext<std::shared_ptr<AssetManager>>();
 			auto& texture = assetManager->GetTexture(sprite.texture_name);
