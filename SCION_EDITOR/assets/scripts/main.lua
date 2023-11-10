@@ -5,6 +5,8 @@ run_script("assets/scripts/asteroids/utilities.lua")
 run_script("assets/scripts/asteroids/ship.lua")
 run_script("assets/scripts/asteroids/asteroid.lua")
 run_script("assets/scripts/asteroids/collision_system.lua")
+run_script("assets/scripts/asteroids/projectile.lua")
+run_script("assets/scripts/asteroids/game_data.lua")
 
 math.randomseed(os.time())
 LoadAssets()
@@ -19,8 +21,10 @@ main = {
 		update = function()
 			gShip:UpdateShip()
 			UpdateAsteroids()
+			UpdateProjectiles()
 			gCollisionSystem:Update()
 			SpawnAsteroid()
+			print("Lives: " ..gData:NumLives())
 		end
 	},
 	[2] = {

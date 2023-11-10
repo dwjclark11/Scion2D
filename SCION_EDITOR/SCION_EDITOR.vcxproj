@@ -170,6 +170,8 @@
     <None Include="assets\scripts\asteroids\asteroid.lua" />
     <None Include="assets\scripts\asteroids\collision_system.lua" />
     <None Include="assets\scripts\asteroids\entityDefs.lua" />
+    <None Include="assets\scripts\asteroids\game_data.lua" />
+    <None Include="assets\scripts\asteroids\projectile.lua" />
     <None Include="assets\scripts\asteroids\ship.lua" />
     <None Include="assets\scripts\asteroids\utilities.lua" />
     <None Include="assets\scripts\main.lua" />

@@ -77,3 +77,31 @@ ShipDefs =
 		}
 	}
 }
+
+ProjectileDefs =
+{
+	proj_1 = 
+	{
+		group = "projectiles",
+		components = 
+		{
+			transform = {
+				position = { x = 0, y = 0},
+				scale = { x = 1, y = 1},
+				rotation = 0
+			}, 
+			sprite = {
+				asset_name = "proj_1",
+				width = 32,
+				height = 16,
+				start_x = 0, start_y = 0,
+				layer = 2
+			},
+			circle_collider = {
+				radius = 12
+			}
+		}, 
+		life_time = 2000,
+		proj_speed = 10
+	}
+}
