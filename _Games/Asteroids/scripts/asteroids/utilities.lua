@@ -1,7 +1,21 @@
+-------------------------------------------------------------------
+-- Simple Constants
+-------------------------------------------------------------------
+WINDOW_WIDTH = 640
+WINDOW_HEIGHT = 480
+SMALL_ASTEROID_SCORE = 15
+LARGE_ASTEROID_SCORE = 100
+-------------------------------------------------------------------
 
 -------------------------------------------------------------------
 -- Helper Functions
 -------------------------------------------------------------------
+--[[
+	Takes in an entity definition and builds a new entity by
+	adding the given components and values based on the provided 
+	definition.
+	Returns the newly created entity's ID
+--]]
 function LoadEntity(def)
 	assert(def, "Def does not exist")
 
@@ -45,12 +59,25 @@ function LoadEntity(def)
 			)
 		)
 		sprite:generate_uvs()
+		sprite.bHidden = def.components.sprite.bHidden or false
 	end
 
 	if def.components.circle_collider then
 		newEntity:add_component(
 			CircleCollider(
 				def.components.circle_collider.radius
+			)
+		)
+	end
+
+	if def.components.animation then 
+		newEntity:add_component(
+			Animation(
+				def.components.animation.num_frames,
+				def.components.animation.frame_rate,
+				def.components.animation.frame_offset,
+				def.components.animation.bVertical,
+				def.components.animation.bLooped
 			)
 		)
 	end
@@ -69,9 +96,7 @@ function LoadBackground()
 	end
 end
 
-WINDOW_WIDTH = 640
-WINDOW_HEIGHT = 480
-
+----------------------------------------------------------------------------
 -- Position = vec2, width/height = float
 function CheckPos(position, width, height)
 	local min_x = 0
@@ -105,9 +130,12 @@ function GetRandomPosition()
 		math.random(WINDOW_HEIGHT) + WINDOW_HEIGHT
 	)
 end
+----------------------------------------------------------------------------
 
+----------------------------------------------------------------------------
+-- Asteroids Holder Helper Functions
+----------------------------------------------------------------------------
 Asteroids = {}
-
 function AddAsteroid(asteroid)
 	table.insert(Asteroids, asteroid)
 end
@@ -118,15 +146,20 @@ function UpdateAsteroids()
 	end
 end
 
+--[[
+	Removes the asteroid that was hit with a projectile. 
+	If the asteroid that was hit was a big asteroid, two 
+	smaller asteroids will be created.
+--]]
 function RemoveAsteroid(asteroid_id)
 	for k, v in pairs(Asteroids) do 
 		if v.m_EntityID == asteroid_id then 
 			-- Check the Asteroids Type
 			if v.m_Type == "big" then 
 				CreateSmallFromBig(v)
-				-- TODO: ADD SCORE
+				gData:AddToScore(LARGE_ASTEROID_SCORE)
 			elseif v.m_Type == "small" then
-				-- TODO: ADD SCORE
+				gData:AddToScore(SMALL_ASTEROID_SCORE)
 			end
 
 			local asteroid = Entity(v.m_EntityID)
@@ -136,6 +169,11 @@ function RemoveAsteroid(asteroid_id)
 	end
 end
 
+--[[
+	Creates two small asteroids from one big asteroid. 
+	It will create the small asteroids in the same position
+	as the big asteroid and then give them random velocities
+--]]
 function CreateSmallFromBig(asteroid)
 	local transform = Entity(asteroid.m_EntityID):get_component(Transform)
 	for i = 1, 2 do 
@@ -167,8 +205,23 @@ function SpawnAsteroid()
 	end
 end
 
-Projectiles = {}
+--[[
+	Clears out the Asteroids table and kills any remaing 
+	asteroid entities
+--]]
+function ResetAsteroids()
+	for k, v in pairs(Asteroids) do 
+		local asteroid = Entity(v.m_EntityID)
+		asteroid:kill()
+		Asteroids[k] = nil
+	end
+end
+----------------------------------------------------------------------------
 
+----------------------------------------------------------------------------
+-- Projectile Holder Helper Functions
+----------------------------------------------------------------------------
+Projectiles = {}
 function AddProjectile(projectile)
 	table.insert(Projectiles, projectile)
 end
@@ -182,4 +235,29 @@ function UpdateProjectiles()
 			v:Update()
 		end
 	end
+end
+
+--[[
+	Clears out the Projectile table and kills any remaing 
+	projectile entities
+--]]
+function ResetProjectiles()
+	for k, v in pairs(Projectiles) do 
+		local projectile  = Entity(v.m_EntityID)
+		projectile:kill()
+		Projectiles[k] = nil
+	end
+end
+----------------------------------------------------------------------------
+
+--[[
+	Gets the value of the specific digit for 
+	the number that is sent in. For instance,
+	if the number is 9596 and we want digit three,
+	it would return 5.
+--]]
+function GetDigit(num, digit)
+	local n = 10 ^ digit 
+	local n1 = 10 ^ (digit - 1)
+	return math.floor((num % n) / n1)
 end
