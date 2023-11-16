@@ -17,6 +17,7 @@ namespace SCION_CORE::ECS {
 		SCION_RENDERING::Color color{.r = 255, .g = 255, .b = 255, .a = 255};
 		int start_x{ 0 }, start_y{ 0 }, layer{ 0 };
 
+		bool bHidden{ false };
 		std::string texture_name{""};
 
 		void generate_uvs(int textureWidth, int textureHeight)
