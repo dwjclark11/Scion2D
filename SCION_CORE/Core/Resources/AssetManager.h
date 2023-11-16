@@ -36,7 +36,7 @@ namespace SCION_RESOURCES {
 		* @param An std::string for the texture name to lookup.
 		* @return Returns the desired texture if it exists, else returns an empty texture object
 		*/
-		const SCION_RENDERING::Texture& GetTexture(const std::string& textureName);
+		std::shared_ptr<SCION_RENDERING::Texture> GetTexture(const std::string& textureName);
 		
 		/*
 		* @brief Checks to see if the Shader exists, and if not, creates and loads the Shader into the
@@ -53,7 +53,7 @@ namespace SCION_RESOURCES {
 		* @param An std::string for the shader name to lookup.
 		* @return Returns the desired shader if it exists, else returns an empty Shader object
 		*/
-		SCION_RENDERING::Shader& GetShader(const std::string& shaderName);
+		std::shared_ptr<SCION_RENDERING::Shader> GetShader(const std::string& shaderName);
 
 		static void CreateLuaAssetManager(sol::state& lua, SCION_CORE::ECS::Registry& registry);
 	};
