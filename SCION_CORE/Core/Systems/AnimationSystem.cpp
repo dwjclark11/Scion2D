@@ -24,8 +24,15 @@ namespace SCION_CORE::Systems {
 			auto& sprite = view.get<SpriteComponent>(entity);
 			auto& animation = view.get<AnimationComponent>(entity);
 
+			if (animation.numFrames <= 0)
+				continue;
+			
+			// if we are not looped and the current from == num frames, skip
+			if (!animation.bLooped && animation.currentFrame >= animation.numFrames - 1)
+				continue;
+
 			// Get the current frame
-			animation.currentFrame = (SDL_GetTicks() * animation.frameRate / 1000) % animation.numFrames;
+			animation.currentFrame = ((SDL_GetTicks() -animation.startTime) * animation.frameRate / 1000) % animation.numFrames;
 
 			if (animation.bVertical)
 			{
