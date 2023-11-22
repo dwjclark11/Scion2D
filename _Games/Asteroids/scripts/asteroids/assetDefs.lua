@@ -12,6 +12,10 @@ AssetDefs =
 		{ name = "score", 			path = "../_Games/Asteroids/textures/score.png", pixel_art = true},
 		{ name = "numbers", 		path = "../_Games/Asteroids/textures/numbers.png", pixel_art = true},
 		{ name = "ship_explosion", 	path = "../_Games/Asteroids/textures/ship_explosion.png", pixel_art = true},
+	},
+	music = 
+	{
+		{ name = "space", path = "../_Games/Asteroids/sounds/music/space.wav"},
 	}
 }
 
@@ -24,5 +28,11 @@ function LoadAssets()
 		end
 	end
 
-	-- TODO: Load other asset types
+	for k, v in pairs(AssetDefs.music) do 
+		if not AssetManager.add_music(v.name, v.path) then 
+			print("Failed to load music [" ..v.name .."] at path [" ..v.path .."]")
+		else
+			print("Loaded music [" ..v.name .."]")
+		end
+	end
 end

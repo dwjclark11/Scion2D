@@ -14,6 +14,18 @@ void SCION_UTIL::SDL_Destroyer::operator()(SDL_GameController* controller) const
     std::cout << "Closed SDL Game Controller!\n";
 }
 
+void SCION_UTIL::SDL_Destroyer::operator()(Mix_Chunk* chunk) const
+{
+    Mix_FreeChunk(chunk);
+    std::cout << "Freed SDL Mix_Chunk!\n";
+}
+
+void SCION_UTIL::SDL_Destroyer::operator()(Mix_Music* music) const
+{
+    Mix_FreeMusic(music);
+    std::cout << "Freed SDL Mix_Chunk!\n";
+}
+
 void SCION_UTIL::SDL_Destroyer::operator()(SDL_Cursor* cursor) const
 {
 

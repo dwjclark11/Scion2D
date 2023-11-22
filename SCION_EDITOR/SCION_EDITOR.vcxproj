@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SOIL\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\SCION_CORE;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SOIL\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\SCION_CORE;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\SCION_SOUNDS\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir).\Dependencies\SDL\lib;$(SolutionDir).\Dependencies\lua_53\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SOIL\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\SCION_CORE;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SOIL\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\SCION_CORE;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\SCION_SOUNDS\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir).\Dependencies\SDL\lib;$(SolutionDir).\Dependencies\lua_53\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -154,6 +154,9 @@
     </ProjectReference>
     <ProjectReference Include="..\SCION_RENDERING\SCION_RENDERING.vcxproj">
       <Project>{f4e7f6ad-7f77-4592-8f6d-0b812015d805}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SCION_SOUNDS\SCION_SOUNDS.vcxproj">
+      <Project>{6701d331-7d05-4366-b6ec-321ce61210b0}</Project>
     </ProjectReference>
     <ProjectReference Include="..\SCION_UTILITIES\SCION_UTILITIES.vcxproj">
       <Project>{7554576b-897a-4cd6-b89f-26bcc61cb401}</Project>

@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SCION_LOGGER", "SCION_LOGGE
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SCION_CORE", "SCION_CORE\SCION_CORE.vcxproj", "{FFFA50F2-8AB7-43A4-A807-2F4092D08828}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SCION_SOUNDS", "SCION_SOUNDS\SCION_SOUNDS.vcxproj", "{6701D331-7D05-4366-B6EC-321CE61210B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -91,6 +93,14 @@ Global
 		{FFFA50F2-8AB7-43A4-A807-2F4092D08828}.Release|x64.Build.0 = Release|x64
 		{FFFA50F2-8AB7-43A4-A807-2F4092D08828}.Release|x86.ActiveCfg = Release|Win32
 		{FFFA50F2-8AB7-43A4-A807-2F4092D08828}.Release|x86.Build.0 = Release|Win32
+		{6701D331-7D05-4366-B6EC-321CE61210B0}.Debug|x64.ActiveCfg = Debug|x64
+		{6701D331-7D05-4366-B6EC-321CE61210B0}.Debug|x64.Build.0 = Debug|x64
+		{6701D331-7D05-4366-B6EC-321CE61210B0}.Debug|x86.ActiveCfg = Debug|Win32
+		{6701D331-7D05-4366-B6EC-321CE61210B0}.Debug|x86.Build.0 = Debug|Win32
+		{6701D331-7D05-4366-B6EC-321CE61210B0}.Release|x64.ActiveCfg = Release|x64
+		{6701D331-7D05-4366-B6EC-321CE61210B0}.Release|x64.Build.0 = Release|x64
+		{6701D331-7D05-4366-B6EC-321CE61210B0}.Release|x86.ActiveCfg = Release|Win32
+		{6701D331-7D05-4366-B6EC-321CE61210B0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

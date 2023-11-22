@@ -5,6 +5,7 @@
 
 #include <Rendering/Essentials/Shader.h>
 #include <Rendering/Essentials/Texture.h>
+#include <Sounds/Essentials/Music.h>
 
 #include "../ECS/Registry.h"
 #include <sol/sol.hpp>
@@ -16,6 +17,8 @@ namespace SCION_RESOURCES {
 	private:
 		std::map<std::string, std::shared_ptr<SCION_RENDERING::Texture>> m_mapTextures{};
 		std::map<std::string, std::shared_ptr<SCION_RENDERING::Shader>> m_mapShader{};
+
+		std::map<std::string, std::shared_ptr<SCION_SOUNDS::Music>> m_mapMusic{};
 	public:
 		AssetManager() = default;
 		~AssetManager() = default;
@@ -32,9 +35,9 @@ namespace SCION_RESOURCES {
 		bool AddTexture(const std::string& textureName, const std::string& texturePath, bool pixelArt = true);
 
 		/*
-		* @brief Checks to see if the texture exists based on the name and returns the texture.
+		* @brief Checks to see if the texture exists based on the name and returns a std::shared_ptr<Texture>.
 		* @param An std::string for the texture name to lookup.
-		* @return Returns the desired texture if it exists, else returns an empty texture object
+		* @return Returns the desired texture if it exists, else returns nullptr
 		*/
 		std::shared_ptr<SCION_RENDERING::Texture> GetTexture(const std::string& textureName);
 		
@@ -49,12 +52,34 @@ namespace SCION_RESOURCES {
 		bool AddShader(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath);
 
 		/*
-		* @brief Checks to see if the shader exists based on the name and returns the Shader.
+		* @brief Checks to see if the shader exists based on the name and returns shared_ptr<Shader>.
 		* @param An std::string for the shader name to lookup.
-		* @return Returns the desired shader if it exists, else returns an empty Shader object
+		* @return Returns the desired shader if it exists, else returns nullptr
 		*/
 		std::shared_ptr<SCION_RENDERING::Shader> GetShader(const std::string& shaderName);
 
+		/*
+		* @brief Checks to see if the Music exists, and if not, creates and loads the Music into the
+		* asset manager.
+		* @param An std::string for the music name to be use as the key.
+		* @param An std::string for the filepath where the music file is located.
+		* @return Returns true if the music was created and loaded successfully, false otherwise.
+		*/
+		bool AddMusic(const std::string& musicName, const std::string& filepath);
+
+		/*
+		* @brief Checks to see if the music exists based on the name and returns shared_ptr<Music>.
+		* @param An std::string for the music name to lookup.
+		* @return Returns an std::shared_ptr<Music> if it exists, else returns nullptr
+		*/
+		std::shared_ptr<SCION_SOUNDS::Music> GetMusic(const std::string& musicName);
+
+		/*
+		* Binds the AssetManager functionality to the lua state. 
+		* @param takes in the sol::state& for binding to lua. 
+		* @param also takes in the registry. The Asset Manager for lua should already exist in the 
+		* main registry.
+		*/
 		static void CreateLuaAssetManager(sol::state& lua, SCION_CORE::ECS::Registry& registry);
 	};
 }

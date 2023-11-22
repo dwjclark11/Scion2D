@@ -26,6 +26,8 @@
 #include <Windowing/Inputs/Mouse.h>
 #include <Windowing/Inputs/Gamepad.h>
 
+// Add sounds
+#include <Sounds/MusicPlayer/MusicPlayer.h>
 
 namespace SCION_EDITOR {
 
@@ -162,6 +164,19 @@ namespace SCION_EDITOR {
 		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::AnimationSystem>>(animationSystem))
 		{
 			SCION_ERROR("Failed to add the animation system to the registry context!");
+			return false;
+		}
+
+		auto musicPlayer = std::make_shared<SCION_SOUNDS::MusicPlayer>();
+		if (!musicPlayer)
+		{
+			SCION_ERROR("Failed to create the Music Player!");
+			return false;
+		}
+
+		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_SOUNDS::MusicPlayer>>(musicPlayer))
+		{
+			SCION_ERROR("Failed to add the Music Player to the Registry Context!");
 			return false;
 		}
 
