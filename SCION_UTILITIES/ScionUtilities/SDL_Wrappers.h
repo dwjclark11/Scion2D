@@ -13,16 +13,18 @@ namespace SCION_UTIL {
 	};
 }
 
-typedef std::shared_ptr<SDL_GameController> Controller;
+using Controller	= std::shared_ptr<SDL_GameController>;
+using Cursor		= std::shared_ptr<SDL_Cursor>;
+using WindowPtr		= std::unique_ptr<SDL_Window, SCION_UTIL::SDL_Destroyer>;
+using SoundFxPtr	= std::unique_ptr<Mix_Chunk, SCION_UTIL::SDL_Destroyer>;
+using MusicPtr		= std::unique_ptr<Mix_Music, SCION_UTIL::SDL_Destroyer>;
+
+static Cursor make_shared_cursor(SDL_Cursor* cursor)
+{
+	return Cursor();
+}
+
 static Controller make_shared_controller(SDL_GameController* controller)
 {
 	return std::shared_ptr<SDL_GameController>(controller, SCION_UTIL::SDL_Destroyer{});
 }
-
-typedef std::shared_ptr<SDL_Cursor> Cursor;
-static Cursor make_shared_cursor(SDL_Cursor* cursor);
-
-typedef std::unique_ptr<SDL_Window, SCION_UTIL::SDL_Destroyer>		WindowPtr;
-
-typedef std::unique_ptr<Mix_Chunk, SCION_UTIL::SDL_Destroyer>		SoundFxPtr;
-typedef std::unique_ptr<Mix_Music, SCION_UTIL::SDL_Destroyer>		MusicPtr;
