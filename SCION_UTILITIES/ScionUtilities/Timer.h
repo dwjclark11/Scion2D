@@ -9,7 +9,7 @@ namespace SCION_UTIL {
 		time_point<steady_clock> m_StartPoint, m_PausedPoint;
 		bool m_bIsRunning{ false }, m_bIsPaused{ false };
 	public:
-		Timer();
+		Timer() = default;
 		~Timer() = default;
 
 		void Start();

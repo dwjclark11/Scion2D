@@ -2,11 +2,6 @@
 #include <iostream>
 
 namespace SCION_UTIL {
-	Timer::Timer()
-		: m_bIsRunning{ false }, m_bIsPaused{ false }
-	{
-
-	}
 
 	void Timer::Start()
 	{
