@@ -4,7 +4,7 @@ namespace SCION_CORE { namespace ECS { class Registry; }}
 
 namespace SCION_CORE::Scripting {
 	/*
-	* Binds the MusicPlayer and the SoundPlayer to Lua using Sol2.
+	* @brief Binds the MusicPlayer and the SoundPlayer to Lua using Sol2.
 	*/
 	struct SoundBinder
 	{
