@@ -158,8 +158,10 @@ function RemoveAsteroid(asteroid_id)
 			if v.m_Type == "big" then 
 				CreateSmallFromBig(v)
 				gData:AddToScore(LARGE_ASTEROID_SCORE)
+				Sound.play("big_ast_explosion")
 			elseif v.m_Type == "small" then
 				gData:AddToScore(SMALL_ASTEROID_SCORE)
+				Sound.play("small_ast_explosion")
 			end
 
 			local asteroid = Entity(v.m_EntityID)

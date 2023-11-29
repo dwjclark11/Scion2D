@@ -10,6 +10,11 @@ main = {
 			if bAsteroidsLoaded then
 				RunAsteroids()		
 			end
+
+			if Keyboard.just_pressed(KEY_C) then
+				Music.stop()
+			end
+
 		end
 	},
 	[2] = {

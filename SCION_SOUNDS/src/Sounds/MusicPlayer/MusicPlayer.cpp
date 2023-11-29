@@ -40,27 +40,35 @@ namespace SCION_SOUNDS {
 
 	void MusicPlayer::Pause()
 	{
-
+		Mix_PauseMusic();
 	}
 
 	void MusicPlayer::Resume()
 	{
-
+		Mix_ResumeMusic();
 	}
 
 	void MusicPlayer::Stop()
 	{
-
+		Mix_HaltMusic();
 	}
 
 	void MusicPlayer::SetVolume(int volume)
 	{
+		if (volume < 0 || volume > 100)
+		{
+			SCION_ERROR("Failed to set volume. Must be between 0 - 100 -- Input [{}]", volume);
+			return;
+		}
 
+		// Scale the volume from 0 - 100%
+		int volume_changed = static_cast<int>((volume / 100.f) * 128);
+		Mix_VolumeMusic(volume_changed);
 	}
 
 	bool MusicPlayer::IsPlaying()
 	{
-		return false;
+		return Mix_PlayingMusic();
 	}
 
 }

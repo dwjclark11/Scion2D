@@ -6,6 +6,7 @@
 #include <Rendering/Essentials/Shader.h>
 #include <Rendering/Essentials/Texture.h>
 #include <Sounds/Essentials/Music.h>
+#include <Sounds/Essentials/SoundFx.h>
 
 #include "../ECS/Registry.h"
 #include <sol/sol.hpp>
@@ -19,6 +20,8 @@ namespace SCION_RESOURCES {
 		std::map<std::string, std::shared_ptr<SCION_RENDERING::Shader>> m_mapShader{};
 
 		std::map<std::string, std::shared_ptr<SCION_SOUNDS::Music>> m_mapMusic{};
+		std::map<std::string, std::shared_ptr<SCION_SOUNDS::SoundFX>> m_mapSoundFx{};
+
 	public:
 		AssetManager() = default;
 		~AssetManager() = default;
@@ -73,6 +76,22 @@ namespace SCION_RESOURCES {
 		* @return Returns an std::shared_ptr<Music> if it exists, else returns nullptr
 		*/
 		std::shared_ptr<SCION_SOUNDS::Music> GetMusic(const std::string& musicName);
+
+		/*
+		* @brief Checks to see if the SoundFx exists, and if not, creates and loads the SoundFx into the
+		* asset manager.
+		* @param An std::string for the SoundFx name to be use as the key.
+		* @param An std::string for the filepath where the SoundFx file is located.
+		* @return Returns true if the Soundfx was created and loaded successfully, false otherwise.
+		*/
+		bool AddSoundFx(const std::string& soundFxName, const std::string& filepath);
+
+		/*
+		* @brief Checks to see if the soundFx exists based on the name and returns shared_ptr<SoundFX>.
+		* @param An std::string for the SoundFx name to lookup.
+		* @return Returns an std::shared_ptr<SoundFx> if it exists, else returns nullptr
+		*/
+		std::shared_ptr<SCION_SOUNDS::SoundFX> GetSoundFx(const std::string& soundFxName);
 
 		/*
 		* Binds the AssetManager functionality to the lua state. 

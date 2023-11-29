@@ -24,12 +24,24 @@
     <ClInclude Include="src\Sounds\Essentials\Music.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Sounds\Essentials\SoundFX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Sounds\SoundPlayer\SoundFxPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Sounds\Essentials\Music.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Sounds\MusicPlayer\MusicPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sounds\Essentials\SoundFX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sounds\SoundPlayer\SoundFxPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

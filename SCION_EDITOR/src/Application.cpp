@@ -28,6 +28,7 @@
 
 // Add sounds
 #include <Sounds/MusicPlayer/MusicPlayer.h>
+#include <Sounds/SoundPlayer/SoundFxPlayer.h>
 
 namespace SCION_EDITOR {
 
@@ -179,6 +180,20 @@ namespace SCION_EDITOR {
 			SCION_ERROR("Failed to add the Music Player to the Registry Context!");
 			return false;
 		}
+
+		auto soundPlayer = std::make_shared<SCION_SOUNDS::SoundFxPlayer>();
+		if (!soundPlayer)
+		{
+			SCION_ERROR("Failed to create the Sound Fx Player!");
+			return false;
+		}
+
+		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_SOUNDS::SoundFxPlayer>>(soundPlayer))
+		{
+			SCION_ERROR("Failed to add the Sound Fx Player to the Registry Context!");
+			return false;
+		}
+
 
 		// Create a temp camera
 		auto camera = std::make_shared<SCION_RENDERING::Camera2D>();
