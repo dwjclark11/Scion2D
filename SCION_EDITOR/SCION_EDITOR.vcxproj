@@ -180,6 +180,8 @@
     <None Include="assets\scripts\asteroids\ship.lua" />
     <None Include="assets\scripts\asteroids\utilities.lua" />
     <None Include="assets\scripts\main.lua" />
+    <None Include="assets\scripts\TestProject\assetDefs.lua" />
+    <None Include="assets\scripts\utilities.lua" />
     <None Include="assets\shaders\basicShader.frag" />
     <None Include="assets\shaders\basicShader.vert" />
   </ItemGroup>

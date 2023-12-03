@@ -36,6 +36,8 @@
     <None Include="assets\scripts\asteroids\game_data.lua" />
     <None Include="assets\scripts\asteroids\hud.lua" />
     <None Include="assets\scripts\asteroids\script_list.lua" />
+    <None Include="assets\scripts\utilities.lua" />
+    <None Include="assets\scripts\TestProject\assetDefs.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
