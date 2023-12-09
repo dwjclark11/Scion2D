@@ -14,7 +14,7 @@ namespace SCION_CORE::Systems {
 	RenderSystem::RenderSystem(SCION_CORE::ECS::Registry& registry)
 		: m_Registry(registry), m_pBatchRenderer{nullptr}
 	{
-		m_pBatchRenderer = std::make_unique<BatchRenderer>();
+		m_pBatchRenderer = std::make_unique<SpriteBatchRenderer>();
 	}
 
 	void RenderSystem::Update()

@@ -7,7 +7,7 @@ namespace SCION_CORE::Systems {
 	{
 	private: 
 		SCION_CORE::ECS::Registry& m_Registry;
-		std::unique_ptr<SCION_RENDERING::BatchRenderer> m_pBatchRenderer;
+		std::unique_ptr<SCION_RENDERING::SpriteBatchRenderer> m_pBatchRenderer;
 
 	public:
 		RenderSystem(SCION_CORE::ECS::Registry& registry);

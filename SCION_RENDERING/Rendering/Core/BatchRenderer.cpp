@@ -2,67 +2,23 @@
 #include <algorithm>
 
 namespace SCION_RENDERING {
-	constexpr size_t NUM_SPRITE_VERTICES = 4;
-	constexpr size_t NUM_SPRITE_INDICES = 6;
-	constexpr size_t MAX_SPRITES = 10000;
-	constexpr size_t MAX_INDICES = MAX_SPRITES * NUM_SPRITE_INDICES;
-	constexpr size_t MAX_VERTICES = MAX_SPRITES * NUM_SPRITE_VERTICES;
 
-	void BatchRenderer::Initialize()
+	void SpriteBatchRenderer::Initialize()
 	{
-		// Let's generate the VAO
-		glGenVertexArrays(1, &m_VAO);
-
-		// Generate the VBO
-		glGenBuffers(1, &m_VBO);
-
-		// Bind the VAO and VBO
-		glBindVertexArray(m_VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-		glBufferData(GL_ARRAY_BUFFER, MAX_VERTICES * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
-
-		// Position
-		glVertexAttribPointer(0, 2,	GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-		glEnableVertexAttribArray(0);
-
-		// UVs
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uvs));
-		glEnableVertexAttribArray(1);
-
-		// Color
-		glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		glEnableVertexAttribArray(2);
-
-		GLuint offset{ 0 };
-		GLuint indices[NUM_SPRITE_INDICES] { 0, 1, 2, 2, 3, 0};
-
-		auto indicesArr = std::make_unique<GLuint[]>(MAX_INDICES);
-
-		for (size_t i = 0; i < MAX_INDICES; i += NUM_SPRITE_INDICES)
-		{
-			for (size_t j = 0; j < NUM_SPRITE_INDICES; j++)
-				indicesArr[i + j] = indices[j] + offset;
-
-			offset += NUM_SPRITE_VERTICES;
-		}
-
-		// Generate the index buffer
-		glGenBuffers(1, &m_IBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * MAX_INDICES, indicesArr.get(), GL_DYNAMIC_DRAW);
-
-		glBindVertexArray(0);
+		SetVertexAttribute(0, 2, GL_FLOAT, sizeof(Vertex), (void*)offsetof(Vertex, position));
+		SetVertexAttribute(1, 2, GL_FLOAT, sizeof(Vertex), (void*)offsetof(Vertex, uvs));
+		SetVertexAttribute(2, 4, GL_UNSIGNED_BYTE, sizeof(Vertex), (void*)offsetof(Vertex, color), GL_TRUE);
 	}
 
-	void BatchRenderer::GenerateBatches()
+	void SpriteBatchRenderer::GenerateBatches()
 	{
 		std::vector<Vertex> vertices;
-		vertices.resize(m_Sprites.size() * NUM_SPRITE_VERTICES);
+		vertices.resize(m_Glyphs.size() * NUM_SPRITE_VERTICES);
 
 		int currentVertex{ 0 }, currentSprite{ 0 };
 		GLuint offset{ 0 }, prevTextureID{ 0 };
 
-		for (const auto& sprite : m_Sprites)
+		for (const auto& sprite : m_Glyphs)
 		{
 			if (currentSprite == 0)
 				m_Batches.emplace_back(std::make_shared<Batch>(
@@ -83,7 +39,7 @@ namespace SCION_RENDERING {
 			currentSprite++;
 		}
 
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, GetVBO());
 
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data());
@@ -91,33 +47,19 @@ namespace SCION_RENDERING {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	BatchRenderer::BatchRenderer()
-		: m_VAO{ 0 }, m_VBO{ 0 }, m_IBO{ 0 }
-		, m_Sprites{}, m_Batches{}
+	SpriteBatchRenderer::SpriteBatchRenderer()
+		: Batcher(true)
 	{
 		Initialize();
 	}
 
-	BatchRenderer::~BatchRenderer()
+	void SpriteBatchRenderer::End()
 	{
-		if (m_VAO) glDeleteVertexArrays(1, &m_VAO);
-		if (m_VBO) glDeleteBuffers(1, &m_VBO);
-		if (m_IBO) glDeleteBuffers(1, &m_IBO);
-	}
-
-	void BatchRenderer::Begin()
-	{
-		m_Sprites.clear();
-		m_Batches.clear();
-	}
-
-	void BatchRenderer::End()
-	{
-		if (m_Sprites.empty())
+		if (m_Glyphs.empty())
 			return;
 
 		// Sort the sprites by their layer
-		std::sort(m_Sprites.begin(), m_Sprites.end(), [&](const auto& a, const auto& b) 
+		std::sort(m_Glyphs.begin(), m_Glyphs.end(), [&](const auto& a, const auto& b)
 			{
 				return a->layer < b->layer;
 			}
@@ -126,12 +68,12 @@ namespace SCION_RENDERING {
 		GenerateBatches();
 	}
 
-	void BatchRenderer::Render()
+	void SpriteBatchRenderer::Render()
 	{
 		if (m_Batches.empty())
 			return;
 
-		glBindVertexArray(m_VAO);
+		EnableVAO();
 
 		for (const auto& batch : m_Batches)
 		{
@@ -139,13 +81,13 @@ namespace SCION_RENDERING {
 			glDrawElements(GL_TRIANGLES, batch->numIndices, GL_UNSIGNED_INT, (void*)(sizeof(GLuint) * batch->offset));
 		}
 
-		glBindVertexArray(0);
+		DisableVAO();
 	}
 
-	void BatchRenderer::AddSprite(const glm::vec4& spriteRect, const glm::vec4 uvRect, GLuint textureID, int layer, glm::mat4 model, const Color& color)
+	void SpriteBatchRenderer::AddSprite(const glm::vec4& spriteRect, const glm::vec4 uvRect, GLuint textureID, int layer, glm::mat4 model, const Color& color)
 	{
-		auto newSprite = std::make_shared<Sprite>(
-			Sprite{
+		auto newSprite = std::make_shared<SpriteGlyph>(
+			SpriteGlyph{
 				.topLeft = Vertex {
 					.position = model * glm::vec4{spriteRect.x, spriteRect.y + spriteRect.w, 0.f, 1.f},
 					.uvs = glm::vec2{uvRect.x, uvRect.y + uvRect.w},
@@ -171,6 +113,6 @@ namespace SCION_RENDERING {
 			}
 		);
 
-		m_Sprites.push_back(std::move(newSprite));
+		m_Glyphs.push_back(std::move(newSprite));
 	}
 }

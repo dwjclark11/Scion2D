@@ -146,8 +146,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Rendering\Core\Batcher.h" />
     <ClInclude Include="Rendering\Core\BatchRenderer.h" />
     <ClInclude Include="Rendering\Core\Camera2D.h" />
+    <ClInclude Include="Rendering\Essentials\BatchTypes.h" />
     <ClInclude Include="Rendering\Essentials\Shader.h" />
     <ClInclude Include="Rendering\Essentials\ShaderLoader.h" />
     <ClInclude Include="Rendering\Essentials\Texture.h" />

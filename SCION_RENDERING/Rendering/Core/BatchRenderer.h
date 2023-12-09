@@ -1,55 +1,30 @@
 #pragma once
-#include "../Essentials/Vertex.h"
-#include <vector>
-#include <memory>
+#include "Batcher.h"
+#include "../Essentials/BatchTypes.h"
 
 namespace SCION_RENDERING {
-	class BatchRenderer
+	class SpriteBatchRenderer : public Batcher<Batch, SpriteGlyph>
 	{
-	private: // Member structs
-		struct Batch
-		{
-			GLuint numIndices{ 0 }, offset{ 0 }, textureID{ 0 };
-		};
-
-		struct Sprite
-		{
-			Vertex topLeft, bottomLeft, topRight, bottomRight;
-			int layer;
-			GLuint textureID;
-		};
-
-	private: // Class Members
-		GLuint m_VAO, m_VBO, m_IBO;
-		std::vector<std::shared_ptr<Sprite>> m_Sprites;
-		std::vector<std::shared_ptr<Batch>> m_Batches;
-
 	private: // Functions
 		void Initialize();
-		void GenerateBatches();
+		virtual void GenerateBatches() override;
 
 	public:
-		BatchRenderer();
-		~BatchRenderer();
-
-		/*
-		* @brief Clears the current batches and sprites making
-		* it ready to start new batches.
-		*/
-		void Begin();
+		SpriteBatchRenderer();
+		~SpriteBatchRenderer() = default;
 
 		/*
 		* @brief Checks to see if there are sprites to create batches.
 		* Sorts the sprites based on their layer and then generates the
 		* batches to be rendered.
 		*/
-		void End();
+		virtual void End() override;
 
 		/*
 		* @brief Checks to see if there are any batches to render. If
 		* there are batches to render, it loops through the batches and Renders them.
 		*/
-		void Render();
+		virtual void Render() override;
 		
 		/*
 		* @brief Adds a new sprite to the sprites vector.
