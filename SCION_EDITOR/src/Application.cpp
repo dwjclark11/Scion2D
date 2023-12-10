@@ -10,6 +10,8 @@
 #include <Rendering/Essentials/TextureLoader.h>
 #include <Rendering/Essentials/Vertex.h>
 #include <Rendering/Core/Camera2D.h>
+#include <Rendering/Core/Renderer.h>
+
 #include <Logger/Logger.h>
 #include <Core/ECS/Entity.h>
 #include <Core/ECS/Components/SpriteComponent.h>
@@ -99,6 +101,9 @@ namespace SCION_EDITOR {
 			return false;
 		}
 
+		auto renderer = std::make_shared<SCION_RENDERING::Renderer>();
+
+
 		// Enable Alpha Blending
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -111,6 +116,12 @@ namespace SCION_EDITOR {
 		}
 
 		m_pRegistry = std::make_unique<SCION_CORE::ECS::Registry>();
+
+		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_RENDERING::Renderer>>(renderer))
+		{
+			SCION_ERROR("Failed to add the renderer to the registry context!");
+			return false;
+		}
 
 		// Create the lua state
 		auto lua = std::make_shared<sol::state>();
@@ -225,6 +236,24 @@ namespace SCION_EDITOR {
 			return false;
 		}
 
+		// TEMP -- TODO: To Be done in the renderer
+		glLineWidth(4.f);
+
+		// TEMP -- These are for testing, DrawLine calls should be done in lua!
+		renderer->DrawLine(
+			SCION_RENDERING::Line{
+				.p1 = glm::vec2{ 50.f },
+				.p2 = glm::vec2{ 200.f },
+				.color = SCION_RENDERING::Color{ 255, 0, 0, 255 }}
+		);
+
+		renderer->DrawLine(
+			SCION_RENDERING::Line{
+				.p1 = glm::vec2{ 200.f, 50.f },
+				.p2 = glm::vec2{ 50.f, 200.f },
+				.color = SCION_RENDERING::Color{ 0, 255, 0, 255 }}
+		);
+
 		return true;
     }
 
@@ -240,7 +269,13 @@ namespace SCION_EDITOR {
 
 		if (!assetManager->AddShader("basic", "assets/shaders/basicShader.vert", "assets/shaders/basicShader.frag"))
 		{
-			SCION_ERROR("Failed to add the shader to the asset manager");
+			SCION_ERROR("Failed to add the basic shader to the asset manager");
+			return false;
+		}
+
+		if (!assetManager->AddShader("color", "assets/shaders/colorShader.vert", "assets/shaders/colorShader.frag"))
+		{
+			SCION_ERROR("Failed to add the color shader to the asset manager");
 			return false;
 		}
 
@@ -346,19 +381,26 @@ namespace SCION_EDITOR {
     void Application::Render()
     {
 		auto& renderSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::RenderSystem>>();
-		
+		auto& camera = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
+		auto& renderer = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
+		auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<SCION_RESOURCES::AssetManager>>();
+
+		auto shader = assetManager->GetShader("color");
+
 		glViewport(
 			0, 0,
 			m_pWindow->GetWidth(),
 			m_pWindow->GetHeight()
 		);
 
-		glClearColor(1.f, 1.f, 1.f, 1.f);
+		glClearColor(0.f, 0.f, 0.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
 		scriptSystem->Render();
 		renderSystem->Update();
+		renderer->DrawLines(*shader, *camera);
+
 
 		SDL_GL_SwapWindow(m_pWindow->GetWindow().get());
     }

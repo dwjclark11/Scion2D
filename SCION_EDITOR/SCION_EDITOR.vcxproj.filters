@@ -38,6 +38,8 @@
     <None Include="assets\scripts\asteroids\script_list.lua" />
     <None Include="assets\scripts\utilities.lua" />
     <None Include="assets\scripts\TestProject\assetDefs.lua" />
+    <None Include="assets\shaders\colorShader.vert" />
+    <None Include="assets\shaders\colorShader.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">

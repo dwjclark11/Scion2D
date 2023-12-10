@@ -149,7 +149,10 @@
     <ClInclude Include="Rendering\Core\Batcher.h" />
     <ClInclude Include="Rendering\Core\BatchRenderer.h" />
     <ClInclude Include="Rendering\Core\Camera2D.h" />
+    <ClInclude Include="Rendering\Core\LineBatchRenderer.h" />
+    <ClInclude Include="Rendering\Core\Renderer.h" />
     <ClInclude Include="Rendering\Essentials\BatchTypes.h" />
+    <ClInclude Include="Rendering\Essentials\Primitives.h" />
     <ClInclude Include="Rendering\Essentials\Shader.h" />
     <ClInclude Include="Rendering\Essentials\ShaderLoader.h" />
     <ClInclude Include="Rendering\Essentials\Texture.h" />
@@ -159,6 +162,8 @@
   <ItemGroup>
     <ClCompile Include="Rendering\Core\BatchRenderer.cpp" />
     <ClCompile Include="Rendering\Core\Camera2D.cpp" />
+    <ClCompile Include="Rendering\Core\LineBatchRenderer.cpp" />
+    <ClCompile Include="Rendering\Core\Renderer.cpp" />
     <ClCompile Include="Rendering\Essentials\Shader.cpp" />
     <ClCompile Include="Rendering\Essentials\ShaderLoader.cpp" />
     <ClCompile Include="Rendering\Essentials\Texture.cpp" />
