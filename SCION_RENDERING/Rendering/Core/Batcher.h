@@ -29,7 +29,7 @@ namespace SCION_RENDERING {
 			void* offset, GLboolean normalized = GL_FALSE);
 
 		inline GLuint GetVBO() const { return m_VBO; }
-		inline GLuint GetIBO() const { return m_VBO; }
+		inline GLuint GetIBO() const { return m_IBO; }
 		inline void EnableVAO() { glBindVertexArray(m_VAO); }
 		inline void DisableVAO() { glBindVertexArray(0); }
 
