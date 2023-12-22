@@ -10,6 +10,7 @@
 #include "../Scripting/GlmLuaBindings.h"
 #include "../Scripting/InputManager.h"
 #include "../Scripting/SoundBindings.h"
+#include "../Scripting/RendererBindings.h"
 
 #include "../Resources/AssetManager.h"
 #include <Logger/Logger.h>
@@ -149,6 +150,7 @@ namespace SCION_CORE::Systems {
 		SCION_CORE::InputManager::CreateLuaInputBindings(lua);
 		SCION_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
 		SCION_CORE::Scripting::SoundBinder::CreateSoundBind(lua, registry);
+		SCION_CORE::Scripting::RendererBinder::CreateRenderingBind(lua, registry);
 
 		create_timer(lua);
 

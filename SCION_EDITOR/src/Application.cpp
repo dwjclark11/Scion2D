@@ -239,21 +239,6 @@ namespace SCION_EDITOR {
 		// TEMP -- TODO: To Be done in the renderer
 		glLineWidth(4.f);
 
-		// TEMP -- These are for testing, DrawLine calls should be done in lua!
-		renderer->DrawLine(
-			SCION_RENDERING::Line{
-				.p1 = glm::vec2{ 50.f },
-				.p2 = glm::vec2{ 200.f },
-				.color = SCION_RENDERING::Color{ 255, 0, 0, 255 }}
-		);
-
-		renderer->DrawLine(
-			SCION_RENDERING::Line{
-				.p1 = glm::vec2{ 200.f, 50.f },
-				.p2 = glm::vec2{ 50.f, 200.f },
-				.color = SCION_RENDERING::Color{ 0, 255, 0, 255 }}
-		);
-
 		return true;
     }
 

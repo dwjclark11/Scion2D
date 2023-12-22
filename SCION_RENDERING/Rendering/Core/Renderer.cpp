@@ -13,18 +13,43 @@ namespace SCION_RENDERING {
 
 	void Renderer::SetClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 	{
+		glClearColor(red, green, blue, alpha);
 	}
 
 	void Renderer::ClearBuffers(bool color, bool depth, bool stencil)
 	{
+		glClear
+		(
+			(color ? GL_COLOR_BUFFER_BIT : 0) |
+			(color ? GL_DEPTH_BUFFER_BIT : 0) |
+			(color ? GL_STENCIL_BUFFER_BIT : 0)
+		);
+	}
+
+	void Renderer::SetCapability(GLCapability capability, bool enable)
+	{
+		if (enable)
+			glEnable(static_cast<GLenum>(capability));
+		else
+			glDisable(static_cast<GLenum>(capability));
+	}
+
+	bool Renderer::IsCapabilityEnabled(GLCapability capability) const
+	{
+		return glIsEnabled(static_cast<GLenum>(capability));
 	}
 
 	void Renderer::SetBlendCapability(BlendingFactors sFactor, BlendingFactors dFactor)
 	{
+		glBlendFunc(
+			static_cast<GLenum>(sFactor),
+			static_cast<GLenum>(dFactor)
+		);
 	}
 
 	void Renderer::SetViewport(GLint x, GLint y, GLsizei width, GLsizei height)
 	{
+		glViewport(x, y, width, height);
 	}
 
 	void Renderer::DrawLine(const Line& line)
@@ -39,14 +64,49 @@ namespace SCION_RENDERING {
 
 	void Renderer::DrawRect(const Rect& rect)
 	{
+		// Top
+		DrawLine(Line{
+				.p1 = rect.position,
+				.p2 = glm::vec2{rect.position.x + rect.width, rect.position.y},
+				.color = rect.color
+			}
+		);
+
+		// Bottom
+		DrawLine(
+			Line{
+				.p1 = glm::vec2{rect.position.x, rect.position.y + rect.height},
+				.p2 = glm::vec2{rect.position.x + rect.width, rect.position.y + rect.height},
+				.color = rect.color
+			}
+		);
+		// Left
+		DrawLine(
+			Line{
+			.p1 = rect.position,
+			.p2 = glm::vec2{rect.position.x, rect.position.y + rect.height},
+			.color = rect.color
+			}
+		);
+
+		// Right
+		DrawLine(
+			Line{
+			.p1 = glm::vec2{rect.position.x + rect.width, rect.position.y},
+			.p2 = glm::vec2{rect.position.x + rect.width, rect.position.y + rect.height},
+			.color = rect.color
+			}
+		);
 	}
 
 	void Renderer::DrawRect(const glm::vec2& position, float width, float height, const Color& color)
 	{
+		DrawRect(Rect{ .position = position, .width = width, .height = height, .color = color });
 	}
 
 	void Renderer::DrawFilledRect(const Rect& rect)
 	{
+
 	}
 
 	void Renderer::DrawCircle(const Circle& circle)
@@ -74,20 +134,21 @@ namespace SCION_RENDERING {
 		shader.Disable();
 	}
 
-	void Renderer::DrawRects()
+	void Renderer::DrawFilledRects(Shader& shader, Camera2D& camera)
 	{
+
 	}
 
-	void Renderer::DrawFilledRects()
+	void Renderer::DrawCircles(Shader& shader, Camera2D& camera)
 	{
-	}
 
-	void Renderer::DrawCircles()
-	{
 	}
 
 	void Renderer::ClearPrimitives()
 	{
+		m_Lines.clear();
+		m_Rects.clear();
+		m_Circles.clear();
 	}
 
 }

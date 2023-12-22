@@ -36,8 +36,16 @@ namespace SCION_RENDERING {
 		~Renderer() = default;
 		
 		// OpenGL Render function wrappers
+		/*
+		* @brief Sets the color buffers to the screen when the buffers are cleared.
+		* @brief Values are clamped at [0, 1]
+		* @param takes in GLfloats for all colors RGBA
+		*/
 		void SetClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
 		void ClearBuffers(bool color = true, bool depth = true, bool stencil = false);
+
+		void SetCapability(GLCapability capability, bool enable);
+		bool IsCapabilityEnabled(GLCapability capability) const;
 
 		void SetBlendCapability(BlendingFactors sFactor, BlendingFactors dFactor);
 		void SetViewport(GLint x, GLint y, GLsizei width, GLsizei height);
@@ -55,9 +63,8 @@ namespace SCION_RENDERING {
 
 
 		void DrawLines(class Shader& shader, class Camera2D& camera);
-		void DrawRects();
-		void DrawFilledRects();
-		void DrawCircles();
+		void DrawFilledRects(class Shader& shader, class Camera2D& camera);
+		void DrawCircles(class Shader& shader, class Camera2D& camera);
 
 		void ClearPrimitives();
 	};

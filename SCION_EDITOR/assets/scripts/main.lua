@@ -7,6 +7,9 @@ run_script("assets/scripts/utilities.lua")
 --assert(tilemap)
 --LoadAssets(AssetDefs)
 --LoadMap(tilemap)
+DrawLine(Line(vec2(50, 50), vec2(200, 200), Color(255, 0, 0, 255 )))
+DrawLine(Line(vec2(200, 50), vec2(50, 200), Color(0, 255, 0, 255 )))
+DrawRect(Rect(vec2(300, 300), 100, 100, Color(0, 0, 255, 255)))
 
 main = {
 	[1] = {
