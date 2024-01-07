@@ -152,6 +152,8 @@
     <ClInclude Include="Rendering\Core\LineBatchRenderer.h" />
     <ClInclude Include="Rendering\Core\Renderer.h" />
     <ClInclude Include="Rendering\Essentials\BatchTypes.h" />
+    <ClInclude Include="Rendering\Essentials\Font.h" />
+    <ClInclude Include="Rendering\Essentials\FontLoader.h" />
     <ClInclude Include="Rendering\Essentials\Primitives.h" />
     <ClInclude Include="Rendering\Essentials\Shader.h" />
     <ClInclude Include="Rendering\Essentials\ShaderLoader.h" />
@@ -164,6 +166,8 @@
     <ClCompile Include="Rendering\Core\Camera2D.cpp" />
     <ClCompile Include="Rendering\Core\LineBatchRenderer.cpp" />
     <ClCompile Include="Rendering\Core\Renderer.cpp" />
+    <ClCompile Include="Rendering\Essentials\Font.cpp" />
+    <ClCompile Include="Rendering\Essentials\FontLoader.cpp" />
     <ClCompile Include="Rendering\Essentials\Shader.cpp" />
     <ClCompile Include="Rendering\Essentials\ShaderLoader.cpp" />
     <ClCompile Include="Rendering\Essentials\Texture.cpp" />

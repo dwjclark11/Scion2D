@@ -141,6 +141,7 @@
     <ClInclude Include="include\SOIL\stbi_dds_aug.h" />
     <ClInclude Include="include\SOIL\stbi_dds_aug_c.h" />
     <ClInclude Include="include\SOIL\stb_image_aug.h" />
+    <ClInclude Include="include\SOIL\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\image_dxt.c" />

@@ -150,5 +150,4 @@ namespace SCION_RENDERING {
 		m_Rects.clear();
 		m_Circles.clear();
 	}
-
 }
