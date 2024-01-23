@@ -236,9 +236,34 @@ namespace SCION_EDITOR {
 			return false;
 		}
 
-		// TEMP -- TODO: To Be done in the renderer
-		glLineWidth(4.f);
+		renderer->SetLineWidth(4.f);
 
+		// Temp Load pixel font
+		if (!assetManager->AddFont("pixel", "./assets/fonts/pixel.ttf"))
+		{
+			SCION_ERROR("Failed to load pixel font!");
+			return false;
+		}
+		// ============================================================================
+		// Test for Drawing Text --> TO BE DELETED!
+		// ============================================================================
+		auto pFont = assetManager->GetFont("pixel");
+		renderer->DrawText2D(
+			SCION_RENDERING::Text{
+				.position = glm::vec2{ 225.f, 200.f },
+				.textStr = "SCION2D",
+				.pFont = pFont
+			}
+		);
+
+		renderer->DrawText2D(
+			SCION_RENDERING::Text{
+			.position = glm::vec2{ 0.f, 300.f },
+				.textStr = "TEXT BATCH RENDERING!",
+				.pFont = pFont
+			}
+		);
+		// ============================================================================
 		return true;
     }
 
@@ -261,6 +286,18 @@ namespace SCION_EDITOR {
 		if (!assetManager->AddShader("color", "assets/shaders/colorShader.vert", "assets/shaders/colorShader.frag"))
 		{
 			SCION_ERROR("Failed to add the color shader to the asset manager");
+			return false;
+		}
+
+		if (!assetManager->AddShader("circle", "assets/shaders/circleShader.vert", "assets/shaders/circleShader.frag"))
+		{
+			SCION_ERROR("Failed to add the color shader to the asset manager");
+			return false;
+		}
+
+		if (!assetManager->AddShader("font", "assets/shaders/fontShader.vert", "assets/shaders/fontShader.frag"))
+		{
+			SCION_ERROR("Failed to add the font shader to the asset manager");
 			return false;
 		}
 
@@ -371,6 +408,8 @@ namespace SCION_EDITOR {
 		auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<SCION_RESOURCES::AssetManager>>();
 
 		auto shader = assetManager->GetShader("color");
+		auto circleShader = assetManager->GetShader("circle");
+		auto fontShader = assetManager->GetShader("font");
 
 		glViewport(
 			0, 0,
@@ -384,10 +423,15 @@ namespace SCION_EDITOR {
 		auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
 		scriptSystem->Render();
 		renderSystem->Update();
-		renderer->DrawLines(*shader, *camera);
 
+		renderer->DrawLines(*shader, *camera);
+		renderer->DrawFilledRects(*shader, *camera);
+		renderer->DrawCircles(*circleShader, *camera);
+		renderer->DrawAllText(*fontShader, *camera);
 
 		SDL_GL_SwapWindow(m_pWindow->GetWindow().get());
+
+		renderer->ClearPrimitives();
     }
 
     void Application::CleanUp()

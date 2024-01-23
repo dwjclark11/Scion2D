@@ -149,8 +149,11 @@
     <ClInclude Include="Rendering\Core\Batcher.h" />
     <ClInclude Include="Rendering\Core\BatchRenderer.h" />
     <ClInclude Include="Rendering\Core\Camera2D.h" />
+    <ClInclude Include="Rendering\Core\CircleBatchRenderer.h" />
     <ClInclude Include="Rendering\Core\LineBatchRenderer.h" />
+    <ClInclude Include="Rendering\Core\RectBatchRenderer.h" />
     <ClInclude Include="Rendering\Core\Renderer.h" />
+    <ClInclude Include="Rendering\Core\TextBatchRenderer.h" />
     <ClInclude Include="Rendering\Essentials\BatchTypes.h" />
     <ClInclude Include="Rendering\Essentials\Font.h" />
     <ClInclude Include="Rendering\Essentials\FontLoader.h" />
@@ -164,8 +167,11 @@
   <ItemGroup>
     <ClCompile Include="Rendering\Core\BatchRenderer.cpp" />
     <ClCompile Include="Rendering\Core\Camera2D.cpp" />
+    <ClCompile Include="Rendering\Core\CircleBatchRenderer.cpp" />
     <ClCompile Include="Rendering\Core\LineBatchRenderer.cpp" />
+    <ClCompile Include="Rendering\Core\RectBatchRenderer.cpp" />
     <ClCompile Include="Rendering\Core\Renderer.cpp" />
+    <ClCompile Include="Rendering\Core\TextBatchRenderer.cpp" />
     <ClCompile Include="Rendering\Essentials\Font.cpp" />
     <ClCompile Include="Rendering\Essentials\FontLoader.cpp" />
     <ClCompile Include="Rendering\Essentials\Shader.cpp" />

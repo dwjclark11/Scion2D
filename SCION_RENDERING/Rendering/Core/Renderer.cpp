@@ -2,13 +2,18 @@
 #include "../Essentials/Shader.h"
 #include "Camera2D.h"
 
+
 namespace SCION_RENDERING {
 
 	Renderer::Renderer()
-		: m_pLineBatch{nullptr}, m_pSpriteBatch{nullptr}
+		: m_Lines{}, m_Rects{}, m_Circles{}, m_Text{}
+		, m_pLineBatch{ std::make_unique<LineBatchRenderer>() }
+		, m_pRectBatch{ std::make_unique<RectBatchRenderer>() }
+		, m_pCircleBatch{ std::make_unique<CircleBatchRenderer>() }
+		, m_pSpriteBatch{ std::make_unique<SpriteBatchRenderer>() }
+		, m_pTextBatch{ std::make_unique<TextBatchRenderer>() }
 	{
-		m_pLineBatch = std::make_unique<LineBatchRenderer>();
-		m_pSpriteBatch = std::make_unique<SpriteBatchRenderer>();
+		
 	}
 
 	void Renderer::SetClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
@@ -52,6 +57,11 @@ namespace SCION_RENDERING {
 		glViewport(x, y, width, height);
 	}
 
+	void Renderer::SetLineWidth(GLfloat lineWidth)
+	{
+		glLineWidth(lineWidth);
+	}
+
 	void Renderer::DrawLine(const Line& line)
 	{
 		m_Lines.push_back(line);
@@ -59,7 +69,7 @@ namespace SCION_RENDERING {
 
 	void Renderer::DrawLine(const glm::vec2& p1, const glm::vec2& p2, const Color& color, float lineWidth)
 	{
-		m_Lines.push_back(Line{.p1 = p1, .p2 = p2, .lineWidth = lineWidth, .color = color});
+		m_Lines.emplace_back(Line{.p1 = p1, .p2 = p2, .lineWidth = lineWidth, .color = color});
 	}
 
 	void Renderer::DrawRect(const Rect& rect)
@@ -106,22 +116,32 @@ namespace SCION_RENDERING {
 
 	void Renderer::DrawFilledRect(const Rect& rect)
 	{
-
+		m_Rects.push_back(rect);
 	}
 
 	void Renderer::DrawCircle(const Circle& circle)
 	{
+		m_Circles.push_back(circle);
 	}
 
 	void Renderer::DrawCircle(const glm::vec2& position, float radius, const Color& color, float thickness)
 	{
+		m_Circles.push_back(Circle{ .position = position, .lineThickness = thickness, .radius = radius, .color = color });
+	}
+
+	void Renderer::DrawText2D(const Text& text)
+	{
+		m_Text.push_back(text);
 	}
 
 	void Renderer::DrawLines(Shader& shader, Camera2D& camera)
 	{
+		if (m_Lines.empty())
+			return;
+
 		auto cam_mat = camera.GetCameraMatrix();
 		shader.Enable();
-		shader.SetUniformMat4("projection", cam_mat);
+		shader.SetUniformMat4("uProjection", cam_mat);
 
 		m_pLineBatch->Begin();
 
@@ -129,6 +149,7 @@ namespace SCION_RENDERING {
 		{
 			m_pLineBatch->AddLine(line);
 		}
+
 		m_pLineBatch->End();
 		m_pLineBatch->Render();
 		shader.Disable();
@@ -136,12 +157,64 @@ namespace SCION_RENDERING {
 
 	void Renderer::DrawFilledRects(Shader& shader, Camera2D& camera)
 	{
+		if (m_Rects.empty())
+			return;
 
+		auto cam_mat = camera.GetCameraMatrix();
+		shader.Enable();
+		shader.SetUniformMat4("uProjection", cam_mat);
+
+		m_pRectBatch->Begin();
+
+		for (const auto& rect : m_Rects)
+		{
+			m_pRectBatch->AddRect(rect);
+		}
+		m_pRectBatch->End();
+		m_pRectBatch->Render();
+		shader.Disable();
 	}
 
 	void Renderer::DrawCircles(Shader& shader, Camera2D& camera)
 	{
+		if (m_Circles.empty())
+			return;
 
+		auto cam_mat = camera.GetCameraMatrix();
+		shader.Enable();
+		shader.SetUniformMat4("uProjection", cam_mat);
+
+		m_pCircleBatch->Begin();
+
+		for (const auto& circle : m_Circles)
+		{
+			m_pCircleBatch->AddCircle(circle);
+		}
+
+		m_pCircleBatch->End();
+		m_pCircleBatch->Render();
+		shader.Disable();
+	}
+
+	void Renderer::DrawAllText(Shader& shader, Camera2D& camera)
+	{
+		if (m_Text.empty())
+			return;
+
+		auto cam_mat = camera.GetCameraMatrix();
+		shader.Enable();
+		shader.SetUniformMat4("uProjection", cam_mat);
+
+		m_pTextBatch->Begin();
+
+		for (const auto& text : m_Text)
+		{
+			m_pTextBatch->AddText(text.textStr, text.pFont, text.position, 4, text.wrap, text.color);
+		}
+
+		m_pTextBatch->End();
+		m_pTextBatch->Render();
+		shader.Disable();
 	}
 
 	void Renderer::ClearPrimitives()
@@ -149,5 +222,6 @@ namespace SCION_RENDERING {
 		m_Lines.clear();
 		m_Rects.clear();
 		m_Circles.clear();
+		//m_Text.clear();
 	}
 }

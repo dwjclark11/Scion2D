@@ -65,13 +65,19 @@ namespace SCION_RENDERING {
 
 	void LineBatchRenderer::AddLine(const Line& line)
 	{
-		std::shared_ptr<LineGlyph> newGlyph = std::make_shared<LineGlyph>();
-		newGlyph->lineWidth = line.lineWidth;
-		newGlyph->p1.position = line.p1;
-		newGlyph->p1.color = line.color;
-
-		newGlyph->p2.position = line.p2;
-		newGlyph->p2.color = line.color;
+		std::shared_ptr<LineGlyph> newGlyph = std::make_shared<LineGlyph>(
+			LineGlyph{
+				.p1 = Vertex{
+					.position = line.p1,
+					.color = line.color
+				},
+				.p2 = Vertex {
+					.position = line.p2,
+					.color = line.color
+				},
+				.lineWidth = line.lineWidth,				
+			}
+		);
 			
 		m_Glyphs.push_back(std::move(newGlyph));
 	}

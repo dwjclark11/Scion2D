@@ -1,8 +1,14 @@
 #pragma once
 #include <glad/glad.h>
 #include "../Essentials/Primitives.h"
+#include <memory>
+#include <vector>
+
 #include "BatchRenderer.h"
 #include "LineBatchRenderer.h"
+#include "RectBatchRenderer.h"
+#include "CircleBatchRenderer.h"
+#include "TextBatchRenderer.h"
 
 namespace SCION_RENDERING {
 	class Renderer
@@ -26,10 +32,13 @@ namespace SCION_RENDERING {
 		std::vector<Line> m_Lines;
 		std::vector<Rect> m_Rects;
 		std::vector<Circle> m_Circles;
+		std::vector<Text> m_Text;
 
 		std::unique_ptr<LineBatchRenderer> m_pLineBatch;
-		//std::unique_ptr<CircleBatchRenderer> m_pCircleBatch;
+		std::unique_ptr<RectBatchRenderer> m_pRectBatch;
+		std::unique_ptr<CircleBatchRenderer> m_pCircleBatch;
 		std::unique_ptr<SpriteBatchRenderer> m_pSpriteBatch;
+		std::unique_ptr<TextBatchRenderer> m_pTextBatch;
 
 	public:
 		Renderer();
@@ -50,6 +59,8 @@ namespace SCION_RENDERING {
 		void SetBlendCapability(BlendingFactors sFactor, BlendingFactors dFactor);
 		void SetViewport(GLint x, GLint y, GLsizei width, GLsizei height);
 
+		void SetLineWidth(GLfloat lineWidth);
+
 		// Primitive Draw calls
 		void DrawLine(const Line& line);
 		void DrawLine(const glm::vec2& p1, const glm::vec2& p2, const Color& color, float lineWidth = 1.f);
@@ -61,10 +72,12 @@ namespace SCION_RENDERING {
 		void DrawCircle(const Circle& circle);
 		void DrawCircle(const glm::vec2& position, float radius, const Color& color, float thickness = 1.f);
 
+		void DrawText2D(const Text& text);
 
 		void DrawLines(class Shader& shader, class Camera2D& camera);
 		void DrawFilledRects(class Shader& shader, class Camera2D& camera);
 		void DrawCircles(class Shader& shader, class Camera2D& camera);
+		void DrawAllText(class Shader& shader, class Camera2D& camera);
 
 		void ClearPrimitives();
 	};
