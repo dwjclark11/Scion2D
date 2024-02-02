@@ -1,5 +1,5 @@
 #include "TextBatchRenderer.h"
-
+#include <Logger/Logger.h>
 namespace SCION_RENDERING {
 
 	void TextBatchRenderer::Initialize()
@@ -28,13 +28,65 @@ namespace SCION_RENDERING {
 			std::vector<std::string> textChunks{};
 			std::string text_holder{""};
 			glm::vec2 temp_pos = textGlyph->position;
+			auto fontSize = textGlyph->font->GetFontSize();
 
-			if (textGlyph->wrap > 1.f)
+			if (textGlyph->wrap > 100.f)
 			{
 				// Create the text chunks for each line.
-				// TODO:
+				for (int i = 0; i < textGlyph->textStr.size(); i++)
+				{
+					auto character = textGlyph->textStr[i];
+					text_holder += character;
+					bool bNewLine = character == '\n';
+					size_t text_size = text_holder.size();
+					// Move the temp_pos with each character
+					textGlyph->font->GetNextCharPos(character, temp_pos);
+					
+					if (text_size > 0 && (temp_pos.x > (textGlyph->wrap + textGlyph->position.x) || character == '\0' || bNewLine))
+					{
+						if (!bNewLine)
+						{
+							// if not an end mark, pop off the character
+							while (textGlyph->textStr[i] != ' ' && textGlyph->textStr[i] != '.' && textGlyph->textStr[i] != '!' &&
+								textGlyph->textStr[i] != '?' && text_size > 0)
+							{
+								i--;
+								if (1 < 0)
+								{
+									SCION_ERROR("Failed to draw text [{}] - Wrap [{}] is too small for the text to wrap successfully!",
+										textGlyph->textStr, textGlyph->wrap);
+									return;
+								}
+
+								if (!text_holder.empty())
+								{
+									text_holder.pop_back();
+									text_size = text_holder.size();
+									temp_pos.x -= fontSize;
+								}
+							}
+						}
+						else
+						{
+							text_holder.pop_back(); // Pop off the newline character
+						}
+
+						if (text_size > 0)
+						{
+							textChunks.push_back(text_holder);
+							temp_pos = textGlyph->position;
+							text_holder.clear();
+						}
+					}
+				}
+
+				if (!text_holder.empty())
+				{
+					textChunks.push_back(text_holder);
+					text_holder.clear();
+				}
 			}
-			else
+			else // Push back the entire string
 			{
 				textChunks.push_back(textGlyph->textStr);
 			}

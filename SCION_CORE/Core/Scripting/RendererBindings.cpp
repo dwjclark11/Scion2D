@@ -1,4 +1,5 @@
 #include "RendererBindings.h"
+#include "../Resources/AssetManager.h"
 #include <Rendering/Essentials/Primitives.h>
 #include <Rendering/Core/Camera2D.h>
 #include <Rendering/Core/Renderer.h>
@@ -6,9 +7,13 @@
 #include <Logger/Logger.h>
 
 using namespace SCION_RENDERING;
+using namespace SCION_RESOURCES;
 
 void SCION_CORE::Scripting::RendererBinder::CreateRenderingBind(sol::state& lua, SCION_CORE::ECS::Registry& registry)
 {
+	// Get the Asset Manager 
+	auto& assetManager = registry.GetContext<std::shared_ptr<AssetManager>>();
+
 	// Primitives Bind
 	lua.new_usertype<Line>(
 		"Line",
@@ -52,6 +57,35 @@ void SCION_CORE::Scripting::RendererBinder::CreateRenderingBind(sol::state& lua,
 		"lineThickness", &Circle::lineThickness,
 		"radius", &Circle::radius,
 		"color", &Circle::color
+	);
+
+	lua.new_usertype<Text>(
+		"Text",
+		sol::call_constructor,
+		sol::factories(
+			[&](const glm::vec2& position, const std::string& textStr, const std::string& fontName, float wrap,
+				const Color& color) 
+			{
+				auto pFont = assetManager->GetFont(fontName);
+				if (!pFont)
+				{
+					SCION_ERROR("Failed to get font [{}] -- Does not exist in asset manager!", fontName);
+					return Text{};
+				}
+
+				return Text{
+					.position = position,
+					.textStr = textStr,
+					.wrap = wrap,
+					.pFont = pFont,
+					.color = color
+				};
+			}
+		),
+		"position", &Text::position,
+		"textStr", &Text::textStr,
+		"wrap", &Text::wrap,
+		"color", &Text::color
 	);
 
 	// Bind the renderer
@@ -98,6 +132,12 @@ void SCION_CORE::Scripting::RendererBinder::CreateRenderingBind(sol::state& lua,
 	lua.set_function(
 		"DrawFilledRect", [&](const Rect& rect) {
 			renderer->DrawFilledRect(rect);
+		}
+	);
+
+	lua.set_function(
+		"DrawText", [&](const Text& text) {
+			renderer->DrawText2D(text);
 		}
 	);
 

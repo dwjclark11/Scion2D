@@ -244,26 +244,7 @@ namespace SCION_EDITOR {
 			SCION_ERROR("Failed to load pixel font!");
 			return false;
 		}
-		// ============================================================================
-		// Test for Drawing Text --> TO BE DELETED!
-		// ============================================================================
-		auto pFont = assetManager->GetFont("pixel");
-		renderer->DrawText2D(
-			SCION_RENDERING::Text{
-				.position = glm::vec2{ 225.f, 200.f },
-				.textStr = "SCION2D",
-				.pFont = pFont
-			}
-		);
 
-		renderer->DrawText2D(
-			SCION_RENDERING::Text{
-			.position = glm::vec2{ 0.f, 300.f },
-				.textStr = "TEXT BATCH RENDERING!",
-				.pFont = pFont
-			}
-		);
-		// ============================================================================
 		return true;
     }
 

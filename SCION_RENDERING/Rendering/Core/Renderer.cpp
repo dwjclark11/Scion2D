@@ -222,6 +222,6 @@ namespace SCION_RENDERING {
 		m_Lines.clear();
 		m_Rects.clear();
 		m_Circles.clear();
-		//m_Text.clear();
+		m_Text.clear();
 	}
 }
