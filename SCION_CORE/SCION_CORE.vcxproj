@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir)\SCION_SOUNDS\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir)\SCION_SOUNDS\src;$(SolutionDir)\SCION_PHYSICS;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir).\Dependencies\lua_53\lib;$(SolutionDir).\Dependencies\SDL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir)\SCION_SOUNDS\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir)\SCION_SOUNDS\src;$(SolutionDir)\SCION_PHYSICS;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir).\Dependencies\lua_53\lib;$(SolutionDir).\Dependencies\SDL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -149,6 +149,9 @@
     <ProjectReference Include="..\SCION_LOGGER\SCION_LOGGER.vcxproj">
       <Project>{fd6b5ddd-ab4d-42fd-94d1-743406818fd7}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\SCION_PHYSICS\SCION_PHYSICS.vcxproj">
+      <Project>{65815f51-122c-4263-9c5a-3544724537af}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\SCION_RENDERING\SCION_RENDERING.vcxproj">
       <Project>{f4e7f6ad-7f77-4592-8f6d-0b812015d805}</Project>
     </ProjectReference>
@@ -170,6 +173,7 @@
     <ClInclude Include="Core\ECS\Components\BoxColliderComponent.h" />
     <ClInclude Include="Core\ECS\Components\CircleColliderComponent.h" />
     <ClInclude Include="Core\ECS\Components\Identification.h" />
+    <ClInclude Include="Core\ECS\Components\PhysicsComponent.h" />
     <ClInclude Include="Core\ECS\Components\ScriptComponent.h" />
     <ClInclude Include="Core\ECS\Components\SpriteComponent.h" />
     <ClInclude Include="Core\ECS\Components\TransformComponent.h" />
@@ -182,6 +186,7 @@
     <ClInclude Include="Core\Scripting\RendererBindings.h" />
     <ClInclude Include="Core\Scripting\SoundBindings.h" />
     <ClInclude Include="Core\Systems\AnimationSystem.h" />
+    <ClInclude Include="Core\Systems\PhysicsSystem.h" />
     <ClInclude Include="Core\Systems\RenderSystem.h" />
     <ClInclude Include="Core\Systems\ScriptingSystem.h" />
   </ItemGroup>
@@ -189,6 +194,7 @@
     <ClCompile Include="Core\ECS\Components\AnimationComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\BoxColliderComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\CircleColliderComponent.cpp" />
+    <ClCompile Include="Core\ECS\Components\PhysicsComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\SpriteComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\TransformComponent.cpp" />
     <ClCompile Include="Core\ECS\Entity.cpp" />
@@ -200,6 +206,7 @@
     <ClCompile Include="Core\Scripting\RendererBindings.cpp" />
     <ClCompile Include="Core\Scripting\SoundBindings.cpp" />
     <ClCompile Include="Core\Systems\AnimationSystem.cpp" />
+    <ClCompile Include="Core\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="Core\Systems\RenderSystem.cpp" />
     <ClCompile Include="Core\Systems\ScriptingSystem.cpp" />
   </ItemGroup>
