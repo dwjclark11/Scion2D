@@ -21,6 +21,12 @@ engines out there; however, I find it more fun to try to build your own, learn f
 ```
 * I will start working on the cmake/premake soon. Thanks.
 
+Box2D needs to be installed on your machine and linked to your project.
+* Install Box2D
+  * I used VCPKG for the Box2D install in the video.
+    * ```vcpkg install box2d:x64-windows```
+  * If you don't use vcpkg, please see the build instructions here:
+    * https://github.com/erincatto/box2d#building  
 
 ## Dependencies
 **SDL2**
