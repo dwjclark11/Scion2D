@@ -5,6 +5,7 @@
 #include "../ECS/Components/AnimationComponent.h"
 #include "../ECS/Components/BoxColliderComponent.h"
 #include "../ECS/Components/CircleColliderComponent.h"
+#include "../ECS/Components/PhysicsComponent.h"
 #include "../ECS/Entity.h"
 
 #include "../Scripting/GlmLuaBindings.h"
@@ -167,18 +168,21 @@ namespace SCION_CORE::Systems {
 		AnimationComponent::CreateAnimationLuaBind(lua);
 		BoxColliderComponent::CreateLuaBoxColliderBind(lua);
 		CircleColliderComponent::CreateLuaCircleColliderBind(lua);
+		PhysicsComponent::CreatePhysicsLuaBind(lua, registry.GetRegistry());
 
 		Entity::RegisterMetaComponent<TransformComponent>();
 		Entity::RegisterMetaComponent<SpriteComponent>();
 		Entity::RegisterMetaComponent<AnimationComponent>();
 		Entity::RegisterMetaComponent<BoxColliderComponent>();
 		Entity::RegisterMetaComponent<CircleColliderComponent>();
+		Entity::RegisterMetaComponent<PhysicsComponent>();
 		
 		Registry::RegisterMetaComponent<TransformComponent>();
 		Registry::RegisterMetaComponent<SpriteComponent>();
 		Registry::RegisterMetaComponent<AnimationComponent>();
 		Registry::RegisterMetaComponent<BoxColliderComponent>();
 		Registry::RegisterMetaComponent<CircleColliderComponent>();
+		Registry::RegisterMetaComponent<PhysicsComponent>();
 	}
 
 

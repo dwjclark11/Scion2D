@@ -25,6 +25,7 @@
 
 #include <Core/Systems/ScriptingSystem.h>
 #include <Core/Systems/RenderSystem.h>
+#include <Core/Systems/RenderShapeSystem.h>
 #include <Core/Systems/AnimationSystem.h>
 #include <Core/Systems/PhysicsSystem.h>
 
@@ -119,6 +120,7 @@ namespace SCION_EDITOR {
 			SCION_ERROR("Failed to create the asset manager!");
 			return false;
 		}
+		assetManager->AddTexture("soccer_ball", "assets/textures/soccer_ball.png");
 
 		m_pRegistry = std::make_unique<SCION_CORE::ECS::Registry>();
 
@@ -168,6 +170,19 @@ namespace SCION_EDITOR {
 		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderSystem>>(renderSystem))
 		{
 			SCION_ERROR("Failed to add the render system to the registry context!");
+			return false;
+		}
+
+		auto renderShapeSystem = std::make_shared<SCION_CORE::Systems::RenderShapeSystem>(*m_pRegistry);
+		if (!renderShapeSystem)
+		{
+			SCION_ERROR("Failed to create the render Shape system!");
+			return false;
+		}
+
+		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderShapeSystem>>(renderShapeSystem))
+		{
+			SCION_ERROR("Failed to add the render Shape system to the registry context!");
 			return false;
 		}
 
@@ -267,103 +282,6 @@ namespace SCION_EDITOR {
 			SCION_ERROR("Failed to load pixel font!");
 			return false;
 		}
-
-		assetManager->AddTexture("soccer_ball", "assets/textures/soccer_ball.png");
-		auto pTexture = assetManager->GetTexture("soccer_ball");
-
-		// Add some test bodies to the registry
-		using namespace SCION_CORE::ECS;
-		auto& reg = m_pRegistry->GetRegistry();
-
-		auto entity1 = reg.create();
-		auto& transform1 = reg.emplace<TransformComponent>(
-			entity1,
-			TransformComponent{
-				.position = glm::vec2{320.f, 0.f},
-				.scale = glm::vec2{1.f}
-			}
-		);
-
-		auto& circle1 = reg.emplace<CircleColliderComponent>(
-			entity1,
-			CircleColliderComponent{
-				.radius = 64.f
-			}
-		);
-
-		auto& physics1 = reg.emplace<PhysicsComponent>(
-			entity1,
-			PhysicsComponent{
-				pPhysicsWorld,
-				PhysicsAttributes{
-					.eType = RigidBodyType::DYNAMIC,
-					.density = 100.f,
-					.friction = 0.5f,
-					.restitution = 0.9f,
-					.restitutionThreshold = 100.f,
-					.radius = circle1.radius * PIXELS_TO_METERS,
-					.gravityScale = 5.f,
-					.position = transform1.position,
-					.scale = transform1.scale,
-					.bCircle = true,
-					.bFixedRotation = false
-				}
-			}
-		);
-
-		physics1.Init(640, 480);
-
-		auto& sprite = reg.emplace<SpriteComponent>(
-			entity1,
-			SpriteComponent{
-				.width = 128.f,
-				.height = 128.f,
-				.start_x = 0,
-				.start_y = 0,
-				.texture_name = "soccer_ball"
-			}
-		);
-
-		sprite.generate_uvs(128, 128);
-
-
-		auto entity2 = reg.create();
-		auto& transform2 = reg.emplace<TransformComponent>(
-			entity2,
-			TransformComponent{
-				.position = glm::vec2{0.f, 400.f},
-				.scale = glm::vec2{1.f}
-			}
-		);
-
-		auto& boxCollider = reg.emplace<BoxColliderComponent>(
-			entity2,
-			BoxColliderComponent{
-				.width = 480,
-				.height = 48
-			}
-		);
-
-		auto& physics2 = reg.emplace<PhysicsComponent>(
-			entity2,
-			PhysicsComponent{
-				pPhysicsWorld,
-				PhysicsAttributes{
-					.eType = RigidBodyType::STATIC,
-					.density = 1000.f,
-					.friction = 0.5f,
-					.restitution = 0.0f,
-					.gravityScale = 0.f,
-					.position = transform2.position,
-					.scale = transform2.scale,
-					.boxSize = glm::vec2{boxCollider.width, boxCollider.height},
-					.bBoxShape = true,
-					.bFixedRotation = false
-				}
-			}
-		);
-
-		physics2.Init(640, 480);
 
 
 		return true;
@@ -515,6 +433,7 @@ namespace SCION_EDITOR {
     void Application::Render()
     {
 		auto& renderSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::RenderSystem>>();
+		auto& renderShapeSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::RenderShapeSystem>>();
 		auto& camera = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
 		auto& renderer = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
 		auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<SCION_RESOURCES::AssetManager>>();
@@ -535,6 +454,7 @@ namespace SCION_EDITOR {
 		auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
 		scriptSystem->Render();
 		renderSystem->Update();
+		renderShapeSystem->Update();
 
 		renderer->DrawLines(*shader, *camera);
 		renderer->DrawFilledRects(*shader, *camera);

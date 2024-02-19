@@ -25,16 +25,15 @@ namespace SCION_CORE::ECS {
 
 	class PhysicsComponent
 	{
-		SCION_PHYSICS::PhysicsWorld m_pPhysicsWorld;
 		std::shared_ptr<b2Body> m_pRigidBody;
-
 		PhysicsAttributes m_InitialAttribs;
 
 	public:
-		PhysicsComponent(SCION_PHYSICS::PhysicsWorld pPhysicsWorld, const PhysicsAttributes& physicsAttr);
+		PhysicsComponent();
+		PhysicsComponent(const PhysicsAttributes& physicsAttr);
 		~PhysicsComponent() = default;
 
-		void Init(int windowWidth, int windowHeight);
+		void Init(SCION_PHYSICS::PhysicsWorld pPhysicsWorld, int windowWidth, int windowHeight);
 		b2Body* GetBody() { return m_pRigidBody.get(); }
 
 		static void CreatePhysicsLuaBind(sol::state& lua, entt::registry& registry);

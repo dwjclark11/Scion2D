@@ -64,40 +64,40 @@ namespace SCION_RENDERING {
 		DisableVAO();
 	}
 
-	void RectBatchRenderer::AddRect(const glm::vec4& destRect, int layer, const Color& color)
+	void RectBatchRenderer::AddRect(const glm::vec4& destRect, int layer, const Color& color, glm::mat4 model)
 	{
 		std::shared_ptr<RectGlyph> newGlyph = std::make_shared<RectGlyph>();
 
 		newGlyph->topLeft.color = color;
-		newGlyph->topLeft.position = glm::vec2{ destRect.x, destRect.y + destRect.w };
+		newGlyph->topLeft.position = model * glm::vec4{ destRect.x, destRect.y + destRect.w, 0.f, 1.f };
 
 		newGlyph->bottomLeft.color = color;
-		newGlyph->bottomLeft.position = glm::vec2{ destRect.x, destRect.y };
+		newGlyph->bottomLeft.position = model * glm::vec4{ destRect.x, destRect.y, 0.f, 1.f };
 
 		newGlyph->bottomRight.color = color;
-		newGlyph->bottomRight.position = glm::vec2{ destRect.x + destRect.z, destRect.y };
+		newGlyph->bottomRight.position = model * glm::vec4{ destRect.x + destRect.z, destRect.y, 0.f, 1.f };
 
 		newGlyph->topRight.color = color;
-		newGlyph->topRight.position = glm::vec2{ destRect.x + destRect.z, destRect.y + destRect.w };
+		newGlyph->topRight.position = model * glm::vec4{ destRect.x + destRect.z, destRect.y + destRect.w, 0.f, 1.f };
 
 		m_Glyphs.push_back(std::move(newGlyph));
 	}
 
-	void RectBatchRenderer::AddRect(const Rect& rect)
+	void RectBatchRenderer::AddRect(const Rect& rect, glm::mat4 model)
 	{
 		std::shared_ptr<RectGlyph> newGlyph = std::make_shared<RectGlyph>();
 
 		newGlyph->topLeft.color = rect.color;
-		newGlyph->topLeft.position = glm::vec2{ rect.position.x, rect.position.y + rect.height };
+		newGlyph->topLeft.position = model * glm::vec4{ rect.position.x, rect.position.y + rect.height, 0.f, 1.f };
 
 		newGlyph->bottomLeft.color = rect.color;
-		newGlyph->bottomLeft.position = glm::vec2{ rect.position.x, rect.position.y };
+		newGlyph->bottomLeft.position = model * glm::vec4{ rect.position.x, rect.position.y, 0.f, 1.f };
 
 		newGlyph->bottomRight.color = rect.color;
-		newGlyph->bottomRight.position = glm::vec2{ rect.position.x + rect.width, rect.position.y };
+		newGlyph->bottomRight.position = model * glm::vec4{ rect.position.x + rect.width, rect.position.y, 0.f, 1.f };
 
 		newGlyph->topRight.color = rect.color;
-		newGlyph->topRight.position = glm::vec2{ rect.position.x + rect.width, rect.position.y + rect.height };
+		newGlyph->topRight.position = model * glm::vec4{ rect.position.x + rect.width, rect.position.y + rect.height, 0.f, 1.f };
 
 		m_Glyphs.push_back(std::move(newGlyph));
 	}
