@@ -6,6 +6,10 @@ The goal for **Scion2D** is to make a simple 2D game engine where I can teach wh
 This is for educational purposes and to constantly learn more about programming and gaming everyday. There are definitely better 
 engines out there; however, I find it more fun to try to build your own, learn from others, and grow as a developer.
 
+## Check the Docs
+The documentation is still a work in progress; however, you can check it out here:
+[Scion2D Docs](https://dwjclark11.github.io/Scion2D_Docs/)
+
 ## Build
 * Under construction
 * Eventually I would like to do a cmake or premake setup for the build; however, if you are building from the ```.sln``` make sure that you set the ```start-up project``` to the ```SCION_EDITOR```. **Right click on project -> Set as Startup Project.**
