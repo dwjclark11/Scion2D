@@ -176,6 +176,7 @@
     <ClInclude Include="Core\ECS\Components\PhysicsComponent.h" />
     <ClInclude Include="Core\ECS\Components\ScriptComponent.h" />
     <ClInclude Include="Core\ECS\Components\SpriteComponent.h" />
+    <ClInclude Include="Core\ECS\Components\TextComponent.h" />
     <ClInclude Include="Core\ECS\Components\TransformComponent.h" />
     <ClInclude Include="Core\ECS\Entity.h" />
     <ClInclude Include="Core\ECS\MetaUtilities.h" />
@@ -189,6 +190,7 @@
     <ClInclude Include="Core\Systems\PhysicsSystem.h" />
     <ClInclude Include="Core\Systems\RenderShapeSystem.h" />
     <ClInclude Include="Core\Systems\RenderSystem.h" />
+    <ClInclude Include="Core\Systems\RenderUISystem.h" />
     <ClInclude Include="Core\Systems\ScriptingSystem.h" />
   </ItemGroup>
   <ItemGroup>
@@ -197,6 +199,7 @@
     <ClCompile Include="Core\ECS\Components\CircleColliderComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\PhysicsComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\SpriteComponent.cpp" />
+    <ClCompile Include="Core\ECS\Components\TextComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\TransformComponent.cpp" />
     <ClCompile Include="Core\ECS\Entity.cpp" />
     <ClCompile Include="Core\ECS\MetaUtilities.cpp" />
@@ -210,6 +213,7 @@
     <ClCompile Include="Core\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="Core\Systems\RenderShapeSystem.cpp" />
     <ClCompile Include="Core\Systems\RenderSystem.cpp" />
+    <ClCompile Include="Core\Systems\RenderUISystem.cpp" />
     <ClCompile Include="Core\Systems\ScriptingSystem.cpp" />
   </ItemGroup>
   <ItemGroup>

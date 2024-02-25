@@ -25,6 +25,7 @@
 
 #include <Core/Systems/ScriptingSystem.h>
 #include <Core/Systems/RenderSystem.h>
+#include <Core/Systems/RenderUISystem.h>
 #include <Core/Systems/RenderShapeSystem.h>
 #include <Core/Systems/AnimationSystem.h>
 #include <Core/Systems/PhysicsSystem.h>
@@ -170,6 +171,19 @@ namespace SCION_EDITOR {
 		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderSystem>>(renderSystem))
 		{
 			SCION_ERROR("Failed to add the render system to the registry context!");
+			return false;
+		}
+
+		auto renderUISystem = std::make_shared<SCION_CORE::Systems::RenderUISystem>(*m_pRegistry);
+		if (!renderUISystem)
+		{
+			SCION_ERROR("Failed to create the render UI system!");
+			return false;
+		}
+
+		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderUISystem>>(renderUISystem))
+		{
+			SCION_ERROR("Failed to add the render UI system to the registry context!");
 			return false;
 		}
 
@@ -433,6 +447,7 @@ namespace SCION_EDITOR {
     void Application::Render()
     {
 		auto& renderSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::RenderSystem>>();
+		auto& renderUISystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::RenderUISystem>>();
 		auto& renderShapeSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::RenderShapeSystem>>();
 		auto& camera = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
 		auto& renderer = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
@@ -455,6 +470,7 @@ namespace SCION_EDITOR {
 		scriptSystem->Render();
 		renderSystem->Update();
 		renderShapeSystem->Update();
+		renderUISystem->Update(m_pRegistry->GetRegistry());
 
 		renderer->DrawLines(*shader, *camera);
 		renderer->DrawFilledRects(*shader, *camera);
