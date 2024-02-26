@@ -4,6 +4,7 @@
 #include <Windowing/Inputs/Gamepad.h>
 #include <memory>
 #include <sol/sol.hpp>
+#include "../ECS/Registry.h"
 
 using namespace SCION_WINDOWING::Inputs;
 constexpr int MAX_CONTROLLERS = 4;
@@ -33,7 +34,7 @@ namespace SCION_CORE {
 
 	public:
 		static InputManager& GetInstance();
-		static void CreateLuaInputBindings(sol::state& lua);
+		static void CreateLuaInputBindings(sol::state& lua, SCION_CORE::ECS::Registry& registry);
 
 		inline Keyboard& GetKeyboard() { return *m_pKeyboard; }
 		inline Mouse& GetMouse() { return *m_pMouse; }

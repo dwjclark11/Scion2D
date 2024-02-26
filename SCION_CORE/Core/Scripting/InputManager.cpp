@@ -1,6 +1,9 @@
 #include "InputManager.h"
 #include <Logger/Logger.h>
 #include <ScionUtilities/SDL_Wrappers.h>
+#include <glm/glm.hpp>
+
+#include <Rendering/Core/Camera2D.h>
 
 namespace SCION_CORE {
 
@@ -145,7 +148,7 @@ namespace SCION_CORE {
 		return instance;
 	}
 
-	void InputManager::CreateLuaInputBindings(sol::state& lua)
+	void InputManager::CreateLuaInputBindings(sol::state& lua, SCION_CORE::ECS::Registry& registry)
 	{
         RegisterLuaKeyNames(lua);
         RegisterMouseBtnNames(lua);
@@ -153,6 +156,7 @@ namespace SCION_CORE {
 
         auto& inputManager = GetInstance();
         auto& keyboard = inputManager.GetKeyboard();
+        auto& camera = registry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
 
         lua.new_usertype<Keyboard>(
             "Keyboard",
@@ -170,7 +174,14 @@ namespace SCION_CORE {
             "just_pressed", [&](int btn) { return mouse.IsBtnJustPressed(btn); },
             "just_released", [&](int btn) { return mouse.IsBtnJustReleased(btn); },
             "pressed", [&](int btn) { return mouse.IsBtnPressed(btn); },
-            "screen_position", [&]() { return mouse.GetMouseScreenPosition(); },
+            "screen_position", [&]() { 
+                auto [x, y] = mouse.GetMouseScreenPosition(); 
+                return glm::vec2{x, y};
+            },
+            "world_position", [&]() {
+                auto [x, y] = mouse.GetMouseScreenPosition();
+                return camera->ScreenCoordsToWorld(glm::vec2{x, y});
+            },
             "wheel_x", [&]() { return mouse.GetMouseWheelX(); },
             "wheel_y", [&]() { return mouse.GetMouseWheelY(); }
         );

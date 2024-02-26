@@ -2,11 +2,23 @@
 --run_script("assets/scripts/TestProject/assetDefs.lua")
 --run_script("assets/scripts/TestProject/testmap.lua")
 --run_script("assets/scripts/utilities.lua")
---
+run_script("assets/scripts/follow_cam.lua")
 --local tilemap = CreateTestMap()
 --assert(tilemap)
 --LoadAssets(AssetDefs)
 --LoadMap(tilemap)
+
+-- Create follow cam
+gCam = Camera.get() 
+gFollowCam = FollowCam:Create(gCam,
+	{
+		scale = 1, 
+		max_x = 20000,
+		max_y = 2000,
+		springback = 0.2
+	}
+)
+
 
 -- Create the main ball
 local ball = Entity("", "")
@@ -34,7 +46,7 @@ sprite:generate_uvs()
 -- Create a box to contain 
 -----------------------------------------------------------------------------------------
 local bottomEnt = Entity("", "")
-local bottomBox = bottomEnt:add_component(BoxCollider(624, 16, vec2(0, 0)))
+local bottomBox = bottomEnt:add_component(BoxCollider(10000, 16, vec2(0, 0)))
 local bottomTrans = bottomEnt:add_component(Transform(vec2(0, 464), vec2(1, 1), 0))
 local bottomPhys = PhysicsAttributes()
 
@@ -51,6 +63,7 @@ bottomPhys.bFixedRotation = true
 
 bottomEnt:add_component(PhysicsComp(bottomPhys))
 
+--[[
 local leftEnt = Entity("", "")
 local leftBox = leftEnt:add_component(BoxCollider(16, 464, vec2(0, 0)))
 local leftTrans = leftEnt:add_component(Transform(vec2(0, 0), vec2(1, 1), 0))
@@ -104,6 +117,7 @@ topPhys.bBoxShape = true
 topPhys.bFixedRotation = true
 
 topEnt:add_component(PhysicsComp(topPhys))
+--]]
 -----------------------------------------------------------------------------------------
 
 local ballCount = 0
@@ -118,10 +132,10 @@ local valText = valEnt:add_component(TextComponent("pixel", "0", Color(255, 255,
 
 function createBall()
 	if (Mouse.just_released(LEFT_BTN)) then 
-		local pos_x, pos_y = Mouse.screen_position() 
+		local pos = Mouse.world_position() 
 		local ball = Entity("", "")
 		local circle = ball:add_component(CircleCollider(64.0))
-		local transform = ball:add_component(Transform( vec2(pos_x, pos_y), vec2(0.5, 0.5), 0))
+		local transform = ball:add_component(Transform( vec2(pos.x, pos.y), vec2(0.5, 0.5), 0))
 		local physAttr = PhysicsAttributes()
 
 		physAttr.eType = BodyType.Dynamic
@@ -173,7 +187,7 @@ main = {
 		update = function()
 			createBall()
 			updateEntity(ball)
-
+			gFollowCam:Update(ball:id())
 			valText.textStr = tostring(ballCount)
 		end
 	},
