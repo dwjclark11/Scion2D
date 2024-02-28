@@ -169,6 +169,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\CoreUtilities\CoreEngineData.h" />
+    <ClInclude Include="Core\CoreUtilities\FollowCamera.h" />
     <ClInclude Include="Core\ECS\Components\AnimationComponent.h" />
     <ClInclude Include="Core\ECS\Components\BoxColliderComponent.h" />
     <ClInclude Include="Core\ECS\Components\CircleColliderComponent.h" />
@@ -194,6 +196,8 @@
     <ClInclude Include="Core\Systems\ScriptingSystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\CoreUtilities\CoreEngineData.cpp" />
+    <ClCompile Include="Core\CoreUtilities\FollowCamera.cpp" />
     <ClCompile Include="Core\ECS\Components\AnimationComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\BoxColliderComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\CircleColliderComponent.cpp" />

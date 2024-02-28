@@ -4,6 +4,7 @@
 #include "../ECS/Components/TransformComponent.h"
 #include "../ECS/Components/PhysicsComponent.h"
 #include <Logger/Logger.h>
+#include "../CoreUtilities/CoreEngineData.h"
 
 using namespace SCION_CORE::ECS;
 
@@ -18,8 +19,10 @@ namespace SCION_CORE::Systems {
 	void PhysicsSystem::Update(entt::registry& registry)
 	{
 		auto boxView = registry.view<PhysicsComponent, TransformComponent, BoxColliderComponent>();
-		auto hScaledWidth = 640.f * PIXELS_TO_METERS * 0.5f;
-		auto hScaledHeight = 480.f * PIXELS_TO_METERS * 0.5f;
+		auto& coreEngine = CoreEngineData::GetInstance();
+
+		float hScaledWidth = coreEngine.ScaledWidth() * 0.5f;
+		float hScaledHeight = coreEngine.ScaledHeight() * 0.5f;
 
 		for (auto entity : boxView)
 		{
@@ -34,10 +37,10 @@ namespace SCION_CORE::Systems {
 
 			const auto& bodyPosition = pRigidBody->GetPosition();
 
-			transform.position.x = (hScaledWidth + bodyPosition.x) * METERS_TO_PIXELS -
+			transform.position.x = (hScaledWidth + bodyPosition.x) * coreEngine.MetersToPixels() -
 				(boxCollider.width * transform.scale.x) * 0.5f - boxCollider.offset.x;
 
-			transform.position.y = (hScaledHeight + bodyPosition.y) * METERS_TO_PIXELS -
+			transform.position.y = (hScaledHeight + bodyPosition.y) * coreEngine.MetersToPixels() -
 				(boxCollider.height * transform.scale.y) * 0.5f - boxCollider.offset.y;
 
 			if (!pRigidBody->IsFixedRotation())
@@ -58,10 +61,10 @@ namespace SCION_CORE::Systems {
 
 			const auto& bodyPosition = pRigidBody->GetPosition();
 
-			transform.position.x = (hScaledWidth + bodyPosition.x) * METERS_TO_PIXELS -
+			transform.position.x = (hScaledWidth + bodyPosition.x) * coreEngine.MetersToPixels() -
 				(circleCollider.radius * transform.scale.x) - circleCollider.offset.x;
 
-			transform.position.y = (hScaledHeight + bodyPosition.y) * METERS_TO_PIXELS -
+			transform.position.y = (hScaledHeight + bodyPosition.y) * coreEngine.MetersToPixels() -
 				(circleCollider.radius * transform.scale.y) - circleCollider.offset.y;
 
 			if (!pRigidBody->IsFixedRotation())

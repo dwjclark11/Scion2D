@@ -1,5 +1,6 @@
 #include "PhysicsComponent.h"
 #include <Logger/Logger.h>
+#include "../../CoreUtilities/CoreEngineData.h"
 
 namespace SCION_CORE::ECS {
 
@@ -22,6 +23,7 @@ namespace SCION_CORE::ECS {
 		// Create the body def 
 		b2BodyDef bodyDef{};
 		bodyDef.type = static_cast<b2BodyType>(m_InitialAttribs.eType);
+		auto PIXELS_TO_METERS = CoreEngineData::GetInstance().PixelsToMeters();
 
 		// Set the initial position of the body
 		bodyDef.position.Set(

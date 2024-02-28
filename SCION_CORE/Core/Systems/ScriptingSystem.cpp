@@ -17,6 +17,8 @@
 #include "../Resources/AssetManager.h"
 #include <Logger/Logger.h>
 #include <ScionUtilities/Timer.h>
+#include "../CoreUtilities/CoreEngineData.h"
+#include "../CoreUtilities/FollowCamera.h"
 
 using namespace SCION_CORE::ECS;
 
@@ -159,7 +161,7 @@ namespace SCION_CORE::Systems {
 		SCION_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
 		SCION_CORE::Scripting::SoundBinder::CreateSoundBind(lua, registry);
 		SCION_CORE::Scripting::RendererBinder::CreateRenderingBind(lua, registry);
-
+		SCION_CORE::FollowCamera::CreateLuaFollowCamera(lua, registry);
 		create_timer(lua);
 
 		Registry::CreateLuaRegistryBind(lua, registry);

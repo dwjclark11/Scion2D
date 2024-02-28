@@ -84,6 +84,12 @@
     <ClInclude Include="Core\Systems\RenderUISystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core\CoreUtilities\CoreEngineData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreUtilities\FollowCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\ECS\Registry.cpp">
@@ -147,6 +153,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Systems\RenderUISystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CoreUtilities\CoreEngineData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CoreUtilities\FollowCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
