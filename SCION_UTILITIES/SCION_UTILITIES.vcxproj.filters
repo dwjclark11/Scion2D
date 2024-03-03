@@ -21,12 +21,18 @@
     <ClInclude Include="ScionUtilities\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ScionUtilities\RandomGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScionUtilities\SDL_Wrappers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ScionUtilities\Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScionUtilities\RandomGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

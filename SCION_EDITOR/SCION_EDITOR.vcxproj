@@ -196,6 +196,7 @@
     <None Include="assets\shaders\fontShader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="assets\scripts\rain_generator.lua" />
     <ClInclude Include="src\Application.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

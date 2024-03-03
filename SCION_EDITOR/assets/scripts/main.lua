@@ -1,13 +1,16 @@
 -- Main Lua Script!
---run_script("assets/scripts/TestProject/assetDefs.lua")
---run_script("assets/scripts/TestProject/testmap.lua")
---run_script("assets/scripts/utilities.lua")
---run_script("assets/scripts/follow_cam.lua")
---local tilemap = CreateTestMap()
---assert(tilemap)
---LoadAssets(AssetDefs)
---LoadMap(tilemap)
+run_script("assets/scripts/TestProject/assetDefs.lua")
+run_script("assets/scripts/TestProject/testmap.lua")
+run_script("assets/scripts/utilities.lua")
+run_script("assets/scripts/rain_generator.lua")
+run_script("assets/scripts/follow_cam.lua")
 
+local tilemap = CreateTestMap()
+assert(tilemap)
+LoadAssets(AssetDefs)
+LoadMap(tilemap)
+
+--[[
 -- Create the main ball
 local ball = Entity("", "")
 local circle = ball:add_component(CircleCollider(64.0))
@@ -36,7 +39,7 @@ gFollowCam = FollowCamera(
 		scale = 1, 
 		max_x = 20000,
 		max_y = 2000,
-		springback = 0.2
+		springback = 1.0
 	}),
 	ball
 )
@@ -62,6 +65,7 @@ bottomPhys.bFixedRotation = true
 
 bottomEnt:add_component(PhysicsComp(bottomPhys))
 
+--]]
 --[[
 local leftEnt = Entity("", "")
 local leftBox = leftEnt:add_component(BoxCollider(16, 464, vec2(0, 0)))
@@ -119,6 +123,7 @@ topEnt:add_component(PhysicsComp(topPhys))
 --]]
 -----------------------------------------------------------------------------------------
 
+--[[
 local ballCount = 0
 local countEnt = Entity("", "")
 countEnt:add_component(Transform(vec2(10, 32), vec2(1, 1), 0))
@@ -180,16 +185,36 @@ function updateEntity(entity)
 		physics:linear_impulse(vec2(0, -300000))
 	end
 end
+--]]
+local rainGen = RainGenerator:Create()
+Sound.play("rain", -1, 1)
+
+gTimer = Timer()
+gTimer:start()
+local bDegenerate = false
+
+function GetRandomValue(min, max)
+	math.randomseed(get_ticks())
+	return math.random(min, max)
+end
 
 main = {
 	[1] = {
 		update = function()
-			createBall()
-			updateEntity(ball)
+			--createBall()
+			--updateEntity(ball)
 			
-			gFollowCam:update()
+			--gFollowCam:update()
 
-			valText.textStr = tostring(ballCount)
+			--valText.textStr = tostring(ballCount)
+
+			rainGen:Update(0.016) -- Add delta-time
+			--if gTimer:elapsed_ms() > 5000 and not bDegenerate then 
+			--	rainGen:Destroy()
+			--	rainGen:ReGenerate()
+			--	bDegenerate = true
+			--	print("ReGenerated!")
+			--end
 		end
 	},
 	[2] = {

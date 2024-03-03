@@ -3,6 +3,8 @@
 #include "../ECS/Components/CircleColliderComponent.h"
 #include "../ECS/Components/TransformComponent.h"
 #include "../Resources/AssetManager.h"
+#include "../CoreUtilities/CoreEngineData.h"
+
 #include <Rendering/Core/Camera2D.h>
 #include <Rendering/Essentials/Primitives.h>
 
@@ -22,6 +24,9 @@ namespace SCION_CORE::Systems {
 
 	void RenderShapeSystem::Update()
 	{
+		if (!CoreEngineData::GetInstance().RenderCollidersEnabled())
+			return;
+
 		auto& camera = m_Registry.GetContext<std::shared_ptr<Camera2D>>();
 		auto& assetManager = m_Registry.GetContext<std::shared_ptr<AssetManager>>();
 

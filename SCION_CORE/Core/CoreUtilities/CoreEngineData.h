@@ -30,6 +30,10 @@ namespace SCION_CORE {
 		inline const float GetDeltaTime() const { return m_DeltaTime; }
 		inline const int WindowWidth() const { return m_WindowWidth; }
 		inline const int WindowHeight() const { return m_WindowHeight; }
+		
+		inline void EnableColliderRender() { m_bRenderColliders = true; }
+		inline void DisableColliderRender() { m_bRenderColliders = false; }
+		inline const bool RenderCollidersEnabled() { return m_bRenderColliders; }
 
 		inline const float ScaledWidth() const { return m_ScaledWidth; }
 		inline const float ScaledHeight() const { return m_ScaledHeight; }

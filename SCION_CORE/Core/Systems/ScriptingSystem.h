@@ -18,8 +18,7 @@ namespace SCION_CORE::Systems {
 		void Render();
 
 		static void RegisterLuaBindings(sol::state& lua, SCION_CORE::ECS::Registry& registry);
-
-		static void RegisterLuaFunctions(sol::state& lua);
+		static void RegisterLuaFunctions(sol::state& lua, SCION_CORE::ECS::Registry& registry);
 	};
 
 }

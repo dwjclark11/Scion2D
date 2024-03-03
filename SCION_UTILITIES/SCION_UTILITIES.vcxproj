@@ -143,10 +143,12 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ScionUtilities\RandomGenerator.h" />
     <ClInclude Include="ScionUtilities\SDL_Wrappers.h" />
     <ClInclude Include="ScionUtilities\Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ScionUtilities\RandomGenerator.cpp" />
     <ClCompile Include="ScionUtilities\SDL_Wrappers.cpp" />
     <ClCompile Include="ScionUtilities\Timer.cpp" />
   </ItemGroup>

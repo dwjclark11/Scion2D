@@ -176,6 +176,7 @@
     <ClInclude Include="Core\ECS\Components\CircleColliderComponent.h" />
     <ClInclude Include="Core\ECS\Components\Identification.h" />
     <ClInclude Include="Core\ECS\Components\PhysicsComponent.h" />
+    <ClInclude Include="Core\ECS\Components\RigidBodyComponent.h" />
     <ClInclude Include="Core\ECS\Components\ScriptComponent.h" />
     <ClInclude Include="Core\ECS\Components\SpriteComponent.h" />
     <ClInclude Include="Core\ECS\Components\TextComponent.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="Core\ECS\Components\BoxColliderComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\CircleColliderComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\PhysicsComponent.cpp" />
+    <ClCompile Include="Core\ECS\Components\RigidBodyComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\SpriteComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\TextComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\TransformComponent.cpp" />
