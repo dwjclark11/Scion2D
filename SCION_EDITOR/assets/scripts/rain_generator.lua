@@ -144,8 +144,8 @@ function RainGenerator:ReGenerate()
 		-- Populate rain
 		for i = 0, rows do 
 			for j = 0, cols do 
-				local start_x = clamp(self.m_xOffset * j, 0, WindowWidth() - 1) 
-				local start_y = clamp(self.m_yOffset * i, 0, WindowHeight() - 1) 
+				local start_x = clamp(self.m_xOffset * j, 0, maxWidth) 
+				local start_y = clamp(self.m_yOffset * i, 0, maxHeight) 
 				local rain_velocity = Random(self.m_RainVelMin, self.m_RainVelMax):get_float()
 				local rain = Rain:Create(
 					{
