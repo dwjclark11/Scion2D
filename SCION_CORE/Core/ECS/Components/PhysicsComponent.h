@@ -14,7 +14,7 @@ namespace SCION_CORE::ECS {
 		float restitutionThreshold{ 1.f }, radius{ 0.f }, gravityScale{ 1.f };
 
 		glm::vec2 position{0.f}, scale{ 1.f }, boxSize{ 0.f }, offset{ 0.f };
-		bool bCircle{ false }, bBoxShape{ true }, bFixedRotation{ true };
+		bool bCircle{ false }, bBoxShape{ true }, bFixedRotation{ true }, bIsSensor{ false };
 
 		uint16_t filterCategory{ 0 }, filterMask{ 0 };
 		int16_t groupIndex{ 0 };
@@ -32,7 +32,7 @@ namespace SCION_CORE::ECS {
 
 		void Init(SCION_PHYSICS::PhysicsWorld pPhysicsWorld, int windowWidth, int windowHeight);
 		b2Body* GetBody() { return m_pRigidBody.get(); }
-
+		const bool IsSensor() const;
 		static void CreatePhysicsLuaBind(sol::state& lua, entt::registry& registry);
 	};
 }

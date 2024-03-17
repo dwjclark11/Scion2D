@@ -244,9 +244,16 @@ namespace SCION_CORE::Systems {
 		lua.set_function("GetDeltaTime", [&] { return engine.GetDeltaTime(); });
 		lua.set_function("WindowWidth", [&] { return engine.WindowWidth(); });
 		lua.set_function("WindowHeight", [&] { return engine.WindowHeight(); });
+
+		// Physics Enable functions
 		lua.set_function("DisablePhysics", [&] { engine.DisablePhysics(); });
 		lua.set_function("EnablePhysics", [&] { engine.EnablePhysics(); });
 		lua.set_function("IsPhysicsEnabled", [&] { return engine.IsPhysicsEnabled(); });
+
+		// Render Colliders Enable functions
+		lua.set_function("DisableRenderColliders", [&] { engine.DisableColliderRender(); });
+		lua.set_function("EnableRenderColliders", [&] { engine.EnableColliderRender(); });
+		lua.set_function("IsRenderCollidersEnabled", [&] { return engine.RenderCollidersEnabled(); });
 
 		lua.new_usertype<SCION_UTIL::RandomGenerator>(
 			"Random",

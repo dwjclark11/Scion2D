@@ -13,6 +13,7 @@ function Rain:Create(params)
 		m_Width = params.width or 32,
 		m_Height = params.height or 16,
 		m_Alpha = params.alpha or 135, -- semi-transparent
+		m_Scale = params.scale or 1,
 		m_NumFrames = params.num_frames or 5, 
 		m_MinLifeTime = params.min_life_time or 0,
 		m_MaxLifeTime = params.max_life_time or 1500,
@@ -23,7 +24,7 @@ function Rain:Create(params)
 
 	-- Create the entity
 	this.m_Entity = Entity("", "rain")
-	this.m_Entity:add_component(Transform(this.m_InitialPosition, vec2(1, 1), 0))
+	this.m_Entity:add_component(Transform(this.m_InitialPosition, vec2(this.m_Scale, this.m_Scale), 0))
 	local sprite = this.m_Entity:add_component(Sprite(this.m_sTexture, this.m_Width, this.m_Height, 0, 0, 6))
 	sprite.color = Color(255, 255, 255, this.m_Alpha)
 	sprite:generate_uvs() 
@@ -110,6 +111,7 @@ function RainGenerator:Create(params)
 		m_RainVelMax = params.rain_vel_max or 200,
 		m_RainLifeMin = params.rain_life_min or 500,
 		m_RainLifeMax = params.rain_life_max or 1500,
+		m_Scale = params.scale or 1
 	}
 
 	this.m_RainTable = {}
@@ -151,7 +153,9 @@ function RainGenerator:ReGenerate()
 					{
 						position = vec2(start_x, start_y),
 						velocity = vec2(rain_velocity, rain_velocity),
-						life_time = Random(self.m_RainLifeMin, self.m_RainLifeMax):get_float()
+						life_time = Random(self.m_RainLifeMin, self.m_RainLifeMax):get_float(),
+						scale = self.m_Scale,
+						num_frames = 1
 					}
 				)
 				table.insert(self.m_RainTable, rain)

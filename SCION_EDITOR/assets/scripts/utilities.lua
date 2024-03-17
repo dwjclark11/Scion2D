@@ -193,26 +193,16 @@ function LoadMap(mapDef)
 				local start_x, start_y = tileset:GetTileStartXY(id)
 
 				-- Scale is used for testing, will change this once zoom in camera is working.
-				local scale = 2 
+				local scale = 1
 				local position = vec2(((col - 1) * tileset.tilewidth * scale), (row * tileset.tileheight * scale))
 
 				local tile = Entity("", "tiles")
-				tile:add_component(Transform(position, vec2(scale, scale), 0))
+				local transform = tile:add_component(Transform(position, vec2(scale, scale), 0))
 
-				local sprite = tile:add_component(
-					Sprite(
-						tileset.name,
-						tileset.tilewidth,
-						tileset.tileheight,
-						start_x, start_y,
-						layer
-					)
-				)
-				sprite:generate_uvs()
-
+				local bIsCollider = false
 				-- Currently the box collider has a sprite, this will be changed once we can draw
 				-- Simple Primitives in the engine.
-				if tileset.name == "collider" then 
+				if tileset.name == "collider" or tileset.name == "trigger" then 
 					local width = tileset.tilewidth / scale
 					local height = tileset.tileheight / scale
 					tile:add_component(
@@ -222,11 +212,45 @@ function LoadMap(mapDef)
 							vec2(0, 0)
 						)
 					)
+					
+					-- If Box2d is enable, create a physics component
+					if IsPhysicsEnabled() then 
+						local physicsAttribs = PhysicsAttributes()
 
-					-- Do we want to show/hide the collider sprite?
-					sprite.bHidden = true
+						-- Adjust properties to desired values, properties that are unchanged use default
+						physicsAttribs.eType = BodyType.Static
+						physicsAttribs.density = 1000.0			
+						physicsAttribs.friction = 0.0			
+						physicsAttribs.restitution = 0.0		
+						physicsAttribs.gravityScale = 0.0
+						physicsAttribs.position = transform.position
+						physicsAttribs.bFixedRotation = true
+						physicsAttribs.boxSize = vec2(tileset.tilewidth, tileset.tileheight)
+						physicsAttribs.bBoxShape = true
+
+						if tileset.name == "trigger" then 
+							physicsAttribs.bIsSensor = true 
+						end
+
+						tile:add_component(PhysicsComp(physicsAttribs))
+					end
+					bIsCollider = true 
 				end
+				
+				-- If not a collider, create the tile sprite
+				if not bIsCollider then 
+					local sprite = tile:add_component(
+						Sprite(
+							tileset.name,
+							tileset.tilewidth,
+							tileset.tileheight,
+							start_x, start_y,
+							layer
+						)
+					)
 
+					sprite:generate_uvs()
+				end
 				::continue::
 			end
 		end
@@ -269,4 +293,15 @@ function LoadAssets(assets)
 		end
 	end
 	-- TODO: Add other loading of assets as needed
+end
+
+
+function Debug()
+	if Keyboard.just_pressed(KEY_C) then 
+		if IsRenderCollidersEnabled() then 
+			DisableRenderColliders()
+		else 
+			EnableRenderColliders()
+		end 
+	end
 end

@@ -53,7 +53,7 @@ namespace SCION_CORE::ECS {
 
 		if (bCircle)
 		{
-			circleShape.m_radius = m_InitialAttribs.radius * m_InitialAttribs.scale.x;
+			circleShape.m_radius = PIXELS_TO_METERS * m_InitialAttribs.radius * m_InitialAttribs.scale.x;
 		}
 		else if (m_InitialAttribs.bBoxShape)
 		{
@@ -78,6 +78,7 @@ namespace SCION_CORE::ECS {
 		fixtureDef.friction = m_InitialAttribs.friction;
 		fixtureDef.restitution = m_InitialAttribs.restitution;
 		fixtureDef.restitutionThreshold = m_InitialAttribs.restitutionThreshold;
+		fixtureDef.isSensor = m_InitialAttribs.bIsSensor;
 
 		auto pFixture = m_pRigidBody->CreateFixture(&fixtureDef);
 		if (!pFixture)
@@ -89,6 +90,14 @@ namespace SCION_CORE::ECS {
 	PhysicsComponent::PhysicsComponent()
 		: PhysicsComponent(PhysicsAttributes{})
 	{
+	}
+
+	const bool PhysicsComponent::IsSensor() const
+	{
+		if (!m_pRigidBody)
+			return false;
+
+		return m_pRigidBody->GetFixtureList()->IsSensor();
 	}
 
 	void PhysicsComponent::CreatePhysicsLuaBind(sol::state& lua, entt::registry& registry)
@@ -123,7 +132,8 @@ namespace SCION_CORE::ECS {
 			"offset", &PhysicsAttributes::offset,
 			"bCircle", &PhysicsAttributes::bCircle,
 			"bBoxShape", &PhysicsAttributes::bBoxShape,
-			"bFixedRotation", &PhysicsAttributes::bFixedRotation
+			"bFixedRotation", &PhysicsAttributes::bFixedRotation,
+			"bIsSensor", &PhysicsAttributes::bIsSensor
 			// TODO: Add in filters and other properties as needed
 		);
 
