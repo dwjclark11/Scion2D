@@ -45,6 +45,7 @@
     <None Include="assets\shaders\fontShader.vert" />
     <None Include="assets\shaders\fontShader.frag" />
     <None Include="assets\scripts\follow_cam.lua" />
+    <None Include="assets\scripts\lua_test_scripts.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
