@@ -18,9 +18,18 @@
     <ClInclude Include="Physics\Box2DWrappers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Physics\UserData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\ContactListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Physics\Box2DWrappers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\ContactListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

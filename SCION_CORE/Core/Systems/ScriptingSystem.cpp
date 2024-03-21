@@ -14,6 +14,7 @@
 #include "../Scripting/InputManager.h"
 #include "../Scripting/SoundBindings.h"
 #include "../Scripting/RendererBindings.h"
+#include "../Scripting/UserDataBindings.h"
 
 #include "../Resources/AssetManager.h"
 #include <Logger/Logger.h>
@@ -165,6 +166,8 @@ namespace SCION_CORE::Systems {
 		SCION_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
 		SCION_CORE::Scripting::SoundBinder::CreateSoundBind(lua, registry);
 		SCION_CORE::Scripting::RendererBinder::CreateRenderingBind(lua, registry);
+		SCION_CORE::Scripting::UserDataBinder::CreateLuaUserData(lua);
+
 		SCION_CORE::FollowCamera::CreateLuaFollowCamera(lua, registry);
 		create_timer(lua);
 
@@ -196,6 +199,9 @@ namespace SCION_CORE::Systems {
 		Registry::RegisterMetaComponent<PhysicsComponent>();
 		Registry::RegisterMetaComponent<TextComponent>();
 		Registry::RegisterMetaComponent<RigidBodyComponent>();
+
+		// Register User Data Types
+		SCION_CORE::Scripting::UserDataBinder::register_meta_user_data<ObjectData>();
 	}
 
 

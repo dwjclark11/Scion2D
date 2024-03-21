@@ -93,6 +93,9 @@
     <ClInclude Include="Core\ECS\Components\RigidBodyComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Scripting\UserDataBindings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\ECS\Registry.cpp">
@@ -167,12 +170,18 @@
     <ClCompile Include="Core\ECS\Components\RigidBodyComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Scripting\UserDataBindings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Core\ECS\Entity.inl">
       <Filter>Header Files</Filter>
     </None>
     <None Include="Core\ECS\Registry.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Core\Scripting\UserDataBindings.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

@@ -6,6 +6,7 @@ run_script("assets/scripts/utilities.lua")
 run_script("assets/scripts/rain_generator.lua")
 run_script("assets/scripts/follow_cam.lua")
 
+--[[
 local tilemap = CreateTestPlatformerMap()
 assert(tilemap)
 LoadAssets(AssetDefs)
@@ -133,18 +134,34 @@ gFollowCam = FollowCamera(
 		}
 	), gPlayer
 )
+--]]
+
+-- Test Data
+local objectData = ObjectData("test_tag", "test_group", true, true, 9919)
+local userData = UserData.create_user_data(objectData);
+
+local objData1 = userData:get_user_data()
+print(objData1:to_string() .."\n")
+
+userData:set_user_data(ObjectData("New Tag", "Newer group", false, true, 12112))
+
+local objData2 = userData:get_user_data()
+print(objData2:to_string())
+
+
 
 main = {
 	[1] = {
 		update = function()
-
+			--[[
 			UpdatePlayer(gPlayer)
 			gFollowCam:update()
 			rainGen:Update(0.016) -- Add delta-time
 			UpdateDimmer(darkness)
-			
+		
 
 			Debug()
+			--]]
 		end
 	},
 	[2] = {

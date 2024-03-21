@@ -130,9 +130,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Physics\Box2DWrappers.h" />
+    <ClInclude Include="Physics\ContactListener.h" />
+    <ClInclude Include="Physics\UserData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Physics\Box2DWrappers.cpp" />
+    <ClCompile Include="Physics\ContactListener.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

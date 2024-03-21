@@ -189,6 +189,7 @@
     <ClInclude Include="Core\Scripting\InputManager.h" />
     <ClInclude Include="Core\Scripting\RendererBindings.h" />
     <ClInclude Include="Core\Scripting\SoundBindings.h" />
+    <ClInclude Include="Core\Scripting\UserDataBindings.h" />
     <ClInclude Include="Core\Systems\AnimationSystem.h" />
     <ClInclude Include="Core\Systems\PhysicsSystem.h" />
     <ClInclude Include="Core\Systems\RenderShapeSystem.h" />
@@ -215,6 +216,7 @@
     <ClCompile Include="Core\Scripting\InputManager.cpp" />
     <ClCompile Include="Core\Scripting\RendererBindings.cpp" />
     <ClCompile Include="Core\Scripting\SoundBindings.cpp" />
+    <ClCompile Include="Core\Scripting\UserDataBindings.cpp" />
     <ClCompile Include="Core\Systems\AnimationSystem.cpp" />
     <ClCompile Include="Core\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="Core\Systems\RenderShapeSystem.cpp" />
@@ -225,6 +227,7 @@
   <ItemGroup>
     <None Include="Core\ECS\Entity.inl" />
     <None Include="Core\ECS\Registry.inl" />
+    <None Include="Core\Scripting\UserDataBindings.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,6 @@
 #pragma once
 #include <Physics/Box2DWrappers.h>
+#include <Physics/UserData.h>
 #include <sol/sol.hpp>
 #include <glm/glm.hpp>
 #include <entt.hpp>
@@ -18,11 +19,13 @@ namespace SCION_CORE::ECS {
 
 		uint16_t filterCategory{ 0 }, filterMask{ 0 };
 		int16_t groupIndex{ 0 };
+		SCION_PHYSICS::ObjectData objectData{};
 	};
 
 	class PhysicsComponent
 	{
 		std::shared_ptr<b2Body> m_pRigidBody;
+		std::shared_ptr<SCION_PHYSICS::UserData> m_pUserData;
 		PhysicsAttributes m_InitialAttribs;
 
 	public:
@@ -32,7 +35,9 @@ namespace SCION_CORE::ECS {
 
 		void Init(SCION_PHYSICS::PhysicsWorld pPhysicsWorld, int windowWidth, int windowHeight);
 		b2Body* GetBody() { return m_pRigidBody.get(); }
+		SCION_PHYSICS::UserData* GetUserData() { return m_pUserData.get(); }
 		const bool IsSensor() const;
+
 		static void CreatePhysicsLuaBind(sol::state& lua, entt::registry& registry);
 	};
 }
