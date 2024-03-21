@@ -66,6 +66,27 @@ namespace SCION_CORE {
         lua.set("KEY_RALT", SCION_KEY_RALT);
         lua.set("KEY_LSHIFT", SCION_KEY_LSHIFT);
         lua.set("KEY_RSHIFT", SCION_KEY_RSHIFT);
+        
+        // ==================================================================
+        //  Register Punctuation Keys
+        // ==================================================================
+        lua.set("KEY_COLON", SCION_KEY_COLON);
+        lua.set("KEY_SEMICOLON", SCION_KEY_SEMICOLON);
+        lua.set("KEY_QUOTE", SCION_KEY_QUOTE);
+        lua.set("KEY_BACKQUOTE", SCION_KEY_BACKQUOTE);
+        lua.set("KEY_CARET", SCION_KEY_CARET);
+        lua.set("KEY_UNDERSCORE", SCION_KEY_UNDERSCORE);
+        lua.set("KEY_RIGHTBRACKET", SCION_KEY_RIGHTBRACKET);
+        lua.set("KEY_LEFTBRACKET", SCION_KEY_LEFTBRACKET);
+        lua.set("KEY_SLASH", SCION_KEY_SLASH);
+        lua.set("KEY_ASTERISK", SCION_KEY_ASTERISK);
+        lua.set("KEY_LEFTPAREN", SCION_KEY_LEFTPAREN);
+        lua.set("KEY_RIGHTPAREN", SCION_KEY_RIGHTPAREN);
+        lua.set("KEY_QUESTION", SCION_KEY_QUESTION);
+        lua.set("KEY_AMPERSAND", SCION_KEY_AMPERSAND);
+        lua.set("KEY_DOLLAR", SCION_KEY_DOLLAR);
+        lua.set("KEY_EXCLAIM", SCION_KEY_EXCLAIM);
+        lua.set("KEY_BACKSLASH", SCION_KEY_BACKSLASH);
 
         // ==================================================================
         //  Register Function Keys
@@ -104,7 +125,25 @@ namespace SCION_CORE {
         lua.set("KP_KEY_7", SCION_KEY_KP7);
         lua.set("KP_KEY_8", SCION_KEY_KP8);
         lua.set("KP_KEY_9", SCION_KEY_KP9);
+
+        lua.set("KP_KEY_DIVIDE", SCION_KEY_KP_DIVIDE);
+        lua.set("KP_KEY_MULTIPLY", SCION_KEY_KP_MULTIPLY);
+        lua.set("KP_KEY_MINUS", SCION_KEY_KP_MINUS);
+        lua.set("KP_KEY_PLUS", SCION_KEY_KP_PLUS);
         lua.set("KP_KEY_ENTER", SCION_KEY_KP_ENTER);
+        lua.set("KP_KEY_PERIOD", SCION_KEY_KP_PERIOD);
+        
+        lua.set("KEY_NUM_LOCK", SCION_KEY_NUMLOCK);
+
+        // Adding windows specific keys here for convenience
+#ifdef _WIN32
+        lua.set("KEY_LWIN", SCION_KEY_LWIN);
+        lua.set("KEY_RWIN", SCION_KEY_RWIN);
+#else 
+        lua.set("KEY_LGUI", SCION_KEY_LGUI);
+        lua.set("KEY_RGUI", SCION_KEY_RGUI);
+#endif
+
 	}
 
     void InputManager::RegisterMouseBtnNames(sol::state& lua)
@@ -163,7 +202,16 @@ namespace SCION_CORE {
             sol::no_constructor,
             "just_pressed", [&](int key) { return keyboard.IsKeyJustPressed(key); },
             "just_released", [&](int key) { return keyboard.IsKeyJustReleased(key); },
-            "pressed", [&](int key) { return keyboard.IsKeyPressed(key); }
+            "pressed", [&](int key) { return keyboard.IsKeyPressed(key); },
+            "pressed_keys", [&]() {
+                std::vector<int> keys;
+                for (const auto& [key, button] : keyboard.GetButtonMap())
+                {
+                    if (button.bIsPressed)
+                        keys.push_back(key);
+                }
+                return keys;
+            }
         );
 
         auto& mouse = inputManager.GetMouse();

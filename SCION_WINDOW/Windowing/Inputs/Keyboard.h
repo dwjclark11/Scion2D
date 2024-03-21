@@ -20,5 +20,7 @@ namespace SCION_WINDOWING::Inputs {
 		const bool IsKeyPressed(int key) const;
 		const bool IsKeyJustPressed(int key) const;
 		const bool IsKeyJustReleased(int key) const;
+
+		const std::map<int, Button>& GetButtonMap() const { return m_mapButtons; }
 	};
 }

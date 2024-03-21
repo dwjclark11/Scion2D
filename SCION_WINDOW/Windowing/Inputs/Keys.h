@@ -27,6 +27,7 @@ constexpr int SCION_KEY_COMMA = SDLK_COMMA;
 constexpr int SCION_KEY_MINUS = SDLK_MINUS;
 constexpr int SCION_KEY_PERIOD = SDLK_PERIOD;
 constexpr int SCION_KEY_SLASH = SDLK_SLASH;
+
 constexpr int SCION_KEY_0 = SDLK_0;
 constexpr int SCION_KEY_1 = SDLK_1;
 constexpr int SCION_KEY_2 = SDLK_2;
@@ -37,6 +38,7 @@ constexpr int SCION_KEY_6 = SDLK_6;
 constexpr int SCION_KEY_7 = SDLK_7;
 constexpr int SCION_KEY_8 = SDLK_8;
 constexpr int SCION_KEY_9 = SDLK_9;
+
 constexpr int SCION_KEY_COLON = SDLK_COLON;
 constexpr int SCION_KEY_SEMICOLON = SDLK_SEMICOLON;
 constexpr int SCION_KEY_LESS = SDLK_LESS;
@@ -94,7 +96,7 @@ constexpr int SCION_KEY_F10 = SDLK_F10;
 constexpr int SCION_KEY_F11 = SDLK_F11;
 constexpr int SCION_KEY_F12 = SDLK_F12;
 
-
+constexpr int SCION_KEY_PRINTSCREEN = SDLK_PRINTSCREEN;
 constexpr int SCION_KEY_SCROLLOCK = SDLK_SCROLLLOCK;
 
 constexpr int SCION_KEY_INSERT = SDLK_INSERT;
@@ -132,3 +134,13 @@ constexpr int SCION_KEY_LALT = SDLK_LALT;
 constexpr int SCION_KEY_RCTRL = SDLK_RCTRL;
 constexpr int SCION_KEY_RSHIFT = SDLK_RSHIFT;
 constexpr int SCION_KEY_RALT = SDLK_RALT;
+
+// Put windows naming specific keys here
+#ifdef _WIN32
+	constexpr int SCION_KEY_LWIN = SDLK_LGUI;
+	constexpr int SCION_KEY_RWIN = SDLK_RGUI;
+#else 
+	constexpr int SCION_KEY_LGUI = SDLK_LGUI;
+	constexpr int SCION_KEY_RGUI = SDLK_RGUI;
+#endif
+
