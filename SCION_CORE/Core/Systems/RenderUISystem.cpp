@@ -4,6 +4,8 @@
 #include <Rendering/Essentials/Font.h>
 #include "../Resources/AssetManager.h"
 #include <Logger/Logger.h>
+#include "../CoreUtilities/CoreEngineData.h"
+#include "../CoreUtilities/CoreUtilities.h"
 
 using namespace SCION_CORE::ECS;
 using namespace SCION_RESOURCES;
@@ -16,12 +18,23 @@ namespace SCION_CORE::Systems {
 		, m_pTextRenderer{ std::make_unique<SCION_RENDERING::TextBatchRenderer>()}
 		, m_pCamera2D{ nullptr }
 	{
-		m_pCamera2D = std::make_unique<SCION_RENDERING::Camera2D>(640, 480);
+		auto& coreEngine = CoreEngineData::GetInstance();
+
+		m_pCamera2D = std::make_unique<SCION_RENDERING::Camera2D>(
+			coreEngine.WindowWidth(), 
+			coreEngine.WindowHeight()
+		);
+
 		m_pCamera2D->Update();
 	}
 
 	void RenderUISystem::Update(entt::registry& registry)
 	{
+		// If there are no entities in the view, leave
+		auto textView = registry.view<TextComponent, TransformComponent>();
+		if (textView.size_hint() < 1)
+			return;
+
 		auto& assetManager = m_Registry.GetContext<std::shared_ptr<AssetManager>>();
 		auto pFontShader = assetManager->GetShader("font");
 
@@ -32,7 +45,7 @@ namespace SCION_CORE::Systems {
 		}
 
 		auto cam_mat = m_pCamera2D->GetCameraMatrix();
-		auto textView = registry.view<TextComponent, TransformComponent>();
+		
 
 		pFontShader->Enable();
 		pFontShader->SetUniformMat4("uProjection", cam_mat);
@@ -54,25 +67,9 @@ namespace SCION_CORE::Systems {
 			}
 
 			const auto& transform = textView.get<TransformComponent>(entity);
+			const auto fontSize = pFont->GetFontSize();
 
-
-			glm::mat4 model{1.f};
-
-			if (transform.rotation > 0.f || transform.rotation < 0.f ||
-				transform.scale.x > 1.f || transform.scale.x < 1.f ||
-				transform.scale.y > 1.f || transform.scale.y < 1.f)
-			{
-				model = glm::translate(model, glm::vec3{transform.position, 0.f});
-				model = glm::translate(model, glm::vec3{ (pFont->GetFontSize() * transform.scale.x) * 0.5f, (pFont->GetFontSize() * transform.scale.y) * 0.5f, 0.f});
-
-				model = glm::rotate(model, glm::radians(transform.rotation), glm::vec3{0.f, 0.f, 1.f});
-				model = glm::translate(model, glm::vec3{ (pFont->GetFontSize() * transform.scale.x) * -0.5f, (pFont->GetFontSize() * transform.scale.y) * -0.5f, 0.f});
-
-				model = glm::scale(model, glm::vec3{transform.scale, 1.f});
-
-				model = glm::translate(model, glm::vec3{-transform.position, 0.f});
-			}
-
+			glm::mat4 model = SCION_CORE::RSTModel(transform, fontSize, fontSize);
 			m_pTextRenderer->AddText(text.sTextStr, pFont, transform.position, text.padding, text.wrap, text.color, model);
 		}
 

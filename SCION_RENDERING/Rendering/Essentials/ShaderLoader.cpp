@@ -1,7 +1,7 @@
 #include "ShaderLoader.h"
 #include <iostream>
 #include <fstream>
-
+#include <Logger/Logger.h>
 namespace SCION_RENDERING {
 
     GLuint ShaderLoader::CreateProgram(const std::string& vertexShader, const std::string& fragmentShader)
@@ -16,7 +16,7 @@ namespace SCION_RENDERING {
 
         if (!LinkShaders(program, vertex, fragment))
         {
-            std::cout << "Failed to Link Shaders!" << std::endl;
+            SCION_ERROR("Failed to Link Shaders!");
             return 0;
         }
 
@@ -31,7 +31,7 @@ namespace SCION_RENDERING {
 
         if (ifs.fail())
         {
-            std::cout << "Shader Failed to open [" << filepath << "]" << std::endl;
+            SCION_ERROR("Shader Failed to open [{}]", filepath);
             return 0;
         }
 
@@ -52,12 +52,49 @@ namespace SCION_RENDERING {
 
         if (!CompileSuccess(shaderID))
         {
-            std::cout << "Failed to compile shader [" << filepath << "]" << std::endl;
+            SCION_ERROR("Failed to compile shader [{}]", filepath);
             return 0;
         }
 
         return shaderID;
     }
+
+    GLuint ShaderLoader::CreateProgram(const char* vertexShader, const char* fragmentShader)
+    {
+        const GLuint program = glCreateProgram();
+
+        const GLuint vertex = CompileShader(GL_VERTEX_SHADER, vertexShader);
+        const GLuint fragment = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+
+        if (vertex == 0 || fragment == 0)
+            return 0;
+
+        if (!LinkShaders(program, vertex, fragment))
+        {
+            SCION_ERROR("Failed to Link Shaders!");
+            return 0;
+        }
+
+        return program;
+    }
+
+    GLuint ShaderLoader::CompileShader(GLuint type, const char* shader)
+    {
+        const GLuint id = glCreateShader(type);
+        glShaderSource(id, 1, &shader, nullptr);
+
+        glCompileShader(id);
+
+        // Check to see if the shader compiled correctly
+        if (!CompileSuccess(id))
+        {
+            SCION_ERROR("Failed to compile shader from memory!");
+            return 0;
+        }
+
+        return id;
+    }
+
 
     bool ShaderLoader::CompileSuccess(GLuint shader)
     {
@@ -74,7 +111,7 @@ namespace SCION_RENDERING {
 
             glGetShaderInfoLog(shader, maxLength, &maxLength, errorLog.data());
 
-            std::cout << "Shader Compilation failed: " << std::string{errorLog} << std::endl;
+            SCION_ERROR("Shader Compilation failed: {}", std::string{errorLog});
             
             glDeleteShader(shader);
             return false;
@@ -98,7 +135,7 @@ namespace SCION_RENDERING {
 
             glGetProgramInfoLog(program, maxLength, &maxLength, errorLog.data());
 
-            std::cout << "Shader's Program failed to link: " << std::string{errorLog} << std::endl;
+            SCION_ERROR("Shader's Program failed to link: {}", std::string{errorLog});
             return false;
         }
 
@@ -139,5 +176,25 @@ namespace SCION_RENDERING {
             return std::make_shared<Shader>(program, vertexShaderPath, fragmentShaderPath);
 
         return nullptr;
+    }
+
+    std::shared_ptr<Shader> ShaderLoader::CreateFromMemory(const char* vertexShader, const char* fragmentShader)
+    {
+        GLuint program = CreateProgram(vertexShader, fragmentShader);
+
+        // From memory holds onto the shader itself, not the path
+        if (program)
+            return std::make_shared<Shader>(program, vertexShader, fragmentShader);
+
+        return nullptr;
+    }
+
+    bool ShaderLoader::Destroy(Shader* pShader)
+    {
+        if (pShader->ShaderProgramID() <= 0)
+            return false;
+
+        glDeleteShader(pShader->ShaderProgramID());
+        return true;
     }
 }

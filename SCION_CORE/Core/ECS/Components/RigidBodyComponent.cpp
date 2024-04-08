@@ -1,6 +1,16 @@
 #include "RigidBodyComponent.h"
 #include <entt.hpp>
 
+std::string SCION_CORE::ECS::RigidBodyComponent::to_string()
+{
+	std::stringstream ss;
+	ss <<
+		"==== RigidBody Component ==== \n" <<
+		"Velocity: [ x = " << velocity.x << ", y = " << velocity.y << "\n";
+		
+	return ss.str();
+}
+
 void SCION_CORE::ECS::RigidBodyComponent::CreateRigidBodyBind(sol::state& lua)
 {
 	lua.new_usertype<RigidBodyComponent>(
@@ -12,6 +22,7 @@ void SCION_CORE::ECS::RigidBodyComponent::CreateRigidBodyBind(sol::state& lua)
 				return RigidBodyComponent{ .velocity = velocity };
 			}
 		),
-		"velocity", &RigidBodyComponent::velocity
+		"velocity", &RigidBodyComponent::velocity,
+		"to_string", &RigidBodyComponent::to_string
 	);
 }

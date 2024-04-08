@@ -1,29 +1,30 @@
 #include "SDL_Wrappers.h"
 #include <iostream>
+#include <Logger/Logger.h>
 
 void SCION_UTIL::SDL_Destroyer::operator()(SDL_Window* window) const
 {
     SDL_DestroyWindow(window);
-    std::cout << "Destroyed SDL WINDOW\n";
+    SCION_LOG("Destroyed SDL WINDOW");
 }
 
 void SCION_UTIL::SDL_Destroyer::operator()(SDL_GameController* controller) const
 {
     SDL_GameControllerClose(controller);
     controller = nullptr;
-    std::cout << "Closed SDL Game Controller!\n";
+    SCION_LOG("Closed SDL Game Controller!");
 }
 
 void SCION_UTIL::SDL_Destroyer::operator()(Mix_Chunk* chunk) const
 {
     Mix_FreeChunk(chunk);
-    std::cout << "Freed SDL Mix_Chunk!\n";
+    SCION_LOG("Freed SDL Mix_Chunk!");
 }
 
 void SCION_UTIL::SDL_Destroyer::operator()(Mix_Music* music) const
 {
     Mix_FreeMusic(music);
-    std::cout << "Freed SDL Mix_Chunk!\n";
+    SCION_LOG("Freed SDL Mix_Chunk!");
 }
 
 void SCION_UTIL::SDL_Destroyer::operator()(SDL_Cursor* cursor) const

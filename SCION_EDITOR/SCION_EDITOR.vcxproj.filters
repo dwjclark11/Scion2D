@@ -46,6 +46,9 @@
     <None Include="assets\shaders\fontShader.frag" />
     <None Include="assets\scripts\follow_cam.lua" />
     <None Include="assets\scripts\lua_test_scripts.lua" />
+    <None Include="assets\scripts\events\event_manager.lua" />
+    <None Include="assets\scripts\events\collision_event.lua" />
+    <None Include="assets\scripts\systems\trigger_system.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">

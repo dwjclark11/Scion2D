@@ -85,6 +85,16 @@ namespace SCION_RESOURCES {
 		bool AddShader(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath);
 
 		/*
+		* @brief Checks to see if the Shader exists, and if not, creates and loads the Shader into the
+		* asset manager.
+		* @param An std::string for the shader name to be use as the key.
+		* @param A const char* for the vertex shader memory to be loaded.
+		* @param A const char* for the fragment shader memory to be loaded.
+		* @return Returns true if the shader was created and loaded successfully, false otherwise.
+		*/
+		bool AddShaderFromMemory(const std::string& shaderName, const char* vertexShader, const char* fragmentShader);
+
+		/*
 		* @brief Checks to see if the shader exists based on the name and returns shared_ptr<Shader>.
 		* @param An std::string for the shader name to lookup.
 		* @return Returns the desired shader if it exists, else returns nullptr

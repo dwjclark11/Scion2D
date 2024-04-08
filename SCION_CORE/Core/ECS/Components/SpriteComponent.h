@@ -20,15 +20,8 @@ namespace SCION_CORE::ECS {
 		bool bHidden{ false };
 		std::string texture_name{""};
 
-		void generate_uvs(int textureWidth, int textureHeight)
-		{
-			uvs.uv_width = width / textureWidth;
-			uvs.uv_height = height / textureHeight;
-
-			uvs.u = start_x * uvs.uv_width;
-			uvs.v = start_y * uvs.uv_height;
-		}
-
+		void generate_uvs(int textureWidth, int textureHeight);
+		[[nodiscard]] std::string to_string() const;
 
 		static void CreateSpriteLuaBind(sol::state& lua, SCION_CORE::ECS::Registry& registry);
 	};

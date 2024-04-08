@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir)\SCION_SOUNDS\src;$(SolutionDir)\SCION_PHYSICS;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir).\Dependencies\lua_53\lib;$(SolutionDir).\Dependencies\SDL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir)\SCION_SOUNDS\src;$(SolutionDir)\SCION_PHYSICS;$(SolutionDir).\Dependencies\box2d\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir).\Dependencies\lua_53\lib;$(SolutionDir).\Dependencies\SDL\lib;$(SolutionDir).\Dependencies\box2d\lib\debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir)\SCION_SOUNDS\src;$(SolutionDir)\SCION_PHYSICS;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir).\Dependencies\lua_53\lib;$(SolutionDir).\Dependencies\SDL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir).\SCION_LOGGER;$(SolutionDir).\SCION_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\GLAD\glad\include;$(SolutionDir).\Scion2D\SOIL\include;$(SolutionDir).\Dependencies\lua_53\include;$(SolutionDir).\Dependencies\sol3;$(SolutionDir).\Dependencies\SDL\include;$(SolutionDir).\SCION_WINDOW;$(SolutionDir).\SCION_UTILITIES;$(SolutionDir)\SCION_SOUNDS\src;$(SolutionDir)\SCION_PHYSICS;$(SolutionDir).\Dependencies\box2d\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir).\Dependencies\lua_53\lib;$(SolutionDir).\Dependencies\SDL\lib;$(SolutionDir).\Dependencies\box2d\lib\release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -113,13 +113,14 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>lua53.lib;SDL2.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua53.lib;SDL2.lib;SDL2_mixer.lib;box2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,6 +132,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,7 +141,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>lua53.lib;SDL2.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua53.lib;SDL2.lib;SDL2_mixer.lib;box2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -170,7 +172,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\CoreUtilities\CoreEngineData.h" />
+    <ClInclude Include="Core\CoreUtilities\CoreUtilities.h" />
     <ClInclude Include="Core\CoreUtilities\FollowCamera.h" />
+    <ClInclude Include="Core\ECS\Components\AllComponents.h" />
     <ClInclude Include="Core\ECS\Components\AnimationComponent.h" />
     <ClInclude Include="Core\ECS\Components\BoxColliderComponent.h" />
     <ClInclude Include="Core\ECS\Components\CircleColliderComponent.h" />
@@ -185,6 +189,7 @@
     <ClInclude Include="Core\ECS\MetaUtilities.h" />
     <ClInclude Include="Core\ECS\Registry.h" />
     <ClInclude Include="Core\Resources\AssetManager.h" />
+    <ClInclude Include="Core\Scripting\ContactListenerBind.h" />
     <ClInclude Include="Core\Scripting\GlmLuaBindings.h" />
     <ClInclude Include="Core\Scripting\InputManager.h" />
     <ClInclude Include="Core\Scripting\RendererBindings.h" />
@@ -199,6 +204,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\CoreUtilities\CoreEngineData.cpp" />
+    <ClCompile Include="Core\CoreUtilities\CoreUtilities.cpp" />
     <ClCompile Include="Core\CoreUtilities\FollowCamera.cpp" />
     <ClCompile Include="Core\ECS\Components\AnimationComponent.cpp" />
     <ClCompile Include="Core\ECS\Components\BoxColliderComponent.cpp" />
@@ -212,6 +218,7 @@
     <ClCompile Include="Core\ECS\MetaUtilities.cpp" />
     <ClCompile Include="Core\ECS\Registry.cpp" />
     <ClCompile Include="Core\Resources\AssetManager.cpp" />
+    <ClCompile Include="Core\Scripting\ContactListenerBind.cpp" />
     <ClCompile Include="Core\Scripting\GlmLuaBindings.cpp" />
     <ClCompile Include="Core\Scripting\InputManager.cpp" />
     <ClCompile Include="Core\Scripting\RendererBindings.cpp" />

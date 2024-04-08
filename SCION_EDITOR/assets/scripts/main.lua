@@ -5,15 +5,30 @@ run_script("assets/scripts/TestProject/test_platformer.lua")
 run_script("assets/scripts/utilities.lua")
 run_script("assets/scripts/rain_generator.lua")
 run_script("assets/scripts/follow_cam.lua")
+run_script("assets/scripts/events/event_manager.lua")
+run_script("assets/scripts/events/collision_event.lua")
+run_script("assets/scripts/systems/trigger_system.lua")
 
---[[
+-- [[
 local tilemap = CreateTestPlatformerMap()
 assert(tilemap)
 LoadAssets(AssetDefs)
 LoadMap(tilemap)
 
+gCollisionEvent = CollisionEvent:Create() 
+gTriggerSystem = TriggerSystem:Create() 
+gCollisionEvent:SubscribeToEvent(gTriggerSystem)
 
-local rainGen = RainGenerator:Create({scale = 0.5})
+
+local rainGen = RainGenerator:Create(
+	{
+		scale = 0.5,
+		rain_vel_min = 10,
+		rain_vel_max = 100,
+		rain_life_min = 250,
+		rain_life_max = 500
+	}
+)
 Sound.play("rain", -1, 1)
 Sound.set_volume(1, 30)
 
@@ -70,6 +85,8 @@ playerPhysAttr.position = playerTransform.position
 playerPhysAttr.radius = circleCollider.radius 
 playerPhysAttr.bCircle = true 
 playerPhysAttr.bFixedRotation = true 
+
+playerPhysAttr.objectData = (ObjectData("player", "", true, false, gPlayer:id()))
 
 -- Add Physics component to the player 
 gPlayer:add_component(PhysicsComp(playerPhysAttr))
@@ -136,6 +153,7 @@ gFollowCam = FollowCamera(
 )
 --]]
 
+--[[
 -- Test Data
 local objectData = ObjectData("test_tag", "test_group", true, true, 9919)
 local userData = UserData.create_user_data(objectData);
@@ -147,13 +165,13 @@ userData:set_user_data(ObjectData("New Tag", "Newer group", false, true, 12112))
 
 local objData2 = userData:get_user_data()
 print(objData2:to_string())
-
+--]]
 
 
 main = {
 	[1] = {
 		update = function()
-			--[[
+			-- [[
 			UpdatePlayer(gPlayer)
 			gFollowCam:update()
 			rainGen:Update(0.016) -- Add delta-time
@@ -162,6 +180,14 @@ main = {
 
 			Debug()
 			--]]
+			
+			local uda, udb = ContactListener.get_user_data()
+			if uda and udb then 
+				--print("USER A: " ..uda:to_string())
+				--print("USER B: " ..udb:to_string())
+				gCollisionEvent:EmitEvent(uda, udb)
+			end 
+
 		end
 	},
 	[2] = {

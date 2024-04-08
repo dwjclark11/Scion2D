@@ -11,6 +11,8 @@ namespace SCION_CORE::ECS {
 		SCION_RENDERING::Color color { 255, 255, 255, 255 };
 		bool bHidden{ false };
 
+		[[nodiscard]] std::string to_string();
+
 		static void CreateLuaTextBindings(sol::state& lua);
 	};
 }

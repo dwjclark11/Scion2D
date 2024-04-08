@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <iostream>
+#include <Logger.h>
 
 namespace SCION_WINDOWING {
 
@@ -14,7 +15,7 @@ namespace SCION_WINDOWING {
 		if (!m_pWindow)
 		{
 			std::string error = SDL_GetError();
-			std::cout << "Failed to create the Window: " << error << "\n";
+			SCION_ERROR("Failed to create the Window: {}", error);
 		}
 	}
 
@@ -28,14 +29,10 @@ namespace SCION_WINDOWING {
 		if (v_sync)
 		{
 			if (!SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1"))
-				std::cout << "Failed to enable VSYNC!\n";
+				SCION_ERROR("Failed to enable VSYNC!");
 		}
-		std::cout << "Window Created Successfully!\n";
-	}
 
-	Window::~Window()
-	{
-
+		SCION_LOG("Window Created Successfully!");
 	}
 
 	void Window::SetPosition(int x, int y)

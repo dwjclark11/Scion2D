@@ -125,12 +125,20 @@ function RainGenerator:Create(params)
 end
 
 function RainGenerator:Update(dt)
-	for k, v in pairs(self.m_RainTable) do 
+	for k, v in pairs(self.m_RainTable) do
+		--[[	
+		local transform = v.m_Entity:get_component(Transform)
+		if not S2D_EntityInView(transform, v.m_Width * 6, v.m_Height * 6) then
+			--print("skipping:" ..v.m_Entity:id())
+			goto continue 
+		end
+		--]]
 		v:Update(dt)
 
 		if v:LifeOver() then
 			v:Finish()
 		end
+		--::continue::
 	end 
 end
 

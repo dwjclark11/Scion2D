@@ -5,6 +5,7 @@
 #include "../ECS/Components/PhysicsComponent.h"
 #include "../Resources/AssetManager.h"
 #include "../CoreUtilities/CoreEngineData.h"
+#include "../CoreUtilities/CoreUtilities.h"
 
 #include <Rendering/Core/Camera2D.h>
 #include <Rendering/Essentials/Primitives.h>
@@ -44,22 +45,10 @@ namespace SCION_CORE::Systems {
 			const auto& transform = boxView.get<TransformComponent>(entity);
 			const auto& boxCollider = boxView.get<BoxColliderComponent>(entity);
 
-			glm::mat4 model{1.f};
+			if (!SCION_CORE::EntityInView(transform, static_cast<float>(boxCollider.width), static_cast<float>(boxCollider.height), *camera))
+				continue;
 
-			if (transform.rotation > 0.f || transform.rotation < 0.f ||
-				transform.scale.x > 1.f || transform.scale.x < 1.f ||
-				transform.scale.y > 1.f || transform.scale.y < 1.f)
-			{
-				model = glm::translate(model, glm::vec3{transform.position, 0.f});
-				model = glm::translate(model, glm::vec3{ (boxCollider.width * transform.scale.x) * 0.5f, (boxCollider.height * transform.scale.y) * 0.5f, 0.f});
-
-				model = glm::rotate(model, glm::radians(transform.rotation), glm::vec3{0.f, 0.f, 1.f});
-				model = glm::translate(model, glm::vec3{ (boxCollider.width * transform.scale.x) * -0.5f, (boxCollider.height * transform.scale.y) * -0.5f, 0.f});
-
-				model = glm::scale(model, glm::vec3{transform.scale, 1.f});
-
-				model = glm::translate(model, glm::vec3{-transform.position, 0.f});
-			}
+			glm::mat4 model = SCION_CORE::RSTModel(transform, boxCollider.width, boxCollider.height);
 			
 			auto color = Color{ 255, 0, 0, 135 };
 
@@ -87,7 +76,6 @@ namespace SCION_CORE::Systems {
 		m_pRectRenderer->Render();
 		colorShader->Disable();
 
-
 		auto circleShader = assetManager->GetShader("circle");
 
 		circleShader->Enable();
@@ -113,7 +101,5 @@ namespace SCION_CORE::Systems {
 		m_pCircleRenderer->End();
 		m_pCircleRenderer->Render();
 		circleShader->Disable();
-
 	}
-
 }

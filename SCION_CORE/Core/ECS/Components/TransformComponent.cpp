@@ -1,6 +1,18 @@
 #include "TransformComponent.h"
 #include <entt.hpp>
 
+std::string SCION_CORE::ECS::TransformComponent::to_string()
+{
+	std::stringstream ss;
+	ss <<
+		"==== Transform Component ==== \n" << 
+		"Position: [ x = " << position.x << ", y = " << position.y << "]" << "\n" <<
+		"Scale: [ x = " << scale.x << ", y = " << scale.y << "]" << "\n" <<
+		"Rotation: " << rotation << "\n";
+
+	return ss.str();
+}
+
 void SCION_CORE::ECS::TransformComponent::CreateLuaTransformBind(sol::state& lua)
 {
 	lua.new_usertype<TransformComponent>(
@@ -25,6 +37,7 @@ void SCION_CORE::ECS::TransformComponent::CreateLuaTransformBind(sol::state& lua
 		), 
 		"position", &TransformComponent::position,
 		"scale", &TransformComponent::scale,
-		"rotation", &TransformComponent::rotation
+		"rotation", &TransformComponent::rotation,
+		"to_string", &TransformComponent::to_string
 	);
 }

@@ -1,6 +1,21 @@
 #include "AnimationComponent.h"
 #include <entt.hpp>
 
+std::string SCION_CORE::ECS::AnimationComponent::to_string() const
+{
+	// Current frame does not need to be returned because it is a calculated value
+	std::stringstream ss;
+	ss <<
+		"==== Animation Component ==== \n" << std::boolalpha <<
+		"Num Frames: " << numFrames << "\n" <<
+		"Frame Rate: " << frameRate<< "\n" <<
+		"Frame Offset: " << frameOffset << "\n" <<
+		"bVertical: " << bVertical << "\n" <<
+		"bLooped: " << bLooped << "\n";
+
+	return ss.str();
+}
+
 void SCION_CORE::ECS::AnimationComponent::CreateAnimationLuaBind(sol::state& lua)
 {
 	lua.new_usertype<AnimationComponent>(
@@ -27,6 +42,7 @@ void SCION_CORE::ECS::AnimationComponent::CreateAnimationLuaBind(sol::state& lua
 		"reset", [](AnimationComponent& anim) { 
 			anim.currentFrame = 0;
 			anim.startTime = SDL_GetTicks(); 
-		}
+		},
+		"to_string", &AnimationComponent::to_string
 	);
 }

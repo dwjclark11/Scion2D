@@ -39,12 +39,14 @@
 #include <Sounds/MusicPlayer/MusicPlayer.h>
 #include <Sounds/SoundPlayer/SoundFxPlayer.h>
 
+#include <Physics/ContactListener.h>
+
 namespace SCION_EDITOR {
 
     bool Application::Initialize()
     {
 		SCION_INIT_LOGS(true, true);
-
+		// TODO: LOAD CORE ENGINE DATA
 		// Init SDL
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		{
@@ -110,11 +112,13 @@ namespace SCION_EDITOR {
 
 		auto renderer = std::make_shared<SCION_RENDERING::Renderer>();
 
-
 		// Enable Alpha Blending
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+		renderer->SetCapability(SCION_RENDERING::Renderer::GLCapability::BLEND, true);
+		renderer->SetBlendCapability(
+			SCION_RENDERING::Renderer::BlendingFactors::SRC_ALPHA,
+			SCION_RENDERING::Renderer::BlendingFactors::ONE_MINUS_SRC_ALPHA
+		);
+		
 		auto assetManager = std::make_shared<SCION_RESOURCES::AssetManager>();
 		if (!assetManager)
 		{
@@ -272,6 +276,15 @@ namespace SCION_EDITOR {
 			return false;
 		}
 
+		auto pContactListener = std::make_shared<SCION_PHYSICS::ContactListener>();
+
+		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>(pContactListener))
+		{
+			SCION_ERROR("Failed to add the contact listener to the registry context!");
+			return false;
+		}
+
+		pPhysicsWorld->SetContactListener(pContactListener.get());
 
 		if (!LoadShaders())
 		{
@@ -457,15 +470,10 @@ namespace SCION_EDITOR {
 		auto circleShader = assetManager->GetShader("circle");
 		auto fontShader = assetManager->GetShader("font");
 
-		glViewport(
-			0, 0,
-			m_pWindow->GetWidth(),
-			m_pWindow->GetHeight()
-		);
-
-		glClearColor(0.f, 0.f, 0.f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
+		renderer->SetViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
+		renderer->SetClearColor(0.f, 0.f, 0.f, 1.f);
+		renderer->ClearBuffers(true, false, false);
+		
 		auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
 		scriptSystem->Render();
 		renderSystem->Update();

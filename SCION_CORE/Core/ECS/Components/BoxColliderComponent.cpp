@@ -1,5 +1,17 @@
 #include "BoxColliderComponent.h"
 #include <entt.hpp>
+std::string SCION_CORE::ECS::BoxColliderComponent::to_string() const
+{
+	std::stringstream ss;
+	ss <<
+		"==== Box Collider Component ==== \n" << std::boolalpha <<
+		"Width: " << width << "\n" <<
+		"Height: " << height << "\n" <<
+		"Offset: [ x = " << offset.x << ", y = " << offset.y << "]" << "\n";
+
+	return ss.str();
+}
+
 void SCION_CORE::ECS::BoxColliderComponent::CreateLuaBoxColliderBind(sol::state& lua)
 {
 	lua.new_usertype<BoxColliderComponent>(

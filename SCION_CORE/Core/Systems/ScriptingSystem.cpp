@@ -15,12 +15,14 @@
 #include "../Scripting/SoundBindings.h"
 #include "../Scripting/RendererBindings.h"
 #include "../Scripting/UserDataBindings.h"
+#include "../Scripting/ContactListenerBind.h"
 
 #include "../Resources/AssetManager.h"
 #include <Logger/Logger.h>
 #include <ScionUtilities/Timer.h>
 #include <ScionUtilities/RandomGenerator.h>
 #include "../CoreUtilities/CoreEngineData.h"
+#include "../CoreUtilities/CoreUtilities.h"
 #include "../CoreUtilities/FollowCamera.h"
 
 using namespace SCION_CORE::ECS;
@@ -167,6 +169,7 @@ namespace SCION_CORE::Systems {
 		SCION_CORE::Scripting::SoundBinder::CreateSoundBind(lua, registry);
 		SCION_CORE::Scripting::RendererBinder::CreateRenderingBind(lua, registry);
 		SCION_CORE::Scripting::UserDataBinder::CreateLuaUserData(lua);
+		SCION_CORE::Scripting::ContactListenerBinder::CreateLuaContactListener(lua, registry.GetRegistry());
 
 		SCION_CORE::FollowCamera::CreateLuaFollowCamera(lua, registry);
 		create_timer(lua);
@@ -267,6 +270,12 @@ namespace SCION_CORE::Systems {
 			sol::constructors<SCION_UTIL::RandomGenerator(uint32_t, uint32_t), SCION_UTIL::RandomGenerator()>(),
 			"get_float", &SCION_UTIL::RandomGenerator::GetFloat,
 			"get_int", &SCION_UTIL::RandomGenerator::GetInt
+		);
+
+		lua.set_function("S2D_EntityInView", [&](const TransformComponent& transform, float width, float height) {
+			auto& camera = registry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
+			return SCION_CORE::EntityInView(transform, width, height, *camera);
+			}
 		);
 	}
 }

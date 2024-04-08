@@ -1,5 +1,16 @@
 #include "CircleColliderComponent.h"
 #include <entt.hpp>
+std::string SCION_CORE::ECS::CircleColliderComponent::to_string() const
+{
+	std::stringstream ss;
+	ss <<
+		"==== Circle Collider Component ==== \n" << std::boolalpha <<
+		"Radius: " << radius<< "\n" <<
+		"Offset: [ x = " << offset.x << ", y = " << offset.y << "]" << "\n";
+
+	return ss.str();
+}
+
 void SCION_CORE::ECS::CircleColliderComponent::CreateLuaCircleColliderBind(sol::state& lua)
 {
 	lua.new_usertype<CircleColliderComponent>(

@@ -9,6 +9,8 @@ namespace SCION_CORE::ECS {
 		glm::vec2 offset{glm::vec2{0}};
 		bool bColliding{ false };
 
+		[[nodiscard]] std::string to_string() const;
+
 		static void CreateLuaBoxColliderBind(sol::state& lua);
 	};
 }

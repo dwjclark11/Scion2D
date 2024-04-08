@@ -119,6 +119,20 @@ namespace SCION_RESOURCES {
         return true;
     }
 
+    bool AssetManager::AddShaderFromMemory(const std::string& shaderName, const char* vertexShader, const char* fragShader)
+    {
+        if (m_mapShader.find(shaderName) != m_mapShader.end())
+        {
+            SCION_ERROR("Failed to add shader - [{0}] -- Already exists!", shaderName);
+            return false;
+        }
+
+        auto shader = std::move(SCION_RENDERING::ShaderLoader::CreateFromMemory(vertexShader, fragShader));
+        m_mapShader.insert(std::make_pair(shaderName, std::move(shader)));
+
+        return true;
+    }
+
     std::shared_ptr<SCION_RENDERING::Shader> AssetManager::GetShader(const std::string& shaderName)
     {
         auto shaderItr = m_mapShader.find(shaderName);

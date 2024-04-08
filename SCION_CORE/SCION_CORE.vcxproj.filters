@@ -96,6 +96,15 @@
     <ClInclude Include="Core\Scripting\UserDataBindings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core\CoreUtilities\CoreUtilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ECS\Components\AllComponents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Scripting\ContactListenerBind.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\ECS\Registry.cpp">
@@ -171,6 +180,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Scripting\UserDataBindings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CoreUtilities\CoreUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Scripting\ContactListenerBind.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
