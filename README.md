@@ -28,7 +28,7 @@ The documentation is still a work in progress; however, you can check it out her
 Box2D needs to be installed on your machine and linked to your project.
 * Install Box2D
   * I used VCPKG for the Box2D install in the video.
-    * ```vcpkg install box2d:x64-windows```
+    * ```vcpkg install box2d:x64-windows-static```
   * If you don't use vcpkg, please see the build instructions here:
     * https://github.com/erincatto/box2d#building  
 
