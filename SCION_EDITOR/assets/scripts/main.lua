@@ -183,9 +183,19 @@ main = {
 			
 			local uda, udb = ContactListener.get_user_data()
 			if uda and udb then 
-				--print("USER A: " ..uda:to_string())
-				--print("USER B: " ..udb:to_string())
-				gCollisionEvent:EmitEvent(uda, udb)
+			-- [[
+			print("uda: Tag: " ..uda.tag ..", Group: " ..uda.group)
+			for k, v in pairs(uda.contactEntities) do 
+				
+				print("uda contacts: Tag: " ..v.tag ..", Group: " ..v.group)
+			end
+
+			print("udb: Tag: " ..udb.tag ..", Group: " ..udb.group)
+			for k, v in pairs(udb.contactEntities) do 
+				print("udb contacts: Tag: " ..v.tag ..", Group: " ..v.group)
+			end
+			--]]
+				--gCollisionEvent:EmitEvent(uda, udb)
 			end 
 
 		end

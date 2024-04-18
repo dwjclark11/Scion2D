@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir).\Dependencies\box2d\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\Dependencies\box2d\include;$(SolutionDir).\SCION_LOGGER\Logger;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir).\Dependencies\box2d\lib\debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir).\Dependencies\box2d\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\Dependencies\box2d\include;$(SolutionDir).\SCION_LOGGER\Logger;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir).\Dependencies\box2d\lib\release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -152,6 +152,12 @@
   <ItemGroup>
     <ClCompile Include="Physics\Box2DWrappers.cpp" />
     <ClCompile Include="Physics\ContactListener.cpp" />
+    <ClCompile Include="Physics\UserData.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SCION_LOGGER\SCION_LOGGER.vcxproj">
+      <Project>{fd6b5ddd-ab4d-42fd-94d1-743406818fd7}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
