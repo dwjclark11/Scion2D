@@ -41,6 +41,14 @@
 
 #include <Physics/ContactListener.h>
 
+// IMGUI TESTING
+// ===================================
+#include <imgui.h>
+#include <backends/imgui_impl_sdl2.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <SDL_opengl.h>
+// ===================================
+
 namespace SCION_EDITOR {
 
     bool Application::Initialize()
@@ -82,7 +90,7 @@ namespace SCION_EDITOR {
 			"Physics Test", 
 			640, 480, 
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-			true, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+			true, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_CAPTURE);
 
 		if (!m_pWindow->GetWindow())
 		{
@@ -286,6 +294,12 @@ namespace SCION_EDITOR {
 
 		pPhysicsWorld->SetContactListener(pContactListener.get());
 
+		if (!InitImGui())
+		{
+			SCION_ERROR("Failed to initialize ImGui!");
+			return false;
+		}
+
 		if (!LoadShaders())
 		{
 			SCION_ERROR("Failed to load the shaders!");
@@ -295,12 +309,13 @@ namespace SCION_EDITOR {
 		SCION_CORE::Systems::ScriptingSystem::RegisterLuaBindings(*lua, *m_pRegistry);
 		SCION_CORE::Systems::ScriptingSystem::RegisterLuaFunctions(*lua, *m_pRegistry);
 
+		
 		if (!scriptSystem->LoadMainScript(*lua))
 		{
 			SCION_ERROR("Failed to load the main lua script!");
 			return false;
 		}
-
+		
 		renderer->SetLineWidth(4.f);
 
 		// Temp Load pixel font
@@ -360,6 +375,8 @@ namespace SCION_EDITOR {
 		// Process Events
 		while (SDL_PollEvent(&m_Event))
 		{
+			ImGui_ImplSDL2_ProcessEvent(&m_Event);
+
 			switch (m_Event.type)
 			{
 			case SDL_QUIT:
@@ -480,6 +497,10 @@ namespace SCION_EDITOR {
 		renderShapeSystem->Update();
 		renderUISystem->Update(m_pRegistry->GetRegistry());
 
+		Begin();
+		RenderImGui();
+		End();
+
 		renderer->DrawLines(*shader, *camera);
 		renderer->DrawFilledRects(*shader, *camera);
 		renderer->DrawCircles(*circleShader, *camera);
@@ -494,6 +515,73 @@ namespace SCION_EDITOR {
     {
 		SDL_Quit();
     }
+
+	bool Application::InitImGui()
+	{
+		const char* glslVersion = "#version 450";
+		IMGUI_CHECKVERSION();
+
+		if (!ImGui::CreateContext())
+		{
+			SCION_ERROR("Failed to create ImGui Context");
+			return false;
+		}
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+		io.ConfigWindowsMoveFromTitleBarOnly = true;
+
+		if (!ImGui_ImplSDL2_InitForOpenGL(
+			m_pWindow->GetWindow().get(),
+			m_pWindow->GetGLContext()
+		))
+		{
+			SCION_ERROR("Failed to intialize ImGui SDL2 for OpenGL!");
+			return false;
+		}
+
+		if (!ImGui_ImplOpenGL3_Init(glslVersion))
+		{
+			SCION_ERROR("Failed to intialize ImGui OpenGL3!");
+			return false;
+		}
+
+		return true;
+	}
+
+	void Application::Begin()
+	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL2_NewFrame();
+		ImGui::NewFrame();
+	}
+
+	void Application::End()
+	{
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		ImGuiIO& io = ImGui::GetIO();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			SDL_GLContext backupContext = SDL_GL_GetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			
+			SDL_GL_MakeCurrent(
+				m_pWindow->GetWindow().get(),
+				backupContext
+			);
+		}
+	}
+
+	void Application::RenderImGui()
+	{
+		ImGui::ShowDemoWindow();
+	}
 
     Application::Application()
         : m_pWindow{nullptr}, m_pRegistry{nullptr}, m_Event{}, m_bIsRunning{true}

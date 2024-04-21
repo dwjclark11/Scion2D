@@ -183,7 +183,7 @@ main = {
 			
 			local uda, udb = ContactListener.get_user_data()
 			if uda and udb then 
-			-- [[
+			--[[
 			print("uda: Tag: " ..uda.tag ..", Group: " ..uda.group)
 			for k, v in pairs(uda.contactEntities) do 
 				

@@ -23,6 +23,13 @@ namespace SCION_EDITOR {
 
 		void CleanUp();
 
+
+		// TEMP IMGUI TESTING --> TODO: REMOVE TO OWN CLASS
+		bool InitImGui();
+		void Begin();
+		void End();
+		void RenderImGui();
+
 		Application();
 		~Application() = default;
 		Application(const Application&) = delete;
