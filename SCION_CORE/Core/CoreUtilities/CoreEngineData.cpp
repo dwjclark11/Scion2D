@@ -1,4 +1,5 @@
 #include "CoreEngineData.h"
+#include <Logger/Logger.h>
 
 namespace SCION_CORE {
 	constexpr float METERS_TO_PIXELS = 12.f;
@@ -25,6 +26,7 @@ namespace SCION_CORE {
 		auto now = std::chrono::steady_clock::now();
 		m_DeltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - m_LastUpdate).count() / 1000000.0f;
 		m_LastUpdate = now;
+		// TODO: Fix Delta Time
 	}
 
 	void CoreEngineData::SetWindowWidth(int windowWidth)

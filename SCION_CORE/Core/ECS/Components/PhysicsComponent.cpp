@@ -309,6 +309,16 @@ namespace SCION_CORE::ECS {
 
 				body->SetGravityScale(gravityScale);
 			},
+			"get_gravity_scale", [](PhysicsComponent& pc) {
+				auto body = pc.GetBody();
+				if (!body)
+				{
+					// TODO: Add Error
+					return 0.f;
+				}
+
+				return body->GetGravityScale();
+			},
 			"set_transform", [](PhysicsComponent& pc, const glm::vec2& position) {
 				auto body = pc.GetBody();
 				if (!body)
@@ -327,8 +337,55 @@ namespace SCION_CORE::ECS {
 				auto by = (position.y * p2m) - scaleHalfHeight;
 
 				body->SetTransform(b2Vec2{ bx, by }, 0.f);
+			},
+			"get_transform", [](const PhysicsComponent& pc) {
+
+			},
+			"set_body_type", [&](PhysicsComponent& pc, RigidBodyType type) {
+				auto body = pc.GetBody();
+				if (!body)
+				{
+					// TODO: Add Error
+					return;
+				}
+
+				b2BodyType bodyType = b2_dynamicBody;
+
+				switch (type)
+				{
+				case RigidBodyType::STATIC:
+					bodyType = b2_staticBody;
+					break;
+				case RigidBodyType::DYNAMIC:
+					bodyType = b2_dynamicBody;
+					break;
+				case RigidBodyType::KINEMATIC:
+					bodyType = b2_kinematicBody;
+					break;
+				default:
+					break;
+				}
+
+				body->SetType(bodyType);
+			},
+			"set_bullet", [&](PhysicsComponent& pc, bool bullet) { 
+				auto body = pc.GetBody();
+				if (!body)
+				{
+					// TODO: Add Error
+					return;
+				}
+				body->SetBullet(bullet);
+			},
+			"is_bullet", [&](PhysicsComponent& pc) {
+				auto body = pc.GetBody();
+				if (!body)
+				{
+					// TODO: Add Error
+					return false;
+				}
+				return body->IsBullet();
 			}
 		);
 	}
-
 }

@@ -22,6 +22,7 @@
 #include <Core/ECS/Components/CircleColliderComponent.h>
 
 #include <Core/Resources/AssetManager.h>
+#include <Core/CoreUtilities/CoreEngineData.h>
 
 #include <Core/Systems/ScriptingSystem.h>
 #include <Core/Systems/RenderSystem.h>
@@ -425,8 +426,7 @@ namespace SCION_EDITOR {
 				switch (m_Event.window.event)
 				{
 				case SDL_WINDOWEVENT_SIZE_CHANGED:
-					m_pWindow->SetWidth(m_Event.window.data1);
-					m_pWindow->SetHeight(m_Event.window.data2);
+					m_pWindow->SetSize(m_Event.window.data1, m_Event.window.data2);
 					break;
 				default:
 					break;
@@ -439,6 +439,9 @@ namespace SCION_EDITOR {
 
     void Application::Update()
     {
+		auto& engineData = SCION_CORE::CoreEngineData::GetInstance();
+		engineData.UpdateDeltaTime();
+
 		auto& camera = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
 		if (!camera)
 		{
