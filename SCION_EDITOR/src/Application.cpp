@@ -11,6 +11,7 @@
 #include <Rendering/Essentials/Vertex.h>
 #include <Rendering/Core/Camera2D.h>
 #include <Rendering/Core/Renderer.h>
+#include <Rendering/Buffers/Framebuffer.h>
 
 #include <Logger/Logger.h>
 #include <Core/ECS/Entity.h>
@@ -50,6 +51,8 @@
 #include <SDL_opengl.h>
 // ===================================
 
+#include "editor/displays/SceneDisplay.h"
+
 namespace SCION_EDITOR {
 
     bool Application::Initialize()
@@ -86,12 +89,15 @@ namespace SCION_EDITOR {
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
+		SDL_DisplayMode displayMode;
+		SDL_GetCurrentDisplayMode(0, &displayMode);
+
 		// Create the Window
 		m_pWindow = std::make_unique<SCION_WINDOWING::Window>(
 			"Physics Test", 
-			640, 480, 
+			displayMode.w, displayMode.h,
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-			true, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_CAPTURE);
+			true, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_CAPTURE | SDL_WINDOW_MAXIMIZED);
 
 		if (!m_pWindow->GetWindow())
 		{
@@ -326,6 +332,33 @@ namespace SCION_EDITOR {
 			return false;
 		}
 
+		// CREATE TEMP FRAMEBUFFER
+		auto pFramebuffer = std::make_shared<SCION_RENDERING::Framebuffer>(640, 480, true);
+		
+		if (!pFramebuffer)
+		{
+			SCION_ERROR("Failed to Create test framebuffer!");
+			return false;
+		}
+
+		if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_RENDERING::Framebuffer>>(pFramebuffer))
+		{
+			SCION_ERROR("Failed add test framebuffer to registry context!");
+			return false;
+		}
+
+		auto pSceneDisplay = std::make_shared<SceneDisplay>(*m_pRegistry);
+		if (!pSceneDisplay)
+		{
+			SCION_ERROR("Failed to Create test SceneDisplay!");
+			return false;
+		}
+
+		if (!m_pRegistry->AddToContext<std::shared_ptr<SceneDisplay>>(pSceneDisplay))
+		{
+			SCION_ERROR("Failed add test pSceneDisplay to registry context!");
+			return false;
+		}
 
 		return true;
     }
@@ -489,28 +522,35 @@ namespace SCION_EDITOR {
 		auto shader = assetManager->GetShader("color");
 		auto circleShader = assetManager->GetShader("circle");
 		auto fontShader = assetManager->GetShader("font");
-
-		renderer->SetViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
-		renderer->SetClearColor(0.f, 0.f, 0.f, 1.f);
-		renderer->ClearBuffers(true, false, false);
-		
 		auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
+
+		const auto& fb = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Framebuffer>>();
+
+		fb->Bind();
+		renderer->SetViewport(0, 0, fb->Width(), fb->Height());
+		renderer->SetClearColor(0.f, 0.f, 0.f, 1.f);
+		renderer->ClearBuffers(true, true, false);
+		
+		
 		scriptSystem->Render();
 		renderSystem->Update();
 		renderShapeSystem->Update();
 		renderUISystem->Update(m_pRegistry->GetRegistry());
 
+		fb->Unbind();
+
 		Begin();
 		RenderImGui();
 		End();
 
-		renderer->DrawLines(*shader, *camera);
+		/*renderer->DrawLines(*shader, *camera);
 		renderer->DrawFilledRects(*shader, *camera);
 		renderer->DrawCircles(*circleShader, *camera);
-		renderer->DrawAllText(*fontShader, *camera);
+		renderer->DrawAllText(*fontShader, *camera);*/
+
+		fb->CheckResize();
 
 		SDL_GL_SwapWindow(m_pWindow->GetWindow().get());
-
 		renderer->ClearPrimitives();
     }
 
@@ -583,6 +623,11 @@ namespace SCION_EDITOR {
 
 	void Application::RenderImGui()
 	{
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
+		auto& pSceneDisplay = m_pRegistry->GetContext<std::shared_ptr<SceneDisplay>>();
+		pSceneDisplay->Draw();
+
 		ImGui::ShowDemoWindow();
 	}
 

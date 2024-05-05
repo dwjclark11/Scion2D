@@ -148,6 +148,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Rendering\Buffers\Framebuffer.h" />
     <ClInclude Include="Rendering\Core\Batcher.h" />
     <ClInclude Include="Rendering\Core\BatchRenderer.h" />
     <ClInclude Include="Rendering\Core\Camera2D.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="Rendering\Essentials\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Rendering\Buffers\Framebuffer.cpp" />
     <ClCompile Include="Rendering\Core\BatchRenderer.cpp" />
     <ClCompile Include="Rendering\Core\Camera2D.cpp" />
     <ClCompile Include="Rendering\Core\CircleBatchRenderer.cpp" />

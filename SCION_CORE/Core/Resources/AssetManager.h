@@ -38,7 +38,7 @@ namespace SCION_RESOURCES {
 		* @return Returns true if the texture was created and loaded successfully, false otherwise.
 		*/
 		bool AddTexture(const std::string& textureName, const std::string& texturePath, bool pixelArt = true);
-
+		bool AddTextureFromMemory(const std::string& textureName, const unsigned char* imageData, size_t length, bool pixelArt = true);
 		/*
 		* @brief Checks to see if the texture exists based on the name and returns a std::shared_ptr<Texture>.
 		* @param An std::string for the texture name to lookup.

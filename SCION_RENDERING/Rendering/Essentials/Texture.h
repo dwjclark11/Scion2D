@@ -5,7 +5,7 @@
 namespace SCION_RENDERING {
 	class Texture
 	{
-	public: enum class TextureType { PIXEL = 0, BLENDED, NONE};
+	public: enum class TextureType { PIXEL = 0, BLENDED, FRAMEBUFFER, NONE};
 	private:
 		GLuint m_TextureID;
 		int m_Width, m_Height;
