@@ -195,6 +195,8 @@
     <ClInclude Include="Core\Scripting\RendererBindings.h" />
     <ClInclude Include="Core\Scripting\SoundBindings.h" />
     <ClInclude Include="Core\Scripting\UserDataBindings.h" />
+    <ClInclude Include="Core\States\State.h" />
+    <ClInclude Include="Core\States\StateStack.h" />
     <ClInclude Include="Core\Systems\AnimationSystem.h" />
     <ClInclude Include="Core\Systems\PhysicsSystem.h" />
     <ClInclude Include="Core\Systems\RenderShapeSystem.h" />
@@ -224,6 +226,8 @@
     <ClCompile Include="Core\Scripting\RendererBindings.cpp" />
     <ClCompile Include="Core\Scripting\SoundBindings.cpp" />
     <ClCompile Include="Core\Scripting\UserDataBindings.cpp" />
+    <ClCompile Include="Core\States\State.cpp" />
+    <ClCompile Include="Core\States\StateStack.cpp" />
     <ClCompile Include="Core\Systems\AnimationSystem.cpp" />
     <ClCompile Include="Core\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="Core\Systems\RenderShapeSystem.cpp" />

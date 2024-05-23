@@ -25,6 +25,10 @@
 #include "../CoreUtilities/CoreUtilities.h"
 #include "../CoreUtilities/FollowCamera.h"
 
+#include "../States/State.h"
+#include "../States/StateStack.h"
+
+
 using namespace SCION_CORE::ECS;
 using namespace SCION_RESOURCES;
 
@@ -173,6 +177,9 @@ namespace SCION_CORE::Systems {
 
 		SCION_CORE::FollowCamera::CreateLuaFollowCamera(lua, registry);
 		create_timer(lua);
+
+		SCION_CORE::State::CreateLuaStateBind(lua);
+		SCION_CORE::StateStack::CreateLuaStateStackBind(lua);
 
 		Registry::CreateLuaRegistryBind(lua, registry);
 		Entity::CreateLuaEntityBind(lua, registry);
