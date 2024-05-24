@@ -94,7 +94,7 @@ namespace SCION_EDITOR {
 
 		// Create the Window
 		m_pWindow = std::make_unique<SCION_WINDOWING::Window>(
-			"Physics Test", 
+			"SCION 2D", 
 			displayMode.w, displayMode.h,
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			true, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_CAPTURE | SDL_WINDOW_MAXIMIZED);
@@ -488,11 +488,7 @@ namespace SCION_EDITOR {
 		scriptSystem->Update();
 
 		auto& pPhysicsWorld = m_pRegistry->GetContext<SCION_PHYSICS::PhysicsWorld>();
-		pPhysicsWorld->Step(
-			1.f/60.f,
-			8,
-			3
-		);
+		pPhysicsWorld->Step( 1.f/60.f, 8, 3 );
 		
 		auto& pPhysicsSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::PhysicsSystem>>();
 		pPhysicsSystem->Update(m_pRegistry->GetRegistry());
@@ -519,9 +515,6 @@ namespace SCION_EDITOR {
 		auto& renderer = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
 		auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<SCION_RESOURCES::AssetManager>>();
 
-		auto shader = assetManager->GetShader("color");
-		auto circleShader = assetManager->GetShader("circle");
-		auto fontShader = assetManager->GetShader("font");
 		auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
 
 		const auto& fb = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Framebuffer>>();
@@ -539,19 +532,15 @@ namespace SCION_EDITOR {
 
 		fb->Unbind();
 
+		renderer->SetClearColor(0.f, 0.f, 0.f, 1.f);
+		renderer->ClearBuffers(true, true, false);
+
 		Begin();
 		RenderImGui();
 		End();
 
-		/*renderer->DrawLines(*shader, *camera);
-		renderer->DrawFilledRects(*shader, *camera);
-		renderer->DrawCircles(*circleShader, *camera);
-		renderer->DrawAllText(*fontShader, *camera);*/
-
 		fb->CheckResize();
-
 		SDL_GL_SwapWindow(m_pWindow->GetWindow().get());
-		renderer->ClearPrimitives();
     }
 
     void Application::CleanUp()
