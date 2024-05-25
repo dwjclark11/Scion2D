@@ -39,7 +39,7 @@
     <None Include="assets\scripts\asteroids\game_data.lua" />
     <None Include="assets\scripts\asteroids\hud.lua" />
     <None Include="assets\scripts\asteroids\script_list.lua" />
-    <None Include="assets\scripts\utilities.lua" />
+    <None Include="assets\scripts\utilities\utilities.lua" />
     <None Include="assets\scripts\TestProject\assetDefs.lua" />
     <None Include="assets\shaders\colorShader.vert" />
     <None Include="assets\shaders\colorShader.frag" />
@@ -47,17 +47,20 @@
     <None Include="assets\shaders\circleShader.frag" />
     <None Include="assets\shaders\fontShader.vert" />
     <None Include="assets\shaders\fontShader.frag" />
-    <None Include="assets\scripts\follow_cam.lua" />
-    <None Include="assets\scripts\lua_test_scripts.lua" />
+    <None Include="assets\scripts\utilities\follow_cam.lua" />
+    <None Include="assets\scripts\utilities\lua_test_scripts.lua" />
     <None Include="assets\scripts\events\event_manager.lua" />
     <None Include="assets\scripts\events\collision_event.lua" />
     <None Include="assets\scripts\systems\trigger_system.lua" />
+    <None Include="assets\scripts\game_states\game_state.lua" />
+    <None Include="assets\scripts\game_states\title_state.lua" />
+    <None Include="assets\scripts\utilities\scene_dimmer.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="assets\scripts\rain_generator.lua">
+    <ClInclude Include="assets\scripts\utilities\rain_generator.lua">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\editor\displays\SceneDisplay.h">

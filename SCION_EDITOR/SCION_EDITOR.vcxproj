@@ -190,12 +190,15 @@
     <None Include="assets\scripts\asteroids\utilities.lua" />
     <None Include="assets\scripts\events\collision_event.lua" />
     <None Include="assets\scripts\events\event_manager.lua" />
-    <None Include="assets\scripts\follow_cam.lua" />
-    <None Include="assets\scripts\lua_test_scripts.lua" />
+    <None Include="assets\scripts\utilities\follow_cam.lua" />
+    <None Include="assets\scripts\game_states\game_state.lua" />
+    <None Include="assets\scripts\game_states\title_state.lua" />
+    <None Include="assets\scripts\utilities\lua_test_scripts.lua" />
     <None Include="assets\scripts\main.lua" />
     <None Include="assets\scripts\systems\trigger_system.lua" />
     <None Include="assets\scripts\TestProject\assetDefs.lua" />
-    <None Include="assets\scripts\utilities.lua" />
+    <None Include="assets\scripts\utilities\scene_dimmer.lua" />
+    <None Include="assets\scripts\utilities\utilities.lua" />
     <None Include="assets\shaders\basicShader.frag" />
     <None Include="assets\shaders\basicShader.vert" />
     <None Include="assets\shaders\circleShader.frag" />
@@ -206,7 +209,7 @@
     <None Include="assets\shaders\fontShader.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="assets\scripts\rain_generator.lua" />
+    <ClInclude Include="assets\scripts\utilities\rain_generator.lua" />
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\editor\displays\SceneDisplay.h" />
   </ItemGroup>
