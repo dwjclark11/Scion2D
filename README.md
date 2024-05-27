@@ -11,26 +11,21 @@ The documentation is still a work in progress; however, you can check it out her
 [Scion2D Docs](https://dwjclark11.github.io/Scion2D_Docs/)
 
 ## Build
-* Under construction
-* Eventually I would like to do a cmake or premake setup for the build; however, if you are building from the ```.sln``` make sure that you set the ```start-up project``` to the ```SCION_EDITOR```. **Right click on project -> Set as Startup Project.**
+
+* Install dependencies `./vcpkg install glm entt sdl2[alsa] sdl2-mixer box2d lua sol2`
+  * Linux `apt-get install python-jinja2`
+* Clone the repository `git clone https://github.com/dwjclark11/Scion2D.git`
+* Get into `Scion2D` directory and run `cmake -S . -B build`
 * Also, in the main.lua file for the editor, comment out the loaded assets and files that don't exist. They will just error out.
 * In the ```Application.cpp```, change the loading of the fonts to a .ttf file at a given location for your engine.
 ```cpp
-		// Temp Load pixel font // Change this to the font you use and its path
-		if (!assetManager->AddFont("pixel", "./assets/fonts/pixel.ttf"))
-		{
-			SCION_ERROR("Failed to load pixel font!");
-			return false;
-		}
-```
-* I will start working on the cmake/premake soon. Thanks.
-
-Box2D needs to be installed on your machine and linked to your project.
-* Install Box2D
-  * I used VCPKG for the Box2D install in the video.
-    * ```vcpkg install box2d:x64-windows-static```
-  * If you don't use vcpkg, please see the build instructions here:
-    * https://github.com/erincatto/box2d#building  
+// Temp Load pixel font // Change this to the font you use and its path
+if (!assetManager->AddFont("pixel", "./assets/fonts/pixel.ttf"))
+{
+  SCION_ERROR("Failed to load pixel font!");
+  return false;
+}
+``` 
 
 ## Dependencies
 **SDL2**

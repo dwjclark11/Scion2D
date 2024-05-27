@@ -1,5 +1,4 @@
 #define SDL_MAIN_HANDLED 1
-#define NOMINMAX
 
 #include "Application.h"
 

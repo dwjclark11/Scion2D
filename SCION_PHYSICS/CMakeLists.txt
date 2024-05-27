@@ -1,0 +1,13 @@
+add_library(SCION_PHYSICS
+    "include/Physics/Box2DWrappers.h"
+    "src/Box2DWrappers.cpp"
+    "include/Physics/ContactListener.h"
+    "src/ContactListener.cpp"
+    "include/Physics/UserData.h"
+    "src/UserData.cpp")
+
+target_include_directories(
+    SCION_PHYSICS PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(SCION_PHYSICS
+    PRIVATE SCION_LOGGER
+    PUBLIC box2d::box2d)

@@ -159,8 +159,7 @@ namespace SCION_EDITOR {
 			return false;
 		}
 
-		lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::table, sol::lib::io, sol::lib::string);
-
+		lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::table, sol::lib::io, sol::lib::string, sol::lib::package);
 		if (!m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua))
 		{
 			SCION_ERROR("Failed to add the sol::state to the registry context!");
