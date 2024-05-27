@@ -159,7 +159,12 @@ namespace SCION_EDITOR {
 			return false;
 		}
 
-		lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::table, sol::lib::io, sol::lib::string);
+		lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::table, sol::lib::io, sol::lib::string, sol::lib::package);
+		/*
+		const auto scriptLibraryPath = std::filesystem::current_path() / "assets/";
+		(*lua)["package"]["path"] =
+			std::format("{}?.lua;", scriptLibraryPath.lexically_normal().string());
+		*/
 
 		if (!m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua))
 		{
