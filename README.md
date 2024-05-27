@@ -12,7 +12,8 @@ The documentation is still a work in progress; however, you can check it out her
 
 ## Build
 
-* Install dependencies `./vcpkg install glm entt sdl2 sdl2-mixer box2d lua sol2`
+* Install dependencies `./vcpkg install glm entt sdl2[alsa] sdl2-mixer box2d lua sol2`
+  * Linux `apt-get install python-jinja2`
 * Clone the repository `git clone https://github.com/dwjclark11/Scion2D.git`
 * Get into `Scion2D` directory and run `cmake -S . -B build`
 * Also, in the main.lua file for the editor, comment out the loaded assets and files that don't exist. They will just error out.

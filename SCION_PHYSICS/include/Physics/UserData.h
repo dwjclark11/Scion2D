@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <any>
 #include <string>
 #include <sstream>

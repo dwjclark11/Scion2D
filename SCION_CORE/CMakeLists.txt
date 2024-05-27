@@ -74,5 +74,7 @@ add_library(SCION_CORE
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(SCION_CORE PUBLIC
-    glm::glm EnTT::EnTT SDL2::SDL2 sol2
+    glm::glm EnTT::EnTT sol2
+    $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
     SCION_LOGGER SCION_UTILITIES SCION_PHYSICS SCION_RENDERING SCION_SOUNDS SCION_WINDOW)

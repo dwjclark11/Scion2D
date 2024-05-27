@@ -5,7 +5,6 @@
 #include <vector>
 #include <cassert>
 
-#define VA_ARGS(...) , ##__VA_ARGS__
 
 /*
 * @brief Variadic Macro for logging Information. This macro takes in a string message, followed by the
@@ -16,7 +15,7 @@
 #ifdef _WIN32
 #define SCION_LOG(x, ...) SCION_LOGGER::Logger::GetInstance().Log(x, __VA_ARGS__)
 #else
-#define SCION_LOG(x, ...) SCION_LOGGER::Logger::GetInstance().Log(x VA_ARGS(__VA_ARGS__))
+#define SCION_LOG(x, ...) SCION_LOGGER::Logger::GetInstance().Log(x, ##__VA_ARGS__)
 #endif 
 
 /*
@@ -27,8 +26,8 @@
 */
 #ifdef _WIN32
 #define SCION_WARN(x, ...) SCION_LOGGER::Logger::GetInstance().Warn(x, __VA_ARGS__)
-#else 
-#define SCION_WARN(x, ...) SCION_LOGGER::Logger::GetInstance().Warn(x VA_ARGS(__VA_ARGS__))
+#else
+#define SCION_WARN(x, ...) SCION_LOGGER::Logger::GetInstance().Warn(x, ##__VA_ARGS__)
 #endif
 
 /*
@@ -39,8 +38,8 @@
 */
 #ifdef _WIN32
 #define SCION_ERROR(x, ...) SCION_LOGGER::Logger::GetInstance().Error(std::source_location::current(), x, __VA_ARGS__)
-#else 
-#define SCION_ERROR(x, ...) SCION_LOGGER::Logger::GetInstance().Error(std::source_location::current(), x VA_ARGS(__VA_ARGS__))
+#else
+#define SCION_ERROR(x, ...) SCION_LOGGER::Logger::GetInstance().Error(std::source_location::current(), x, ##__VA_ARGS__)
 #endif
 
 #define SCION_ASSERT(x) assert(x);

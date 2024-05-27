@@ -1,4 +1,5 @@
 #include "Physics/UserData.h"
+#include <algorithm> // find_if
 
 namespace SCION_PHYSICS {
 	bool ObjectData::AddContact(const ObjectData& objectData)

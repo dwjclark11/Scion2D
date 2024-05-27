@@ -7,7 +7,7 @@
 #include <Rendering/Essentials/Texture.h>
 #include <Rendering/Essentials/Font.h>
 #include <Sounds/Essentials/Music.h>
-#include <Sounds/Essentials/SoundFx.h>
+#include <Sounds/Essentials/SoundFX.h>
 
 #include "Core/ECS/Registry.h"
 #include <sol/sol.hpp>
