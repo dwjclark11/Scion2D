@@ -1,0 +1,9 @@
+﻿---
+BasedOnStyle: Microsoft
+SpaceBeforeParens: Always
+SpacesInParentheses: 'false'
+SpacesInSquareBrackets: 'true'
+TabWidth: '4'
+UseTab: Always
+
+...
