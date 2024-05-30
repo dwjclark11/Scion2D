@@ -1,8 +1,17 @@
 ﻿---
 BasedOnStyle: Microsoft
-SpaceBeforeParens: Always
+AllowAllConstructorInitializersOnNextLine: 'true'
+AllowShortCaseLabelsOnASingleLine: 'true'
+AllowShortFunctionsOnASingleLine: InlineOnly
+AlwaysBreakTemplateDeclarations: 'Yes'
+BinPackArguments: 'false'
+BreakConstructorInitializers: BeforeComma
+PointerAlignment: Left
+SortIncludes: 'false'
+SpaceBeforeParens: ControlStatements
 SpacesInParentheses: 'false'
 SpacesInSquareBrackets: 'true'
+Standard: Auto
 TabWidth: '4'
 UseTab: Always
 

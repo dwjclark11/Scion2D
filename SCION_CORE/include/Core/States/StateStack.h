@@ -2,26 +2,27 @@
 #include <vector>
 #include "State.h"
 
-namespace SCION_CORE {
-	class StateStack
-	{
-	private:
-		std::vector<State> m_States{};
-		std::unique_ptr<State> m_pStateHolder{ nullptr };
+namespace SCION_CORE
+{
+class StateStack
+{
+  private:
+	std::vector<State> m_States{};
+	std::unique_ptr<State> m_pStateHolder{nullptr};
 
-	public:
-		StateStack() = default;
-		~StateStack() = default;
+  public:
+	StateStack() = default;
+	~StateStack() = default;
 
-		void Push(State& state);
-		void Pop();
-		void ChangeState(State& state);
+	void Push(State& state);
+	void Pop();
+	void ChangeState(State& state);
 
-		void Update(const float dt);
-		void Render();
+	void Update(const float dt);
+	void Render();
 
-		State& Top();
+	State& Top();
 
-		static void CreateLuaStateStackBind(sol::state& lua);
-	};
-}
+	static void CreateLuaStateStackBind(sol::state& lua);
+};
+} // namespace SCION_CORE

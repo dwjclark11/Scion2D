@@ -6,25 +6,24 @@ void SCION_CORE::State::CreateLuaStateBind(sol::state& lua)
 	lua.new_usertype<State>(
 		"State",
 		sol::call_constructor,
-		sol::factories(
-			[](const std::string& name) {
-				return State{ .name = name };
-			},
-			[](const std::string& name, sol::protected_function on_enter, sol::protected_function on_exit,
-				sol::protected_function on_update, sol::protected_function on_render, sol::protected_function handle_inputs,
-				sol::object variables) {
-					return State{
-						.name = name,
-						.on_render = on_render,
-						.on_update = on_update,
-						.on_enter = on_enter,
-						.on_exit = on_exit,
-						.handle_inputs = handle_inputs,
-						.variables = variables
-					};
-			}
-		),
-		"set_on_enter", [](State& state, sol::protected_function on_enter) {
+		sol::factories([](const std::string& name) { return State{.name = name}; },
+					   [](const std::string& name,
+						  sol::protected_function on_enter,
+						  sol::protected_function on_exit,
+						  sol::protected_function on_update,
+						  sol::protected_function on_render,
+						  sol::protected_function handle_inputs,
+						  sol::object variables) {
+						   return State{.name = name,
+										.on_render = on_render,
+										.on_update = on_update,
+										.on_enter = on_enter,
+										.on_exit = on_exit,
+										.handle_inputs = handle_inputs,
+										.variables = variables};
+					   }),
+		"set_on_enter",
+		[](State& state, sol::protected_function on_enter) {
 			if (!on_enter.valid())
 			{
 				SCION_ERROR("Failed to set the on_enter function");
@@ -32,7 +31,8 @@ void SCION_CORE::State::CreateLuaStateBind(sol::state& lua)
 			}
 			state.on_enter = on_enter;
 		},
-		"set_on_exit", [](State& state, sol::protected_function on_exit) {
+		"set_on_exit",
+		[](State& state, sol::protected_function on_exit) {
 			if (!on_exit.valid())
 			{
 				SCION_ERROR("Failed to set the on_exit function");
@@ -40,7 +40,8 @@ void SCION_CORE::State::CreateLuaStateBind(sol::state& lua)
 			}
 			state.on_exit = on_exit;
 		},
-		"set_on_update", [](State& state, sol::protected_function on_update) {
+		"set_on_update",
+		[](State& state, sol::protected_function on_update) {
 			if (!on_update.valid())
 			{
 				SCION_ERROR("Failed to set the on_update function");
@@ -48,7 +49,8 @@ void SCION_CORE::State::CreateLuaStateBind(sol::state& lua)
 			}
 			state.on_update = on_update;
 		},
-		"set_on_render", [](State& state, sol::protected_function on_render) {
+		"set_on_render",
+		[](State& state, sol::protected_function on_render) {
 			if (!on_render.valid())
 			{
 				SCION_ERROR("Failed to set the on_render function");
@@ -56,7 +58,8 @@ void SCION_CORE::State::CreateLuaStateBind(sol::state& lua)
 			}
 			state.on_render = on_render;
 		},
-		"set_handle_inputs", [](State& state, sol::protected_function handle_inputs) {
+		"set_handle_inputs",
+		[](State& state, sol::protected_function handle_inputs) {
 			if (!handle_inputs.valid())
 			{
 				SCION_ERROR("Failed to set the handle_inputs function");
@@ -64,7 +67,8 @@ void SCION_CORE::State::CreateLuaStateBind(sol::state& lua)
 			}
 			state.handle_inputs = handle_inputs;
 		},
-		"set_variable_table", [](State& state, const sol::table& table) {
+		"set_variable_table",
+		[](State& state, const sol::table& table) {
 			if (!table.valid())
 			{
 				SCION_ERROR("Failed to set the variables function");
@@ -72,8 +76,10 @@ void SCION_CORE::State::CreateLuaStateBind(sol::state& lua)
 			}
 			state.variables = table;
 		},
-		"variables", &State::variables,
-		"name", &State::name,
-		"bKillState", &State::bKillState
-	);
+		"variables",
+		&State::variables,
+		"name",
+		&State::name,
+		"bKillState",
+		&State::bKillState);
 }

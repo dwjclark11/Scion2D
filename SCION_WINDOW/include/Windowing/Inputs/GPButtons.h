@@ -1,10 +1,10 @@
 #pragma once
 /*
-*  Gamepad Button Definitions
-*  These buttons are defined based on an
-*  X_BOX style Controller and are based on
-*  the SDL_GameControllerButton values
-*/
+ *  Gamepad Button Definitions
+ *  These buttons are defined based on an
+ *  X_BOX style Controller and are based on
+ *  the SDL_GameControllerButton values
+ */
 
 constexpr int SCION_GP_BTN_UNKNOWN = -1;
 

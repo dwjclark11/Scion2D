@@ -27,8 +27,9 @@ void SCION_CORE::Scripting::SoundBinder::CreateSoundBind(sol::state& lua, SCION_
 	lua.new_usertype<MusicPlayer>(
 		"Music",
 		sol::no_constructor,
-		"play", sol::overload(
-			[&](const std::string& musicName, int loops) {
+		"play",
+		sol::overload(
+			[ & ](const std::string& musicName, int loops) {
 				auto music = assetManager->GetMusic(musicName);
 				if (!music)
 				{
@@ -37,7 +38,7 @@ void SCION_CORE::Scripting::SoundBinder::CreateSoundBind(sol::state& lua, SCION_
 				}
 				musicPlayer->Play(*music, loops);
 			},
-			[&](const std::string& musicName) {
+			[ & ](const std::string& musicName) {
 				auto music = assetManager->GetMusic(musicName);
 				if (!music)
 				{
@@ -45,24 +46,17 @@ void SCION_CORE::Scripting::SoundBinder::CreateSoundBind(sol::state& lua, SCION_
 					return;
 				}
 				musicPlayer->Play(*music, -1);
-			}
-		),
-		"stop", [&]() {
-			musicPlayer->Stop();
-		},
-		"pause", [&]() {
-			musicPlayer->Pause();
-		},
-		"resume", [&]() {
-			musicPlayer->Resume();
-		},
-		"set_volume", [&](int volume) {
-			musicPlayer->SetVolume(volume);
-		},
-		"is_playing", [&]() {
-			return musicPlayer->IsPlaying();
-		}
-	);
+			}),
+		"stop",
+		[ & ]() { musicPlayer->Stop(); },
+		"pause",
+		[ & ]() { musicPlayer->Pause(); },
+		"resume",
+		[ & ]() { musicPlayer->Resume(); },
+		"set_volume",
+		[ & ](int volume) { musicPlayer->SetVolume(volume); },
+		"is_playing",
+		[ & ]() { return musicPlayer->IsPlaying(); });
 
 	// Create the SoundFxPlayer Bindings
 	auto& soundFxPlayer = registry.GetContext<std::shared_ptr<SoundFxPlayer>>();
@@ -75,9 +69,9 @@ void SCION_CORE::Scripting::SoundBinder::CreateSoundBind(sol::state& lua, SCION_
 	lua.new_usertype<SoundFxPlayer>(
 		"Sound",
 		sol::no_constructor,
-		"play", sol::overload(
-			[&](const std::string& soundName)
-			{
+		"play",
+		sol::overload(
+			[ & ](const std::string& soundName) {
 				auto pSoundFx = assetManager->GetSoundFx(soundName);
 				if (!pSoundFx)
 				{
@@ -87,8 +81,7 @@ void SCION_CORE::Scripting::SoundBinder::CreateSoundBind(sol::state& lua, SCION_
 
 				soundFxPlayer->Play(*pSoundFx);
 			},
-			[&](const std::string& soundName, int loops, int channel)
-			{
+			[ & ](const std::string& soundName, int loops, int channel) {
 				auto pSoundFx = assetManager->GetSoundFx(soundName);
 				if (!pSoundFx)
 				{
@@ -97,10 +90,11 @@ void SCION_CORE::Scripting::SoundBinder::CreateSoundBind(sol::state& lua, SCION_
 				}
 
 				soundFxPlayer->Play(*pSoundFx, loops, channel);
-			}
-		),
-		"stop", [&](int channel) { soundFxPlayer->Stop(channel); },
-		"set_volume", [&](int channel, int volume) { soundFxPlayer->SetVolume(channel, volume); },
-		"is_playing", [&](int channel) { return soundFxPlayer->IsPlaying(channel); }
-	);
+			}),
+		"stop",
+		[ & ](int channel) { soundFxPlayer->Stop(channel); },
+		"set_volume",
+		[ & ](int channel, int volume) { soundFxPlayer->SetVolume(channel, volume); },
+		"is_playing",
+		[ & ](int channel) { return soundFxPlayer->IsPlaying(channel); });
 }

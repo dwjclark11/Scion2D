@@ -12,4 +12,3 @@ void SCION_WINDOWING::Inputs::Button::Reset()
 	bJustPressed = false;
 	bJustReleased = false;
 }
-

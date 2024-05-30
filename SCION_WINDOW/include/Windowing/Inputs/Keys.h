@@ -1,8 +1,8 @@
 #pragma once
 #include <SDL.h>
 /*
-*  The key numbers are defined based on SDLK key code values
-*/
+ *  The key numbers are defined based on SDLK key code values
+ */
 
 constexpr int KEY_UNKNOWN = -1;
 
@@ -139,10 +139,9 @@ constexpr int SCION_KEY_RALT = SDLK_RALT;
 
 // Put windows naming specific keys here
 #ifdef _WIN32
-	constexpr int SCION_KEY_LWIN = SDLK_LGUI;
-	constexpr int SCION_KEY_RWIN = SDLK_RGUI;
-#else 
-	constexpr int SCION_KEY_LGUI = SDLK_LGUI;
-	constexpr int SCION_KEY_RGUI = SDLK_RGUI;
+constexpr int SCION_KEY_LWIN = SDLK_LGUI;
+constexpr int SCION_KEY_RWIN = SDLK_RGUI;
+#else
+constexpr int SCION_KEY_LGUI = SDLK_LGUI;
+constexpr int SCION_KEY_RGUI = SDLK_RGUI;
 #endif
-
