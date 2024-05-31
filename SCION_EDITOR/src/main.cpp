@@ -6,6 +6,6 @@ int main()
 {
 	auto& app = SCION_EDITOR::Application::GetInstance();
 	app.Run();
-		
+
 	return 0;
 }
