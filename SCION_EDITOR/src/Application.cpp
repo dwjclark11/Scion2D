@@ -45,7 +45,7 @@
 
 // IMGUI TESTING
 // ===================================
-#include <imgui.h>
+#include <imgui_internal.h>
 #include <backends/imgui_impl_sdl2.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <SDL_opengl.h>
@@ -584,7 +584,22 @@ void Application::End()
 
 void Application::RenderImGui()
 {
-	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+	const auto dockSpaceId = ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+	if (static auto firstTime = true; firstTime) [[unlikely]]
+	{
+		firstTime = false;
+
+		ImGui::DockBuilderRemoveNode(dockSpaceId);
+		ImGui::DockBuilderAddNode(dockSpaceId);
+
+		auto centerNodeId = dockSpaceId;
+		const auto leftNodeId = ImGui::DockBuilderSplitNode(centerNodeId, ImGuiDir_Left, 0.2f, nullptr, &centerNodeId);
+
+		ImGui::DockBuilderDockWindow("Dear ImGui Demo", leftNodeId);
+		ImGui::DockBuilderDockWindow("Scene", centerNodeId);
+
+		ImGui::DockBuilderFinish(dockSpaceId);
+	}
 
 	auto& pSceneDisplay = m_pRegistry->GetContext<std::shared_ptr<SceneDisplay>>();
 	pSceneDisplay->Draw();
