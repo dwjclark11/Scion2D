@@ -45,8 +45,8 @@ auto Entity::RemoveComponent()
 template <typename TComponent>
 auto add_component(Entity& entity, const sol::table& comp, sol::this_state s)
 {
-	auto& component = entity.AddComponent<TComponent>(comp.valid() ? comp.as<TComponent>() : TComponent{});
-
+	auto& component = entity.AddComponent<TComponent>(comp.valid() ? std::move(comp.as<TComponent&&>()) : TComponent{});
+	
 	return sol::make_reference(s, std::ref(component));
 }
 
