@@ -34,7 +34,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 
 #### Clone the repository 
 ```
-git clone https://github.com/dwjclark11/Scion2D.git`
+git clone https://github.com/dwjclark11/Scion2D.git
 cd Scion2D
 cmake -S . -B build
 ```
