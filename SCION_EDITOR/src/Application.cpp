@@ -142,8 +142,7 @@ bool Application::Initialize()
 		SCION_ERROR("Failed to create the asset manager!");
 		return false;
 	}
-	assetManager->AddTexture("soccer_ball", "assets/textures/soccer_ball.png");
-
+	
 	m_pRegistry = std::make_unique<SCION_CORE::ECS::Registry>();
 
 	if (!m_pRegistry->AddToContext<std::shared_ptr<SCION_RENDERING::Renderer>>(renderer))
