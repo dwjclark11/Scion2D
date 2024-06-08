@@ -144,9 +144,8 @@ end
 
 function RainGenerator:ReGenerate()
 	if #self.m_RainTable == 0 then 
-		local camScale = Camera.get():scale()
-		local maxWidth = WindowWidth() * camScale
-		local maxHeight = WindowHeight() * camScale
+		local maxWidth = WindowWidth()
+		local maxHeight = WindowHeight()
 
 		local rows = maxHeight / self.m_yOffset
 		local cols = maxWidth / self.m_xOffset

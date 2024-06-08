@@ -9,7 +9,7 @@ BreakConstructorInitializers: BeforeComma
 PointerAlignment: Left
 SortIncludes: 'false'
 SpaceBeforeParens: ControlStatements
-SpacesInParentheses: 'false'
+SpacesInParentheses: 'true'
 SpacesInSquareBrackets: 'true'
 Standard: Auto
 TabWidth: '4'
