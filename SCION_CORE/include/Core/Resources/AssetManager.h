@@ -29,6 +29,8 @@ class AssetManager
 	AssetManager() = default;
 	~AssetManager() = default;
 
+	bool CreateDefaultFonts();
+
 	/*
 	 * @brief Checks to see if the texture exists, and if not, creates and loads the texture into the
 	 * asset manager.

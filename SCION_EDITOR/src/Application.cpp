@@ -329,12 +329,11 @@ bool Application::Initialize()
 
 	renderer->SetLineWidth(4.f);
 
-	// Temp Load pixel font
-	//if (!assetManager->AddFont("pixel", "./assets/fonts/pixel.ttf"))
-	//{
-	//	SCION_ERROR("Failed to load pixel font!");
-	//	return false;
-	//}
+	if (!assetManager->CreateDefaultFonts())
+	{
+		SCION_ERROR("Failed to create default fonts");
+		return false;
+	}
 
 	// CREATE TEMP FRAMEBUFFER
 	auto pFramebuffer = std::make_shared<SCION_RENDERING::Framebuffer>(640, 480, true);

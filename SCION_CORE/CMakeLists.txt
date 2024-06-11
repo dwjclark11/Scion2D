@@ -37,6 +37,7 @@ add_library(SCION_CORE
     "src/ECS/Components/TransformComponent.cpp"
 
     "include/Core/Resources/AssetManager.h"
+    "include/Core/Resources/fonts/default_fonts.h"
     "src/Resources/AssetManager.cpp"
 
     "include/Core/Scripting/ContactListenerBind.h"
@@ -57,6 +58,8 @@ add_library(SCION_CORE
     "src/States/State.cpp"
     "include/Core/States/StateStack.h"
     "src/States/StateStack.cpp"
+    "include/Core/States/StateMachine.h"
+    "src/States/StateMachine.cpp"
 
     "include/Core/Systems/AnimationSystem.h"
     "src/Systems/AnimationSystem.cpp"
@@ -69,7 +72,7 @@ add_library(SCION_CORE
     "include/Core/Systems/RenderUISystem.h"
     "src/Systems/RenderUISystem.cpp"
     "include/Core/Systems/ScriptingSystem.h"
-    "src/Systems/ScriptingSystem.cpp")
+    "src/Systems/ScriptingSystem.cpp" )
 
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

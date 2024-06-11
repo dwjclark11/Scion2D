@@ -1,15 +1,8 @@
 -- Main Lua Script!
-run_script("assets/scripts/Platformer/defs/assetDefs.lua")
-run_script("assets/scripts/Platformer/maps/test_platformer.lua")
-run_script("assets/scripts/Platformer/utilities/utilities.lua")
-run_script("assets/scripts/Platformer/utilities/rain_generator.lua")
-run_script("assets/scripts/Platformer/utilities/scene_dimmer.lua")
-run_script("assets/scripts/Platformer/events/event_manager.lua")
-run_script("assets/scripts/Platformer/events/collision_event.lua")
-run_script("assets/scripts/Platformer/systems/trigger_system.lua")
 
-run_script("assets/scripts/Platformer/game_states/title_state.lua")
-run_script("assets/scripts/Platformer/game_states/game_state.lua")
+S2D_run_script("assets/scripts/Platformer/script_list.lua")
+
+S2D_load_script_table(ScriptList)
 
 LoadAssets(AssetDefs)
 
