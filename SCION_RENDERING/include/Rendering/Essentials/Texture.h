@@ -23,8 +23,8 @@ class Texture
 
   public:
 	Texture();
-	Texture(GLuint id, int width, int height, TextureType type = TextureType::PIXEL,
-			const std::string& texturePath = "");
+	Texture( GLuint id, int width, int height, TextureType type = TextureType::PIXEL,
+			 const std::string& texturePath = "" );
 	~Texture() = default;
 
 	inline const int GetWidth() const { return m_Width; }

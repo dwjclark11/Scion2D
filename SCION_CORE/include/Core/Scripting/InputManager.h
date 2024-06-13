@@ -25,17 +25,17 @@ class InputManager
   private:
 	InputManager();
 	~InputManager() = default;
-	InputManager(const InputManager&) = delete;
-	InputManager& operator=(const InputManager&) = delete;
+	InputManager( const InputManager& ) = delete;
+	InputManager& operator=( const InputManager& ) = delete;
 
   private:
-	static void RegisterLuaKeyNames(sol::state& lua);
-	static void RegisterMouseBtnNames(sol::state& lua);
-	static void RegisterGamepadBtnNames(sol::state& lua);
+	static void RegisterLuaKeyNames( sol::state& lua );
+	static void RegisterMouseBtnNames( sol::state& lua );
+	static void RegisterGamepadBtnNames( sol::state& lua );
 
   public:
 	static InputManager& GetInstance();
-	static void CreateLuaInputBindings(sol::state& lua, SCION_CORE::ECS::Registry& registry);
+	static void CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Registry& registry );
 
 	inline Keyboard& GetKeyboard() { return *m_pKeyboard; }
 	inline Mouse& GetMouse() { return *m_pMouse; }
@@ -48,35 +48,35 @@ class InputManager
 	 * @return Returns a shared_ptr of the gamepad at the index
 	 * if exists, else returns nullptr;
 	 */
-	std::shared_ptr<Gamepad> GetController(int index);
+	std::shared_ptr<Gamepad> GetController( int index );
 
 	/*
 	 * @brief Adds a new gamepad to the map at the given index.
 	 * @param Takes in a Sint32 for the desired index.
 	 * @return Returns true if successfully added, false otherwise.
 	 */
-	bool AddGamepad(Sint32 gamepadIndex);
+	bool AddGamepad( Sint32 gamepadIndex );
 
 	/*
 	 * @brief Removes the gamepad based on the given ID
 	 * @param Takes in a Sin32 for the gamepadID
 	 * @return Returns true if the gamepad was removed successfully, false otherwise.
 	 */
-	bool RemoveGamepad(Sint32 gamepadID);
+	bool RemoveGamepad( Sint32 gamepadID );
 
 	/*
 	 * @brief Finds the Gamepad based on the values provided from the SDL_Event
 	 * and sets the Button to pressed if it exists.
 	 * @param Takes in the SDL_Event
 	 */
-	void GamepadBtnPressed(const SDL_Event& event);
+	void GamepadBtnPressed( const SDL_Event& event );
 
 	/*
 	 * @brief Finds the Gamepad based on the values provided from the SDL_Event
 	 * and sets the Button to released if it exists.
 	 * @param Takes in the SDL_Event
 	 */
-	void GamepadBtnReleased(const SDL_Event& event);
+	void GamepadBtnReleased( const SDL_Event& event );
 
 	/*
 	 * @brief Finds the Gamepad based on the values provided from the SDL_Event
@@ -84,14 +84,14 @@ class InputManager
 	 * @brief Access values are treated as analog values that have a range.
 	 * @param Takes in the SDL_Event
 	 */
-	void GamepadAxisValues(const SDL_Event& event);
+	void GamepadAxisValues( const SDL_Event& event );
 
 	/*
 	 * @brief Finds the Gamepad based on the values provided from the SDL_Event
 	 * and sets the Hat values if they exists.
 	 * @param Takes in the SDL_Event
 	 */
-	void GamepadHatValues(const SDL_Event& event);
+	void GamepadHatValues( const SDL_Event& event );
 
 	/*
 	 * @brief Updates all active gamepads

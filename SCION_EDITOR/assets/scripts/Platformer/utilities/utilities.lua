@@ -319,25 +319,25 @@ end
 function LoadAssets(assets)
 	for k, v in pairs(assets.textures) do
 		if not AssetManager.add_texture(v.name, v.path, v.pixel_art) then
-			print("Failed to load texture [" ..v.name .."] at path [" ..v.path .."]")
+			S2D_error("Failed to load texture [%s] at path [%s]",v.name, v.path)
 		else
-			print("Loaded Texture [" ..v.name .."]")
+			S2D_log("Loaded Texture [%s]", v.name)
 		end
 	end
 
 	for k, v in pairs(assets.music) do 
 		if not AssetManager.add_music(v.name, v.path) then 
-			print("Failed to load music [" ..v.name .."] at path [" ..v.path .."]")
+			S2D_error("Failed to load music [%s] at path [%s]",v.name, v.path)
 		else
-			print("Loaded music [" ..v.name .."]")
+			S2D_log("Loaded Music [%s]", v.name)
 		end
 	end
 
 	for k, v in pairs(assets.sound_fx) do
 		if not AssetManager.add_soundfx(v.name, v.path) then
-			print("Failed to load soundfx [" ..v.name .."] at path [" ..v.path .."]")
+			S2D_error("Failed to load soundfx [%s] at path [%s]",v.name, v.path)
 		else
-			print("Loaded soundfx [" ..v.name .."]")
+			S2D_log("Loaded soundfx [%s]", v.name)
 		end
 	end
 	-- TODO: Add other loading of assets as needed

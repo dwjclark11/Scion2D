@@ -14,6 +14,8 @@ add_library(SCION_CORE
     "include/Core/ECS/Registry.h"
     "include/Core/ECS/Registry.inl"
     "src/ECS/Registry.cpp"
+    "include/Core/ECS/MainRegistry.h" 
+    "src/ECS/MainRegistry.cpp"
 
     "include/Core/ECS/Components/AllComponents.h"
     "include/Core/ECS/Components/Identification.h"

@@ -8,10 +8,10 @@ class Music
 {
   private:
 	SoundParams m_Params{};
-	MusicPtr m_pMusic{nullptr};
+	MusicPtr m_pMusic{ nullptr };
 
   public:
-	Music(const SoundParams& params, MusicPtr pMusic);
+	Music( const SoundParams& params, MusicPtr pMusic );
 	~Music() = default;
 
 	inline const std::string& GetName() const { return m_Params.name; }
@@ -21,7 +21,7 @@ class Music
 
 	inline Mix_Music* GetMusicPtr() const
 	{
-		if (!m_pMusic)
+		if ( !m_pMusic )
 			return nullptr;
 		return m_pMusic.get();
 	}

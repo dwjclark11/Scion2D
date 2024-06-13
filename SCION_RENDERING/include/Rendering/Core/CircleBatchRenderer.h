@@ -17,7 +17,8 @@ class CircleBatchRenderer : public Batcher<RectBatch, CircleGlyph>
 
 	virtual void End() override;
 	virtual void Render() override;
-	void AddCircle(const glm::vec4& destRect, const Color& color, float thickness, glm::mat4 model = glm::mat4{1.0f});
-	void AddCircle(const struct Circle& circle);
+	void AddCircle( const glm::vec4& destRect, const Color& color, float thickness,
+					glm::mat4 model = glm::mat4{ 1.0f } );
+	void AddCircle( const struct Circle& circle );
 };
 } // namespace SCION_RENDERING

@@ -14,7 +14,7 @@ class StateMachine
 
   public:
 	StateMachine();
-	StateMachine(const sol::table& stateFuncs);
+	StateMachine( const sol::table& stateFuncs );
 
 	void ChangeState( const std::string& stateName, bool bRemoveState = false,
 					  const sol::object& enterParams = sol::lua_nil_t{} );
@@ -27,6 +27,5 @@ class StateMachine
 	const std::string& CurrentState() const { return m_sCurrentState; }
 
 	static void CreateLuaStateMachine( sol::state& lua );
-
 };
 } // namespace SCION_CORE

@@ -33,7 +33,7 @@ class Registry
 	 * @return Returns a reference to the newly added context.
 	 */
 	template <typename TContext>
-	TContext AddToContext(TContext context);
+	TContext AddToContext( TContext context );
 
 	/*
 	 * @brief Checks the map for the desired context variable and returns
@@ -45,17 +45,17 @@ class Registry
 	template <typename TContext>
 	TContext& GetContext();
 
-	static void CreateLuaRegistryBind(sol::state& lua, Registry& registry);
+	static void CreateLuaRegistryBind( sol::state& lua, Registry& registry );
 
 	template <typename TComponent>
 	static void RegisterMetaComponent();
 };
 
 template <typename TComponent>
-entt::runtime_view& add_component_to_view(Registry* registry, entt::runtime_view& view);
+entt::runtime_view& add_component_to_view( Registry* registry, entt::runtime_view& view );
 
 template <typename TComponent>
-entt::runtime_view& exclude_component_from_view(Registry* registry, entt::runtime_view& view);
+entt::runtime_view& exclude_component_from_view( Registry* registry, entt::runtime_view& view );
 
 } // namespace SCION_CORE::ECS
 

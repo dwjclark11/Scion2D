@@ -35,8 +35,8 @@ class SpriteBatchRenderer : public Batcher<Batch, SpriteGlyph>
 	 * @param glm::mat4 model is the model matrix to apply transformations to the sprites verticies
 	 * @param Color is the color the sprite is changed to.
 	 */
-	void AddSprite(const glm::vec4& spriteRect, const glm::vec4 uvRect, GLuint textureID, int layer = 0,
-				   glm::mat4 model = glm::mat4{1.f},
-				   const Color& color = Color{.r = 255, .g = 255, .b = 255, .a = 255});
+	void AddSprite( const glm::vec4& spriteRect, const glm::vec4 uvRect, GLuint textureID, int layer = 0,
+					glm::mat4 model = glm::mat4{ 1.f },
+					const Color& color = Color{ .r = 255, .g = 255, .b = 255, .a = 255 } );
 };
 } // namespace SCION_RENDERING

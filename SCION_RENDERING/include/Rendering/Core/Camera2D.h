@@ -17,7 +17,7 @@ class Camera2D
 
   public:
 	Camera2D();
-	Camera2D(int width, int height);
+	Camera2D( int width, int height );
 	~Camera2D() = default;
 	/*
 	 * @brief Updates the camera's position, scale,
@@ -26,15 +26,15 @@ class Camera2D
 	 */
 	void Update();
 
-	glm::vec2 ScreenCoordsToWorld(const glm::vec2& screenCoords);
-	glm::vec2 WorldCoordsToScreen(const glm::vec2& screenCoords);
+	glm::vec2 ScreenCoordsToWorld( const glm::vec2& screenCoords );
+	glm::vec2 WorldCoordsToScreen( const glm::vec2& screenCoords );
 
-	inline void SetPosition(glm::vec2 newPosition)
+	inline void SetPosition( glm::vec2 newPosition )
 	{
 		m_Position = newPosition;
 		m_bNeedsUpdate = true;
 	}
-	inline void SetScale(float scale)
+	inline void SetScale( float scale )
 	{
 		m_Scale = scale;
 		m_bNeedsUpdate = true;

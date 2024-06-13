@@ -8,11 +8,11 @@ using PhysicsWorld = std::shared_ptr<b2World>;
 
 struct BodyDestroyer
 {
-	void operator()(b2Body* body) const;
+	void operator()( b2Body* body ) const;
 };
 
-static std::shared_ptr<b2Body> MakeSharedBody(b2Body* body)
+static std::shared_ptr<b2Body> MakeSharedBody( b2Body* body )
 {
-	return std::shared_ptr<b2Body>(body, BodyDestroyer{});
+	return std::shared_ptr<b2Body>( body, BodyDestroyer{} );
 }
 } // namespace SCION_PHYSICS

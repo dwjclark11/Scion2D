@@ -11,7 +11,7 @@ class SoundFX
 	SoundFxPtr m_pSoundFx;
 
   public:
-	SoundFX(const SoundParams& params, SoundFxPtr pSoundFx);
+	SoundFX( const SoundParams& params, SoundFxPtr pSoundFx );
 	~SoundFX() = default;
 
 	inline const std::string& GetName() const { return m_Params.name; }
@@ -20,7 +20,7 @@ class SoundFX
 	inline const double GetDuration() const { return m_Params.duration; }
 	inline Mix_Chunk* GetSoundFxPtr() const
 	{
-		if (!m_pSoundFx)
+		if ( !m_pSoundFx )
 			return nullptr;
 		return m_pSoundFx.get();
 	}

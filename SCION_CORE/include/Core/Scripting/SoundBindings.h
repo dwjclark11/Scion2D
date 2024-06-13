@@ -15,6 +15,6 @@ namespace SCION_CORE::Scripting
  */
 struct SoundBinder
 {
-	static void CreateSoundBind(sol::state& lua, SCION_CORE::ECS::Registry& registry);
+	static void CreateSoundBind( sol::state& lua );
 };
 } // namespace SCION_CORE::Scripting

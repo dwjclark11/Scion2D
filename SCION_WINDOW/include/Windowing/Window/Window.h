@@ -14,21 +14,21 @@ class Window
 	Uint32 m_WindowFlags;
 
   private:
-	void CreateNewWindow(Uint32 flags);
+	void CreateNewWindow( Uint32 flags );
 
   public:
 	Window()
-		: Window("default_window", 640, 480, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, true, NULL)
+		: Window( "default_window", 640, 480, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, true, NULL )
 	{
 	}
-	Window(const std::string title, int width, int height, int x_pos, int y_pos, bool v_sync = true,
-		   Uint32 flags = (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_CAPTURE));
+	Window( const std::string title, int width, int height, int x_pos, int y_pos, bool v_sync = true,
+			Uint32 flags = ( SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_CAPTURE ) );
 	~Window() = default;
 
-	void SetPosition(int x, int y);
-	void SetSize(int width, int height);
+	void SetPosition( int x, int y );
+	void SetSize( int width, int height );
 
-	inline void SetGLContext(SDL_GLContext gl_context) { m_GLContext = gl_context; }
+	inline void SetGLContext( SDL_GLContext gl_context ) { m_GLContext = gl_context; }
 	inline SDL_GLContext& GetGLContext() { return m_GLContext; }
 	inline WindowPtr& GetWindow() { return m_pWindow; }
 	inline const std::string& GetWindowName() const { return m_sTitle; }
@@ -39,6 +39,6 @@ class Window
 	inline const int GetWidth() const { return m_Width; }
 	inline const int GetHeight() const { return m_Height; }
 
-	void SetWindowName(const std::string& name);
+	void SetWindowName( const std::string& name );
 };
 } // namespace SCION_WINDOWING

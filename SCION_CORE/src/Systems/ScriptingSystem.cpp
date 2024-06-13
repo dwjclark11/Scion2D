@@ -9,6 +9,7 @@
 #include "Core/ECS/Components/TextComponent.h"
 #include "Core/ECS/Components/RigidBodyComponent.h"
 #include "Core/ECS/Entity.h"
+#include "Core/ECS/MainRegistry.h"
 
 #include "Core/Scripting/GlmLuaBindings.h"
 #include "Core/Scripting/InputManager.h"
@@ -170,18 +171,131 @@ auto create_timer = []( sol::state& lua ) {
 							 } );
 };
 
+auto create_lua_logger = [ & ]( sol::state& lua ) {
+	auto& logger = SCION_LOGGER::Logger::GetInstance();
+
+	lua.new_usertype<SCION_LOGGER::Logger>(
+		"Logger",
+		sol::no_constructor,
+		"log",
+		[ & ]( const std::string_view message ) { logger.LuaLog( message ); },
+		"warn",
+		[ & ]( const std::string_view message ) { logger.LuaWarn( message ); },
+		"error",
+		[ & ]( const std::string_view message ) { logger.LuaError( message ); } );
+
+	auto logResult = lua.safe_script( R"(
+				function ZZZ_Log(message, ...)
+					Logger.log(string.format(message, ...))
+				end
+			)" );
+
+	if ( !logResult.valid() )
+	{
+		SCION_ERROR( "Failed to initialize lua logs" );
+	}
+
+	auto warnResult = lua.safe_script( R"(
+				function ZZZ_Warn(message, ...)
+					Logger.warn(string.format(message, ...))
+				end
+			)" );
+
+	if ( !warnResult.valid() )
+	{
+		SCION_ERROR( "Failed to initialize lua warnings" );
+	}
+
+	auto errorResult = lua.safe_script( R"(
+				function ZZZ_Error(message, ...)
+					Logger.error(string.format(message, ...))
+				end
+			)" );
+
+	if ( !errorResult.valid() )
+	{
+		SCION_ERROR( "Failed to initialize lua errors" );
+	}
+
+	lua.set_function( "S2D_log", []( const std::string& message, const sol::variadic_args& args, sol::this_state s ) {
+		try
+		{
+			sol::state_view L = s;
+			sol::protected_function log = L[ "ZZZ_Log" ];
+			auto result = log( message, args );
+			if ( !result.valid() )
+			{
+				sol::error error = result;
+				throw error;
+			}
+		}
+		catch ( const sol::error& error )
+		{
+			SCION_ERROR( "Failed to get lua log: {}", error.what() );
+		}
+	} );
+
+	lua.set_function( "S2D_warn", []( const std::string& message, const sol::variadic_args& args, sol::this_state s ) {
+		try
+		{
+			sol::state_view L = s;
+			sol::protected_function warn = L[ "ZZZ_Warn" ];
+			auto result = warn( message, args );
+			if ( !result.valid() )
+			{
+				sol::error error = result;
+				throw error;
+			}
+		}
+		catch ( const sol::error& error )
+		{
+			SCION_ERROR( "Failed to get lua warning: {}", error.what() );
+		}
+	} );
+
+	lua.set_function( "S2D_error", []( const std::string& message, const sol::variadic_args& args, sol::this_state s ) {
+		try
+		{
+			sol::state_view L = s;
+			sol::protected_function err = L[ "ZZZ_Error" ];
+			auto result = err( message, args );
+			if ( !result.valid() )
+			{
+				sol::error error = result;
+				throw error;
+			}
+		}
+		catch ( const sol::error& error )
+		{
+			SCION_ERROR( "Failed to get lua errors: {}", error.what() );
+		}
+	} );
+
+	auto assertResult = lua.safe_script( R"(
+				S2D_assert = assert
+				assert = function(arg1, message, ...)
+					if not arg1 then 
+						Logger.error(string.format(message, ...))
+					end 
+					S2D_assert(arg1)
+				end
+			)" );
+};
+
 void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Registry& registry )
 {
 	SCION_CORE::Scripting::GLMBindings::CreateGLMBindings( lua );
 	SCION_CORE::InputManager::CreateLuaInputBindings( lua, registry );
-	SCION_RESOURCES::AssetManager::CreateLuaAssetManager( lua, registry );
-	SCION_CORE::Scripting::SoundBinder::CreateSoundBind( lua, registry );
+	SCION_RESOURCES::AssetManager::CreateLuaAssetManager( lua );
+	SCION_CORE::Scripting::SoundBinder::CreateSoundBind( lua );
 	SCION_CORE::Scripting::RendererBinder::CreateRenderingBind( lua, registry );
 	SCION_CORE::Scripting::UserDataBinder::CreateLuaUserData( lua );
 	SCION_CORE::Scripting::ContactListenerBinder::CreateLuaContactListener( lua, registry.GetRegistry() );
 
 	SCION_CORE::FollowCamera::CreateLuaFollowCamera( lua, registry );
+
 	create_timer( lua );
+	create_lua_logger( lua );
 
 	SCION_CORE::State::CreateLuaStateBind( lua );
 	SCION_CORE::StateStack::CreateLuaStateStackBind( lua );
@@ -190,7 +304,7 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Reg
 	Registry::CreateLuaRegistryBind( lua, registry );
 	Entity::CreateLuaEntityBind( lua, registry );
 	TransformComponent::CreateLuaTransformBind( lua );
-	SpriteComponent::CreateSpriteLuaBind( lua, registry );
+	SpriteComponent::CreateSpriteLuaBind( lua );
 	AnimationComponent::CreateAnimationLuaBind( lua );
 	BoxColliderComponent::CreateLuaBoxColliderBind( lua );
 	CircleColliderComponent::CreateLuaCircleColliderBind( lua );
@@ -222,6 +336,8 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Reg
 
 void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Registry& registry )
 {
+	auto& mainRegistry = MAIN_REGISTRY();
+
 	lua.set_function( "S2D_run_script", [ & ]( const std::string& path ) {
 		try
 		{
@@ -264,9 +380,9 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 
 	lua.set_function( "S2D_get_ticks", [] { return SDL_GetTicks(); } );
 
-	auto& assetManager = registry.GetContext<std::shared_ptr<AssetManager>>();
+	auto& assetManager = mainRegistry.GetAssetManager();
 	lua.set_function( "S2D_measure_text", [ & ]( const std::string& text, const std::string& fontName ) {
-		const auto& pFont = assetManager->GetFont( fontName );
+		const auto& pFont = assetManager.GetFont( fontName );
 		if ( !pFont )
 		{
 			SCION_ERROR( "Failed to get font [{}] - Does not exist in asset manager!", fontName );

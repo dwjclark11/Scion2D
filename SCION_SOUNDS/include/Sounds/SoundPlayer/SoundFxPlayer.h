@@ -8,10 +8,10 @@ class SoundFxPlayer
 	SoundFxPlayer() = default;
 	~SoundFxPlayer() = default;
 
-	void Play(class SoundFX& soundFx);
-	void Play(class SoundFX& soundFx, int loops, int channel);
-	void SetVolume(int channel, int volume);
-	void Stop(int channel);
-	bool IsPlaying(int channel);
+	void Play( class SoundFX& soundFx );
+	void Play( class SoundFX& soundFx, int loops, int channel );
+	void SetVolume( int channel, int volume );
+	void Stop( int channel );
+	bool IsPlaying( int channel );
 };
 } // namespace SCION_SOUNDS

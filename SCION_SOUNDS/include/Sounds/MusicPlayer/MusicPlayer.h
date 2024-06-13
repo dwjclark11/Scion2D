@@ -25,7 +25,7 @@ class MusicPlayer
 	 * @param Takes a Reference to the Music and the number loops to play
 	 * the music. Use '-1' to play music indefinitely.
 	 */
-	void Play(class Music& music, int loops = 0);
+	void Play( class Music& music, int loops = 0 );
 
 	/*
 	 * @brief Pauses the current playing music.
@@ -47,7 +47,7 @@ class MusicPlayer
 	 * @param takes in an int value for the volume. The value needs
 	 * to be between [0-100] | 0 == MIN | 100 == MAX
 	 */
-	void SetVolume(int volume);
+	void SetVolume( int volume );
 
 	/*
 	 * @brief Returns true if the music channel is currently playing

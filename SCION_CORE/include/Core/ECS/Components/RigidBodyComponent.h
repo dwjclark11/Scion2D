@@ -10,11 +10,11 @@ namespace SCION_CORE::ECS
  */
 struct RigidBodyComponent
 {
-	glm::vec2 velocity{0.f};
+	glm::vec2 velocity{ 0.f };
 	// TODO: Add more members as needed
 
 	[[nodiscard]] std::string to_string();
 
-	static void CreateRigidBodyBind(sol::state& lua);
+	static void CreateRigidBodyBind( sol::state& lua );
 };
 } // namespace SCION_CORE::ECS

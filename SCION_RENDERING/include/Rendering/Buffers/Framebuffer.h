@@ -21,14 +21,14 @@ class Framebuffer
 
   public:
 	Framebuffer();
-	Framebuffer(int width, int height, bool bUseRbo);
+	Framebuffer( int width, int height, bool bUseRbo );
 	~Framebuffer();
 
 	void Bind();
 	void Unbind();
 
 	// Resizing
-	void Resize(int width, int height);
+	void Resize( int width, int height );
 	void CheckResize();
 
 	inline const GLuint GetID() const { return m_FboID; }

@@ -5,41 +5,41 @@
 namespace SCION_RENDERING
 {
 
-GLuint ShaderLoader::CreateProgram(const std::string& vertexShader, const std::string& fragmentShader)
+GLuint ShaderLoader::CreateProgram( const std::string& vertexShader, const std::string& fragmentShader )
 {
 	const GLuint program = glCreateProgram();
 
-	const GLuint vertex = CompileShader(GL_VERTEX_SHADER, vertexShader);
-	const GLuint fragment = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+	const GLuint vertex = CompileShader( GL_VERTEX_SHADER, vertexShader );
+	const GLuint fragment = CompileShader( GL_FRAGMENT_SHADER, fragmentShader );
 
-	if (vertex == 0 || fragment == 0)
+	if ( vertex == 0 || fragment == 0 )
 		return 0;
 
-	if (!LinkShaders(program, vertex, fragment))
+	if ( !LinkShaders( program, vertex, fragment ) )
 	{
-		SCION_ERROR("Failed to Link Shaders!");
+		SCION_ERROR( "Failed to Link Shaders!" );
 		return 0;
 	}
 
 	return program;
 }
 
-GLuint ShaderLoader::CompileShader(GLuint shaderType, const std::string& filepath)
+GLuint ShaderLoader::CompileShader( GLuint shaderType, const std::string& filepath )
 {
-	const GLuint shaderID = glCreateShader(shaderType);
+	const GLuint shaderID = glCreateShader( shaderType );
 
-	std::ifstream ifs(filepath);
+	std::ifstream ifs( filepath );
 
-	if (ifs.fail())
+	if ( ifs.fail() )
 	{
-		SCION_ERROR("Shader Failed to open [{}]", filepath);
+		SCION_ERROR( "Shader Failed to open [{}]", filepath );
 		return 0;
 	}
 
-	std::string contents{""};
+	std::string contents{ "" };
 	std::string line;
 
-	while (std::getline(ifs, line))
+	while ( std::getline( ifs, line ) )
 	{
 		contents += line + "\n";
 	}
@@ -47,153 +47,154 @@ GLuint ShaderLoader::CompileShader(GLuint shaderType, const std::string& filepat
 	ifs.close();
 
 	const char* contentsPtr = contents.c_str();
-	glShaderSource(shaderID, 1, &contentsPtr, nullptr);
+	glShaderSource( shaderID, 1, &contentsPtr, nullptr );
 
-	glCompileShader(shaderID);
+	glCompileShader( shaderID );
 
-	if (!CompileSuccess(shaderID))
+	if ( !CompileSuccess( shaderID ) )
 	{
-		SCION_ERROR("Failed to compile shader [{}]", filepath);
+		SCION_ERROR( "Failed to compile shader [{}]", filepath );
 		return 0;
 	}
 
 	return shaderID;
 }
 
-GLuint ShaderLoader::CreateProgram(const char* vertexShader, const char* fragmentShader)
+GLuint ShaderLoader::CreateProgram( const char* vertexShader, const char* fragmentShader )
 {
 	const GLuint program = glCreateProgram();
 
-	const GLuint vertex = CompileShader(GL_VERTEX_SHADER, vertexShader);
-	const GLuint fragment = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+	const GLuint vertex = CompileShader( GL_VERTEX_SHADER, vertexShader );
+	const GLuint fragment = CompileShader( GL_FRAGMENT_SHADER, fragmentShader );
 
-	if (vertex == 0 || fragment == 0)
+	if ( vertex == 0 || fragment == 0 )
 		return 0;
 
-	if (!LinkShaders(program, vertex, fragment))
+	if ( !LinkShaders( program, vertex, fragment ) )
 	{
-		SCION_ERROR("Failed to Link Shaders!");
+		SCION_ERROR( "Failed to Link Shaders!" );
 		return 0;
 	}
 
 	return program;
 }
 
-GLuint ShaderLoader::CompileShader(GLuint type, const char* shader)
+GLuint ShaderLoader::CompileShader( GLuint type, const char* shader )
 {
-	const GLuint id = glCreateShader(type);
-	glShaderSource(id, 1, &shader, nullptr);
+	const GLuint id = glCreateShader( type );
+	glShaderSource( id, 1, &shader, nullptr );
 
-	glCompileShader(id);
+	glCompileShader( id );
 
 	// Check to see if the shader compiled correctly
-	if (!CompileSuccess(id))
+	if ( !CompileSuccess( id ) )
 	{
-		SCION_ERROR("Failed to compile shader from memory!");
+		SCION_ERROR( "Failed to compile shader from memory!" );
 		return 0;
 	}
 
 	return id;
 }
 
-bool ShaderLoader::CompileSuccess(GLuint shader)
+bool ShaderLoader::CompileSuccess( GLuint shader )
 {
 	GLint status;
 
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+	glGetShaderiv( shader, GL_COMPILE_STATUS, &status );
 
-	if (status != GL_TRUE)
+	if ( status != GL_TRUE )
 	{
 		GLint maxLength;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+		glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &maxLength );
 
-		std::string errorLog(maxLength, ' ');
+		std::string errorLog( maxLength, ' ' );
 
-		glGetShaderInfoLog(shader, maxLength, &maxLength, errorLog.data());
+		glGetShaderInfoLog( shader, maxLength, &maxLength, errorLog.data() );
 
-		SCION_ERROR("Shader Compilation failed: {}", std::string{errorLog});
+		SCION_ERROR( "Shader Compilation failed: {}", std::string{ errorLog } );
 
-		glDeleteShader(shader);
+		glDeleteShader( shader );
 		return false;
 	}
 
 	return true;
 }
 
-bool ShaderLoader::IsProgramValid(GLuint program)
+bool ShaderLoader::IsProgramValid( GLuint program )
 {
 	GLint status;
 
-	glGetProgramiv(program, GL_LINK_STATUS, &status);
+	glGetProgramiv( program, GL_LINK_STATUS, &status );
 
-	if (status != GL_TRUE)
+	if ( status != GL_TRUE )
 	{
 		GLint maxLength;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+		glGetProgramiv( program, GL_INFO_LOG_LENGTH, &maxLength );
 
-		std::string errorLog(maxLength, ' ');
+		std::string errorLog( maxLength, ' ' );
 
-		glGetProgramInfoLog(program, maxLength, &maxLength, errorLog.data());
+		glGetProgramInfoLog( program, maxLength, &maxLength, errorLog.data() );
 
-		SCION_ERROR("Shader's Program failed to link: {}", std::string{errorLog});
+		SCION_ERROR( "Shader's Program failed to link: {}", std::string{ errorLog } );
 		return false;
 	}
 
 	return true;
 }
 
-bool ShaderLoader::LinkShaders(GLuint program, GLuint vertexShader, GLuint fragmentShader)
+bool ShaderLoader::LinkShaders( GLuint program, GLuint vertexShader, GLuint fragmentShader )
 {
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
+	glAttachShader( program, vertexShader );
+	glAttachShader( program, fragmentShader );
 
-	glLinkProgram(program);
+	glLinkProgram( program );
 
-	if (!IsProgramValid(program))
+	if ( !IsProgramValid( program ) )
 	{
-		glDeleteProgram(program);
-		glDeleteShader(vertexShader);
-		glDeleteShader(fragmentShader);
+		glDeleteProgram( program );
+		glDeleteShader( vertexShader );
+		glDeleteShader( fragmentShader );
 
 		return false;
 	}
 
-	glDetachShader(program, vertexShader);
-	glDetachShader(program, fragmentShader);
+	glDetachShader( program, vertexShader );
+	glDetachShader( program, fragmentShader );
 
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	glDeleteShader( vertexShader );
+	glDeleteShader( fragmentShader );
 
 	return true;
 }
 
-std::shared_ptr<Shader> ShaderLoader::Create(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+std::shared_ptr<Shader> ShaderLoader::Create( const std::string& vertexShaderPath,
+											  const std::string& fragmentShaderPath )
 {
-	GLuint program = CreateProgram(vertexShaderPath, fragmentShaderPath);
+	GLuint program = CreateProgram( vertexShaderPath, fragmentShaderPath );
 
-	if (program)
-		return std::make_shared<Shader>(program, vertexShaderPath, fragmentShaderPath);
+	if ( program )
+		return std::make_shared<Shader>( program, vertexShaderPath, fragmentShaderPath );
 
 	return nullptr;
 }
 
-std::shared_ptr<Shader> ShaderLoader::CreateFromMemory(const char* vertexShader, const char* fragmentShader)
+std::shared_ptr<Shader> ShaderLoader::CreateFromMemory( const char* vertexShader, const char* fragmentShader )
 {
-	GLuint program = CreateProgram(vertexShader, fragmentShader);
+	GLuint program = CreateProgram( vertexShader, fragmentShader );
 
 	// From memory holds onto the shader itself, not the path
-	if (program)
-		return std::make_shared<Shader>(program, vertexShader, fragmentShader);
+	if ( program )
+		return std::make_shared<Shader>( program, vertexShader, fragmentShader );
 
 	return nullptr;
 }
 
-bool ShaderLoader::Destroy(Shader* pShader)
+bool ShaderLoader::Destroy( Shader* pShader )
 {
-	if (pShader->ShaderProgramID() <= 0)
+	if ( pShader->ShaderProgramID() <= 0 )
 		return false;
 
-	glDeleteShader(pShader->ShaderProgramID());
+	glDeleteShader( pShader->ShaderProgramID() );
 	return true;
 }
 } // namespace SCION_RENDERING

@@ -16,14 +16,14 @@ class CoreEngineData
   private:
 	CoreEngineData();
 	~CoreEngineData() = default;
-	CoreEngineData(const CoreEngineData&) = delete;
-	CoreEngineData& operator=(const CoreEngineData&) = delete;
+	CoreEngineData( const CoreEngineData& ) = delete;
+	CoreEngineData& operator=( const CoreEngineData& ) = delete;
 
   public:
 	static CoreEngineData& GetInstance();
 	void UpdateDeltaTime();
-	void SetWindowWidth(int windowWidth);
-	void SetWindowHeight(int windowHeight);
+	void SetWindowWidth( int windowWidth );
+	void SetWindowHeight( int windowHeight );
 
 	const float MetersToPixels() const;
 	const float PixelsToMeters() const;

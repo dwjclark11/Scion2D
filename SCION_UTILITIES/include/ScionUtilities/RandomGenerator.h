@@ -12,7 +12,7 @@ class RandomGenerator
 
   public:
 	RandomGenerator();
-	RandomGenerator(uint32_t min, uint32_t max);
+	RandomGenerator( uint32_t min, uint32_t max );
 
 	float GetFloat();
 	uint32_t GetInt();

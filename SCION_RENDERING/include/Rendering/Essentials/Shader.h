@@ -14,18 +14,18 @@ class Shader
 
 	std::unordered_map<std::string, GLuint> m_UniformLocationMap;
 
-	GLuint GetUniformLocation(const std::string& uniformName);
+	GLuint GetUniformLocation( const std::string& uniformName );
 
   public:
 	Shader();
-	Shader(GLuint program, const std::string vertexPath, const std::string& fragmentPath);
+	Shader( GLuint program, const std::string vertexPath, const std::string& fragmentPath );
 	~Shader();
 
-	void SetUniformInt(const std::string& name, int value);
+	void SetUniformInt( const std::string& name, int value );
 
 	// TODO: Add more Setters as needed
 
-	void SetUniformMat4(const std::string& name, glm::mat4& mat);
+	void SetUniformMat4( const std::string& name, glm::mat4& mat );
 
 	// TODO: Add the getters for the uniforms
 

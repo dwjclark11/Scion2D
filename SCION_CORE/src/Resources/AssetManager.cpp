@@ -1,5 +1,6 @@
 #include "Core/Resources/AssetManager.h"
 #include "Core/Resources/fonts/default_fonts.h"
+#include "Core/ECS/MainRegistry.h"
 #include <Rendering/Essentials/TextureLoader.h>
 #include <Rendering/Essentials/ShaderLoader.h>
 #include <Rendering/Essentials/FontLoader.h>
@@ -10,12 +11,12 @@ namespace SCION_RESOURCES
 
 bool AssetManager::CreateDefaultFonts()
 {
-	if (!AddFontFromMemory("pixel", pixel_font))
+	if ( !AddFontFromMemory( "pixel", pixel_font ) )
 	{
 		SCION_ERROR( "Failed to create pixel font." );
 		return false;
 	}
-	
+
 	// TODO: Add more default fonts.
 
 	return true;
@@ -270,33 +271,29 @@ std::shared_ptr<SCION_SOUNDS::SoundFX> AssetManager::GetSoundFx( const std::stri
 	return soundItr->second;
 }
 
-void AssetManager::CreateLuaAssetManager( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+void AssetManager::CreateLuaAssetManager( sol::state& lua )
 {
-	auto& asset_manager = registry.GetContext<std::shared_ptr<AssetManager>>();
-	if ( !asset_manager )
-	{
-		SCION_ERROR( "Failed to bind the asset manager to lua - Does not exist in the registry!" );
-		return;
-	}
+	auto& mainRegistry = MAIN_REGISTRY();
+	auto& asset_manager = mainRegistry.GetAssetManager();
 
 	lua.new_usertype<AssetManager>(
 		"AssetManager",
 		sol::no_constructor,
 		"add_texture",
 		[ & ]( const std::string& assetName, const std::string& filepath, bool pixel_art ) {
-			return asset_manager->AddTexture( assetName, filepath, pixel_art );
+			return asset_manager.AddTexture( assetName, filepath, pixel_art );
 		},
 		"add_music",
 		[ & ]( const std::string& musicName, const std::string& filepath ) {
-			return asset_manager->AddMusic( musicName, filepath );
+			return asset_manager.AddMusic( musicName, filepath );
 		},
 		"add_soundfx",
 		[ & ]( const std::string& soundFxName, const std::string& filepath ) {
-			return asset_manager->AddSoundFx( soundFxName, filepath );
+			return asset_manager.AddSoundFx( soundFxName, filepath );
 		},
 		"add_font",
 		[ & ]( const std::string& fontName, const std::string& fontPath, float fontSize ) {
-			return asset_manager->AddFont( fontName, fontPath, fontSize );
+			return asset_manager.AddFont( fontName, fontPath, fontSize );
 		} );
 }
 } // namespace SCION_RESOURCES

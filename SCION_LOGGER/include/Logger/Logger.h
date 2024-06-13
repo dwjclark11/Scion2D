@@ -12,9 +12,9 @@
  * the arguments
  */
 #ifdef _WIN32
-#define SCION_LOG(x, ...) SCION_LOGGER::Logger::GetInstance().Log(x, __VA_ARGS__)
+#define SCION_LOG( x, ... ) SCION_LOGGER::Logger::GetInstance().Log( x, __VA_ARGS__ )
 #else
-#define SCION_LOG(x, ...) SCION_LOGGER::Logger::GetInstance().Log(x, ##__VA_ARGS__)
+#define SCION_LOG( x, ... ) SCION_LOGGER::Logger::GetInstance().Log( x, ##__VA_ARGS__ )
 #endif
 
 /*
@@ -24,9 +24,9 @@
  * the arguments
  */
 #ifdef _WIN32
-#define SCION_WARN(x, ...) SCION_LOGGER::Logger::GetInstance().Warn(x, __VA_ARGS__)
+#define SCION_WARN( x, ... ) SCION_LOGGER::Logger::GetInstance().Warn( x, __VA_ARGS__ )
 #else
-#define SCION_WARN(x, ...) SCION_LOGGER::Logger::GetInstance().Warn(x, ##__VA_ARGS__)
+#define SCION_WARN( x, ... ) SCION_LOGGER::Logger::GetInstance().Warn( x, ##__VA_ARGS__ )
 #endif
 
 /*
@@ -36,13 +36,15 @@
  * the arguments
  */
 #ifdef _WIN32
-#define SCION_ERROR(x, ...) SCION_LOGGER::Logger::GetInstance().Error(std::source_location::current(), x, __VA_ARGS__)
+#define SCION_ERROR( x, ... )                                                                                          \
+	SCION_LOGGER::Logger::GetInstance().Error( std::source_location::current(), x, __VA_ARGS__ )
 #else
-#define SCION_ERROR(x, ...) SCION_LOGGER::Logger::GetInstance().Error(std::source_location::current(), x, ##__VA_ARGS__)
+#define SCION_ERROR( x, ... )                                                                                          \
+	SCION_LOGGER::Logger::GetInstance().Error( std::source_location::current(), x, ##__VA_ARGS__ )
 #endif
 
-#define SCION_ASSERT(x) assert(x);
-#define SCION_INIT_LOGS(console, retain) SCION_LOGGER::Logger::GetInstance().Init(console, retain);
+#define SCION_ASSERT( x ) assert( x );
+#define SCION_INIT_LOGS( console, retain ) SCION_LOGGER::Logger::GetInstance().Init( console, retain );
 
 namespace SCION_LOGGER
 {
@@ -56,22 +58,22 @@ struct LogEntry
 		ERR,
 		NONE
 	};
-	LogType type{LogType::INFO};
-	std::string log{""};
+	LogType type{ LogType::INFO };
+	std::string log{ "" };
 };
 
 class Logger
 {
   private:
 	std::vector<LogEntry> m_LogEntries;
-	bool m_bLogAdded{false}, m_bInitialized{false}, m_bConsoleLog{true}, m_bRetainLogs{true};
+	bool m_bLogAdded{ false }, m_bInitialized{ false }, m_bConsoleLog{ true }, m_bRetainLogs{ true };
 
 	Logger() = default;
 
 	struct LogTime
 	{
 		std::string day, dayNumber, month, year, time;
-		LogTime(const std::string& date);
+		LogTime( const std::string& date );
 	};
 
 	std::string CurrentDateTime();
@@ -81,19 +83,25 @@ class Logger
 
 	~Logger() = default;
 	// Make the logger non-copyable
-	Logger(const Logger&) = delete;
-	Logger& operator=(const Logger&) = delete;
+	Logger( const Logger& ) = delete;
+	Logger& operator=( const Logger& ) = delete;
 
-	void Init(bool consoleLog = true, bool retainLogs = true);
-
-	template <typename... Args>
-	void Log(const std::string_view message, Args&&... args);
+	void Init( bool consoleLog = true, bool retainLogs = true );
 
 	template <typename... Args>
-	void Warn(const std::string_view message, Args&&... args);
+	void Log( const std::string_view message, Args&&... args );
 
 	template <typename... Args>
-	void Error(std::source_location location, const std::string_view message, Args&&... args);
+	void Warn( const std::string_view message, Args&&... args );
+
+	template <typename... Args>
+	void Error( std::source_location location, const std::string_view message, Args&&... args );
+
+	void LuaLog( const std::string_view message );
+
+	void LuaWarn( const std::string_view message );
+
+	void LuaError( const std::string_view message );
 };
 } // namespace SCION_LOGGER
 

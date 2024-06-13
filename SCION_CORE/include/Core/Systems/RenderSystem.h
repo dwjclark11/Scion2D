@@ -11,7 +11,7 @@ class RenderSystem
 	std::unique_ptr<SCION_RENDERING::SpriteBatchRenderer> m_pBatchRenderer;
 
   public:
-	RenderSystem(SCION_CORE::ECS::Registry& registry);
+	RenderSystem( SCION_CORE::ECS::Registry& registry );
 	~RenderSystem() = default;
 
 	/*

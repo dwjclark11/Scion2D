@@ -8,7 +8,7 @@ class Timer
 {
   private:
 	time_point<steady_clock> m_StartPoint, m_PausedPoint;
-	bool m_bIsRunning{false}, m_bIsPaused{false};
+	bool m_bIsRunning{ false }, m_bIsPaused{ false };
 
   public:
 	Timer() = default;

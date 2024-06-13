@@ -18,7 +18,7 @@ class RectBatchRenderer : public Batcher<RectBatch, RectGlyph>
 	virtual void End() override;
 	virtual void Render() override;
 
-	void AddRect(const glm::vec4& destRect, int layer, const Color& color, glm::mat4 model = glm::mat4{1.f});
-	void AddRect(const struct Rect& rect, glm::mat4 model = glm::mat4{1.f});
+	void AddRect( const glm::vec4& destRect, int layer, const Color& color, glm::mat4 model = glm::mat4{ 1.f } );
+	void AddRect( const struct Rect& rect, glm::mat4 model = glm::mat4{ 1.f } );
 };
 } // namespace SCION_RENDERING

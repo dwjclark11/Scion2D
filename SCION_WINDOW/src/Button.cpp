@@ -1,6 +1,6 @@
 #include "Windowing/Inputs/Button.h"
 
-void SCION_WINDOWING::Inputs::Button::Update(bool bPressed)
+void SCION_WINDOWING::Inputs::Button::Update( bool bPressed )
 {
 	bJustPressed = !bIsPressed && bPressed;
 	bJustReleased = bIsPressed && !bPressed;

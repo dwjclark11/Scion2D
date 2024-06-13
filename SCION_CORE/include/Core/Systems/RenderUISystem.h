@@ -15,9 +15,9 @@ class RenderUISystem
 	std::unique_ptr<SCION_RENDERING::Camera2D> m_pCamera2D;
 
   public:
-	RenderUISystem(SCION_CORE::ECS::Registry& registry);
+	RenderUISystem( SCION_CORE::ECS::Registry& registry );
 	~RenderUISystem() = default;
 
-	void Update(entt::registry& registry);
+	void Update( entt::registry& registry );
 };
 } // namespace SCION_CORE::Systems

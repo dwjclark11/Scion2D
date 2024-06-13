@@ -18,6 +18,6 @@ class LineBatchRenderer : public Batcher<LineBatch, LineGlyph>
 	virtual void End() override;
 	virtual void Render() override;
 
-	void AddLine(const Line& line);
+	void AddLine( const Line& line );
 };
 } // namespace SCION_RENDERING

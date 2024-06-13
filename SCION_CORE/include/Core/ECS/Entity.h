@@ -12,11 +12,11 @@ class Entity
 	std::string m_sName, m_sGroup;
 
   public:
-	Entity(Registry& registry);
-	Entity(Registry& registry, const std::string& name = "", const std::string& group = "");
+	Entity( Registry& registry );
+	Entity( Registry& registry, const std::string& name = "", const std::string& group = "" );
 
-	Entity(Registry& registry, const entt::entity& entity);
-	Entity& operator=(const Entity& other)
+	Entity( Registry& registry, const entt::entity& entity );
+	Entity& operator=( const Entity& other )
 	{
 		this->m_Entity = other.m_Entity;
 		this->m_sName = other.m_sName;
@@ -35,7 +35,7 @@ class Entity
 	 * this Entity, trying to access an entity that does not exist can cause problems.
 	 * @return Returns the std::uint32_t id of the destroyed entity.
 	 */
-	inline std::uint32_t Kill() { return m_Registry.GetRegistry().destroy(m_Entity); }
+	inline std::uint32_t Kill() { return m_Registry.GetRegistry().destroy( m_Entity ); }
 
 	/*
 	 * @brief Gets the actual entity.
@@ -49,7 +49,7 @@ class Entity
 	 */
 	inline entt::registry& GetRegistry() { return m_Registry.GetRegistry(); }
 
-	static void CreateLuaEntityBind(sol::state& lua, Registry& registry);
+	static void CreateLuaEntityBind( sol::state& lua, Registry& registry );
 
 	template <typename TComponent>
 	static void RegisterMetaComponent();
@@ -61,10 +61,10 @@ class Entity
 	 * @return Returns a reference to the added component.
 	 */
 	template <typename TComponent, typename... Args>
-	TComponent& AddComponent(Args&&... args);
+	TComponent& AddComponent( Args&&... args );
 
 	template <typename TComponent, typename... Args>
-	TComponent& ReplaceComponent(Args&&... args);
+	TComponent& ReplaceComponent( Args&&... args );
 
 	template <typename TComponent>
 	TComponent& GetComponent();
@@ -82,16 +82,16 @@ class Entity
 };
 
 template <typename TComponent>
-auto add_component(Entity& entity, const sol::table& comp, sol::this_state s);
+auto add_component( Entity& entity, const sol::table& comp, sol::this_state s );
 
 template <typename TComponent>
-bool has_component(Entity& entity);
+bool has_component( Entity& entity );
 
 template <typename TComponent>
-auto get_component(Entity& entity, sol::this_state s);
+auto get_component( Entity& entity, sol::this_state s );
 
 template <typename TComponent>
-auto remove_component(Entity& entity);
+auto remove_component( Entity& entity );
 
 } // namespace SCION_CORE::ECS
 

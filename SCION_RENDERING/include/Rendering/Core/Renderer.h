@@ -51,34 +51,34 @@ class Renderer
 	 * @brief Values are clamped at [0, 1]
 	 * @param takes in GLfloats for all colors RGBA
 	 */
-	void SetClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
-	void ClearBuffers(bool color = true, bool depth = true, bool stencil = false);
+	void SetClearColor( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha );
+	void ClearBuffers( bool color = true, bool depth = true, bool stencil = false );
 
-	void SetCapability(GLCapability capability, bool enable);
-	bool IsCapabilityEnabled(GLCapability capability) const;
+	void SetCapability( GLCapability capability, bool enable );
+	bool IsCapabilityEnabled( GLCapability capability ) const;
 
-	void SetBlendCapability(BlendingFactors sFactor, BlendingFactors dFactor);
-	void SetViewport(GLint x, GLint y, GLsizei width, GLsizei height);
+	void SetBlendCapability( BlendingFactors sFactor, BlendingFactors dFactor );
+	void SetViewport( GLint x, GLint y, GLsizei width, GLsizei height );
 
-	void SetLineWidth(GLfloat lineWidth);
+	void SetLineWidth( GLfloat lineWidth );
 
 	// Primitive Draw calls
-	void DrawLine(const Line& line);
-	void DrawLine(const glm::vec2& p1, const glm::vec2& p2, const Color& color, float lineWidth = 1.f);
+	void DrawLine( const Line& line );
+	void DrawLine( const glm::vec2& p1, const glm::vec2& p2, const Color& color, float lineWidth = 1.f );
 
-	void DrawRect(const Rect& rect);
-	void DrawRect(const glm::vec2& position, float width, float height, const Color& color);
-	void DrawFilledRect(const Rect& rect);
+	void DrawRect( const Rect& rect );
+	void DrawRect( const glm::vec2& position, float width, float height, const Color& color );
+	void DrawFilledRect( const Rect& rect );
 
-	void DrawCircle(const Circle& circle);
-	void DrawCircle(const glm::vec2& position, float radius, const Color& color, float thickness = 1.f);
+	void DrawCircle( const Circle& circle );
+	void DrawCircle( const glm::vec2& position, float radius, const Color& color, float thickness = 1.f );
 
-	void DrawText2D(const Text& text);
+	void DrawText2D( const Text& text );
 
-	void DrawLines(class Shader& shader, class Camera2D& camera);
-	void DrawFilledRects(class Shader& shader, class Camera2D& camera);
-	void DrawCircles(class Shader& shader, class Camera2D& camera);
-	void DrawAllText(class Shader& shader, class Camera2D& camera);
+	void DrawLines( class Shader& shader, class Camera2D& camera );
+	void DrawFilledRects( class Shader& shader, class Camera2D& camera );
+	void DrawCircles( class Shader& shader, class Camera2D& camera );
+	void DrawAllText( class Shader& shader, class Camera2D& camera );
 
 	void ClearPrimitives();
 };

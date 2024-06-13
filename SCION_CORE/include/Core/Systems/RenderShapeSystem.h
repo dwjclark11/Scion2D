@@ -13,7 +13,7 @@ class RenderShapeSystem
 	std::unique_ptr<SCION_RENDERING::CircleBatchRenderer> m_pCircleRenderer;
 
   public:
-	RenderShapeSystem(SCION_CORE::ECS::Registry& registry);
+	RenderShapeSystem( SCION_CORE::ECS::Registry& registry );
 	~RenderShapeSystem() = default;
 
 	void Update();
