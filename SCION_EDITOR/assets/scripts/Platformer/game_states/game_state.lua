@@ -77,6 +77,7 @@ function GameState:OnUpdate(dt)
 	gFollowCam:update()
 	self.m_SceneDimmer.m_OnUpdate()
 	self.m_SceneDimmer:UpdateRainGen(dt)
+	gTriggerSystem:Update()
 end
 
 function GameState:OnRender()

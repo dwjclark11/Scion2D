@@ -5,6 +5,15 @@ namespace SCION_PHYSICS
 {
 bool ObjectData::AddContact( const ObjectData& objectData )
 {
+	if ( tag.empty() && group.empty() )
+		return false;
+
+	if ( objectData.tag == tag && objectData.group == group )
+		return false;
+
+	if (bIsFriendly && objectData.bIsFriendly && bTrigger && objectData.bTrigger)
+		return false;
+
 	auto contactItr = std::find_if( contactEntities.begin(), contactEntities.end(), [ & ]( ObjectData& contactInfo ) {
 		return contactInfo == objectData;
 	} );
@@ -18,6 +27,9 @@ bool ObjectData::AddContact( const ObjectData& objectData )
 
 bool ObjectData::RemoveContact( const ObjectData& objectData )
 {
+	if ( objectData.tag.empty() && objectData.group.empty() )
+		return true;
+
 	auto contactItr = std::remove_if( contactEntities.begin(), contactEntities.end(), [ & ]( ObjectData& contactInfo ) {
 		return contactInfo == objectData;
 	} );

@@ -119,15 +119,21 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 				const std::string& group,
 				bool bCollider,
 				bool bTrigger,
+				bool bFriendly,
 				std::uint32_t entityID ) {
-				return ObjectData{
-					.tag = tag, .group = group, .bCollider = bCollider, .bTrigger = bTrigger, .entityID = entityID };
+				return ObjectData{ .tag = tag,
+								   .group = group,
+								   .bCollider = bCollider,
+								   .bTrigger = bTrigger,
+								   .bIsFriendly = bFriendly,
+								   .entityID = entityID };
 			},
 			[]( const sol::table& objectData ) {
 				return ObjectData{ .tag = objectData[ "tag" ].get_or( std::string{ "" } ),
 								   .group = objectData[ "group" ].get_or( std::string{ "" } ),
 								   .bCollider = objectData[ "bCollider" ].get_or( false ),
 								   .bTrigger = objectData[ "bTrigger" ].get_or( false ),
+								   .bIsFriendly = objectData[ "bIsFriendly" ].get_or( false ),
 								   .entityID = objectData[ "entityID" ].get_or( (std::uint32_t)entt::null ) };
 			} ),
 		"tag",
@@ -137,6 +143,8 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 		"bCollider",
 		&ObjectData::bCollider,
 		"bTrigger",
+		&ObjectData::bIsFriendly,
+		"bIsFriendly",
 		&ObjectData::bTrigger,
 		"entityID",
 		&ObjectData::entityID,
