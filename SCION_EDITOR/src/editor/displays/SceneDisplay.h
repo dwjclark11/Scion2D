@@ -1,9 +1,10 @@
 #pragma once
+#include "IDisplay.h"
 #include <Core/ECS/Registry.h>
 
 namespace SCION_EDITOR
 {
-class SceneDisplay
+class SceneDisplay : public IDisplay
 {
   private:
 	SCION_CORE::ECS::Registry& m_Registry;
@@ -12,6 +13,6 @@ class SceneDisplay
 	SceneDisplay( SCION_CORE::ECS::Registry& registry );
 	~SceneDisplay() = default;
 
-	void Draw();
+	virtual void Draw() override;
 };
 } // namespace SCION_EDITOR

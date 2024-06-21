@@ -24,7 +24,7 @@ class Application
 
 	void CleanUp();
 
-	// TEMP IMGUI TESTING --> TODO: REMOVE TO OWN CLASS
+	bool CreateDisplays();
 	bool InitImGui();
 	void Begin();
 	void End();

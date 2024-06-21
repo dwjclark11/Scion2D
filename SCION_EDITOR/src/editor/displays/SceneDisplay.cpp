@@ -7,6 +7,7 @@ namespace SCION_EDITOR
 SceneDisplay::SceneDisplay( SCION_CORE::ECS::Registry& registry )
 	: m_Registry{ registry }
 {
+
 }
 
 void SceneDisplay::Draw()

@@ -4,6 +4,12 @@
 
 int main()
 {
+#ifndef NDEBUG
+	// TODO: SHOW CONSOLE via OS
+#else
+	// TODO: HIDE CONSOLE via OS
+#endif
+
 	auto& app = SCION_EDITOR::Application::GetInstance();
 	app.Run();
 

@@ -43,8 +43,12 @@
 	SCION_LOGGER::Logger::GetInstance().Error( std::source_location::current(), x, ##__VA_ARGS__ )
 #endif
 
-#define SCION_ASSERT( x ) assert( x );
-#define SCION_INIT_LOGS( console, retain ) SCION_LOGGER::Logger::GetInstance().Init( console, retain );
+#define SCION_ASSERT( x ) assert( x )
+#define SCION_INIT_LOGS( console, retain ) SCION_LOGGER::Logger::GetInstance().Init( console, retain )
+#define SCION_LOG_ADDED() SCION_LOGGER::Logger::GetInstance().LogAdded()
+#define SCION_RESET_ADDED() SCION_LOGGER::Logger::GetInstance().ResetLogAdded()
+#define SCION_GET_LOGS() SCION_LOGGER::Logger::GetInstance().GetLogs()
+#define SCION_CLEAR_LOGS() SCION_LOGGER::Logger::GetInstance().ClearLogs()
 
 namespace SCION_LOGGER
 {
@@ -98,10 +102,14 @@ class Logger
 	void Error( std::source_location location, const std::string_view message, Args&&... args );
 
 	void LuaLog( const std::string_view message );
-
 	void LuaWarn( const std::string_view message );
-
 	void LuaError( const std::string_view message );
+
+	inline void ClearLogs() { m_LogEntries.clear(); }
+	inline const std::vector<LogEntry>& GetLogs() { return m_LogEntries; }
+	inline void ResetLogAdded() { m_bLogAdded = false; }
+	inline const bool LogAdded() const { return m_bLogAdded; }
+
 };
 } // namespace SCION_LOGGER
 

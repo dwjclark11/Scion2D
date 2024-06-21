@@ -1,5 +1,4 @@
 #include "Core/ECS/MainRegistry.h"
-#include "Core/ECS/Registry.h"
 #include "Core/Resources/AssetManager.h"
 #include <Logger/Logger.h>
 #include <Sounds/MusicPlayer/MusicPlayer.h>

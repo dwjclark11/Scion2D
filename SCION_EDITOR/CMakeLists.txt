@@ -3,8 +3,11 @@ add_executable(SCION_EDITOR
     "src/Application.h"
     "src/main.cpp"
 
+    "src/editor/displays/IDisplay.h"
+    "src/editor/displays/LogDisplay.h"
+    "src/editor/displays/LogDisplay.cpp"
     "src/editor/displays/SceneDisplay.h"
-    "src/editor/displays/SceneDisplay.cpp")
+    "src/editor/displays/SceneDisplay.cpp" )
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

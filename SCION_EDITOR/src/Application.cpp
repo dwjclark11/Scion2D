@@ -53,6 +53,7 @@
 // ===================================
 
 #include "editor/displays/SceneDisplay.h"
+#include "editor/displays/LogDisplay.h"
 
 namespace SCION_EDITOR
 {
@@ -293,6 +294,12 @@ bool Application::Initialize()
 		return false;
 	}
 
+	if ( !CreateDisplays() )
+	{
+		SCION_ERROR( "Failed to create displays." );
+		return false;
+	}
+
 	renderer->SetLineWidth( 4.f );
 
 	if ( !mainRegistry.GetAssetManager().CreateDefaultFonts() )
@@ -313,19 +320,6 @@ bool Application::Initialize()
 	if ( !m_pRegistry->AddToContext<std::shared_ptr<SCION_RENDERING::Framebuffer>>( pFramebuffer ) )
 	{
 		SCION_ERROR( "Failed add test framebuffer to registry context!" );
-		return false;
-	}
-
-	auto pSceneDisplay = std::make_shared<SceneDisplay>( *m_pRegistry );
-	if ( !pSceneDisplay )
-	{
-		SCION_ERROR( "Failed to Create test SceneDisplay!" );
-		return false;
-	}
-
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<SceneDisplay>>( pSceneDisplay ) )
-	{
-		SCION_ERROR( "Failed add test pSceneDisplay to registry context!" );
 		return false;
 	}
 
@@ -485,6 +479,40 @@ void Application::CleanUp()
 	SDL_Quit();
 }
 
+bool Application::CreateDisplays()
+{
+	auto& mainRegistry = MAIN_REGISTRY();
+
+	auto pDisplayHolder = std::make_shared<DisplayHolder>();
+
+	if ( !mainRegistry.AddToContext<std::shared_ptr<DisplayHolder>>( pDisplayHolder ) )
+	{
+		SCION_ERROR( "Failed to add the display holder to the main registry." );
+		return false;
+	}
+
+	auto pSceneDisplay = std::make_unique<SceneDisplay>( *m_pRegistry );
+	if ( !pSceneDisplay )
+	{
+		SCION_ERROR( "Failed to Create Scene Display!" );
+		return false;
+	}
+
+	auto pLogDisplay = std::make_unique<LogDisplay>();
+	if ( !pLogDisplay )
+	{
+		SCION_ERROR( "Failed to Create Log Display!" );
+		return false;
+	}
+
+	// TODO: Create and add other displays as needed
+
+	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
+	pDisplayHolder->displays.push_back( std::move( pLogDisplay ) );
+
+	return true;
+}
+
 bool Application::InitImGui()
 {
 	const char* glslVersion = "#version 450";
@@ -555,14 +583,21 @@ void Application::RenderImGui()
 		const auto leftNodeId =
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Left, 0.2f, nullptr, &centerNodeId );
 
+		const auto LogNodeId = ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Down, 0.25f, nullptr, &centerNodeId );
 		ImGui::DockBuilderDockWindow( "Dear ImGui Demo", leftNodeId );
 		ImGui::DockBuilderDockWindow( "Scene", centerNodeId );
+		ImGui::DockBuilderDockWindow( "Logs", LogNodeId );
 
 		ImGui::DockBuilderFinish( dockSpaceId );
 	}
 
-	auto& pSceneDisplay = m_pRegistry->GetContext<std::shared_ptr<SceneDisplay>>();
-	pSceneDisplay->Draw();
+	auto& mainRegistry = MAIN_REGISTRY();
+	auto& pDisplayHolder = mainRegistry.GetContext<std::shared_ptr<DisplayHolder>>();
+
+	for (const auto& pDisplay : pDisplayHolder->displays)
+	{
+		pDisplay->Draw();
+	}
 
 	ImGui::ShowDemoWindow();
 }

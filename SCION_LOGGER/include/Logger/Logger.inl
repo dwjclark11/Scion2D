@@ -49,7 +49,10 @@ void Logger::Log( const std::string_view message, Args&&... args )
 	}
 
 	if ( m_bRetainLogs )
+	{
 		m_LogEntries.emplace_back( LogEntry::LogType::INFO, ss.str() );
+		m_bLogAdded = true;
+	}
 }
 
 template <typename... Args>
@@ -80,7 +83,10 @@ void Logger::Warn( const std::string_view message, Args&&... args )
 	}
 
 	if ( m_bRetainLogs )
+	{
 		m_LogEntries.emplace_back( LogEntry::LogType::WARN, ss.str() );
+		m_bLogAdded = true;
+	}
 }
 
 template <typename... Args>
@@ -111,6 +117,9 @@ void Logger::Error( std::source_location location, const std::string_view messag
 	}
 
 	if ( m_bRetainLogs )
+	{
 		m_LogEntries.emplace_back( LogEntry::LogType::ERR, ss.str() );
+		m_bLogAdded = true;
+	}
 }
 } // namespace SCION_LOGGER
