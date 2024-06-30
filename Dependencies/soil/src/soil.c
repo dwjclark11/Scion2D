@@ -19,7 +19,8 @@
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <wingdi.h>
-	#include <GL/gl.h>
+	#include <glad/glad.h>
+
 #elif defined(__APPLE__) || defined(__APPLE_CC__)
 	/*	I can't test this Apple stuff!	*/
 	#include <OpenGL/gl.h>
@@ -1176,11 +1177,9 @@ unsigned int
 		/*	and what type am I using as the internal texture format?	*/
 		switch( channels )
 		{
-		case 1:
-			original_texture_format = GL_LUMINANCE;
+		case 1: original_texture_format = GL_RED;
 			break;
-		case 2:
-			original_texture_format = GL_LUMINANCE_ALPHA;
+		case 2: original_texture_format = GL_RG;
 			break;
 		case 3:
 			original_texture_format = GL_RGB;
@@ -1343,7 +1342,7 @@ unsigned int
 		} else
 		{
 			/*	unsigned int clamp_mode = SOIL_CLAMP_TO_EDGE;	*/
-			unsigned int clamp_mode = GL_CLAMP;
+			unsigned int clamp_mode = GL_CLAMP_TO_EDGE;
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_S, clamp_mode );
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_T, clamp_mode );
 			if( opengl_texture_type == SOIL_TEXTURE_CUBE_MAP )
@@ -1810,7 +1809,7 @@ unsigned int SOIL_direct_load_DDS_from_memory(
 		} else
 		{
 			/*	unsigned int clamp_mode = SOIL_CLAMP_TO_EDGE;	*/
-			unsigned int clamp_mode = GL_CLAMP;
+			unsigned int clamp_mode = GL_CLAMP_TO_EDGE;
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_S, clamp_mode );
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_T, clamp_mode );
 			glTexParameteri( opengl_texture_type, SOIL_TEXTURE_WRAP_R, clamp_mode );
@@ -1873,24 +1872,43 @@ unsigned int SOIL_direct_load_DDS(
 int query_NPOT_capability( void )
 {
 	/*	check for the capability	*/
-	if( has_NPOT_capability == SOIL_CAPABILITY_UNKNOWN )
+	if ( has_NPOT_capability == SOIL_CAPABILITY_UNKNOWN )
 	{
-		/*	we haven't yet checked for the capability, do so	*/
-		if(
-			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
-				"GL_ARB_texture_non_power_of_two" ) )
-			)
+		GLint n, i;
+		glGetIntegerv( GL_NUM_EXTENSIONS, &n );
+		for (i = 0; i < n; i++)
 		{
-			/*	not there, flag the failure	*/
-			has_NPOT_capability = SOIL_CAPABILITY_NONE;
-		} else
-		{
-			/*	it's there!	*/
-			has_NPOT_capability = SOIL_CAPABILITY_PRESENT;
+			if (strstr((char const*)glGetStringi(GL_EXTENSIONS, i), "GL_ARB_texture_non_power_of_two") != NULL)
+			{
+				return SOIL_CAPABILITY_PRESENT;
+			}
 		}
+
+		return SOIL_CAPABILITY_NONE;
 	}
+
 	/*	let the user know if we can do non-power-of-two textures or not	*/
 	return has_NPOT_capability;
+
+	// The below way has been deprecated in OpenGL 3+ Core
+	//if( has_NPOT_capability == SOIL_CAPABILITY_UNKNOWN )
+	//{
+	//	/*	we haven't yet checked for the capability, do so	*/
+	//	if(
+	//		(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
+	//			"GL_ARB_texture_non_power_of_two" ) )
+	//		)
+	//	{
+	//		/*	not there, flag the failure	*/
+	//		has_NPOT_capability = SOIL_CAPABILITY_NONE;
+	//	} else
+	//	{
+	//		/*	it's there!	*/
+	//		has_NPOT_capability = SOIL_CAPABILITY_PRESENT;
+	//	}
+	//}
+	///*	let the user know if we can do non-power-of-two textures or not	*/
+	//return has_NPOT_capability;
 }
 
 int query_tex_rectangle_capability( void )

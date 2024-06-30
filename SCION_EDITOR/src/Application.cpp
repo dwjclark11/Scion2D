@@ -54,6 +54,7 @@
 
 #include "editor/displays/SceneDisplay.h"
 #include "editor/displays/LogDisplay.h"
+#include "editor/utilities/editor_textures.h"
 
 namespace SCION_EDITOR
 {
@@ -157,14 +158,6 @@ bool Application::Initialize()
 		SCION_ERROR( "Failed to create the lua state!" );
 		return false;
 	}
-
-	lua->open_libraries( sol::lib::base,
-						 sol::lib::math,
-						 sol::lib::os,
-						 sol::lib::table,
-						 sol::lib::io,
-						 sol::lib::string,
-						 sol::lib::package );
 
 	if ( !m_pRegistry->AddToContext<std::shared_ptr<sol::state>>( lua ) )
 	{
@@ -285,12 +278,9 @@ bool Application::Initialize()
 		return false;
 	}
 
-	SCION_CORE::Systems::ScriptingSystem::RegisterLuaBindings( *lua, *m_pRegistry );
-	SCION_CORE::Systems::ScriptingSystem::RegisterLuaFunctions( *lua, *m_pRegistry );
-
-	if ( !scriptSystem->LoadMainScript( *lua ) )
+	if (!LoadEditorTextures())
 	{
-		SCION_ERROR( "Failed to load the main lua script!" );
+		SCION_ERROR( "Failed to load the editor textures!" );
 		return false;
 	}
 
@@ -358,6 +348,28 @@ bool Application::LoadShaders()
 	return true;
 }
 
+bool Application::LoadEditorTextures()
+{
+	auto& mainRegistry = MAIN_REGISTRY();
+	auto& assetManager = mainRegistry.GetAssetManager();
+
+	if ( !assetManager.AddTextureFromMemory(
+			 "play_button", play_button, sizeof( play_button ) / sizeof( play_button[ 0 ] ) ) )
+	{
+		SCION_ERROR( "Failed to load texture [play_button] from memory." );
+		return false;
+	}
+
+	if ( !assetManager.AddTextureFromMemory(
+			 "stop_button", stop_button, sizeof( stop_button ) / sizeof( stop_button[ 0 ] ) ) )
+	{
+		SCION_ERROR( "Failed to load texture [stop_button] from memory." );
+		return false;
+	}
+
+	return true;
+}
+
 void Application::ProcessEvents()
 {
 	auto& inputManager = SCION_CORE::InputManager::GetInstance();
@@ -408,26 +420,11 @@ void Application::Update()
 	auto& engineData = SCION_CORE::CoreEngineData::GetInstance();
 	engineData.UpdateDeltaTime();
 
-	auto& camera = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
-	if ( !camera )
-	{
-		SCION_ERROR( "Failed to get the camera from the registry context!" );
-		return;
-	}
+	auto& mainRegistry = MAIN_REGISTRY();
+	auto& displayHolder = mainRegistry.GetContext<std::shared_ptr<DisplayHolder>>();
 
-	camera->Update();
-
-	auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
-	scriptSystem->Update();
-
-	auto& pPhysicsWorld = m_pRegistry->GetContext<SCION_PHYSICS::PhysicsWorld>();
-	pPhysicsWorld->Step( 1.f / 60.f, 8, 3 );
-
-	auto& pPhysicsSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::PhysicsSystem>>();
-	pPhysicsSystem->Update( m_pRegistry->GetRegistry() );
-
-	auto& animationSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::AnimationSystem>>();
-	animationSystem->Update();
+	for ( const auto& pDisplay : displayHolder->displays )
+		pDisplay->Update();
 
 	// Update inputs
 	auto& inputManager = SCION_CORE::InputManager::GetInstance();
@@ -447,7 +444,7 @@ void Application::Render()
 	auto& camera = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
 	auto& renderer = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
 
-	auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
+	//auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
 
 	const auto& fb = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Framebuffer>>();
 
@@ -456,7 +453,7 @@ void Application::Render()
 	renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );
 	renderer->ClearBuffers( true, true, false );
 
-	scriptSystem->Render();
+	//scriptSystem->Render();
 	renderSystem->Update();
 	renderShapeSystem->Update();
 	renderUISystem->Update( m_pRegistry->GetRegistry() );
@@ -583,7 +580,8 @@ void Application::RenderImGui()
 		const auto leftNodeId =
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Left, 0.2f, nullptr, &centerNodeId );
 
-		const auto LogNodeId = ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Down, 0.25f, nullptr, &centerNodeId );
+		const auto LogNodeId =
+			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Down, 0.25f, nullptr, &centerNodeId );
 		ImGui::DockBuilderDockWindow( "Dear ImGui Demo", leftNodeId );
 		ImGui::DockBuilderDockWindow( "Scene", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Logs", LogNodeId );
@@ -594,7 +592,7 @@ void Application::RenderImGui()
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& pDisplayHolder = mainRegistry.GetContext<std::shared_ptr<DisplayHolder>>();
 
-	for (const auto& pDisplay : pDisplayHolder->displays)
+	for ( const auto& pDisplay : pDisplayHolder->displays )
 	{
 		pDisplay->Draw();
 	}

@@ -9,7 +9,8 @@ class TextureLoader
   private:
 	static bool LoadTexture( const std::string& filepath, GLuint& id, int& width, int& height, bool blended = false );
 	static bool LoadFBTexture( GLuint& id, int& width, int& height );
-
+	static bool LoadTextureFromMemory( const unsigned char* imageData, size_t length, GLuint& id, int& width,
+									   int& height, bool blended = false );
   public:
 	TextureLoader() = delete;
 

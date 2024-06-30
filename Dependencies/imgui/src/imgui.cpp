@@ -7977,6 +7977,12 @@ void ImGui::PopButtonRepeat()
     PopItemFlag();
 }
 
+const int ImGui::GetColorStackSize()
+{
+    ImGuiContext& g = *GImGui;
+	return g.ColorStack.Size;
+}
+
 void ImGui::PushTextWrapPos(float wrap_pos_x)
 {
     ImGuiWindow* window = GetCurrentWindow();

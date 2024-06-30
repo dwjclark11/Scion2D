@@ -1,6 +1,8 @@
 #pragma once
 #include <chrono>
 
+#define CORE_GLOBALS() SCION_CORE::CoreEngineData::GetInstance()
+
 namespace SCION_CORE
 {
 class CoreEngineData

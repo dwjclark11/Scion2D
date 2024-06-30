@@ -25,7 +25,7 @@ main = {
 	},
 	[2] = {
 		render = function()
-			gStateStack:render()
+			--gStateStack:render()
 		end
 	},
 }

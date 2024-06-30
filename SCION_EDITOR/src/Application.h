@@ -17,6 +17,7 @@ class Application
   private:
 	bool Initialize();
 	bool LoadShaders();
+	bool LoadEditorTextures();
 
 	void ProcessEvents();
 	void Update();
