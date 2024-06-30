@@ -2,7 +2,7 @@
 #include "Core/Resources/AssetManager.h"
 #include <Logger/Logger.h>
 #include <Sounds/MusicPlayer/MusicPlayer.h>
-#include <Sounds/SoundPlayer/SoundFXPlayer.h>
+#include <Sounds/SoundPlayer/SoundFxPlayer.h>
 
 namespace SCION_CORE::ECS
 {

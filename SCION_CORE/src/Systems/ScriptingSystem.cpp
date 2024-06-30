@@ -171,7 +171,7 @@ auto create_timer = []( sol::state& lua ) {
 							 } );
 };
 
-auto create_lua_logger = [ & ]( sol::state& lua ) {
+auto create_lua_logger = [ ]( sol::state& lua ) {
 	auto& logger = SCION_LOGGER::Logger::GetInstance();
 
 	lua.new_usertype<SCION_LOGGER::Logger>(
