@@ -27,8 +27,9 @@
 	#include <Carbon/Carbon.h>
 	#define APIENTRY
 #else
-	#include <GL/gl.h>
-	#include <GL/glx.h>
+	//#include <GL/gl.h>
+	//#include <GL/glx.h>
+	#include <glad/glad.h>
 #endif
 
 #include "SOIL/SOIL.h"
