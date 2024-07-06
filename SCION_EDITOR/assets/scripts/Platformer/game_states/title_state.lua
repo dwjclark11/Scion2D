@@ -19,7 +19,7 @@ function TitleState:Create(stack)
 	state:set_variable_table(this)
 	state:set_on_enter(
 		function()
-			print("Enter Title State")
+			S2D_log("Enter Title State")
 		end
 	)
 	state:set_on_exit(

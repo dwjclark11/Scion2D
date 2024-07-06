@@ -5,7 +5,6 @@ S2D_run_script("assets/scripts/Platformer/script_list.lua")
 S2D_load_script_table(ScriptList)
 
 LoadAssets(AssetDefs)
-
 gFollowCam = nil 
 gCollisionEvent = nil 
 gTriggerSystem = nil 

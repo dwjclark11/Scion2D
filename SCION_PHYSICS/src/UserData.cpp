@@ -8,6 +8,9 @@ bool ObjectData::AddContact( const ObjectData& objectData )
 	if ( tag.empty() && group.empty() )
 		return false;
 
+	if ( objectData.tag.empty() && objectData.group.empty() )
+		return false;
+
 	if ( objectData.tag == tag && objectData.group == group )
 		return false;
 

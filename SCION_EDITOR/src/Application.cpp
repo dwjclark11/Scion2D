@@ -61,7 +61,7 @@ namespace SCION_EDITOR
 
 bool Application::Initialize()
 {
-	SCION_INIT_LOGS( true, true );
+	SCION_INIT_LOGS( false, true );
 	// TODO: LOAD CORE ENGINE DATA
 	// Init SDL
 	if ( SDL_Init( SDL_INIT_EVERYTHING ) != 0 )

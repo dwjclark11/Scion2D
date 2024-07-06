@@ -26,6 +26,30 @@ function UpdateActiveCharacters(dt)
 	end 
 end 
 
+Projectiles = {}
+
+function AddProjectile(projectile)
+	Projectiles[projectile.m_EntityID] = projectile
+end
+
+function UpdateProjectiles(dt)
+	for k, v in pairs(Projectiles) do 
+		if v:TimesUp() then 
+			v:Destroy()
+			Projectiles[k] = nil
+		else 
+			v:Update(dt)
+		end
+	end
+end
+
+function ResetProjectiles()
+	for k, v in pairs(Projectiles) do 
+		v:Destroy()
+		Projectiles[k] = nil
+	end
+end 
+
 --[[
 	Takes in an entity definition and builds a new entity by
 	adding the given components and values based on the provided 

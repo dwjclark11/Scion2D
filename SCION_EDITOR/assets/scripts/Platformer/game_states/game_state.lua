@@ -60,11 +60,11 @@ end
 
 function GameState:OnEnter()
 	LoadMap(CreateTestPlatformerMap())
-	Sound.play("rain", -1, 1)
-	Sound.set_volume(1, 30)
-
-	Music.play("snowfall", -1)
-	Music.set_volume(50)
+	--Sound.play("rain", -1, 1)
+	--Sound.set_volume(1, 30)
+	--
+	--Music.play("snowfall", -1)
+	--Music.set_volume(50)
 end
 
 function GameState:OnExit()
@@ -74,6 +74,7 @@ end
 function GameState:OnUpdate(dt)
 	self:UpdateContacts()
 	UpdateActiveCharacters(dt)
+	UpdateProjectiles(dt)
 	gFollowCam:update()
 	self.m_SceneDimmer.m_OnUpdate()
 	self.m_SceneDimmer:UpdateRainGen(dt)

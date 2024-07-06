@@ -52,7 +52,8 @@ PlayerDefs =
 					tag = "player",
 					group = "",
 					bCollider = true,
-					bTrigger = false
+					bTrigger = false, 
+					bIsFriendly = true
 				}
 			}
 		},
