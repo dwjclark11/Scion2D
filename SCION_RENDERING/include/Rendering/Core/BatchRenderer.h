@@ -12,7 +12,7 @@ class SpriteBatchRenderer : public Batcher<Batch, SpriteGlyph>
 
   public:
 	SpriteBatchRenderer();
-	~SpriteBatchRenderer() = default;
+	virtual ~SpriteBatchRenderer() = default;
 
 	/*
 	 * @brief Checks to see if there are sprites to create batches.

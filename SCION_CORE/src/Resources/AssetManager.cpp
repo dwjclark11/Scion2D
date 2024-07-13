@@ -4,6 +4,7 @@
 #include <Rendering/Essentials/TextureLoader.h>
 #include <Rendering/Essentials/ShaderLoader.h>
 #include <Rendering/Essentials/FontLoader.h>
+#include <ScionUtilities/ScionUtilities.h>
 #include <Logger/Logger.h>
 
 namespace SCION_RESOURCES
@@ -22,7 +23,8 @@ bool AssetManager::CreateDefaultFonts()
 	return true;
 }
 
-bool AssetManager::AddTexture( const std::string& textureName, const std::string& texturePath, bool pixelArt )
+bool AssetManager::AddTexture( const std::string& textureName, const std::string& texturePath, bool pixelArt,
+							   bool bTileset )
 {
 	// Check to see if the texture already exists
 	if ( m_mapTextures.find( textureName ) != m_mapTextures.end() )
@@ -33,7 +35,8 @@ bool AssetManager::AddTexture( const std::string& textureName, const std::string
 
 	auto texture = SCION_RENDERING::TextureLoader::Create( pixelArt ? SCION_RENDERING::Texture::TextureType::PIXEL
 																	: SCION_RENDERING::Texture::TextureType::BLENDED,
-														   texturePath );
+														   texturePath,
+														   bTileset );
 
 	if ( !texture )
 	{
@@ -46,7 +49,7 @@ bool AssetManager::AddTexture( const std::string& textureName, const std::string
 }
 
 bool AssetManager::AddTextureFromMemory( const std::string& textureName, const unsigned char* imageData, size_t length,
-										 bool pixelArt )
+										 bool pixelArt, bool bTileset )
 {
 	// Check to see if the Texture already exist
 	if ( m_mapTextures.contains( textureName ) )
@@ -55,7 +58,9 @@ bool AssetManager::AddTextureFromMemory( const std::string& textureName, const u
 		return false;
 	}
 
-	auto texture = std::move( SCION_RENDERING::TextureLoader::CreateFromMemory( imageData, length ) );
+	auto texture =
+		std::move( SCION_RENDERING::TextureLoader::CreateFromMemory( imageData, length, pixelArt, bTileset ) );
+
 	// Load the texture
 	if ( !texture )
 	{
@@ -80,6 +85,12 @@ std::shared_ptr<SCION_RENDERING::Texture> AssetManager::GetTexture( const std::s
 
 	return texItr->second;
 }
+
+std::vector<std::string> AssetManager::GetTilesetNames() const
+{
+	return SCION_UTIL::GetKeys( m_mapTextures, []( const auto& pair ) { return pair.second->IsTileset(); } );
+}
+
 
 bool AssetManager::AddFont( const std::string& fontName, const std::string& fontPath, float fontSize )
 {
@@ -280,9 +291,13 @@ void AssetManager::CreateLuaAssetManager( sol::state& lua )
 		"AssetManager",
 		sol::no_constructor,
 		"add_texture",
-		[ & ]( const std::string& assetName, const std::string& filepath, bool pixel_art ) {
-			return asset_manager.AddTexture( assetName, filepath, pixel_art );
-		},
+		sol::overload(
+			[ & ]( const std::string& assetName, const std::string& filepath, bool pixel_art ) {
+				return asset_manager.AddTexture( assetName, filepath, pixel_art, false );
+			},
+			[ & ]( const std::string& assetName, const std::string& filepath, bool pixel_art, bool bTileset ) {
+				return asset_manager.AddTexture( assetName, filepath, pixel_art, bTileset );
+			} ),
 		"add_music",
 		[ & ]( const std::string& musicName, const std::string& filepath ) {
 			return asset_manager.AddMusic( musicName, filepath );

@@ -4,7 +4,9 @@ add_library(SCION_UTILITIES
     "include/ScionUtilities/SDL_Wrappers.h"
     "src/SDL_Wrappers.cpp"
     "include/ScionUtilities/Timer.h"
-    "src/Timer.cpp")
+    "src/Timer.cpp" 
+    "include/ScionUtilities/ScionUtilities.h"
+)
 
 target_include_directories(
     SCION_UTILITIES PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

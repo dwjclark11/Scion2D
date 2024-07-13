@@ -40,15 +40,21 @@ class AssetManager
 	 * use.
 	 * @return Returns true if the texture was created and loaded successfully, false otherwise.
 	 */
-	bool AddTexture( const std::string& textureName, const std::string& texturePath, bool pixelArt = true );
+	bool AddTexture( const std::string& textureName, const std::string& texturePath, bool pixelArt = true, bool bTileset = false);
 	bool AddTextureFromMemory( const std::string& textureName, const unsigned char* imageData, size_t length,
-							   bool pixelArt = true );
+							   bool pixelArt = true, bool bTileset = false );
 	/*
 	 * @brief Checks to see if the texture exists based on the name and returns a std::shared_ptr<Texture>.
 	 * @param An std::string for the texture name to lookup.
 	 * @return Returns the desired texture if it exists, else returns nullptr
 	 */
 	std::shared_ptr<SCION_RENDERING::Texture> GetTexture( const std::string& textureName );
+
+	/*
+	* @brief Get the names of all the textures that are flagged as tilesets.
+	* @return Returns a vector of strings.
+	*/
+	std::vector<std::string> GetTilesetNames() const;
 
 	/*
 	 * @brief Checks to see if the font exists, and if not, creates and loads the font into the
@@ -135,6 +141,9 @@ class AssetManager
 	 * @return Returns an std::shared_ptr<SoundFx> if it exists, else returns nullptr
 	 */
 	std::shared_ptr<SCION_SOUNDS::SoundFX> GetSoundFx( const std::string& soundFxName );
+
+
+	inline const std::map<std::string, std::shared_ptr<SCION_RENDERING::Texture>>& GetAllTextures() const { return m_mapTextures; }
 
 	/*
 	 * Binds the AssetManager functionality to the lua state.

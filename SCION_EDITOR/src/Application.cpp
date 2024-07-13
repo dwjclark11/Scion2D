@@ -53,6 +53,7 @@
 // ===================================
 
 #include "editor/displays/SceneDisplay.h"
+#include "editor/displays/TilesetDisplay.h"
 #include "editor/displays/LogDisplay.h"
 #include "editor/utilities/editor_textures.h"
 
@@ -502,10 +503,18 @@ bool Application::CreateDisplays()
 		return false;
 	}
 
+	auto pTilesetDisplay = std::make_unique<TilesetDisplay>();
+	if ( !pTilesetDisplay)
+	{
+		SCION_ERROR( "Failed to Create TilesetDisplay!" );
+		return false;
+	}
+
 	// TODO: Create and add other displays as needed
 
 	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pLogDisplay ) );
+	pDisplayHolder->displays.push_back( std::move( pTilesetDisplay ) );
 
 	return true;
 }

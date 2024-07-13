@@ -13,7 +13,7 @@ class RectBatchRenderer : public Batcher<RectBatch, RectGlyph>
 
   public:
 	RectBatchRenderer();
-	~RectBatchRenderer() = default;
+	virtual ~RectBatchRenderer() = default;
 
 	virtual void End() override;
 	virtual void Render() override;

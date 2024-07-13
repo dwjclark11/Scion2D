@@ -39,7 +39,7 @@ class Batcher
   public:
 	Batcher();
 	Batcher( bool bUseIBO );
-	~Batcher();
+	virtual ~Batcher();
 
 	void Begin();
 

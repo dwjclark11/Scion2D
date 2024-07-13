@@ -9,7 +9,10 @@ add_executable(SCION_EDITOR
     "src/editor/displays/SceneDisplay.h"
     "src/editor/displays/SceneDisplay.cpp"  
     
-    "src/editor/utilities/editor_textures.h")
+    "src/editor/utilities/editor_textures.h" 
+    "src/editor/displays/TilesetDisplay.h"
+    "src/editor/displays/TilesetDisplay.cpp"
+)
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

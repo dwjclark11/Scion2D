@@ -19,10 +19,10 @@ class TextureLoader
 	 * @params Takes in the type of texture to be created and a string for the filepath of the texture.
 	 * @return Returns a shared_ptr<Texture> if successful, nullptr otherwise.
 	 */
-	static std::shared_ptr<Texture> Create( Texture::TextureType type, const std::string& texturePath );
-	static std::shared_ptr<Texture> Create( Texture::TextureType type, int width, int height );
+	static std::shared_ptr<Texture> Create( Texture::TextureType type, const std::string& texturePath, bool bTileset = false );
+	static std::shared_ptr<Texture> Create( Texture::TextureType type, int width, int height, bool bTileset = false );
 
 	static std::shared_ptr<Texture> CreateFromMemory( const unsigned char* imageData, size_t length,
-													  bool blended = false );
+													  bool blended = false, bool bTileset = false );
 };
 } // namespace SCION_RENDERING

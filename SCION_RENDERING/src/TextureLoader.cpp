@@ -109,7 +109,8 @@ bool TextureLoader::LoadTextureFromMemory( const unsigned char* imageData, size_
 	return true;
 }
 
-std::shared_ptr<Texture> TextureLoader::Create( Texture::TextureType type, const std::string& texturePath )
+std::shared_ptr<Texture> TextureLoader::Create( Texture::TextureType type, const std::string& texturePath,
+												bool bTileset )
 {
 	GLuint id;
 	int width, height;
@@ -125,10 +126,10 @@ std::shared_ptr<Texture> TextureLoader::Create( Texture::TextureType type, const
 	default: assert( false && "The current type is not defined, Please use a defined texture type!" ); return nullptr;
 	}
 
-	return std::make_shared<Texture>( id, width, height, type, texturePath );
+	return std::make_shared<Texture>( id, width, height, type, texturePath, bTileset );
 }
 
-std::shared_ptr<Texture> TextureLoader::Create( Texture::TextureType type, int width, int height )
+std::shared_ptr<Texture> TextureLoader::Create( Texture::TextureType type, int width, int height, bool bTileset )
 {
 	SCION_ASSERT( type == Texture::TextureType::FRAMEBUFFER && "Must be framebuffer type" );
 
@@ -142,10 +143,11 @@ std::shared_ptr<Texture> TextureLoader::Create( Texture::TextureType type, int w
 	glGenTextures( 1, &id );
 	LoadFBTexture( id, width, height );
 
-	return std::make_shared<Texture>( id, width, height, type );
+	return std::make_shared<Texture>( id, width, height, type, "", bTileset );
 }
 
-std::shared_ptr<Texture> TextureLoader::CreateFromMemory( const unsigned char* imageData, size_t length, bool blended )
+std::shared_ptr<Texture> TextureLoader::CreateFromMemory( const unsigned char* imageData, size_t length, bool blended,
+														  bool bTileset )
 {
 	GLuint id;
 	int width, height;
@@ -153,6 +155,6 @@ std::shared_ptr<Texture> TextureLoader::CreateFromMemory( const unsigned char* i
 	LoadTextureFromMemory( imageData, length, id, width, height, blended );
 
 	return std::make_shared<Texture>(
-		id, width, height, blended ? Texture::TextureType::BLENDED : Texture::TextureType::PIXEL, "" );
+		id, width, height, blended ? Texture::TextureType::BLENDED : Texture::TextureType::PIXEL, "", bTileset );
 }
 } // namespace SCION_RENDERING

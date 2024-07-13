@@ -344,7 +344,12 @@ end
 --]]
 function LoadAssets(assets)
 	for k, v in pairs(assets.textures) do
-		if not AssetManager.add_texture(v.name, v.path, v.pixel_art) then
+		local bTileset = false 
+		if v.bTileset then 
+			bTileset = v.bTileset 
+		end 
+
+		if not AssetManager.add_texture(v.name, v.path, v.pixel_art, bTileset) then
 			S2D_error("Failed to load texture [%s] at path [%s]",v.name, v.path)
 		else
 			S2D_log("Loaded Texture [%s]", v.name)
