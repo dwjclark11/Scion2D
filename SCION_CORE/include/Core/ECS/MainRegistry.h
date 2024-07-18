@@ -2,7 +2,7 @@
 #include <memory>
 #include "Core/ECS/Registry.h"
 
-#define MAIN_REGISTRY() SCION_CORE::ECS::MainRegistry::GetInstance();
+#define MAIN_REGISTRY() SCION_CORE::ECS::MainRegistry::GetInstance()
 
 namespace SCION_RESOURCES
 {

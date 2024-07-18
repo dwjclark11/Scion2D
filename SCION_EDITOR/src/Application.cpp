@@ -54,8 +54,12 @@
 
 #include "editor/displays/SceneDisplay.h"
 #include "editor/displays/TilesetDisplay.h"
+#include "editor/displays/TilemapDisplay.h"
 #include "editor/displays/LogDisplay.h"
 #include "editor/utilities/editor_textures.h"
+#include "editor/utilities/EditorFramebuffers.h"
+
+#include "editor/systems/GridSystem.h"
 
 namespace SCION_EDITOR
 {
@@ -143,13 +147,13 @@ bool Application::Initialize()
 	auto& mainRegistry = MAIN_REGISTRY();
 	mainRegistry.Initialize();
 
-	m_pRegistry = std::make_unique<SCION_CORE::ECS::Registry>();
-
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<SCION_RENDERING::Renderer>>( renderer ) )
+	if ( !mainRegistry.AddToContext<std::shared_ptr<SCION_RENDERING::Renderer>>( renderer ) )
 	{
 		SCION_ERROR( "Failed to add the renderer to the registry context!" );
 		return false;
 	}
+
+	m_pRegistry = std::make_unique<SCION_CORE::ECS::Registry>();
 
 	// Create the lua state
 	auto lua = std::make_shared<sol::state>();
@@ -186,7 +190,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderSystem>>( renderSystem ) )
+	if ( !mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderSystem>>( renderSystem ) )
 	{
 		SCION_ERROR( "Failed to add the render system to the registry context!" );
 		return false;
@@ -199,7 +203,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderUISystem>>( renderUISystem ) )
+	if ( !mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderUISystem>>( renderUISystem ) )
 	{
 		SCION_ERROR( "Failed to add the render UI system to the registry context!" );
 		return false;
@@ -212,7 +216,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderShapeSystem>>( renderShapeSystem ) )
+	if ( !mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderShapeSystem>>( renderShapeSystem ) )
 	{
 		SCION_ERROR( "Failed to add the render Shape system to the registry context!" );
 		return false;
@@ -279,7 +283,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	if (!LoadEditorTextures())
+	if ( !LoadEditorTextures() )
 	{
 		SCION_ERROR( "Failed to load the editor textures!" );
 		return false;
@@ -299,18 +303,29 @@ bool Application::Initialize()
 		return false;
 	}
 
-	// CREATE TEMP FRAMEBUFFER
-	auto pFramebuffer = std::make_shared<SCION_RENDERING::Framebuffer>( 640, 480, true );
+	auto pEditorFramebuffers = std::make_shared<EditorFramebuffers>();
 
-	if ( !pFramebuffer )
+	if ( !pEditorFramebuffers )
 	{
-		SCION_ERROR( "Failed to Create test framebuffer!" );
+		SCION_ERROR( "Failed to create editor frame buffers!" );
 		return false;
 	}
 
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<SCION_RENDERING::Framebuffer>>( pFramebuffer ) )
+	if ( !mainRegistry.AddToContext<std::shared_ptr<EditorFramebuffers>>( pEditorFramebuffers ) )
 	{
-		SCION_ERROR( "Failed add test framebuffer to registry context!" );
+		SCION_ERROR( "Failed add the editor frame buffers to registry context!" );
+		return false;
+	}
+
+	pEditorFramebuffers->mapFramebuffers.emplace( FramebufferType::SCENE,
+												  std::make_shared<SCION_RENDERING::Framebuffer>( 640, 480, false ) );
+
+	pEditorFramebuffers->mapFramebuffers.emplace( FramebufferType::TILEMAP,
+												  std::make_shared<SCION_RENDERING::Framebuffer>( 640, 480, false ) );
+
+	if ( !mainRegistry.AddToContext<std::shared_ptr<GridSystem>>( std::make_shared<GridSystem>() ) )
+	{
+		SCION_ERROR( "Failed add the grid system registry context!" );
 		return false;
 	}
 
@@ -410,6 +425,7 @@ void Application::ProcessEvents()
 			case SDL_WINDOWEVENT_SIZE_CHANGED: m_pWindow->SetSize( m_Event.window.data1, m_Event.window.data2 ); break;
 			default: break;
 			}
+			break;
 		}
 		default: break;
 		}
@@ -439,36 +455,10 @@ void Application::Update()
 
 void Application::Render()
 {
-	auto& renderSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::RenderSystem>>();
-	auto& renderUISystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::RenderUISystem>>();
-	auto& renderShapeSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::RenderShapeSystem>>();
-	auto& camera = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
-	auto& renderer = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
-
-	//auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
-
-	const auto& fb = m_pRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Framebuffer>>();
-
-	fb->Bind();
-	renderer->SetViewport( 0, 0, fb->Width(), fb->Height() );
-	renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );
-	renderer->ClearBuffers( true, true, false );
-
-	//scriptSystem->Render();
-	renderSystem->Update();
-	renderShapeSystem->Update();
-	renderUISystem->Update( m_pRegistry->GetRegistry() );
-
-	fb->Unbind();
-
-	renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );
-	renderer->ClearBuffers( true, true, false );
-
 	Begin();
 	RenderImGui();
 	End();
 
-	fb->CheckResize();
 	SDL_GL_SwapWindow( m_pWindow->GetWindow().get() );
 }
 
@@ -504,9 +494,16 @@ bool Application::CreateDisplays()
 	}
 
 	auto pTilesetDisplay = std::make_unique<TilesetDisplay>();
-	if ( !pTilesetDisplay)
+	if ( !pTilesetDisplay )
 	{
 		SCION_ERROR( "Failed to Create TilesetDisplay!" );
+		return false;
+	}
+
+	auto pTilemapDisplay = std::make_unique<TilemapDisplay>();
+	if ( !pTilemapDisplay )
+	{
+		SCION_ERROR( "Failed to Create TilemapDisplay!" );
 		return false;
 	}
 
@@ -515,6 +512,7 @@ bool Application::CreateDisplays()
 	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pLogDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pTilesetDisplay ) );
+	pDisplayHolder->displays.push_back( std::move( pTilemapDisplay ) );
 
 	return true;
 }
@@ -593,7 +591,10 @@ void Application::RenderImGui()
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Down, 0.25f, nullptr, &centerNodeId );
 		ImGui::DockBuilderDockWindow( "Dear ImGui Demo", leftNodeId );
 		ImGui::DockBuilderDockWindow( "Scene", centerNodeId );
+		ImGui::DockBuilderDockWindow( "Tilemap Editor", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Logs", LogNodeId );
+
+		ImGui::DockBuilderDockWindow( "Tileset", LogNodeId );
 
 		ImGui::DockBuilderFinish( dockSpaceId );
 	}

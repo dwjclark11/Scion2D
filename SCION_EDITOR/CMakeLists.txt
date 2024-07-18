@@ -12,6 +12,11 @@ add_executable(SCION_EDITOR
     "src/editor/utilities/editor_textures.h" 
     "src/editor/displays/TilesetDisplay.h"
     "src/editor/displays/TilesetDisplay.cpp"
+    "src/editor/systems/GridSystem.h" 
+    "src/editor/systems/GridSystem.cpp" 
+    "src/editor/displays/TilemapDisplay.h" 
+    "src/editor/displays/TilemapDisplay.cpp" 
+    "src/editor/utilities/EditorFramebuffers.h"
 )
 
 target_include_directories(

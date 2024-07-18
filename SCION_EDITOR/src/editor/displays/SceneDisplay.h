@@ -13,6 +13,7 @@ class SceneDisplay : public IDisplay
   private:
 	void LoadScene();
 	void UnloadScene();
+	void RenderScene();
 
   public:
 	SceneDisplay( SCION_CORE::ECS::Registry& registry );

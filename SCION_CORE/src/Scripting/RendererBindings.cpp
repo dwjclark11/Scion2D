@@ -86,7 +86,7 @@ void SCION_CORE::Scripting::RendererBinder::CreateRenderingBind( sol::state& lua
 		&Text::color );
 
 	// Bind the renderer
-	auto& renderer = registry.GetContext<std::shared_ptr<Renderer>>();
+	auto& renderer = mainRegistry.GetContext<std::shared_ptr<Renderer>>();
 	if ( !renderer )
 	{
 		SCION_ERROR( "Failed to bind the Renderer to Lua! Not in the registry context!" );
