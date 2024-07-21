@@ -12,6 +12,11 @@
 #include "Core/ECS/Registry.h"
 #include <sol/sol.hpp>
 
+namespace SCION_UTIL
+{
+enum class AssetType;
+}
+
 namespace SCION_RESOURCES
 {
 
@@ -38,9 +43,21 @@ class AssetManager
 	 * @param An std::string for the texture file path to be loaded.
 	 * @param A bool value to determine if it is pixel art. That controls the type of Min/Mag filter to
 	 * use.
+	 * @param A bool value to determine if the texture is being used as a tileset.
 	 * @return Returns true if the texture was created and loaded successfully, false otherwise.
 	 */
-	bool AddTexture( const std::string& textureName, const std::string& texturePath, bool pixelArt = true, bool bTileset = false);
+	bool AddTexture( const std::string& textureName, const std::string& texturePath, bool pixelArt = true,
+					 bool bTileset = false );
+
+	/*
+	* @brief Checks to see if the texture exists, and if not, creates and loads the texture into the asset manager.
+	* @param std::string for the texture name to be used as the key.
+	* @param const unsigned char* this is the image data needed to be converted to an OpenGL texture.
+	* @param size_t length, this is the size of the image data array passed in. 
+	* @param A bool value to determine if it is pixel art. That controls the type of Min/Mag filter to use.
+	* @param A bool value to determine if the texture is being used as a tileset.
+	* @return Returns true if the texture was created and loaded successfully, false otherwise. 
+	*/
 	bool AddTextureFromMemory( const std::string& textureName, const unsigned char* imageData, size_t length,
 							   bool pixelArt = true, bool bTileset = false );
 	/*
@@ -51,9 +68,9 @@ class AssetManager
 	std::shared_ptr<SCION_RENDERING::Texture> GetTexture( const std::string& textureName );
 
 	/*
-	* @brief Get the names of all the textures that are flagged as tilesets.
-	* @return Returns a vector of strings.
-	*/
+	 * @brief Get the names of all the textures that are flagged as tilesets.
+	 * @return Returns a vector of strings.
+	 */
 	std::vector<std::string> GetTilesetNames() const;
 
 	/*
@@ -142,8 +159,34 @@ class AssetManager
 	 */
 	std::shared_ptr<SCION_SOUNDS::SoundFX> GetSoundFx( const std::string& soundFxName );
 
+	inline const std::map<std::string, std::shared_ptr<SCION_RENDERING::Texture>>& GetAllTextures() const
+	{
+		return m_mapTextures;
+	}
 
-	inline const std::map<std::string, std::shared_ptr<SCION_RENDERING::Texture>>& GetAllTextures() const { return m_mapTextures; }
+	/*
+	* @brief Grab all the asset key names for the specific asset type.
+	* @param Takes in an enum for the desired AssetType.
+	* @return Returns an std::vector of strings of the asset names.
+	*/
+	std::vector<std::string> GetAssetKeyNames( SCION_UTIL::AssetType eAssetType ) const;
+
+	/*
+	* @brief Try to change the name of the asset based on the asset type.
+	* @param std::string of the old asset name.
+	* @param std::string of the new asset name.
+	* @param An enum of the asset type.
+	* @return Returns true if the name was changed successfully, false otherwise.
+	*/
+	bool ChangeAssetName( const std::string& sOldName, const std::string& sNewName, SCION_UTIL::AssetType eAssetType );
+	
+	/*
+	* @brief Checks to see if the asset exists.
+	* @param std::string of the name to check.
+	* @param an enum of the asset type to check.
+	* @return Returns true if the asset exists, false otherwise.
+	*/
+	bool CheckHasAsset( const std::string& sNameCheck, SCION_UTIL::AssetType eAssetType );
 
 	/*
 	 * Binds the AssetManager functionality to the lua state.

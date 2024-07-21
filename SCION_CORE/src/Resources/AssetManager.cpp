@@ -91,7 +91,6 @@ std::vector<std::string> AssetManager::GetTilesetNames() const
 	return SCION_UTIL::GetKeys( m_mapTextures, []( const auto& pair ) { return pair.second->IsTileset(); } );
 }
 
-
 bool AssetManager::AddFont( const std::string& fontName, const std::string& fontPath, float fontSize )
 {
 	if ( m_mapFonts.contains( fontName ) )
@@ -280,6 +279,50 @@ std::shared_ptr<SCION_SOUNDS::SoundFX> AssetManager::GetSoundFx( const std::stri
 	}
 
 	return soundItr->second;
+}
+
+std::vector<std::string> AssetManager::GetAssetKeyNames( SCION_UTIL::AssetType eAssetType ) const
+{
+	switch ( eAssetType )
+	{
+	case SCION_UTIL::AssetType::TEXTURE:
+		return SCION_UTIL::GetKeys( m_mapTextures, []( const auto& pair ) { return !pair.second->IsEditorTexture(); } );
+	case SCION_UTIL::AssetType::FONT: return SCION_UTIL::GetKeys( m_mapFonts );
+	case SCION_UTIL::AssetType::SOUNDFX: return SCION_UTIL::GetKeys( m_mapSoundFx );
+	case SCION_UTIL::AssetType::MUSIC: return SCION_UTIL::GetKeys( m_mapMusic );
+	default: SCION_ASSERT( false && "Cannot get this type!" );
+	}
+
+	return std::vector<std::string>{};
+}
+
+bool AssetManager::ChangeAssetName( const std::string& sOldName, const std::string& sNewName,
+									SCION_UTIL::AssetType eAssetType )
+{
+	switch ( eAssetType )
+	{
+	case SCION_UTIL::AssetType::TEXTURE: return SCION_UTIL::KeyChange( m_mapTextures, sOldName, sNewName );
+	case SCION_UTIL::AssetType::FONT: return SCION_UTIL::KeyChange( m_mapFonts, sOldName, sNewName );
+	case SCION_UTIL::AssetType::SOUNDFX: return SCION_UTIL::KeyChange( m_mapSoundFx, sOldName, sNewName );
+	case SCION_UTIL::AssetType::MUSIC: return SCION_UTIL::KeyChange( m_mapMusic, sOldName, sNewName );
+	default: SCION_ASSERT( false && "Cannot get this type!" );
+	}
+
+	return false;
+}
+
+bool AssetManager::CheckHasAsset( const std::string& sNameCheck, SCION_UTIL::AssetType eAssetType )
+{
+	switch ( eAssetType )
+	{
+	case SCION_UTIL::AssetType::TEXTURE: return m_mapTextures.contains( sNameCheck );
+	case SCION_UTIL::AssetType::FONT: return m_mapFonts.contains( sNameCheck );
+	case SCION_UTIL::AssetType::SOUNDFX: return m_mapSoundFx.contains( sNameCheck );
+	case SCION_UTIL::AssetType::MUSIC: return m_mapMusic.contains( sNameCheck );
+	default: SCION_ASSERT( false && "Cannot get this type!" );
+	}
+
+	return false;
 }
 
 void AssetManager::CreateLuaAssetManager( sol::state& lua )

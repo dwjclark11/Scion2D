@@ -74,7 +74,7 @@ end
 function GameState:OnUpdate(dt)
 	self:UpdateContacts()
 	UpdateActiveCharacters(dt)
-	--UpdateProjectiles(dt)
+	UpdateProjectiles(dt)
 	gFollowCam:update()
 	self.m_SceneDimmer.m_OnUpdate()
 	self.m_SceneDimmer:UpdateRainGen(dt)

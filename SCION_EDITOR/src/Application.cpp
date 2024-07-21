@@ -52,6 +52,7 @@
 #include <SDL_opengl.h>
 // ===================================
 
+#include "editor/displays/AssetDisplay.h"
 #include "editor/displays/SceneDisplay.h"
 #include "editor/displays/TilesetDisplay.h"
 #include "editor/displays/TilemapDisplay.h"
@@ -376,12 +377,34 @@ bool Application::LoadEditorTextures()
 		return false;
 	}
 
+	assetManager.GetTexture( "play_button" )->SetIsEditorTexture( true );
+
 	if ( !assetManager.AddTextureFromMemory(
 			 "stop_button", stop_button, sizeof( stop_button ) / sizeof( stop_button[ 0 ] ) ) )
 	{
 		SCION_ERROR( "Failed to load texture [stop_button] from memory." );
 		return false;
 	}
+
+	assetManager.GetTexture( "stop_button" )->SetIsEditorTexture( true );
+
+	if ( !assetManager.AddTextureFromMemory(
+			 "music_icon", music_icon, sizeof( music_icon ) / sizeof( music_icon[ 0 ] ) ) )
+	{
+		SCION_ERROR( "Failed to load texture [music_icon] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "music_icon" )->SetIsEditorTexture( true );
+
+	if ( !assetManager.AddTextureFromMemory(
+			 "scene_icon", scene_icon, sizeof( scene_icon ) / sizeof( scene_icon[ 0 ] ) ) )
+	{
+		SCION_ERROR( "Failed to load texture [scene_icon] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "scene_icon" )->SetIsEditorTexture( true );
 
 	return true;
 }
@@ -401,8 +424,6 @@ void Application::ProcessEvents()
 		{
 		case SDL_QUIT: m_bIsRunning = false; break;
 		case SDL_KEYDOWN:
-			if ( m_Event.key.keysym.sym == SDLK_ESCAPE )
-				m_bIsRunning = false;
 			keyboard.OnKeyPressed( m_Event.key.keysym.sym );
 			break;
 		case SDL_KEYUP: keyboard.OnKeyReleased( m_Event.key.keysym.sym ); break;
@@ -507,12 +528,21 @@ bool Application::CreateDisplays()
 		return false;
 	}
 
+	auto pAssetDisplay = std::make_unique<AssetDisplay>();
+	if ( !pAssetDisplay )
+	{
+		SCION_ERROR( "Failed to Create AssetDisplay!" );
+		return false;
+	}
+
+
 	// TODO: Create and add other displays as needed
 
 	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pLogDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pTilesetDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pTilemapDisplay ) );
+	pDisplayHolder->displays.push_back( std::move( pAssetDisplay ) );
 
 	return true;
 }
@@ -592,6 +622,7 @@ void Application::RenderImGui()
 		ImGui::DockBuilderDockWindow( "Dear ImGui Demo", leftNodeId );
 		ImGui::DockBuilderDockWindow( "Scene", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Tilemap Editor", centerNodeId );
+		ImGui::DockBuilderDockWindow( "Assets", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Logs", LogNodeId );
 
 		ImGui::DockBuilderDockWindow( "Tileset", LogNodeId );

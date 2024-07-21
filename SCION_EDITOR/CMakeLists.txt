@@ -3,20 +3,27 @@ add_executable(SCION_EDITOR
     "src/Application.h"
     "src/main.cpp"
 
+    # Editor Utilities
+    "src/editor/utilities/editor_textures.h" 
+    "src/editor/utilities/EditorUtilities.h"
+
+    # Editor Displays
     "src/editor/displays/IDisplay.h"
     "src/editor/displays/LogDisplay.h"
     "src/editor/displays/LogDisplay.cpp"
     "src/editor/displays/SceneDisplay.h"
     "src/editor/displays/SceneDisplay.cpp"  
-    
-    "src/editor/utilities/editor_textures.h" 
     "src/editor/displays/TilesetDisplay.h"
     "src/editor/displays/TilesetDisplay.cpp"
-    "src/editor/systems/GridSystem.h" 
-    "src/editor/systems/GridSystem.cpp" 
     "src/editor/displays/TilemapDisplay.h" 
     "src/editor/displays/TilemapDisplay.cpp" 
     "src/editor/utilities/EditorFramebuffers.h"
+    "src/editor/displays/AssetDisplay.h" 
+    "src/editor/displays/AssetDisplay.cpp" 
+
+    # Editor Systems
+    "src/editor/systems/GridSystem.h" 
+    "src/editor/systems/GridSystem.cpp" 
 )
 
 target_include_directories(
