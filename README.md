@@ -28,9 +28,13 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 
 #### Install dependencies 
 ```
-./vcpkg install glm entt sdl2[alsa] sdl2-mixer box2d lua sol2
+./vcpkg install fmt glm entt sdl2[alsa] sdl2-mixer box2d lua sol2
 ```
-  * Linux `apt-get install python-jinja2`
+- Linux[debian based] `sudo apt install python-jinja2 autoconf automake libtool pkg-config libibus-1.0-dev`
+    * if[Xorg] `sudo apt install libx11-dev libxft-dev libxext-dev`
+    * if[Wayland] `sudo apt install libwayland-dev libxkbcommon-dev libegl1-mesa-dev`
+    * Optional but good practice `sudo apt install build-essentials`
+
 
 #### Clone the repository 
 ```

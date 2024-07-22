@@ -23,7 +23,7 @@ std::string Logger::CurrentDateTime()
 	ctime_r( &time, buf );
 #endif
 	LogTime logTime{ std::string{ buf } };
-	return std::format( "{0}-{1}-{2} {3}", logTime.year, logTime.month, logTime.dayNumber, logTime.time );
+	return fmt::format( "{0}-{1}-{2} {3}", logTime.year, logTime.month, logTime.dayNumber, logTime.time );
 }
 
 Logger& Logger::GetInstance()

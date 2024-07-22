@@ -2,7 +2,7 @@
 #include "Logger.h"
 #include <chrono>
 #include <ctime>
-#include <format>
+#include <fmt/format.h>
 #include <iostream>
 #include <sstream>
 
@@ -34,7 +34,7 @@ void Logger::Log( const std::string_view message, Args&&... args )
 	}
 
 	std::stringstream ss;
-	ss << "SCION [INFO]: " << CurrentDateTime() << " - " << std::vformat( message, std::make_format_args( args... ) );
+	ss << "SCION [INFO]: " << CurrentDateTime() << " - " << fmt::vformat( message, fmt::make_format_args( args... ) );
 
 	if ( m_bConsoleLog )
 	{
@@ -68,7 +68,7 @@ void Logger::Warn( const std::string_view message, Args&&... args )
 	}
 
 	std::stringstream ss;
-	ss << "SCION [WARN]: " << CurrentDateTime() << " - " << std::vformat( message, std::make_format_args( args... ) );
+	ss << "SCION [WARN]: " << CurrentDateTime() << " - " << fmt::vformat( message, fmt::make_format_args( args... ) );
 
 	if ( m_bConsoleLog )
 	{
@@ -101,7 +101,7 @@ void Logger::Error( std::source_location location, const std::string_view messag
 	}
 
 	std::stringstream ss;
-	ss << "SCION [ERROR]: " << CurrentDateTime() << " - " << std::vformat( message, std::make_format_args( args... ) )
+	ss << "SCION [ERROR]: " << CurrentDateTime() << " - " << fmt::vformat( message, fmt::make_format_args( args... ) )
 	   << "\nFUNC: " << location.function_name() << "\nLINE: " << location.line();
 
 	if ( m_bConsoleLog )

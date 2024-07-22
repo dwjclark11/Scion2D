@@ -29,6 +29,7 @@ if(WIN32)
     add_definitions(-DNOMINMAX)
 endif()
 
+find_package(fmt CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_mixer CONFIG REQUIRED)
 find_package(box2d CONFIG REQUIRED)

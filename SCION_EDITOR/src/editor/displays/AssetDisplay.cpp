@@ -134,7 +134,7 @@ void AssetDisplay::CheckRename( const std::string& sCheckName ) const
 
 	if ( bHasAsset )
 		ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f },
-							std::format( "Asset name [{}] already exists!", sCheckName ).c_str() );
+							fmt::format( "Asset name [{}] already exists!", sCheckName ).c_str() );
 }
 
 void AssetDisplay::DrawSelectedAssets()

@@ -5,3 +5,5 @@ add_library(SCION_LOGGER
 
 target_include_directories(
     SCION_LOGGER PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+target_link_libraries( SCION_LOGGER PUBLIC fmt::fmt)
