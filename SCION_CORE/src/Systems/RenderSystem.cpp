@@ -14,23 +14,22 @@ using namespace SCION_RESOURCES;
 
 namespace SCION_CORE::Systems
 {
-RenderSystem::RenderSystem( SCION_CORE::ECS::Registry& registry )
-	: m_Registry( registry )
-	, m_pBatchRenderer{ nullptr }
+RenderSystem::RenderSystem( )
+	: m_pBatchRenderer{ std::make_unique<SpriteBatchRenderer>() }
 {
-	m_pBatchRenderer = std::make_unique<SpriteBatchRenderer>();
+	
 }
 
-void RenderSystem::Update()
+void RenderSystem::Update( SCION_CORE::ECS::Registry& registry )
 {
-	auto view = m_Registry.GetRegistry().view<SpriteComponent, TransformComponent>();
+	auto view = registry.GetRegistry().view<SpriteComponent, TransformComponent>();
 	if ( view.size_hint() < 1 )
 		return;
 
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
 
-	auto& camera = m_Registry.GetContext<std::shared_ptr<Camera2D>>();
+	auto& camera = registry.GetContext<std::shared_ptr<Camera2D>>();
 
 	const auto& spriteShader = assetManager.GetShader( "basic" );
 	auto cam_mat = camera->GetCameraMatrix();

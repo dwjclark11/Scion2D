@@ -14,6 +14,14 @@ inline TContext& Registry::GetContext()
 	return m_pRegistry->ctx().get<TContext>();
 }
 
+
+template <typename TContext>
+bool Registry::RemoveContext()
+{
+	return m_pRegistry->ctx().erase<TContext>();
+}
+
+
 template <typename TComponent>
 entt::runtime_view& add_component_to_view( Registry* registry, entt::runtime_view& view )
 {

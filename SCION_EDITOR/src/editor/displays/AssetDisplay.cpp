@@ -6,6 +6,7 @@
 #include "Logger/Logger.h"
 
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/scene/SceneManager.h"
 
 #include <imgui.h>
 
@@ -137,6 +138,30 @@ void AssetDisplay::CheckRename( const std::string& sCheckName ) const
 							fmt::format( "Asset name [{}] already exists!", sCheckName ).c_str() );
 }
 
+void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
+{
+	if ( ImGui::Selectable( "rename" ) )
+	{
+		m_bRename = true;
+	}
+
+	if ( ImGui::Selectable( "delete" ) )
+	{
+		if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
+		{
+			// TODO: Check is scene name already exists
+		}
+		else
+		{
+			auto& assetManager = MAIN_REGISTRY().GetAssetManager();
+			if (!assetManager.DeleteAsset(sAssetName, m_eSelectedType))
+			{
+				SCION_ERROR( "Failed to delete asset {}.", sAssetName );
+			}
+		}
+	}
+}
+
 void AssetDisplay::DrawSelectedAssets()
 {
 	auto& mainRegistry = MAIN_REGISTRY();
@@ -146,7 +171,7 @@ void AssetDisplay::DrawSelectedAssets()
 
 	if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
 	{
-		// TODO: When we have the scene manager
+		assetNames = SCENE_MANAGER().GetSceneNames();
 	}
 	else
 		assetNames = assetManager.GetAssetKeyNames( m_eSelectedType );
@@ -203,14 +228,8 @@ void AssetDisplay::DrawSelectedAssets()
 
 				if ( bSelectedAsset && ImGui::BeginPopupContextItem() )
 				{
-					if ( ImGui::Selectable( "rename" ) )
-					{
-						m_bRename = true;
-					}
-					if ( ImGui::Selectable( "delete" ) )
-					{
-						SCION_LOG( "PLEASE DELETE [{}]", *assetItr );
-					}
+					OpenAssetContext( *assetItr );
+
 					ImGui::EndPopup();
 				}
 

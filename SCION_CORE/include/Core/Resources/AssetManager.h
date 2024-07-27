@@ -188,6 +188,8 @@ class AssetManager
 	*/
 	bool CheckHasAsset( const std::string& sNameCheck, SCION_UTIL::AssetType eAssetType );
 
+	bool DeleteAsset( const std::string& sAssetName, SCION_UTIL::AssetType eAssetType );
+
 	/*
 	 * Binds the AssetManager functionality to the lua state.
 	 * @param takes in the sol::state& for binding to lua.

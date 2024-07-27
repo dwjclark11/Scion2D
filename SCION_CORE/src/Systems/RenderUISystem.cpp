@@ -14,9 +14,8 @@ using namespace SCION_RESOURCES;
 namespace SCION_CORE::Systems
 {
 
-RenderUISystem::RenderUISystem( SCION_CORE::ECS::Registry& registry )
-	: m_Registry{ registry }
-	, m_pSpriteRenderer{ std::make_unique<SCION_RENDERING::SpriteBatchRenderer>() }
+RenderUISystem::RenderUISystem( )
+	: m_pSpriteRenderer{ std::make_unique<SCION_RENDERING::SpriteBatchRenderer>() }
 	, m_pTextRenderer{ std::make_unique<SCION_RENDERING::TextBatchRenderer>() }
 	, m_pCamera2D{ nullptr }
 {
@@ -27,12 +26,12 @@ RenderUISystem::RenderUISystem( SCION_CORE::ECS::Registry& registry )
 	m_pCamera2D->Update();
 }
 
-void RenderUISystem::Update( entt::registry& registry )
+void RenderUISystem::Update( SCION_CORE::ECS::Registry& registry )
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 
 	// If there are no entities in the view, leave
-	auto textView = registry.view<TextComponent, TransformComponent>();
+	auto textView = registry.GetRegistry().view<TextComponent, TransformComponent>();
 	if ( textView.size_hint() < 1 )
 		return;
 

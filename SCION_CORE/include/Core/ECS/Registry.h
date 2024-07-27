@@ -25,6 +25,8 @@ class Registry
 	 */
 	inline entt::entity CreateEntity() { return m_pRegistry->create(); }
 
+	inline void ClearRegistry() { m_pRegistry->clear(); }
+
 	/*
 	 * @brief The context is a general purpose map that can hold any type of variable.
 	 * The variable must be movable and constructable.
@@ -44,6 +46,9 @@ class Registry
 	 */
 	template <typename TContext>
 	TContext& GetContext();
+
+	template <typename TContext>
+	bool RemoveContext();
 
 	static void CreateLuaRegistryBind( sol::state& lua, Registry& registry );
 

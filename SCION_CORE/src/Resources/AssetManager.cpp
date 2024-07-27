@@ -325,6 +325,24 @@ bool AssetManager::CheckHasAsset( const std::string& sNameCheck, SCION_UTIL::Ass
 	return false;
 }
 
+bool AssetManager::DeleteAsset( const std::string& sAssetName, SCION_UTIL::AssetType eAssetType )
+{
+	switch ( eAssetType )
+	{
+	case SCION_UTIL::AssetType::TEXTURE:
+		return std::erase_if( m_mapTextures, [ & ]( const auto& pair ) { return pair.first == sAssetName; } ) > 0;
+	case SCION_UTIL::AssetType::FONT:
+		return std::erase_if( m_mapFonts, [ & ]( const auto& pair ) { return pair.first == sAssetName; } ) > 0;
+	case SCION_UTIL::AssetType::SOUNDFX: 
+		return std::erase_if( m_mapSoundFx, [ & ]( const auto& pair ) { return pair.first == sAssetName; } ) > 0;
+	case SCION_UTIL::AssetType::MUSIC:
+		return std::erase_if( m_mapMusic, [ & ]( const auto& pair ) { return pair.first == sAssetName; } ) > 0;
+	default: SCION_ASSERT( false && "Cannot get this type!" );
+	}
+
+	return false;
+}
+
 void AssetManager::CreateLuaAssetManager( sol::state& lua )
 {
 	auto& mainRegistry = MAIN_REGISTRY();

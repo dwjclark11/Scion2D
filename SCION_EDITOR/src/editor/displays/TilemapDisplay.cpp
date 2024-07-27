@@ -6,6 +6,9 @@
 
 #include "editor/systems/GridSystem.h"
 #include "editor/utilities/EditorFramebuffers.h"
+#include "editor/utilities/EditorUtilities.h"
+
+#include "editor/scene/SceneManager.h"
 
 #include "Logger/Logger.h"
 #include <imgui.h>
@@ -75,6 +78,21 @@ void TilemapDisplay::Draw()
 		ImGui::SetCursorPos( ImVec2{ x, y } );
 
 		ImGui::Image( (ImTextureID)fb->GetTextureID(), imageSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f } );
+
+		// Accept Scene Drop Target
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( DROP_SCENE_SRC );
+			if (payload)
+			{
+				SCION_LOG( "BEFORE: {}", SCENE_MANAGER().GetCurrentSceneName() );
+				SCENE_MANAGER().SetCurrentScene( std::string{ (const char*)payload->Data } );
+				SCION_LOG( "AFTER: {}", SCENE_MANAGER().GetCurrentSceneName() );
+			}
+
+			ImGui::EndDragDropTarget();
+		}
+
 
 		ImGui::EndChild();
 	}

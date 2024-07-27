@@ -7,7 +7,6 @@ namespace SCION_EDITOR
 class SceneDisplay : public IDisplay
 {
   private:
-	SCION_CORE::ECS::Registry& m_Registry;
 	bool m_bPlayScene, m_bSceneLoaded;
 
   private:

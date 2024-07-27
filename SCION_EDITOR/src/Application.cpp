@@ -61,6 +61,8 @@
 #include "editor/utilities/EditorFramebuffers.h"
 
 #include "editor/systems/GridSystem.h"
+#include "editor/scene/SceneManager.h"
+
 
 namespace SCION_EDITOR
 {
@@ -184,7 +186,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	auto renderSystem = std::make_shared<SCION_CORE::Systems::RenderSystem>( *m_pRegistry );
+	auto renderSystem = std::make_shared<SCION_CORE::Systems::RenderSystem>( );
 	if ( !renderSystem )
 	{
 		SCION_ERROR( "Failed to create the render system!" );
@@ -197,7 +199,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	auto renderUISystem = std::make_shared<SCION_CORE::Systems::RenderUISystem>( *m_pRegistry );
+	auto renderUISystem = std::make_shared<SCION_CORE::Systems::RenderUISystem>( );
 	if ( !renderUISystem )
 	{
 		SCION_ERROR( "Failed to create the render UI system!" );
@@ -210,7 +212,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	auto renderShapeSystem = std::make_shared<SCION_CORE::Systems::RenderShapeSystem>( *m_pRegistry );
+	auto renderShapeSystem = std::make_shared<SCION_CORE::Systems::RenderShapeSystem>( );
 	if ( !renderShapeSystem )
 	{
 		SCION_ERROR( "Failed to create the render Shape system!" );
@@ -329,6 +331,10 @@ bool Application::Initialize()
 		SCION_ERROR( "Failed add the grid system registry context!" );
 		return false;
 	}
+
+	SCENE_MANAGER().AddScene( "DefaultScene" );
+	SCENE_MANAGER().AddScene( "NewScene" );
+	//SCENE_MANAGER().SetCurrentScene( "DefaultScene" );
 
 	return true;
 }
