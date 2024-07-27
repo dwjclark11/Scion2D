@@ -1,26 +1,8 @@
 #include "Application.h"
-
-#include <SDL.h>
 #include <glad/glad.h>
-#include <iostream>
-#include <SOIL/SOIL.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <Rendering/Essentials/ShaderLoader.h>
-#include <Rendering/Essentials/TextureLoader.h>
-#include <Rendering/Essentials/Vertex.h>
-#include <Rendering/Core/Camera2D.h>
 #include <Rendering/Core/Renderer.h>
-#include <Rendering/Buffers/Framebuffer.h>
 
 #include <Logger/Logger.h>
-#include <Core/ECS/Entity.h>
-#include <Core/ECS/Components/SpriteComponent.h>
-#include <Core/ECS/Components/Identification.h>
-#include <Core/ECS/Components/TransformComponent.h>
-#include <Core/ECS/Components/PhysicsComponent.h>
-#include <Core/ECS/Components/BoxColliderComponent.h>
-#include <Core/ECS/Components/CircleColliderComponent.h>
 #include <Core/ECS/MainRegistry.h>
 
 #include <Core/Resources/AssetManager.h>
@@ -37,12 +19,7 @@
 #include <Windowing/Inputs/Keyboard.h>
 #include <Windowing/Inputs/Mouse.h>
 #include <Windowing/Inputs/Gamepad.h>
-
-// Add sounds
-#include <Sounds/MusicPlayer/MusicPlayer.h>
-#include <Sounds/SoundPlayer/SoundFxPlayer.h>
-
-#include <Physics/ContactListener.h>
+#include <Windowing/Window/Window.h>
 
 // IMGUI TESTING
 // ===================================
@@ -62,7 +39,6 @@
 
 #include "editor/systems/GridSystem.h"
 #include "editor/scene/SceneManager.h"
-
 
 namespace SCION_EDITOR
 {
@@ -156,37 +132,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	m_pRegistry = std::make_unique<SCION_CORE::ECS::Registry>();
-
-	// Create the lua state
-	auto lua = std::make_shared<sol::state>();
-
-	if ( !lua )
-	{
-		SCION_ERROR( "Failed to create the lua state!" );
-		return false;
-	}
-
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<sol::state>>( lua ) )
-	{
-		SCION_ERROR( "Failed to add the sol::state to the registry context!" );
-		return false;
-	}
-
-	auto scriptSystem = std::make_shared<SCION_CORE::Systems::ScriptingSystem>( *m_pRegistry );
-	if ( !scriptSystem )
-	{
-		SCION_ERROR( "Failed to create the script system!" );
-		return false;
-	}
-
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>( scriptSystem ) )
-	{
-		SCION_ERROR( "Failed to add the script system to the registry context!" );
-		return false;
-	}
-
-	auto renderSystem = std::make_shared<SCION_CORE::Systems::RenderSystem>( );
+	auto renderSystem = std::make_shared<SCION_CORE::Systems::RenderSystem>();
 	if ( !renderSystem )
 	{
 		SCION_ERROR( "Failed to create the render system!" );
@@ -199,7 +145,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	auto renderUISystem = std::make_shared<SCION_CORE::Systems::RenderUISystem>( );
+	auto renderUISystem = std::make_shared<SCION_CORE::Systems::RenderUISystem>();
 	if ( !renderUISystem )
 	{
 		SCION_ERROR( "Failed to create the render UI system!" );
@@ -212,7 +158,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	auto renderShapeSystem = std::make_shared<SCION_CORE::Systems::RenderShapeSystem>( );
+	auto renderShapeSystem = std::make_shared<SCION_CORE::Systems::RenderShapeSystem>();
 	if ( !renderShapeSystem )
 	{
 		SCION_ERROR( "Failed to create the render Shape system!" );
@@ -224,55 +170,6 @@ bool Application::Initialize()
 		SCION_ERROR( "Failed to add the render Shape system to the registry context!" );
 		return false;
 	}
-
-	auto animationSystem = std::make_shared<SCION_CORE::Systems::AnimationSystem>( *m_pRegistry );
-	if ( !animationSystem )
-	{
-		SCION_ERROR( "Failed to create the animation system!" );
-		return false;
-	}
-
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::AnimationSystem>>( animationSystem ) )
-	{
-		SCION_ERROR( "Failed to add the animation system to the registry context!" );
-		return false;
-	}
-
-	// Create a temp camera
-	auto camera = std::make_shared<SCION_RENDERING::Camera2D>();
-
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<SCION_RENDERING::Camera2D>>( camera ) )
-	{
-		SCION_ERROR( "Failed to add the camera to the registry context!" );
-		return false;
-	}
-
-	// Create the physics world
-	SCION_PHYSICS::PhysicsWorld pPhysicsWorld = std::make_shared<b2World>( b2Vec2{ 0.f, 9.8f } );
-
-	if ( !m_pRegistry->AddToContext<SCION_PHYSICS::PhysicsWorld>( pPhysicsWorld ) )
-	{
-		SCION_ERROR( "Failed to add the Physics world to the registry context!" );
-		return false;
-	}
-
-	auto pPhysicsSystem = std::make_shared<SCION_CORE::Systems::PhysicsSystem>( *m_pRegistry );
-
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<SCION_CORE::Systems::PhysicsSystem>>( pPhysicsSystem ) )
-	{
-		SCION_ERROR( "Failed to add the Physics system to the registry context!" );
-		return false;
-	}
-
-	auto pContactListener = std::make_shared<SCION_PHYSICS::ContactListener>();
-
-	if ( !m_pRegistry->AddToContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>( pContactListener ) )
-	{
-		SCION_ERROR( "Failed to add the contact listener to the registry context!" );
-		return false;
-	}
-
-	pPhysicsWorld->SetContactListener( pContactListener.get() );
 
 	if ( !InitImGui() )
 	{
@@ -332,9 +229,9 @@ bool Application::Initialize()
 		return false;
 	}
 
+	// TEST SCENES -- TODO: Remove These after testing
 	SCENE_MANAGER().AddScene( "DefaultScene" );
 	SCENE_MANAGER().AddScene( "NewScene" );
-	//SCENE_MANAGER().SetCurrentScene( "DefaultScene" );
 
 	return true;
 }
@@ -429,9 +326,7 @@ void Application::ProcessEvents()
 		switch ( m_Event.type )
 		{
 		case SDL_QUIT: m_bIsRunning = false; break;
-		case SDL_KEYDOWN:
-			keyboard.OnKeyPressed( m_Event.key.keysym.sym );
-			break;
+		case SDL_KEYDOWN: keyboard.OnKeyPressed( m_Event.key.keysym.sym ); break;
 		case SDL_KEYUP: keyboard.OnKeyReleased( m_Event.key.keysym.sym ); break;
 		case SDL_MOUSEBUTTONDOWN: mouse.OnBtnPressed( m_Event.button.button ); break;
 		case SDL_MOUSEBUTTONUP: mouse.OnBtnReleased( m_Event.button.button ); break;
@@ -506,7 +401,7 @@ bool Application::CreateDisplays()
 		return false;
 	}
 
-	auto pSceneDisplay = std::make_unique<SceneDisplay>( *m_pRegistry );
+	auto pSceneDisplay = std::make_unique<SceneDisplay>();
 	if ( !pSceneDisplay )
 	{
 		SCION_ERROR( "Failed to Create Scene Display!" );
@@ -540,9 +435,6 @@ bool Application::CreateDisplays()
 		SCION_ERROR( "Failed to Create AssetDisplay!" );
 		return false;
 	}
-
-
-	// TODO: Create and add other displays as needed
 
 	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pLogDisplay ) );
@@ -649,7 +541,6 @@ void Application::RenderImGui()
 
 Application::Application()
 	: m_pWindow{ nullptr }
-	, m_pRegistry{ nullptr }
 	, m_Event{}
 	, m_bIsRunning{ true }
 {

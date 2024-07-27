@@ -138,7 +138,7 @@ void SceneDisplay::RenderScene()
 	fb->CheckResize();
 }
 
-SceneDisplay::SceneDisplay( SCION_CORE::ECS::Registry& registry )
+SceneDisplay::SceneDisplay( )
 	: m_bPlayScene{ false }
 	, m_bSceneLoaded{ false }
 {

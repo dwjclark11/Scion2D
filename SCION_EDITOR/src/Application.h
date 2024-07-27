@@ -1,7 +1,11 @@
 #pragma once
-#include <glad/glad.h>
-#include <Windowing/Window/Window.h>
-#include <Core/ECS/Registry.h>
+#include <memory>
+#include <SDL.h>
+
+namespace SCION_WINDOWING
+{
+class Window;
+}
 
 namespace SCION_EDITOR
 {
@@ -9,7 +13,6 @@ class Application
 {
   private:
 	std::unique_ptr<SCION_WINDOWING::Window> m_pWindow;
-	std::unique_ptr<SCION_CORE::ECS::Registry> m_pRegistry;
 
 	SDL_Event m_Event;
 	bool m_bIsRunning;

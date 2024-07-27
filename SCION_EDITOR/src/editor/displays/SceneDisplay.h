@@ -15,7 +15,7 @@ class SceneDisplay : public IDisplay
 	void RenderScene();
 
   public:
-	SceneDisplay( SCION_CORE::ECS::Registry& registry );
+	SceneDisplay();
 	~SceneDisplay() = default;
 
 	virtual void Draw() override;
