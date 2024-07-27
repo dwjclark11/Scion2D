@@ -44,8 +44,8 @@ bool AssetManager::AddTexture( const std::string& textureName, const std::string
 		return false;
 	}
 
-	m_mapTextures.emplace( textureName, std::move( texture ) );
-	return true;
+	auto [ itr, bSuccess ] = m_mapTextures.emplace( textureName, std::move( texture ) );
+	return bSuccess;
 }
 
 bool AssetManager::AddTextureFromMemory( const std::string& textureName, const unsigned char* imageData, size_t length,
@@ -69,9 +69,9 @@ bool AssetManager::AddTextureFromMemory( const std::string& textureName, const u
 	}
 
 	// Insert the texture into the map
-	m_mapTextures.emplace( textureName, std::move( texture ) );
+	auto [ itr, bSuccess ] = m_mapTextures.emplace( textureName, std::move( texture ) );
 
-	return true;
+	return bSuccess;
 }
 
 std::shared_ptr<SCION_RENDERING::Texture> AssetManager::GetTexture( const std::string& textureName )
@@ -107,9 +107,9 @@ bool AssetManager::AddFont( const std::string& fontName, const std::string& font
 		return false;
 	}
 
-	m_mapFonts.emplace( fontName, std::move( pFont ) );
+	auto [ itr, bSuccess ] = m_mapFonts.emplace( fontName, std::move( pFont ) );
 
-	return true;
+	return bSuccess;
 }
 
 bool AssetManager::AddFontFromMemory( const std::string& fontName, unsigned char* fontData, float fontSize )
@@ -129,9 +129,9 @@ bool AssetManager::AddFontFromMemory( const std::string& fontName, unsigned char
 		return false;
 	}
 
-	m_mapFonts.emplace( fontName, std::move( pFont ) );
+	auto [ itr, bSuccess ] = m_mapFonts.emplace( fontName, std::move( pFont ) );
 
-	return true;
+	return bSuccess;
 }
 
 std::shared_ptr<SCION_RENDERING::Font> AssetManager::GetFont( const std::string& fontName )
@@ -150,7 +150,7 @@ bool AssetManager::AddShader( const std::string& shaderName, const std::string& 
 							  const std::string& fragmentPath )
 {
 	// Check to see if the shader already exists
-	if ( m_mapShader.find( shaderName ) != m_mapShader.end() )
+	if ( m_mapShader.contains( shaderName ) )
 	{
 		SCION_ERROR( "Failed to add shader [{0}] -- Already Exists!", shaderName );
 		return false;
@@ -168,23 +168,23 @@ bool AssetManager::AddShader( const std::string& shaderName, const std::string& 
 		return false;
 	}
 
-	m_mapShader.emplace( shaderName, std::move( shader ) );
-	return true;
+	auto [ itr, bSuccess ] = m_mapShader.emplace( shaderName, std::move( shader ) );
+	return bSuccess;
 }
 
 bool AssetManager::AddShaderFromMemory( const std::string& shaderName, const char* vertexShader,
 										const char* fragShader )
 {
-	if ( m_mapShader.find( shaderName ) != m_mapShader.end() )
+	if ( m_mapShader.contains( shaderName ) )
 	{
 		SCION_ERROR( "Failed to add shader - [{0}] -- Already exists!", shaderName );
 		return false;
 	}
 
 	auto shader = std::move( SCION_RENDERING::ShaderLoader::CreateFromMemory( vertexShader, fragShader ) );
-	m_mapShader.insert( std::make_pair( shaderName, std::move( shader ) ) );
+	auto [ itr, bSuccess ] = m_mapShader.insert( std::make_pair( shaderName, std::move( shader ) ) );
 
-	return true;
+	return bSuccess;
 }
 
 std::shared_ptr<SCION_RENDERING::Shader> AssetManager::GetShader( const std::string& shaderName )
@@ -201,7 +201,7 @@ std::shared_ptr<SCION_RENDERING::Shader> AssetManager::GetShader( const std::str
 
 bool AssetManager::AddMusic( const std::string& musicName, const std::string& filepath )
 {
-	if ( m_mapMusic.find( musicName ) != m_mapMusic.end() )
+	if ( m_mapMusic.contains( musicName ) )
 	{
 		SCION_ERROR( "Failed to add music [{}] -- Already exists!", musicName );
 		return false;
@@ -227,9 +227,9 @@ bool AssetManager::AddMusic( const std::string& musicName, const std::string& fi
 		return false;
 	}
 
-	m_mapMusic.emplace( musicName, std::move( musicPtr ) );
+	auto [ itr, bSuccess ] = m_mapMusic.emplace( musicName, std::move( musicPtr ) );
 
-	return true;
+	return bSuccess;
 }
 
 std::shared_ptr<SCION_SOUNDS::Music> AssetManager::GetMusic( const std::string& musicName )
@@ -246,7 +246,7 @@ std::shared_ptr<SCION_SOUNDS::Music> AssetManager::GetMusic( const std::string& 
 
 bool AssetManager::AddSoundFx( const std::string& soundFxName, const std::string& filepath )
 {
-	if ( m_mapSoundFx.find( soundFxName ) != m_mapSoundFx.end() )
+	if ( m_mapSoundFx.contains( soundFxName ) )
 	{
 		SCION_ERROR( "Failed to add soundfx [{}] -- Already exists!", soundFxName );
 		return false;
@@ -264,9 +264,9 @@ bool AssetManager::AddSoundFx( const std::string& soundFxName, const std::string
 	SCION_SOUNDS::SoundParams params{ .name = soundFxName, .filename = filepath, .duration = chunk->alen / 179.4 };
 
 	auto pSoundFx = std::make_shared<SCION_SOUNDS::SoundFX>( params, SoundFxPtr{ chunk } );
-	m_mapSoundFx.emplace( soundFxName, std::move( pSoundFx ) );
+	auto [ itr, bSuccess ] = m_mapSoundFx.emplace( soundFxName, std::move( pSoundFx ) );
 
-	return true;
+	return bSuccess;
 }
 
 std::shared_ptr<SCION_SOUNDS::SoundFX> AssetManager::GetSoundFx( const std::string& soundFxName )
@@ -333,7 +333,7 @@ bool AssetManager::DeleteAsset( const std::string& sAssetName, SCION_UTIL::Asset
 		return std::erase_if( m_mapTextures, [ & ]( const auto& pair ) { return pair.first == sAssetName; } ) > 0;
 	case SCION_UTIL::AssetType::FONT:
 		return std::erase_if( m_mapFonts, [ & ]( const auto& pair ) { return pair.first == sAssetName; } ) > 0;
-	case SCION_UTIL::AssetType::SOUNDFX: 
+	case SCION_UTIL::AssetType::SOUNDFX:
 		return std::erase_if( m_mapSoundFx, [ & ]( const auto& pair ) { return pair.first == sAssetName; } ) > 0;
 	case SCION_UTIL::AssetType::MUSIC:
 		return std::erase_if( m_mapMusic, [ & ]( const auto& pair ) { return pair.first == sAssetName; } ) > 0;

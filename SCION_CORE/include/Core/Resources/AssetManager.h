@@ -188,6 +188,12 @@ class AssetManager
 	*/
 	bool CheckHasAsset( const std::string& sNameCheck, SCION_UTIL::AssetType eAssetType );
 
+	/*
+	* @brief Checks to see if the asset exists based on it's name and type. Then deletes the asset.
+	* @param std::string of the name to check.
+	* @param an enum of the asset type to check.
+	* @return Returns true if the asset was deleted successfully, false otherwise.
+	*/
 	bool DeleteAsset( const std::string& sAssetName, SCION_UTIL::AssetType eAssetType );
 
 	/*
