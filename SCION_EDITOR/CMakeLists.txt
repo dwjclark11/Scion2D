@@ -29,7 +29,11 @@ add_executable(SCION_EDITOR
     "src/editor/scene/SceneObject.h" 
     "src/editor/scene/SceneObject.cpp" 
     "src/editor/scene/SceneManager.h" 
-    "src/editor/scene/SceneManager.cpp")
+    "src/editor/scene/SceneManager.cpp"
+    
+    # Tools
+    "src/editor/tools/AbstractTool.h"
+    "src/editor/tools/AbstractTool.cpp")
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

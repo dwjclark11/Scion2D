@@ -21,6 +21,7 @@ class SceneObject
 	inline Canvas& GetCanvas() { return m_Canvas; }
 	inline const std::string& GetName() { return m_sSceneName; }
 	inline SCION_CORE::ECS::Registry& GetRegistry() { return m_Registry; }
+	inline SCION_CORE::ECS::Registry* GetRegistryPtr() { return &m_Registry; }
 	inline SCION_CORE::ECS::Registry& GetRuntimeRegistry() { return m_RuntimeRegistry; }
 };
 } // namespace SCION_EDITOR

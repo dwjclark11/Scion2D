@@ -9,6 +9,8 @@
 using namespace SCION_WINDOWING::Inputs;
 constexpr int MAX_CONTROLLERS = 4;
 
+#define INPUT_MANAGER() SCION_CORE::InputManager::GetInstance()
+
 namespace SCION_CORE
 {
 /*
