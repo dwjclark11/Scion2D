@@ -24,8 +24,8 @@
 // IMGUI TESTING
 // ===================================
 #include <imgui_internal.h>
-#include <backends/imgui_impl_sdl2.h>
-#include <backends/imgui_impl_opengl3.h>
+#include <imgui_impl_sdl2.h>
+#include <imgui_impl_opengl3.h>
 #include <SDL_opengl.h>
 // ===================================
 
@@ -503,7 +503,7 @@ void Application::End()
 
 void Application::RenderImGui()
 {
-	const auto dockSpaceId = ImGui::DockSpaceOverViewport( ImGui::GetMainViewport() );
+	const auto dockSpaceId = ImGui::DockSpaceOverViewport( 0, ImGui::GetMainViewport() );
 	if ( static auto firstTime = true; firstTime ) [[unlikely]]
 	{
 		firstTime = false;

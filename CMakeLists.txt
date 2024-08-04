@@ -31,6 +31,9 @@ if(WIN32)
     add_definitions(-DNOMINMAX)
 endif()
 
+find_package(glad CONFIG REQUIRED)
+find_package(soil2 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_mixer CONFIG REQUIRED)
@@ -40,8 +43,6 @@ find_package(glm CONFIG REQUIRED)
 find_package(Lua REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
 target_link_libraries(sol2 INTERFACE ${LUA_LIBRARIES})
-
-add_subdirectory(Dependencies)
 
 add_subdirectory(SCION_LOGGER)
 add_subdirectory(SCION_UTILITIES)

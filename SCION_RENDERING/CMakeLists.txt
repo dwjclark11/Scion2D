@@ -39,7 +39,7 @@ target_include_directories(
 
 target_link_libraries(SCION_RENDERING
     PRIVATE SCION_LOGGER
-    PUBLIC glm::glm glad soil)
+    PUBLIC glm::glm glad::glad soil2)
 
 target_compile_options(
     SCION_RENDERING PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)

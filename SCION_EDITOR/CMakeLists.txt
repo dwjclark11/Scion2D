@@ -37,7 +37,7 @@ add_executable(SCION_EDITOR
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(SCION_EDITOR PRIVATE SCION_CORE imgui)
+target_link_libraries(SCION_EDITOR PRIVATE SCION_CORE imgui::imgui)
 
 add_resources(TARGET Assets IN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets OUT_DIR assets)
 add_dependencies(SCION_EDITOR Copy-Assets)

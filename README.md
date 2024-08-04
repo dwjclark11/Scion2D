@@ -25,7 +25,22 @@ git clone https://github.com/microsoft/vcpkg
 VCPKG_ROOT=[path_to_vcpkg]
 VCPKG_DEFAULT_TRIPLET=x64-windows
 ```
+
+- Windows
+
+    Add the following line in your Path environnment variable:
+    ```
+    <path_to_vcpkg_installation_folder>
+    ```
+
+    Open a terminal and type the following:
+    ```
+    vcpkg integrate install
+    vcpkg integrate powershell
+    ```
+
 - Linux
+
     Edit your profile's bashrc file:
     ```
     nano ~/.bashrc
@@ -40,15 +55,21 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
     ```
     source ~/.bashrc
     ```
+
+    Open a terminal and type the following:
+    ```
+    vcpkg integrate install
+    vcpkg integrate bash
+    ```
     
 #### Install dependencies 
 - Windows
     ```
-    ./vcpkg install fmt glm entt sdl2 sdl2-mixer box2d lua sol2
+    vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
     ```
 - Linux[debian based]
     ```
-    ./vcpkg install fmt glm entt sdl2[alsa] sdl2-mixer box2d lua sol2
+    vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
     ```
     ```
     sudo apt install python-jinja2 autoconf automake libtool pkg-config libibus-1.0-dev`
@@ -57,15 +78,14 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
          ```
         sudo apt install libx11-dev libxft-dev libxext-dev
         ```
-   * if[Wayland]
+    * if[Wayland]
         ```
         sudo apt install libwayland-dev libxkbcommon-dev libegl1-mesa-dev
         ```
-    Optional but good practice
-    ```
-    sudo apt install build-essentials
-    ```
-
+    * Optional but good practice
+        ```
+        sudo apt install build-essentials
+        ```
 
 #### Clone the repository 
 ```

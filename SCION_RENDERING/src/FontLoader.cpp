@@ -5,7 +5,7 @@
 #include <Logger/Logger.h>
 
 #define STB_TRUETYPE_IMPLEMENTATION
-#include <SOIL/stb_truetype.h>
+#include <stb_truetype.h>
 
 namespace SCION_RENDERING
 {
