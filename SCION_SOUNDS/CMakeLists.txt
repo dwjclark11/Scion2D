@@ -13,6 +13,10 @@ add_library(SCION_SOUNDS
 
 target_include_directories(
     SCION_SOUNDS PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 target_link_libraries(SCION_SOUNDS
     PRIVATE $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
     PUBLIC SCION_UTILITIES)
+
+target_compile_options(
+    SCION_SOUNDS PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)

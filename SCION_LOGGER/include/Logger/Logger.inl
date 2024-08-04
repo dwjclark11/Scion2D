@@ -1,7 +1,5 @@
 #pragma once
 #include "Logger.h"
-#include <chrono>
-#include <ctime>
 #include <fmt/format.h>
 #include <iostream>
 #include <sstream>
@@ -13,11 +11,11 @@ constexpr WORD RED = 4;
 constexpr WORD YELLOW = 6;
 constexpr WORD WHITE = 7;
 #else
-static const std::string GREEN = "\033[0;32m";
-static const std::string YELLOW = "\033[0;33m";
-static const std::string RED = "\033[0;31m";
-static const std::string WHITE = "\033[0;30m";
-static const std::string CLOSE = "\022[0m";
+static const char* GREEN = "\033[0;32m";
+static const char* YELLOW = "\033[0;33m";
+static const char* RED = "\033[0;31m";
+static const char* WHITE = "\033[0;30m";
+static const char* CLOSE = "\022[0m";
 #endif
 
 namespace SCION_LOGGER

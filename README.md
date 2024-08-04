@@ -18,7 +18,7 @@ Requires [CMake 3.26](https://cmake.org/) and [vcpkg](https://github.com/microso
 #### Get VCPKG:
 ```ps
 git clone https://github.com/microsoft/vcpkg
-./vcpkg/bootstrap-vcpkg.bat
+./vcpkg/bootstrap-vcpkg.bat --disableMetrics
 ```
 #### Make sure the following environment variables are set:
 ```
@@ -26,15 +26,66 @@ VCPKG_ROOT=[path_to_vcpkg]
 VCPKG_DEFAULT_TRIPLET=x64-windows
 ```
 
-#### Install dependencies 
-```
-./vcpkg install fmt glm entt sdl2[alsa] sdl2-mixer box2d lua sol2
-```
-- Linux[debian based] `sudo apt install python-jinja2 autoconf automake libtool pkg-config libibus-1.0-dev`
-    * if[Xorg] `sudo apt install libx11-dev libxft-dev libxext-dev`
-    * if[Wayland] `sudo apt install libwayland-dev libxkbcommon-dev libegl1-mesa-dev`
-    * Optional but good practice `sudo apt install build-essentials`
+- Windows
 
+    Add the following line in your Path environnment variable:
+    ```
+    <path_to_vcpkg_installation_folder>
+    ```
+
+    Open a terminal and type the following:
+    ```
+    vcpkg integrate install
+    vcpkg integrate powershell
+    ```
+
+- Linux
+
+    Edit your profile's bashrc file:
+    ```
+    nano ~/.bashrc
+    ```
+    Add the following lines at the end:
+    ```
+    export PATH=<path_to_vcpkg_installation_folder>:$PATH
+    export VCPKG_ROOT=<path_to_vcpkg_installation_folder>
+    export VCPKG_DEFAULT_TRIPLET=x64-linux
+    ```
+    Apply changes:
+    ```
+    source ~/.bashrc
+    ```
+
+    Open a terminal and type the following:
+    ```
+    vcpkg integrate install
+    vcpkg integrate bash
+    ```
+    
+#### Install dependencies 
+- Windows
+    ```
+    vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
+    ```
+- Linux[debian based]
+    ```
+    vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
+    ```
+    ```
+    sudo apt install python-jinja2 autoconf automake libtool pkg-config libibus-1.0-dev`
+    ```
+    * if[Xorg]
+         ```
+        sudo apt install libx11-dev libxft-dev libxext-dev
+        ```
+    * if[Wayland]
+        ```
+        sudo apt install libwayland-dev libxkbcommon-dev libegl1-mesa-dev
+        ```
+    * Optional but good practice
+        ```
+        sudo apt install build-essentials
+        ```
 
 #### Clone the repository 
 ```

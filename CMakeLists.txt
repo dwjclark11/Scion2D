@@ -19,6 +19,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
+include(cmake/CompilerSettings.cmake)
+
 set(BUILD_SHARED_LIBS OFF)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib") # .lib, .a
@@ -29,6 +31,9 @@ if(WIN32)
     add_definitions(-DNOMINMAX)
 endif()
 
+find_package(glad CONFIG REQUIRED)
+find_package(soil2 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_mixer CONFIG REQUIRED)
@@ -38,8 +43,6 @@ find_package(glm CONFIG REQUIRED)
 find_package(Lua REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
 target_link_libraries(sol2 INTERFACE ${LUA_LIBRARIES})
-
-add_subdirectory(Dependencies)
 
 add_subdirectory(SCION_LOGGER)
 add_subdirectory(SCION_UTILITIES)

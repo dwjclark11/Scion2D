@@ -11,11 +11,7 @@
  * @param Takes an std::string_view or string in the form of "This is a log value: {0}, and {1}", followed by
  * the arguments
  */
-#ifdef _WIN32
-#define SCION_LOG( x, ... ) SCION_LOGGER::Logger::GetInstance().Log( x, __VA_ARGS__ )
-#else
-#define SCION_LOG( x, ... ) SCION_LOGGER::Logger::GetInstance().Log( x, ##__VA_ARGS__ )
-#endif
+#define SCION_LOG( x, ... ) SCION_LOGGER::Logger::GetInstance().Log( x __VA_OPT__(, ) __VA_ARGS__ )
 
 /*
  * @brief Variadic Macro for logging warnings. This macro takes in a string message, followed by the
@@ -23,11 +19,7 @@
  * @param Takes an std::string_view or string in the form of "This is a log value: {0}, and {1}", followed by
  * the arguments
  */
-#ifdef _WIN32
-#define SCION_WARN( x, ... ) SCION_LOGGER::Logger::GetInstance().Warn( x, __VA_ARGS__ )
-#else
-#define SCION_WARN( x, ... ) SCION_LOGGER::Logger::GetInstance().Warn( x, ##__VA_ARGS__ )
-#endif
+#define SCION_WARN( x, ... ) SCION_LOGGER::Logger::GetInstance().Warn( x __VA_OPT__(, ) __VA_ARGS__ )
 
 /*
  * @brief Variadic Macro for logging Errors. This macro takes in a string message, followed by the
@@ -35,13 +27,8 @@
  * @param Takes an std::string_view or string in the form of "This is a log value: {0}, and {1}", followed by
  * the arguments
  */
-#ifdef _WIN32
-#define SCION_ERROR( x, ... )                                                                                          \
-	SCION_LOGGER::Logger::GetInstance().Error( std::source_location::current(), x, __VA_ARGS__ )
-#else
-#define SCION_ERROR( x, ... )                                                                                          \
-	SCION_LOGGER::Logger::GetInstance().Error( std::source_location::current(), x, ##__VA_ARGS__ )
-#endif
+#define SCION_ERROR( x, ... )                                                                                \
+	SCION_LOGGER::Logger::GetInstance().Error( std::source_location::current(), x __VA_OPT__(, ) __VA_ARGS__ )
 
 #define SCION_ASSERT( x ) assert( x )
 #define SCION_INIT_LOGS( console, retain ) SCION_LOGGER::Logger::GetInstance().Init( console, retain )
@@ -108,9 +95,10 @@ class Logger
 	inline void ClearLogs() { m_LogEntries.clear(); }
 	inline const std::vector<LogEntry>& GetLogs() { return m_LogEntries; }
 	inline void ResetLogAdded() { m_bLogAdded = false; }
-	inline const bool LogAdded() const { return m_bLogAdded; }
+	inline bool LogAdded() const { return m_bLogAdded; }
 
 };
 } // namespace SCION_LOGGER
 
 #include "Logger.inl"
+
