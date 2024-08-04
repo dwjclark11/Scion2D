@@ -36,6 +36,10 @@ add_library(SCION_RENDERING
 
 target_include_directories(
     SCION_RENDERING PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 target_link_libraries(SCION_RENDERING
     PRIVATE SCION_LOGGER
-    PUBLIC glm::glm glad soil)
+    PUBLIC glm::glm glad::glad soil2)
+
+target_compile_options(
+    SCION_RENDERING PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)

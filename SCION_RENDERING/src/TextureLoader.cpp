@@ -1,5 +1,5 @@
 #include "Rendering/Essentials/TextureLoader.h"
-#include <SOIL/SOIL.h>
+#include <SOIL2/SOIL2.h>
 #include <Logger/Logger.h>
 
 namespace SCION_RENDERING

@@ -30,7 +30,6 @@ constexpr float one_over_sixty = 1.f / 60.f;
 
 namespace SCION_EDITOR
 {
-
 void SceneDisplay::LoadScene()
 {
 	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
@@ -58,8 +57,7 @@ void SceneDisplay::LoadScene()
 	runtimeRegistry.AddToContext<std::shared_ptr<AnimationSystem>>(
 		std::make_shared<AnimationSystem>( runtimeRegistry ) );
 
-	runtimeRegistry.AddToContext<std::shared_ptr<PhysicsSystem>>(
-		std::make_shared<PhysicsSystem>( runtimeRegistry ) );
+	runtimeRegistry.AddToContext<std::shared_ptr<PhysicsSystem>>( std::make_shared<PhysicsSystem>( runtimeRegistry ) );
 
 	auto lua = runtimeRegistry.AddToContext<std::shared_ptr<sol::state>>( std::make_shared<sol::state>() );
 
@@ -93,7 +91,7 @@ void SceneDisplay::UnloadScene()
 	m_bSceneLoaded = false;
 	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
-	
+
 	runtimeRegistry.ClearRegistry();
 	runtimeRegistry.RemoveContext<std::shared_ptr<Camera2D>>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<sol::state>>();
@@ -107,7 +105,7 @@ void SceneDisplay::UnloadScene()
 	mainRegistry.GetSoundPlayer().Stop( -1 );
 }
 
-void SceneDisplay::RenderScene()
+void SceneDisplay::RenderScene() const
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
@@ -125,8 +123,8 @@ void SceneDisplay::RenderScene()
 	renderer->ClearBuffers( true, true, false );
 
 	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
-	
-	if (pCurrentScene && m_bPlayScene)
+
+	if ( pCurrentScene && m_bPlayScene )
 	{
 		auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 		renderSystem->Update( runtimeRegistry );
@@ -138,7 +136,7 @@ void SceneDisplay::RenderScene()
 	fb->CheckResize();
 }
 
-SceneDisplay::SceneDisplay( )
+SceneDisplay::SceneDisplay()
 	: m_bPlayScene{ false }
 	, m_bSceneLoaded{ false }
 {
@@ -161,9 +159,9 @@ void SceneDisplay::Draw()
 
 	if ( m_bPlayScene )
 	{
-		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4{ 0.f, 0.9f, 0.f, 0.3 } );
-		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4{ 0.f, 0.9f, 0.f, 0.3 } );
-		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3 } );
+		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
+		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
+		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
 	}
 
 	if ( ImGui::ImageButton( (ImTextureID)pPlayTexture->GetID(),
@@ -176,9 +174,6 @@ void SceneDisplay::Draw()
 		LoadScene();
 	}
 
-	if ( ImGui::GetColorStackSize() > 0 )
-		ImGui::PopStyleColor( ImGui::GetColorStackSize() );
-
 	if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal ) )
 		ImGui::SetTooltip( "Play Scene" );
 
@@ -186,9 +181,10 @@ void SceneDisplay::Draw()
 
 	if ( !m_bPlayScene )
 	{
-		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4{ 0.f, 0.9f, 0.f, 0.3 } );
-		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4{ 0.f, 0.9f, 0.f, 0.3 } );
-		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3 } );
+		// As both buttons styles are the same, those could be pushed only once
+		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
+		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
+		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
 	}
 
 	RenderScene();
@@ -203,8 +199,7 @@ void SceneDisplay::Draw()
 		UnloadScene();
 	}
 
-	if ( ImGui::GetColorStackSize() > 0 )
-		ImGui::PopStyleColor( ImGui::GetColorStackSize() );
+	ImGui::PopStyleColor( 3 ); // ImGui::PushStyleColor called three times only. (m_bPlayScene) != (!m_bPlayScene)
 
 	if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal ) )
 		ImGui::SetTooltip( "Stop Scene" );
@@ -239,10 +234,11 @@ void SceneDisplay::Update()
 	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
 	if ( !pCurrentScene )
 		return;
-	
+
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 
 	auto& mainRegistry = MAIN_REGISTRY();
+	(void)mainRegistry; // TODO: unused
 	auto& coreGlobals = CORE_GLOBALS();
 
 	auto& camera = runtimeRegistry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();

@@ -12,7 +12,7 @@ class SceneDisplay : public IDisplay
   private:
 	void LoadScene();
 	void UnloadScene();
-	void RenderScene();
+	void RenderScene() const;
 
   public:
 	SceneDisplay();
