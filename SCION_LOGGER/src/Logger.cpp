@@ -1,5 +1,7 @@
 #include "Logger/Logger.h"
 
+#include <chrono>
+
 namespace SCION_LOGGER
 {
 

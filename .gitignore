@@ -1,3 +1,5 @@
-/build/*
-/out/*
-/.vs/*
+.vs/
+.vscode/
+
+out/
+build/

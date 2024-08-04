@@ -16,4 +16,8 @@ add_library(SCION_WINDOW
 
 target_include_directories(
     SCION_WINDOW PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 target_link_libraries(SCION_WINDOW PUBLIC SCION_UTILITIES)
+
+target_compile_options(
+    SCION_WINDOW PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)

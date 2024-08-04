@@ -8,6 +8,10 @@ add_library(SCION_PHYSICS
 
 target_include_directories(
     SCION_PHYSICS PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 target_link_libraries(SCION_PHYSICS
     PRIVATE SCION_LOGGER
     PUBLIC box2d::box2d)
+
+target_compile_options(
+    SCION_PHYSICS PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)

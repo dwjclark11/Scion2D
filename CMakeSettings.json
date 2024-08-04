@@ -1,0 +1,44 @@
+{
+  "configurations": [
+	{
+	  "name": "01_Win-x64-Release",
+	  "generator": "Ninja",
+	  "configurationType": "Release",
+	  "inheritEnvironments": [ "msvc_x64_x64" ],
+	  "buildRoot": "${projectDir}/build/msvc_x64_Release",
+	  "intelliSenseMode": "windows-msvc-x64"
+	},
+	{
+	  "name": "02_Win-x64-RelWithDebInfo",
+	  "generator": "Ninja",
+	  "configurationType": "RelWithDebInfo",
+	  "inheritEnvironments": [ "msvc_x64_x64" ],
+	  "buildRoot": "${projectDir}/build/msvc_x64_RelWithDebInfo",
+	  "intelliSenseMode": "windows-msvc-x64"
+	},
+	{
+	  "name": "03_Win-x64-MinSizeRel",
+	  "generator": "Ninja",
+	  "configurationType": "MinSizeRel",
+	  "inheritEnvironments": [ "msvc_x64_x64" ],
+	  "buildRoot": "${projectDir}/build/msvc_x64_MinSizeRel",
+	  "intelliSenseMode": "windows-msvc-x64"
+	},
+	{
+	  "name": "04_Win-x64-Debug",
+	  "generator": "Ninja",
+	  "configurationType": "Debug",
+	  "inheritEnvironments": [ "msvc_x64_x64" ],
+	  "buildRoot": "${projectDir}/build/msvc_x64_Debug",
+	  "intelliSenseMode": "windows-msvc-x64"
+	},
+	{
+		"name": "05_x64-Clang-Release",
+		"generator": "Ninja",
+		"configurationType": "Release",
+		"buildRoot": "${projectDir}/build/clang_x64_Release",
+		"inheritEnvironments": [ "clang_cl_x64_x64" ],
+		"variables": []
+	}
+  ]
+}
