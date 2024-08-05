@@ -1,6 +1,8 @@
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Core/ECS/Components/AllComponents.h"
 
+using namespace SCION_CORE::ECS;
+
 bool SCION_CORE::EntityInView( const TransformComponent& transform, float width, float height,
 							   const SCION_RENDERING::Camera2D& camera )
 {

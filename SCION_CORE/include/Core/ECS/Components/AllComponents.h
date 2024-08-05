@@ -9,5 +9,4 @@
 #include "ScriptComponent.h"
 #include "Identification.h"
 #include "TextComponent.h"
-
-using namespace SCION_CORE::ECS;
+#include "TileComponent.h"

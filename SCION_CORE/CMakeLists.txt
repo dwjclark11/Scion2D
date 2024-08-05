@@ -17,7 +17,7 @@ add_library(SCION_CORE
     "include/Core/ECS/MainRegistry.h" 
     "src/ECS/MainRegistry.cpp"
 
-    "include/Core/ECS/Components/AllComponents.h"
+    
     "include/Core/ECS/Components/Identification.h"
 
     "include/Core/ECS/Components/AnimationComponent.h"
@@ -37,6 +37,8 @@ add_library(SCION_CORE
     "src/ECS/Components/TextComponent.cpp"
     "include/Core/ECS/Components/TransformComponent.h"
     "src/ECS/Components/TransformComponent.cpp"
+    "include/Core/ECS/Components/TileComponent.h"
+
 
     "include/Core/Resources/AssetManager.h"
     "include/Core/Resources/fonts/default_fonts.h"

@@ -33,7 +33,10 @@ add_executable(SCION_EDITOR
     
     # Tools
     "src/editor/tools/AbstractTool.h"
-    "src/editor/tools/AbstractTool.cpp")
+    "src/editor/tools/AbstractTool.cpp"
+    "src/editor/tools/TileTool.h"
+    "src/editor/tools/TileTool.cpp"
+)
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
