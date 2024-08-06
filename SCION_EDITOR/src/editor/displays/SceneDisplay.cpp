@@ -157,11 +157,15 @@ void SceneDisplay::Draw()
 	auto pPlayTexture = assetManager.GetTexture( "play_button" );
 	auto pStopTexture = assetManager.GetTexture( "stop_button" );
 
+	static int numStyleColors = 0; 
+
 	if ( m_bPlayScene )
 	{
 		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
 		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
 		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
+
+		numStyleColors += 3;
 	}
 
 	if ( ImGui::ImageButton( (ImTextureID)pPlayTexture->GetID(),
@@ -174,6 +178,12 @@ void SceneDisplay::Draw()
 		LoadScene();
 	}
 
+	if (numStyleColors > 0 )
+	{
+		ImGui::PopStyleColor( numStyleColors );
+		numStyleColors = 0;
+	}
+
 	if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal ) )
 		ImGui::SetTooltip( "Play Scene" );
 
@@ -181,10 +191,12 @@ void SceneDisplay::Draw()
 
 	if ( !m_bPlayScene )
 	{
-		// As both buttons styles are the same, those could be pushed only once
 		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
 		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
 		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
+
+		numStyleColors += 3;
+
 	}
 
 	RenderScene();
@@ -199,7 +211,11 @@ void SceneDisplay::Draw()
 		UnloadScene();
 	}
 
-	ImGui::PopStyleColor( 3 ); // ImGui::PushStyleColor called three times only. (m_bPlayScene) != (!m_bPlayScene)
+	if ( numStyleColors > 0 )
+	{
+		ImGui::PopStyleColor( numStyleColors );
+		numStyleColors = 0;
+	} 
 
 	if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal ) )
 		ImGui::SetTooltip( "Stop Scene" );
