@@ -144,9 +144,6 @@ void TileTool::LoadSpriteTextureData( const std::string& textureName )
 
 const std::string& TileTool::GetSpriteTexture() const
 {
-	if ( !m_pMouseTile )
-		return std::string{ "" };
-
 	return m_pMouseTile->sprite.texture_name;
 }
 
