@@ -5,6 +5,7 @@
 #include "Rendering/Core/Camera2D.h"
 #include "Rendering/Essentials/Primitives.h"
 #include "Rendering/Essentials/Vertex.h"
+#include "editor/scene/SceneObject.h"
 
 
 namespace SCION_EDITOR
@@ -15,10 +16,10 @@ GridSystem::GridSystem()
 
 }
 
-void GridSystem::Update( SCION_RENDERING::Camera2D& camera )
+void GridSystem::Update( SceneObject& currentScene, SCION_RENDERING::Camera2D& camera )
 {
 	auto& assetManager = MAIN_REGISTRY().GetAssetManager();
-
+	const auto& canvas = currentScene.GetCanvas();
 	auto camMat = camera.GetCameraMatrix();
 
 	auto pColorShader = assetManager.GetShader( "color" );
@@ -28,7 +29,8 @@ void GridSystem::Update( SCION_RENDERING::Camera2D& camera )
 
 	m_pBatchRenderer->Begin();
 
-	int tileWidth{ 32 }, tileHeight{ 32 }, canvasWidth{ 640 }, canvasHeight{ 480 };
+	int tileWidth{ canvas.tileWidth }, tileHeight{ canvas.tileHeight };
+	int canvasWidth{ canvas.width }, canvasHeight{ canvas.height };
 
 	int cols = canvasWidth / tileWidth;
 	int rows = canvasHeight / tileHeight;

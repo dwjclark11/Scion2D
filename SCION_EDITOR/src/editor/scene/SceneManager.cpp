@@ -1,6 +1,9 @@
 #include "SceneManager.h"
 #include "SceneObject.h"
 #include "ScionUtilities/ScionUtilities.h"
+#include "editor/tools/ToolManager.h"
+#include "editor/tools/TileTool.h"
+
 #include "Logger/Logger.h"
 
 namespace SCION_EDITOR
@@ -13,20 +16,21 @@ SceneManager& SceneManager::GetInstance()
 
 bool SceneManager::AddScene( const std::string& sSceneName )
 {
-	if (m_mapScenes.contains(sSceneName))
+	if ( m_mapScenes.contains( sSceneName ) )
 	{
 		SCION_ERROR( "Failed to add new scene object - [{}] already exists.", sSceneName );
 		return false;
 	}
 
-	auto [itr, bSuccess] = m_mapScenes.emplace( sSceneName, std::move( std::make_shared<SCION_EDITOR::SceneObject>( sSceneName ) ) );
+	auto [ itr, bSuccess ] =
+		m_mapScenes.emplace( sSceneName, std::move( std::make_shared<SCION_EDITOR::SceneObject>( sSceneName ) ) );
 	return bSuccess;
 }
 
 std::shared_ptr<SCION_EDITOR::SceneObject> SceneManager::GetScene( const std::string& sSceneName )
 {
 	auto sceneItr = m_mapScenes.find( sSceneName );
-	if (sceneItr == m_mapScenes.end())
+	if ( sceneItr == m_mapScenes.end() )
 	{
 		SCION_ERROR( "Failed to get scene object - [{}] does not exist.", sSceneName );
 		return nullptr;
@@ -53,5 +57,26 @@ std::shared_ptr<SCION_EDITOR::SceneObject> SceneManager::GetCurrentScene()
 std::vector<std::string> SceneManager::GetSceneNames() const
 {
 	return SCION_UTIL::GetKeys( m_mapScenes );
+}
+
+ToolManager& SceneManager::GetToolManager()
+{
+	if ( !m_pToolManager )
+		m_pToolManager = std::make_unique<ToolManager>();
+
+	SCION_ASSERT( m_pToolManager && "Tool manager must be valid" );
+
+	return *m_pToolManager;
+}
+
+void SceneManager::SetTileset( const std::string& sTileset )
+{
+	m_sCurrentTileset = sTileset;
+	if ( !m_pToolManager )
+		return;
+
+	auto pActiveTool = m_pToolManager->GetActiveTool();
+	if ( pActiveTool )
+		pActiveTool->LoadSpriteTextureData( m_sCurrentTileset );
 }
 } // namespace SCION_EDITOR

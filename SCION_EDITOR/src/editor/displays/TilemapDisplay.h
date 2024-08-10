@@ -16,6 +16,7 @@ class TilemapDisplay : public IDisplay
 
   private:
 	void RenderTilemap();
+	void LoadNewScene();
 
   public:
 	TilemapDisplay();

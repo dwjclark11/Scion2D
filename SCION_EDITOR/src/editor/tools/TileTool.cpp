@@ -91,8 +91,8 @@ void TileTool::ExamineMousePosition()
 		if ( mouseWorldPos.y >= 0.f )
 			mouseGrid.y = static_cast<int>( ( mouseWorldPos.y / ( m_MouseRect.y * transform.scale.y ) * cameraScale ) );
 
-		transform.position.x = std::floor( ( mouseGrid.x / cameraScale ) ) * m_MouseRect.x * transform.position.x;
-		transform.position.y = std::floor( ( mouseGrid.y / cameraScale ) ) * m_MouseRect.y * transform.position.y;
+		transform.position.x = std::floor( ( mouseGrid.x / cameraScale ) ) * m_MouseRect.x * transform.scale.x;
+		transform.position.y = std::floor( ( mouseGrid.y / cameraScale ) ) * m_MouseRect.y * transform.scale.y;
 
 		m_GridCoords.x = mouseGrid.x / cameraScale;
 		m_GridCoords.y = mouseGrid.y / cameraScale;
@@ -101,7 +101,7 @@ void TileTool::ExamineMousePosition()
 	}
 	else
 	{
-		transform.position = bIsOffset ? mouseWorldPos - m_MouseRect * 0.f : mouseWorldPos;
+		transform.position = bIsOffset ? mouseWorldPos - m_MouseRect * 0.5f : mouseWorldPos;
 	}
 }
 

@@ -19,6 +19,6 @@ class GridSystem
 	GridSystem();
 	~GridSystem() = default;
 
-	void Update( /*class SceneObject& currentScene, */ SCION_RENDERING::Camera2D& camera );
+	void Update( class SceneObject& currentScene, SCION_RENDERING::Camera2D& camera );
 };
 } // namespace SCION_EDITOR

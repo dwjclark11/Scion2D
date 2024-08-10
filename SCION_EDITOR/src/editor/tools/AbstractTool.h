@@ -80,7 +80,7 @@ class AbstractTool
 	inline const glm::vec2& GetMouseWorldCoords() const { return m_MouseWorldCoords; }
 
 	inline void Activate() { m_bActivated = true; }
-	inline void DeActivate() { m_bActivated = false; }
+	inline void Deactivate() { m_bActivated = false; }
 	inline const bool IsActivated() const { return m_bActivated; }
 	inline const bool OutOfBounds() const { return m_bOutOfBounds; }
 };

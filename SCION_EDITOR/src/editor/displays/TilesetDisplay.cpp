@@ -3,6 +3,10 @@
 #include "Core/Resources/AssetManager.h"
 #include "Core/ECS/MainRegistry.h"
 
+#include "editor/scene/SceneManager.h"
+#include "editor/tools/ToolManager.h"
+#include "editor/tools/TileTool.h"
+
 #include <imgui.h>
 
 namespace SCION_EDITOR
@@ -24,10 +28,15 @@ void TilesetDisplay::Draw()
 		{
 			bool bIsSelected = m_sTileset == sTileset;
 			if ( ImGui::Selectable( sTileset.c_str(), bIsSelected ) )
+			{
 				m_sTileset = sTileset;
+				SCENE_MANAGER().SetTileset( sTileset );
+			}
 
 			if ( bIsSelected )
+			{
 				ImGui::SetItemDefaultFocus();
+			}
 		}
 
 		ImGui::EndCombo();
@@ -82,7 +91,9 @@ void TilesetDisplay::Draw()
 				if (ImGui::ImageButton((ImTextureID)pTexture->GetID(), ImVec2{ 16.f * 1.5, 16.f * 1.5, }, ImVec2{ ux, uy }, ImVec2{ vx, vy }))
 				{
 					m_Selected = id;
-					SCION_LOG( "StartX: {}, StartY: {}", j, i );
+					auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
+					if ( pActiveTool )
+						pActiveTool->SetSpriteUVs( j, i );
 				}
 
 				ImGui::PopID();

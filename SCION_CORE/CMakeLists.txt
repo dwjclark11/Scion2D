@@ -1,4 +1,5 @@
 add_library(SCION_CORE
+	# Core Utilities
     "include/Core/CoreUtilities/CoreEngineData.h"
     "src/CoreUtilities/CoreEngineData.cpp"
     "include/Core/CoreUtilities/CoreUtilities.h"
@@ -6,6 +7,7 @@ add_library(SCION_CORE
     "include/Core/CoreUtilities/FollowCamera.h"
     "src/CoreUtilities/FollowCamera.cpp"
 
+	# ECS - Entity, Registry
     "include/Core/ECS/Entity.h"
     "include/Core/ECS/Entity.inl"
     "src/ECS/Entity.cpp"
@@ -17,7 +19,7 @@ add_library(SCION_CORE
     "include/Core/ECS/MainRegistry.h" 
     "src/ECS/MainRegistry.cpp"
 
-    
+    # Components
     "include/Core/ECS/Components/Identification.h"
 
     "include/Core/ECS/Components/AnimationComponent.h"
@@ -38,12 +40,14 @@ add_library(SCION_CORE
     "include/Core/ECS/Components/TransformComponent.h"
     "src/ECS/Components/TransformComponent.cpp"
     "include/Core/ECS/Components/TileComponent.h"
+	"include/Core/ECS/Components/AllComponents.h"
 
-
+	# Resources
     "include/Core/Resources/AssetManager.h"
     "include/Core/Resources/fonts/default_fonts.h"
     "src/Resources/AssetManager.cpp"
 
+	# Scripting
     "include/Core/Scripting/ContactListenerBind.h"
     "src/Scripting/ContactListenerBind.cpp"
     "include/Core/Scripting/GlmLuaBindings.h"
@@ -58,6 +62,7 @@ add_library(SCION_CORE
     "include/Core/Scripting/UserDataBindings.inl"
     "src/Scripting/UserDataBindings.cpp"
 
+	# States and State Machine
     "include/Core/States/State.h"
     "src/States/State.cpp"
     "include/Core/States/StateStack.h"
@@ -65,6 +70,7 @@ add_library(SCION_CORE
     "include/Core/States/StateMachine.h"
     "src/States/StateMachine.cpp"
 
+	# Core Systems
     "include/Core/Systems/AnimationSystem.h"
     "src/Systems/AnimationSystem.cpp"
     "include/Core/Systems/PhysicsSystem.h"
