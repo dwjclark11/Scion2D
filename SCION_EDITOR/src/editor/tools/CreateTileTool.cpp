@@ -42,6 +42,19 @@ void CreateTileTool::CreateNewTile()
 
 void CreateTileTool::RemoveTile()
 {
+	const auto& mouseWorldCoords = GetMouseWorldCoords();
+
+	// Check if there is a tile that we can remove
+	if ( auto id = CheckForTile( mouseWorldCoords ); id != entt::null )
+	{
+		// Create an entity from that id
+		Entity tileToRemove{ CreateEntity( id ) };
+
+		// TODO: We need to eventually get all of the component information from
+		// the tile entity so we can place it into the Undo/Redo Commands that will be
+		// coming in the future. For now we will just delete the tile.
+		tileToRemove.Kill();
+	}
 }
 
 CreateTileTool::CreateTileTool()
@@ -58,7 +71,7 @@ void CreateTileTool::Create()
 	{
 		CreateNewTile();
 	}
-	else if ( MouseBtnJustPressed( EMouseButton::LEFT ) || MouseBtnPressed( EMouseButton::LEFT ) )
+	else if ( MouseBtnJustPressed( EMouseButton::RIGHT ) || MouseBtnPressed( EMouseButton::RIGHT ) )
 	{
 		RemoveTile();
 	}
