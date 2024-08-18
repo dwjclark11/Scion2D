@@ -1,4 +1,7 @@
 add_library(SCION_RENDERING
+    "include/Rendering/Utils/OpenGLDebugger.h"
+    "src/OpenGLDebugger.cpp"
+
     "include/Rendering/Buffers/Framebuffer.h"
     "src/Framebuffer.cpp"
 

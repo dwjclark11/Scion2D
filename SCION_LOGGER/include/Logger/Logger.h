@@ -27,7 +27,7 @@
  * @param Takes an std::string_view or string in the form of "This is a log value: {0}, and {1}", followed by
  * the arguments
  */
-#define SCION_ERROR( x, ... )                                                                                \
+#define SCION_ERROR( x, ... )                                                                                          \
 	SCION_LOGGER::Logger::GetInstance().Error( std::source_location::current(), x __VA_OPT__(, ) __VA_ARGS__ )
 
 #define SCION_ASSERT( x ) assert( x )
@@ -39,7 +39,6 @@
 
 namespace SCION_LOGGER
 {
-
 struct LogEntry
 {
 	enum class LogType
@@ -88,6 +87,9 @@ class Logger
 	template <typename... Args>
 	void Error( std::source_location location, const std::string_view message, Args&&... args );
 
+	template <typename... Args>
+	void Error( const std::string_view message, Args&&... args );
+
 	void LuaLog( const std::string_view message );
 	void LuaWarn( const std::string_view message );
 	void LuaError( const std::string_view message );
@@ -96,9 +98,7 @@ class Logger
 	inline const std::vector<LogEntry>& GetLogs() { return m_LogEntries; }
 	inline void ResetLogAdded() { m_bLogAdded = false; }
 	inline bool LogAdded() const { return m_bLogAdded; }
-
 };
 } // namespace SCION_LOGGER
 
 #include "Logger.inl"
-

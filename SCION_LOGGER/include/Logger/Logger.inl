@@ -56,7 +56,6 @@ void Logger::Log( const std::string_view message, Args&&... args )
 template <typename... Args>
 void Logger::Warn( const std::string_view message, Args&&... args )
 {
-
 	assert( m_bInitialized && "The logger must be initialized before it is used!" );
 
 	if ( !m_bInitialized )
@@ -101,6 +100,39 @@ void Logger::Error( std::source_location location, const std::string_view messag
 	std::stringstream ss;
 	ss << "SCION [ERROR]: " << CurrentDateTime() << " - " << fmt::vformat( message, fmt::make_format_args( args... ) )
 	   << "\nFUNC: " << location.function_name() << "\nLINE: " << location.line();
+
+	if ( m_bConsoleLog )
+	{
+#ifdef _WIN32
+		HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );
+		SetConsoleTextAttribute( hConsole, RED );
+		std::cout << ss.str();
+		SetConsoleTextAttribute( hConsole, WHITE );
+#else
+		std::cout << RED << ss.str() << CLOSE << "\n\n";
+#endif
+	}
+
+	if ( m_bRetainLogs )
+	{
+		m_LogEntries.emplace_back( LogEntry::LogType::ERR, ss.str() );
+		m_bLogAdded = true;
+	}
+}
+
+template <typename... Args>
+void Logger::Error( const std::string_view message, Args&&... args )
+{
+	assert( m_bInitialized && "The logger must be initialized before it is used!" );
+
+	if ( !m_bInitialized )
+	{
+		std::cout << "The logger must be initialized before it is used!" << std::endl;
+		return;
+	}
+
+	std::stringstream ss;
+	ss << "SCION [ERROR]: " << CurrentDateTime() << " - " << fmt::vformat( message, fmt::make_format_args( args... ) );
 
 	if ( m_bConsoleLog )
 	{
