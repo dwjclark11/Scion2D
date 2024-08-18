@@ -21,7 +21,7 @@ class Camera2D
   public:
 	Camera2D();
 	Camera2D( int width, int height );
-	~Camera2D() = default;
+	~Camera2D();
 	/*
 	 * @brief Updates the camera's position, scale,
 	 * and rotation if needed. If there has been no changes,
