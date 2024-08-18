@@ -1,6 +1,11 @@
 #pragma once
 #include "Core/ECS/Registry.h"
-#include <Rendering/Core/BatchRenderer.h>
+
+namespace SCION_RENDERING
+{
+class Camera2D;
+class SpriteBatchRenderer;
+}
 
 namespace SCION_CORE::Systems
 {
@@ -18,6 +23,6 @@ class RenderSystem
 	 * and transform component. Applies all the necessary transformations and adds them
 	 * to a Batch to be rendered.
 	 */
-	void Update( SCION_CORE::ECS::Registry& registry );
+	void Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera );
 };
 } // namespace SCION_CORE::Systems

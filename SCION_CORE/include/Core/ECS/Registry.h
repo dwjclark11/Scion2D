@@ -48,7 +48,13 @@ class Registry
 	TContext& GetContext();
 
 	template <typename TContext>
+	TContext* TryGetContext();
+
+	template <typename TContext>
 	bool RemoveContext();
+
+	template <typename TContext>
+	bool HasContext();
 
 	static void CreateLuaRegistryBind( sol::state& lua, Registry& registry );
 

@@ -23,11 +23,11 @@ class AbstractTool
 	glm::vec2 m_GUICursorCoords, m_GUIRelativeCoords;
 	glm::vec2 m_WindowPos, m_WindowSize;
 
-	bool m_bActivated, m_bOutOfBounds;
+	bool m_bActivated, m_bOutOfBounds, m_bOverTilemapWindow;
 
   private:
 	void UpdateMouseWorldCoords();
-	void CheckOutOfBounds( Canvas& canvas );
+	void CheckOutOfBounds( const Canvas& canvas );
 
   protected:
 	enum class EMouseButton
@@ -81,7 +81,10 @@ class AbstractTool
 
 	inline void Activate() { m_bActivated = true; }
 	inline void Deactivate() { m_bActivated = false; }
+	inline void SetOverTilemapWindow( bool bOverWindow ) { m_bOverTilemapWindow = bOverWindow; }
+
 	inline const bool IsActivated() const { return m_bActivated; }
 	inline const bool OutOfBounds() const { return m_bOutOfBounds; }
+	inline const bool IsOverTilemapWindow() const { return m_bOverTilemapWindow; }
 };
 } // namespace SCION_EDITOR

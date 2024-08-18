@@ -127,8 +127,9 @@ void SceneDisplay::RenderScene() const
 	if ( pCurrentScene && m_bPlayScene )
 	{
 		auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
-		renderSystem->Update( runtimeRegistry );
-		renderShapeSystem->Update( runtimeRegistry );
+		auto& camera = runtimeRegistry.GetContext<std::shared_ptr<Camera2D>>();
+		renderSystem->Update( runtimeRegistry, *camera );
+		renderShapeSystem->Update( runtimeRegistry, *camera );
 		renderUISystem->Update( runtimeRegistry );
 	}
 
@@ -157,7 +158,7 @@ void SceneDisplay::Draw()
 	auto pPlayTexture = assetManager.GetTexture( "play_button" );
 	auto pStopTexture = assetManager.GetTexture( "stop_button" );
 
-	static int numStyleColors = 0; 
+	static int numStyleColors = 0;
 
 	if ( m_bPlayScene )
 	{
@@ -178,7 +179,7 @@ void SceneDisplay::Draw()
 		LoadScene();
 	}
 
-	if (numStyleColors > 0 )
+	if ( numStyleColors > 0 )
 	{
 		ImGui::PopStyleColor( numStyleColors );
 		numStyleColors = 0;
@@ -196,7 +197,6 @@ void SceneDisplay::Draw()
 		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
 
 		numStyleColors += 3;
-
 	}
 
 	RenderScene();
@@ -215,7 +215,7 @@ void SceneDisplay::Draw()
 	{
 		ImGui::PopStyleColor( numStyleColors );
 		numStyleColors = 0;
-	} 
+	}
 
 	if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal ) )
 		ImGui::SetTooltip( "Stop Scene" );

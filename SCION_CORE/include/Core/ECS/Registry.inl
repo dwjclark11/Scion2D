@@ -14,6 +14,11 @@ inline TContext& Registry::GetContext()
 	return m_pRegistry->ctx().get<TContext>();
 }
 
+template <typename TContext>
+inline TContext* Registry::TryGetContext()
+{
+	return m_pRegistry->ctx().find<TContext>();
+}
 
 template <typename TContext>
 bool Registry::RemoveContext()
@@ -21,6 +26,11 @@ bool Registry::RemoveContext()
 	return m_pRegistry->ctx().erase<TContext>();
 }
 
+template <typename TContext>
+bool Registry::HasContext()
+{
+	return m_pRegistry->ctx().contains<TContext>();
+}
 
 template <typename TComponent>
 entt::runtime_view& add_component_to_view( Registry* registry, entt::runtime_view& view )

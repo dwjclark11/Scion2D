@@ -9,6 +9,8 @@
 
 #include <Rendering/Core/Camera2D.h>
 #include <Rendering/Essentials/Primitives.h>
+#include <Rendering/Core/RectBatchRenderer.h>
+#include <Rendering/Core/CircleBatchRenderer.h>
 
 using namespace SCION_CORE::ECS;
 using namespace SCION_RENDERING;
@@ -17,22 +19,21 @@ using namespace SCION_RESOURCES;
 namespace SCION_CORE::Systems
 {
 
-RenderShapeSystem::RenderShapeSystem( )
+RenderShapeSystem::RenderShapeSystem()
 	: m_pRectRenderer{ std::make_unique<RectBatchRenderer>() }
 	, m_pCircleRenderer{ std::make_unique<CircleBatchRenderer>() }
 {
 }
 
-void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry )
+void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
 {
 	if ( !CoreEngineData::GetInstance().RenderCollidersEnabled() )
 		return;
 
-	auto& camera = registry.GetContext<std::shared_ptr<Camera2D>>();
 	auto& assetManager = registry.GetContext<std::shared_ptr<AssetManager>>();
 
 	auto colorShader = assetManager->GetShader( "color" );
-	auto cam_mat = camera->GetCameraMatrix();
+	auto cam_mat = camera.GetCameraMatrix();
 
 	colorShader->Enable();
 	colorShader->SetUniformMat4( "uProjection", cam_mat );
@@ -47,7 +48,7 @@ void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry )
 		if ( !SCION_CORE::EntityInView( transform,
 										static_cast<float>( boxCollider.width ),
 										static_cast<float>( boxCollider.height ),
-										*camera ) )
+										camera ) )
 			continue;
 
 		glm::mat4 model = SCION_CORE::RSTModel( transform, boxCollider.width, boxCollider.height );

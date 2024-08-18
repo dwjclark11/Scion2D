@@ -6,6 +6,8 @@
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include <Rendering/Core/Camera2D.h>
 #include <Rendering/Essentials/Shader.h>
+#include <Rendering/Core/BatchRenderer.h>
+
 #include <Logger/Logger.h>
 
 using namespace SCION_CORE::ECS;
@@ -14,13 +16,12 @@ using namespace SCION_RESOURCES;
 
 namespace SCION_CORE::Systems
 {
-RenderSystem::RenderSystem( )
+RenderSystem::RenderSystem()
 	: m_pBatchRenderer{ std::make_unique<SpriteBatchRenderer>() }
 {
-	
 }
 
-void RenderSystem::Update( SCION_CORE::ECS::Registry& registry )
+void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
 {
 	auto view = registry.GetRegistry().view<SpriteComponent, TransformComponent>();
 	if ( view.size_hint() < 1 )
@@ -29,10 +30,8 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry )
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
 
-	auto& camera = registry.GetContext<std::shared_ptr<Camera2D>>();
-
 	const auto& spriteShader = assetManager.GetShader( "basic" );
-	auto cam_mat = camera->GetCameraMatrix();
+	auto cam_mat = camera.GetCameraMatrix();
 
 	if ( spriteShader->ShaderProgramID() == 0 )
 	{
@@ -51,7 +50,7 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry )
 		const auto& transform = view.get<TransformComponent>( entity );
 		const auto& sprite = view.get<SpriteComponent>( entity );
 
-		if ( !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, *camera ) )
+		if ( !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, camera ) )
 			continue;
 
 		if ( sprite.texture_name.empty() || sprite.bHidden )

@@ -1,8 +1,12 @@
 #pragma once
-#include <Rendering/Core/BatchRenderer.h>
-#include <Rendering/Core/TextBatchRenderer.h>
-#include <Rendering/Core/Camera2D.h>
 #include "Core/ECS/Registry.h"
+
+namespace SCION_RENDERING
+{
+class Camera2D;
+class SpriteBatchRenderer;
+class TextBatchRenderer;
+} // namespace SCION_RENDERING
 
 namespace SCION_CORE::Systems
 {
@@ -14,9 +18,9 @@ class RenderUISystem
 	std::unique_ptr<SCION_RENDERING::Camera2D> m_pCamera2D;
 
   public:
-	RenderUISystem( );
-	~RenderUISystem() = default;
+	RenderUISystem();
+	~RenderUISystem();
 
-	void Update( SCION_CORE::ECS::Registry& registry);
+	void Update( SCION_CORE::ECS::Registry& registry );
 };
 } // namespace SCION_CORE::Systems

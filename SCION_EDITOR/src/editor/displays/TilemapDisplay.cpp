@@ -19,6 +19,9 @@
 #include "editor/tools/ToolManager.h"
 #include "editor/tools/CreateTileTool.h"
 
+#include "Core/Scripting/InputManager.h"
+#include "Windowing/Inputs/Mouse.h"
+
 #include "Logger/Logger.h"
 #include <imgui.h>
 
@@ -44,7 +47,7 @@ void TilemapDisplay::RenderTilemap()
 	renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );
 	renderer->ClearBuffers( true, true, false );
 
-	if (!pCurrentScene)
+	if ( !pCurrentScene )
 	{
 		fb->Unbind();
 		return;
@@ -53,8 +56,8 @@ void TilemapDisplay::RenderTilemap()
 	auto& gridSystem = mainRegistry.GetContext<std::shared_ptr<GridSystem>>();
 	gridSystem->Update( *pCurrentScene, *m_pTilemapCam );
 
-	renderSystem->Update( pCurrentScene->GetRegistry());
-	renderShapeSystem->Update( pCurrentScene->GetRegistry() );
+	renderSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
+	renderShapeSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
 	renderUISystem->Update( pCurrentScene->GetRegistry() );
 
 	auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
@@ -75,9 +78,9 @@ void TilemapDisplay::LoadNewScene()
 		return;
 
 	auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
-	if (pActiveTool)
+	if ( pActiveTool )
 	{
-		if (!pActiveTool->SetupTool(pCurrentScene->GetRegistryPtr(), m_pTilemapCam.get()))
+		if ( !pActiveTool->SetupTool( pCurrentScene->GetRegistryPtr(), m_pTilemapCam.get() ) )
 		{
 			SCION_ASSERT( false && "This should work!!" );
 			__debugbreak();
@@ -88,10 +91,68 @@ void TilemapDisplay::LoadNewScene()
 	}
 }
 
+void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
+{
+	if ( !m_pTilemapCam )
+		return;
+
+	auto& mouse = INPUT_MANAGER().GetMouse();
+
+	if ( !mouse.IsBtnJustPressed( SCION_MOUSE_MIDDLE ) && !mouse.IsBtnPressed( SCION_MOUSE_MIDDLE ) &&
+		 mouse.GetMouseWheelY() == 0 )
+	{
+		return;
+	}
+
+	static glm::vec2 startPosition{ 0.f };
+	auto screenOffset = m_pTilemapCam->GetScreenOffset();
+	bool bOffsetChanged{ false }, bScaledChanged{ false };
+
+	if (mouse.IsBtnJustPressed(SCION_MOUSE_MIDDLE))
+	{
+		startPosition = mousePos;
+	}
+
+	if (mouse.IsBtnPressed(SCION_MOUSE_MIDDLE))
+	{
+		screenOffset += ( mousePos - startPosition );
+		bOffsetChanged = true;
+	}
+
+	glm::vec2 currentWorldPos = m_pTilemapCam->ScreenCoordsToWorld( mousePos );
+	float scale = m_pTilemapCam->GetScale();
+
+	if (mouse.GetMouseWheelY() == 1)
+	{
+		scale += 0.2f;
+		bScaledChanged = true;
+		bOffsetChanged = true;
+	}
+	else if (mouse.GetMouseWheelY() == -1)
+	{
+		scale -= 0.2f;
+		bScaledChanged = true;
+		bOffsetChanged = true;
+	}
+
+	scale = std::clamp( scale, 1.f, 10.f );
+
+	if ( bScaledChanged )
+		m_pTilemapCam->SetScale( scale );
+
+	glm::vec2 afterMovePos = m_pTilemapCam->ScreenCoordsToWorld( mousePos );
+
+	screenOffset += ( afterMovePos - currentWorldPos );
+
+	if ( bOffsetChanged )
+		m_pTilemapCam->SetScreenOffset( screenOffset );
+
+	startPosition = mousePos;
+}
+
 TilemapDisplay::TilemapDisplay()
 	: m_pTilemapCam{ std::make_unique<SCION_RENDERING::Camera2D>() }
 {
-	
 }
 
 void TilemapDisplay::Draw()
@@ -123,29 +184,38 @@ void TilemapDisplay::Draw()
 		auto windowPos = ImGui::GetWindowPos();
 
 		auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
-		if (pActiveTool)
+		if ( pActiveTool )
 		{
 			pActiveTool->SetRelativeCoords( glm::vec2{ relativePos.x, relativePos.y } );
 			pActiveTool->SetCursorCoords( glm::vec2{ io.MousePos.x, io.MousePos.y } );
 			pActiveTool->SetWindowPos( glm::vec2{ windowPos.x, windowPos.y } );
 			pActiveTool->SetWindowSize( glm::vec2{ windowSize.x, windowSize.y } );
+
+			pActiveTool->SetOverTilemapWindow( ImGui::IsWindowHovered() );
 		}
 
 		ImGui::Image( (ImTextureID)fb->GetTextureID(), imageSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f } );
 
 		// Accept Scene Drop Target
-		if (ImGui::BeginDragDropTarget())
+		if ( ImGui::BeginDragDropTarget() )
 		{
 			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( DROP_SCENE_SRC );
-			if (payload)
+			if ( payload )
 			{
 				SCENE_MANAGER().SetCurrentScene( std::string{ (const char*)payload->Data } );
-				LoadNewScene();				
+				LoadNewScene();
+				m_pTilemapCam->Reset();
 			}
 
 			ImGui::EndDragDropTarget();
 		}
 
+		// Check for resize based on the window size
+		if ( fb->Width() != static_cast<int>( windowSize.x ) || fb->Height() != static_cast<int>( windowSize.y ) )
+		{
+			fb->Resize( static_cast<int>( windowSize.x ), static_cast<int>( windowSize.y ) );
+			m_pTilemapCam->Resize( static_cast<int>( windowSize.x ), static_cast<int>( windowSize.y ) );
+		}
 
 		ImGui::EndChild();
 	}
@@ -159,8 +229,10 @@ void TilemapDisplay::Update()
 		return;
 
 	auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
-	if (pActiveTool && !ImGui::GetDragDropPayload())
+	if ( pActiveTool && pActiveTool->IsOverTilemapWindow() && !ImGui::GetDragDropPayload() )
 	{
+		PanZoomCamera( pActiveTool->GetMouseScreenCoords() );
+
 		pActiveTool->Update( pCurrentScene->GetCanvas() );
 		pActiveTool->Create();
 	}

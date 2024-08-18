@@ -2,11 +2,16 @@
 #include "Core/ECS/Components/TextComponent.h"
 #include "Core/ECS/Components/TransformComponent.h"
 #include "Core/ECS/MainRegistry.h"
-#include <Rendering/Essentials/Font.h>
 #include "Core/Resources/AssetManager.h"
-#include <Logger/Logger.h>
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
+
+#include <Rendering/Essentials/Font.h>
+#include <Rendering/Core/BatchRenderer.h>
+#include <Rendering/Core/TextBatchRenderer.h>
+#include <Rendering/Core/Camera2D.h>
+
+#include <Logger/Logger.h>
 
 using namespace SCION_CORE::ECS;
 using namespace SCION_RESOURCES;
@@ -14,7 +19,7 @@ using namespace SCION_RESOURCES;
 namespace SCION_CORE::Systems
 {
 
-RenderUISystem::RenderUISystem( )
+RenderUISystem::RenderUISystem()
 	: m_pSpriteRenderer{ std::make_unique<SCION_RENDERING::SpriteBatchRenderer>() }
 	, m_pTextRenderer{ std::make_unique<SCION_RENDERING::TextBatchRenderer>() }
 	, m_pCamera2D{ nullptr }
@@ -24,6 +29,10 @@ RenderUISystem::RenderUISystem( )
 	m_pCamera2D = std::make_unique<SCION_RENDERING::Camera2D>( coreEngine.WindowWidth(), coreEngine.WindowHeight() );
 
 	m_pCamera2D->Update();
+}
+
+RenderUISystem::~RenderUISystem()
+{
 }
 
 void RenderUISystem::Update( SCION_CORE::ECS::Registry& registry )

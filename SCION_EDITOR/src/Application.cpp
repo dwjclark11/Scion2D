@@ -515,15 +515,17 @@ void Application::RenderImGui()
 		const auto leftNodeId =
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Left, 0.2f, nullptr, &centerNodeId );
 
+		const auto RightNodeId =
+			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Right, 0.2f, nullptr, &centerNodeId );
+
 		const auto LogNodeId =
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Down, 0.25f, nullptr, &centerNodeId );
+		ImGui::DockBuilderDockWindow( "Tileset", RightNodeId );
 		ImGui::DockBuilderDockWindow( "Dear ImGui Demo", leftNodeId );
 		ImGui::DockBuilderDockWindow( "Scene", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Tilemap Editor", centerNodeId );
-		ImGui::DockBuilderDockWindow( "Assets", centerNodeId );
+		ImGui::DockBuilderDockWindow( "Assets", LogNodeId );
 		ImGui::DockBuilderDockWindow( "Logs", LogNodeId );
-
-		ImGui::DockBuilderDockWindow( "Tileset", LogNodeId );
 
 		ImGui::DockBuilderFinish( dockSpaceId );
 	}
