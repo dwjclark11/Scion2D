@@ -219,7 +219,7 @@ void AssetDisplay::DrawSelectedAssets()
 				if ( textureID == 0 )
 					break;
 
-				ImGui::ImageButton( (ImTextureID)textureID, ImVec2{ m_AssetSize, m_AssetSize } );
+				ImGui::ImageButton( (ImTextureID)(intptr_t)textureID, ImVec2{ m_AssetSize, m_AssetSize } );
 
 				if ( ImGui::IsItemHovered() && ImGui::IsMouseClicked( 0 ) && !m_bRename )
 					m_SelectedID = id;
@@ -240,7 +240,7 @@ void AssetDisplay::DrawSelectedAssets()
 											   ( strlen( sAssetName ) + 1 ) * sizeof( char ),
 											   ImGuiCond_Once );
 
-					ImGui::Image( (ImTextureID)textureID, DRAG_ASSET_SIZE );
+					ImGui::Image( (ImTextureID)(intptr_t)textureID, DRAG_ASSET_SIZE );
 					ImGui::EndDragDropSource();
 				}
 

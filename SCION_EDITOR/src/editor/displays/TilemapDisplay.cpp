@@ -206,7 +206,7 @@ void TilemapDisplay::Draw()
 			pActiveTool->SetOverTilemapWindow( ImGui::IsWindowHovered() );
 		}
 
-		ImGui::Image( (ImTextureID)fb->GetTextureID(), imageSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f } );
+		ImGui::Image( (ImTextureID)(intptr_t)fb->GetTextureID(), imageSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f } );
 
 		// Accept Scene Drop Target
 		if ( ImGui::BeginDragDropTarget() )

@@ -88,7 +88,7 @@ void TilesetDisplay::Draw()
 				// Create unique id for the buttons
 				ImGui::PushID( k++ );
 
-				if (ImGui::ImageButton((ImTextureID)pTexture->GetID(), ImVec2{ 16.f * 1.5, 16.f * 1.5, }, ImVec2{ ux, uy }, ImVec2{ vx, vy }))
+				if (ImGui::ImageButton((ImTextureID)(intptr_t)pTexture->GetID(), ImVec2{ 16.f * 1.5f, 16.f * 1.5f, }, ImVec2{ ux, uy }, ImVec2{ vx, vy }))
 				{
 					m_Selected = id;
 					auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
