@@ -169,7 +169,7 @@ void SceneDisplay::Draw()
 		numStyleColors += 3;
 	}
 
-	if ( ImGui::ImageButton( (ImTextureID)pPlayTexture->GetID(),
+	if ( ImGui::ImageButton( (ImTextureID)(intptr_t)pPlayTexture->GetID(),
 							 ImVec2{
 								 (float)pPlayTexture->GetWidth() * 0.25f,
 								 (float)pPlayTexture->GetHeight() * 0.25f,
@@ -201,7 +201,7 @@ void SceneDisplay::Draw()
 
 	RenderScene();
 
-	if ( ImGui::ImageButton( (ImTextureID)pStopTexture->GetID(),
+	if ( ImGui::ImageButton( (ImTextureID)(intptr_t)pStopTexture->GetID(),
 							 ImVec2{
 								 (float)pStopTexture->GetWidth() * 0.25f,
 								 (float)pStopTexture->GetHeight() * 0.25f,
@@ -227,7 +227,7 @@ void SceneDisplay::Draw()
 
 		ImGui::SetCursorPos( ImVec2{ 0.f, 0.f } );
 
-		ImGui::Image( (ImTextureID)fb->GetTextureID(),
+		ImGui::Image( (ImTextureID)(intptr_t)fb->GetTextureID(),
 					  ImVec2{ static_cast<float>( fb->Width() ), static_cast<float>( fb->Height() ) },
 					  ImVec2{ 0.f, 1.f },
 					  ImVec2{ 1.f, 0.f } );

@@ -82,7 +82,6 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
     * Optional but good practice
         ```
         sudo apt install build-essential
-      
         ```
     ```
     vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
