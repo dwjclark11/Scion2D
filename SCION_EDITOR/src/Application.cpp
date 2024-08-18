@@ -1,6 +1,7 @@
 #include "Application.h"
 #include <glad/glad.h>
 #include <Rendering/Core/Renderer.h>
+#include <Rendering/Utils/OpenGLDebugger.h>
 
 #include <Logger/Logger.h>
 #include <Core/ECS/MainRegistry.h>
@@ -42,7 +43,6 @@
 
 namespace SCION_EDITOR
 {
-
 bool Application::Initialize()
 {
 	SCION_INIT_LOGS( false, true );
@@ -96,6 +96,15 @@ bool Application::Initialize()
 		return false;
 	}
 
+	// Enable debug context if required
+	 #ifdef SCION_OPENGL_DEBUG_CALLBACK
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG
+		#ifdef SCION_OPENGL_DEBUG_CALLBACK_FWD_COMPATIBILITY
+			| SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG
+		#endif //! SCION_OPENGL_DEBUG_CALLBACK_FWD_COMPATIBILITY
+			);
+	 #endif //! SCION_OPENGL_DEBUG_CALLBACK
+
 	// Create the openGL context
 	m_pWindow->SetGLContext( SDL_GL_CreateContext( m_pWindow->GetWindow().get() ) );
 
@@ -107,6 +116,7 @@ bool Application::Initialize()
 	}
 
 	SDL_GL_MakeCurrent( m_pWindow->GetWindow().get(), m_pWindow->GetGLContext() );
+
 	SDL_GL_SetSwapInterval( 1 );
 
 	// Initialize Glad
@@ -116,6 +126,11 @@ bool Application::Initialize()
 		return false;
 	}
 
+#ifdef SCION_OPENGL_DEBUG_CALLBACK
+	// OpenGL debug callback initialization. A valid current OpenGL context is necessary.
+	m_openGLDebugger = std::make_unique<SCION_RENDERING::OpenGLDebugger>();
+	m_openGLDebugger->init();
+#endif
 	auto renderer = std::make_shared<SCION_RENDERING::Renderer>();
 
 	// Enable Alpha Blending

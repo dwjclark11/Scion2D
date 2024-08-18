@@ -7,6 +7,13 @@ namespace SCION_WINDOWING
 class Window;
 }
 
+#ifdef SCION_OPENGL_DEBUG_CALLBACK
+namespace SCION_RENDERING
+{
+class OpenGLDebugger;
+}
+#endif //  SCION_OPENGL_DEBUG_CALLBACK
+
 namespace SCION_EDITOR
 {
 class Application
@@ -43,5 +50,10 @@ class Application
 	static Application& GetInstance();
 
 	void Run();
+
+  private:
+#ifdef SCION_OPENGL_DEBUG_CALLBACK
+	std::unique_ptr<SCION_RENDERING::OpenGLDebugger> m_openGLDebugger;
+#endif //  SCION_OPENGL_DEBUG_CALLBACK
 };
 } // namespace SCION_EDITOR
