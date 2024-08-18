@@ -18,7 +18,7 @@ Requires [CMake 3.26](https://cmake.org/) and [vcpkg](https://github.com/microso
 #### Get VCPKG:
 ```ps
 git clone https://github.com/microsoft/vcpkg
-./vcpkg/bootstrap-vcpkg.bat --disableMetrics
+./vcpkg/bootstrap-vcpkg.bat -disableMetrics
 ```
 #### Make sure the following environment variables are set:
 ```
@@ -69,10 +69,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
     ```
 - Linux[debian based]
     ```
-    vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
-    ```
-    ```
-    sudo apt install python-jinja2 autoconf automake libtool pkg-config libibus-1.0-dev`
+    sudo apt install python-jinja2 autoconf automake libtool pkg-config libibus-1.0-dev
     ```
     * if[Xorg]
          ```
@@ -84,8 +81,12 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
         ```
     * Optional but good practice
         ```
-        sudo apt install build-essentials
+        sudo apt install build-essential
+      
         ```
+    ```
+    vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
+    ```
 
 #### Clone the repository 
 ```

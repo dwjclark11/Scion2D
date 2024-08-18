@@ -25,6 +25,10 @@
 #include "Logger/Logger.h"
 #include <imgui.h>
 
+#ifdef __linux
+#include <signal.h>
+#endif
+
 using namespace SCION_CORE::Systems;
 
 namespace SCION_EDITOR
@@ -83,7 +87,11 @@ void TilemapDisplay::LoadNewScene()
 		if ( !pActiveTool->SetupTool( pCurrentScene->GetRegistryPtr(), m_pTilemapCam.get() ) )
 		{
 			SCION_ASSERT( false && "This should work!!" );
+#ifdef _WIN32
 			__debugbreak();
+#elif __linux
+			raise( SIGTRAP );
+#endif
 		}
 
 		if ( !SCENE_MANAGER().GetCurrentTileset().empty() )
@@ -108,12 +116,12 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 	auto screenOffset = m_pTilemapCam->GetScreenOffset();
 	bool bOffsetChanged{ false }, bScaledChanged{ false };
 
-	if (mouse.IsBtnJustPressed(SCION_MOUSE_MIDDLE))
+	if ( mouse.IsBtnJustPressed( SCION_MOUSE_MIDDLE ) )
 	{
 		startPosition = mousePos;
 	}
 
-	if (mouse.IsBtnPressed(SCION_MOUSE_MIDDLE))
+	if ( mouse.IsBtnPressed( SCION_MOUSE_MIDDLE ) )
 	{
 		screenOffset += ( mousePos - startPosition );
 		bOffsetChanged = true;
@@ -122,13 +130,13 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 	glm::vec2 currentWorldPos = m_pTilemapCam->ScreenCoordsToWorld( mousePos );
 	float scale = m_pTilemapCam->GetScale();
 
-	if (mouse.GetMouseWheelY() == 1)
+	if ( mouse.GetMouseWheelY() == 1 )
 	{
 		scale += 0.2f;
 		bScaledChanged = true;
 		bOffsetChanged = true;
 	}
-	else if (mouse.GetMouseWheelY() == -1)
+	else if ( mouse.GetMouseWheelY() == -1 )
 	{
 		scale -= 0.2f;
 		bScaledChanged = true;
@@ -152,6 +160,10 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 
 TilemapDisplay::TilemapDisplay()
 	: m_pTilemapCam{ std::make_unique<SCION_RENDERING::Camera2D>() }
+{
+}
+
+TilemapDisplay::~TilemapDisplay()
 {
 }
 

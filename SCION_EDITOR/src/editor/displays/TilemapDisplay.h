@@ -22,9 +22,10 @@ class TilemapDisplay : public IDisplay
 
   public:
 	TilemapDisplay();
-	~TilemapDisplay() = default;
+	virtual ~TilemapDisplay();
 
 	virtual void Draw() override;
 	virtual void Update() override;
 };
 } // namespace SCION_EDITOR
+

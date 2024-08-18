@@ -17,6 +17,10 @@ Camera2D::Camera2D()
 {
 }
 
+Camera2D::~Camera2D()
+{
+}
+
 Camera2D::Camera2D( int width, int height )
 	: m_Width{ width }
 	, m_Height{ height }
