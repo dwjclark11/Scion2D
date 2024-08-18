@@ -22,11 +22,8 @@ void AbstractTool::CheckOutOfBounds( const Canvas& canvas )
 	auto boundsWidth{ canvas.width - ( canvas.tileWidth * 0.5f ) };
 	auto boundsHeight{ canvas.height - ( canvas.tileHeight * 0.5f ) };
 
-	if ( m_WindowPos.x <= m_GUICursorCoords.x && m_WindowPos.x + m_WindowSize.x >= m_GUICursorCoords.x &&
-		 m_WindowPos.y <= m_GUICursorCoords.y && m_WindowPos.y + m_WindowSize.y >= m_GUICursorCoords.y &&
-		 m_MouseScreenCoords.x > 0.f && m_MouseScreenCoords.y > 0.f && m_MouseScreenCoords.x < m_WindowSize.x &&
-		 m_MouseScreenCoords.y < m_WindowSize.y && m_MouseWorldCoords.x <= boundsWidth &&
-		 m_MouseWorldCoords.y <= boundsHeight && m_MouseWorldCoords.x >= 0.f && m_MouseWorldCoords.y >= 0.f )
+	if ( m_MouseWorldCoords.x <= boundsWidth && m_MouseWorldCoords.y <= boundsHeight && m_MouseWorldCoords.x >= 0.f &&
+		 m_MouseWorldCoords.y >= 0.f )
 	{
 		m_bOutOfBounds = false;
 	}
