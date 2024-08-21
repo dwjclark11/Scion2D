@@ -1,7 +1,7 @@
 #include "Application.h"
 #include <glad/glad.h>
-#include <Rendering/Core/Renderer.h>
 #include <Rendering/Utils/OpenGLDebugger.h>
+#include <Rendering/Core/Renderer.h>
 
 #include <Logger/Logger.h>
 #include <Core/ECS/MainRegistry.h>
@@ -96,17 +96,32 @@ bool Application::Initialize()
 		return false;
 	}
 
-	// Enable debug context if required
-	 #ifdef SCION_OPENGL_DEBUG_CALLBACK
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG
-		#ifdef SCION_OPENGL_DEBUG_CALLBACK_FWD_COMPATIBILITY
-			| SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG
-		#endif //! SCION_OPENGL_DEBUG_CALLBACK_FWD_COMPATIBILITY
-			);
-	 #endif //! SCION_OPENGL_DEBUG_CALLBACK
+	{ // Configure the openGL context attributes
+		int attributes{ 0 };
+		SDL_GL_GetAttribute( SDL_GL_CONTEXT_FLAGS, &attributes );
+
+#ifdef SCION_OPENGL_DEBUG_CALLBACK
+		attributes |= SDL_GL_CONTEXT_DEBUG_FLAG;
+#endif //! SCION_OPENGL_DEBUG_CALLBACK
+
+#ifdef SCION_OPENGL_DEBUG_FORWARD_COMPATIBILITY
+		attributes |= SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
+#endif //! SCION_STRICT_OPENGL_CONTEXT
+
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, attributes );
+	}
 
 	// Create the openGL context
 	m_pWindow->SetGLContext( SDL_GL_CreateContext( m_pWindow->GetWindow().get() ) );
+
+	// Initialize Glad
+	if ( gladLoadGLLoader( SDL_GL_GetProcAddress ) == 0 )
+	{
+		std::cout << "Failed to Initialize Glad" << std::endl;
+
+		SCION_ERROR( "Failed to LoadGL --> GLAD" );
+		return false;
+	}
 
 	if ( !m_pWindow->GetGLContext() )
 	{
@@ -115,22 +130,24 @@ bool Application::Initialize()
 		return false;
 	}
 
-	SDL_GL_MakeCurrent( m_pWindow->GetWindow().get(), m_pWindow->GetGLContext() );
-
-	SDL_GL_SetSwapInterval( 1 );
-
-	// Initialize Glad
-	if ( gladLoadGLLoader( SDL_GL_GetProcAddress ) == 0 )
+	if ( ( SDL_GL_MakeCurrent( m_pWindow->GetWindow().get(), m_pWindow->GetGLContext() ) ) != 0 )
 	{
-		SCION_ERROR( "Failed to LoadGL --> GLAD" );
+		std::string error = SDL_GetError();
+		SCION_ERROR( "Failed to make OpenGL context current: {0}", error );
 		return false;
 	}
 
+	SDL_GL_SetSwapInterval( 1 );
+
 #ifdef SCION_OPENGL_DEBUG_CALLBACK
 	// OpenGL debug callback initialization. A valid current OpenGL context is necessary.
-	m_openGLDebugger = std::make_unique<SCION_RENDERING::OpenGLDebugger>();
-	m_openGLDebugger->init();
+	std::vector<unsigned int> ignore{ /* 1281, 131169, 131185, 131204, 31218*/ };
+	SCION_RENDERING::OpenGLDebugger::init( ignore );
+	SCION_RENDERING::OpenGLDebugger::breakOnError( false );
+	SCION_RENDERING::OpenGLDebugger::breakOnWarning( false );
+	SCION_RENDERING::OpenGLDebugger::setSeverityLevel( SCION_RENDERING::OpenGLDebuggerSeverity::Medium );
 #endif
+
 	auto renderer = std::make_shared<SCION_RENDERING::Renderer>();
 
 	// Enable Alpha Blending

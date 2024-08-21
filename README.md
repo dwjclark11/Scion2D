@@ -1,7 +1,7 @@
 
 ![logo](https://github.com/dwjclark11/Scion2D/assets/63356975/cc26ef0c-b190-4af9-9ac1-cac8cd9f2ed5)
 
-## Introduction
+# Introduction
 The goal for **Scion2D** is to make a simple 2D game engine where I can teach what I am learning through my [youtube channel](https://www.youtube.com/playlist?list=PL3HUvSWOJR7XRDwVVQqqWO-zyyscb8L-v). 
 This is for educational purposes and to constantly learn more about programming and gaming everyday. There are definitely better 
 engines out there; however, I find it more fun to try to build your own, learn from others, and grow as a developer.
@@ -15,12 +15,12 @@ The documentation is still a work in progress; however, you can check it out her
 # Build
 ----
 Requires [CMake 3.26](https://cmake.org/) and [vcpkg](https://github.com/microsoft/vcpkg)
-#### Get VCPKG:
+## Get VCPKG:
 ```ps
 git clone https://github.com/microsoft/vcpkg
 ./vcpkg/bootstrap-vcpkg.bat -disableMetrics
 ```
-#### Make sure the following environment variables are set:
+### Make sure the following environment variables are set:
 ```
 VCPKG_ROOT=[path_to_vcpkg]
 VCPKG_DEFAULT_TRIPLET=x64-windows
@@ -28,66 +28,66 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 
 - Windows
 
-    Add the following line in your Path environnment variable:
-    ```
-    <path_to_vcpkg_installation_folder>
-    ```
+	Add the following line in your Path environnment variable:
+	```
+	<path_to_vcpkg_installation_folder>
+	```
 
-    Open a terminal and type the following:
-    ```
-    vcpkg integrate install
-    vcpkg integrate powershell
-    ```
+	Open a terminal and type the following:
+	```
+	vcpkg integrate install
+	vcpkg integrate powershell
+	```
 
 - Linux
 
-    Edit your profile's bashrc file:
-    ```
-    nano ~/.bashrc
-    ```
-    Add the following lines at the end:
-    ```
-    export PATH=<path_to_vcpkg_installation_folder>:$PATH
-    export VCPKG_ROOT=<path_to_vcpkg_installation_folder>
-    export VCPKG_DEFAULT_TRIPLET=x64-linux
-    ```
-    Apply changes:
-    ```
-    source ~/.bashrc
-    ```
+	Edit your profile's bashrc file:
+	```
+	nano ~/.bashrc
+	```
+	Add the following lines at the end:
+	```
+	export PATH=<path_to_vcpkg_installation_folder>:$PATH
+	export VCPKG_ROOT=<path_to_vcpkg_installation_folder>
+	export VCPKG_DEFAULT_TRIPLET=x64-linux
+	```
+	Apply changes:
+	```
+	source ~/.bashrc
+	```
 
-    Open a terminal and type the following:
-    ```
-    vcpkg integrate install
-    vcpkg integrate bash
-    ```
-    
-#### Install dependencies 
+	Open a terminal and type the following:
+	```
+	vcpkg integrate install
+	vcpkg integrate bash
+	```
+	
+## Install dependencies 
 - Windows
-    ```
-    vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
-    ```
+	```
+	vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
+	```
 - Linux[debian based]
-    ```
-    sudo apt install python-jinja2 autoconf automake libtool pkg-config libibus-1.0-dev
-    ```
-    * if[Xorg]
-         ```
-        sudo apt install libx11-dev libxft-dev libxext-dev
-        ```
-    * if[Wayland]
-        ```
-        sudo apt install libwayland-dev libxkbcommon-dev libegl1-mesa-dev
-        ```
-    * Optional but good practice
-        ```
-        sudo apt install build-essential
-        ```
-    ```
-    vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
-    ```
+	```
+	sudo apt install python-jinja2 autoconf automake libtool pkg-config libibus-1.0-dev
+	```
+	* if[Xorg]
+		 ```
+		sudo apt install libx11-dev libxft-dev libxext-dev
+		```
+	* if[Wayland]
+		```
+		sudo apt install libwayland-dev libxkbcommon-dev libegl1-mesa-dev
+		```
+	* Optional but good practice
+		```
+		sudo apt install build-essential
+		```
+	```
+	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
+	```
 
-#### Clone the repository 
+## Clone the repository 
 ```
 git clone https://github.com/dwjclark11/Scion2D.git
 cd Scion2D
@@ -96,7 +96,7 @@ cmake -S . -B build
  
 * Also, in the main.lua file for the editor, comment out the loaded assets and files that don't exist. They will just error out.
 
-#### Add a default font
+## Add a default font
 * The engine needs a default font. Use the code below and add the font of your choice.
 * We will be adding default font to the engine shortly that will be automatically loaded.
 * In the ```Application.cpp```, change the loading of the fonts to a .ttf file at a given location for your engine.
@@ -108,5 +108,33 @@ if (!assetManager->AddFont("pixel", "./assets/fonts/pixel.ttf"))
   SCION_ERROR("Failed to load pixel font!");
   return false;
 }
-``` 
+```
+
+## Use the buit-in OpenGL debugger
+Note: this requires a graphics adapter with OpenGL version >= 4.3 capabilities.
+
+In Scion2D/CMakeLists.txt:
+* Set the variable ```SCION_OPENGL_DEBUG_CALLBACK``` to ```ON```.
+* Optionnaly, set the variable ```SCION_OPENGL_DEBUG_FORWARD_COMPATIBILITY``` to ```ON``` in order to enable warnings about deprecated OpenGL functions.
+
+Activate the debugger in your code as soon as you have a valid OpenGL context made current:
+* ```SCION_RENDERING::OpenGLDebugger::init()```.
+* Optionnaly, you can opt out a list of warning wy doing the following:
+	```
+	std::vector<unsigned int> ignore{ 1281, 131169, 131185, 131204, 31218 };
+	SCION_RENDERING::OpenGLDebugger::init( ignore );
+	```
+
+* To allow the debugger to break, call ```SCION_RENDERING::OpenGLDebugger::breakOnError( true/false )``` and/or ```SCION_RENDERING::OpenGLDebugger::breakOnWarning( true/false )```.
+* To ignore a specific warning, call ```SCION_RENDERING::OpenGLDebugger::push( Id )```.
+* To reinstate, call ```SCION_RENDERING::OpenGLDebugger::pop( Id )```.
+* To set the severity level, call ```SCION_RENDERING::OpenGLDebugger::setSeverityLevel( SCION_RENDERING::OpenGLDebuggerSeverity::Disable/Notification/Low/Medium/High )```.
+
+## Force the discrete GPU on Optimus laptops
+In Scion2D/CMakeLists.txt:
+* Set the variable ```SCION_OPENGL_FORCE_DISCRETE_GPU``` to ```ON```.
+
+Note: Ids can differ between platforms or drivers.
+Note for linux users: this is currently working only on nVidia GPUs.
+
 #### Under Construction
