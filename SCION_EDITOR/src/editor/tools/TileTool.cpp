@@ -218,4 +218,8 @@ const bool TileTool::SpriteValid() const
 {
 	return !m_pMouseTile->sprite.texture_name.empty();
 }
+const bool TileTool::CanDrawOrCreate() const
+{
+	return IsActivated() && !OutOfBounds() && IsOverTilemapWindow() && SpriteValid();
+}
 } // namespace SCION_EDITOR

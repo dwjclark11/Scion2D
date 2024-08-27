@@ -40,7 +40,10 @@ add_executable(SCION_EDITOR
 	"src/editor/tools/CreateTileTool.cpp"
 	"src/editor/tools/ToolAccessories.h"
 	"src/editor/tools/ToolManager.h"
-	"src/editor/tools/ToolManager.cpp")
+	"src/editor/tools/ToolManager.cpp"
+	"src/editor/tools/RectFillTool.h"
+	"src/editor/tools/RectFillTool.cpp"
+)
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
