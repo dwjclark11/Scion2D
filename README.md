@@ -110,7 +110,7 @@ if (!assetManager->AddFont("pixel", "./assets/fonts/pixel.ttf"))
 }
 ```
 
-## Use the buit-in OpenGL debugger
+## Use the built-in OpenGL debugger
 Note: this requires a graphics adapter with OpenGL version >= 4.3 capabilities.
 
 In Scion2D/CMakeLists.txt:
