@@ -30,6 +30,7 @@
 #include <SDL_opengl.h>
 // ===================================
 
+#include "editor/displays/MenuDisplay.h"
 #include "editor/displays/AssetDisplay.h"
 #include "editor/displays/SceneDisplay.h"
 #include "editor/displays/TilesetDisplay.h"
@@ -433,6 +434,13 @@ bool Application::CreateDisplays()
 		return false;
 	}
 
+	auto pMenuDisplay = std::make_unique<MenuDisplay>();
+	if ( !pMenuDisplay )
+	{
+		SCION_ERROR( "Failed to Create Menu Display!" );
+		return false;
+	}
+
 	auto pSceneDisplay = std::make_unique<SceneDisplay>();
 	if ( !pSceneDisplay )
 	{
@@ -468,6 +476,7 @@ bool Application::CreateDisplays()
 		return false;
 	}
 
+	pDisplayHolder->displays.push_back( std::move( pMenuDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pLogDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pTilesetDisplay ) );

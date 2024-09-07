@@ -50,18 +50,20 @@ find_package(EnTT CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(Lua REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
+find_package(tinyfiledialogs CONFIG REQUIRED)
 target_link_libraries(sol2 INTERFACE ${LUA_LIBRARIES})
 
 add_subdirectory(SCION_LOGGER)
 add_subdirectory(SCION_UTILITIES)
 add_subdirectory(SCION_PHYSICS)
 add_subdirectory(SCION_RENDERING)
+add_subdirectory(SCION_FILESYSTEM)
 add_subdirectory(SCION_SOUNDS)
 add_subdirectory(SCION_WINDOW)
 add_subdirectory(SCION_CORE)
 set_target_properties(
     SCION_LOGGER SCION_UTILITIES SCION_PHYSICS
-    SCION_RENDERING SCION_SOUNDS SCION_WINDOW SCION_CORE
+    SCION_RENDERING SCION_FILESYSTEM SCION_SOUNDS SCION_WINDOW SCION_CORE
     PROPERTIES FOLDER "Engine")
 
 include(cmake/AddResources.cmake)

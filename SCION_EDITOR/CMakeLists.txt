@@ -43,7 +43,7 @@ add_executable(SCION_EDITOR
 	"src/editor/tools/ToolManager.cpp"
 	"src/editor/tools/RectFillTool.h"
 	"src/editor/tools/RectFillTool.cpp"
-)
+ "src/editor/displays/MenuDisplay.h" "src/editor/displays/MenuDisplay.cpp")
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
