@@ -3,6 +3,7 @@
 
 namespace SCION_FILESYSTEM
 {
+
 std::string FileDialog::OpenFileDialog( const std::string& sTitle, const std::string& sDefaultPath,
 										const std::vector<const char*>& filters, const std::string& sFilterDesc )
 {
@@ -26,6 +27,7 @@ std::string FileDialog::SaveFileDialog( const std::string& sTitle, const std::st
 
 	return std::string{ file };
 }
+
 std::string FileDialog::SelectFolderDialog( const std::string& sTitle, const std::string& sDefaultPath )
 {
 	const char* folder = tinyfd_selectFolderDialog( sTitle.c_str(), sDefaultPath.c_str() );

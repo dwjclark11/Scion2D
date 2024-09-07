@@ -22,15 +22,23 @@ class Shader
 	~Shader();
 
 	void SetUniformInt( const std::string& name, int value );
+	void SetUniformFloat( const std::string& name, float value );
 
-	// TODO: Add more Setters as needed
+	void SetUniformVec2( const std::string& name, float x, float y );
+	void SetUniformVec2( const std::string& name, const glm::vec2& value );
 
-	void SetUniformMat4( const std::string& name, glm::mat4& mat );
+	void SetUniformVec3( const std::string& name, float x, float y, float z );
+	void SetUniformVec3( const std::string& name, const glm::vec3& value );
 
-	// TODO: Add the getters for the uniforms
+	void SetUniformVec4( const std::string& name, float x, float y, float z, float w );
+	void SetUniformVec4( const std::string& name, const glm::vec3& value );
 
-	void Enable();
-	void Disable();
+	void SetUniformMat2( const std::string& name, const glm::mat2& mat );
+	void SetUniformMat3( const std::string& name, const glm::mat3& mat );
+	void SetUniformMat4( const std::string& name, const glm::mat4& mat );
+
+	void Enable() const;
+	void Disable() const;
 
 	inline const GLuint ShaderProgramID() const { return m_ShaderProgramID; }
 };
