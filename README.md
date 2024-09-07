@@ -12,6 +12,8 @@ engines out there; however, I find it more fun to try to build your own, learn f
 The documentation is still a work in progress; however, you can check it out here:
 [Scion2D Docs](https://dwjclark11.github.io/Scion2D_Docs/)
 
+![scion_pic](https://github.com/user-attachments/assets/5b09cb12-e749-471f-a541-9398d0ac6bc9)
+
 # Build
 ----
 Requires [CMake 3.26](https://cmake.org/) and [vcpkg](https://github.com/microsoft/vcpkg)
@@ -65,7 +67,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 ## Install dependencies 
 - Windows
 	```
-	vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
+	vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer box2d lua sol2 stb tinyfiledialogs imgui[docking-experimental,opengl3-binding,sdl2-binding]
 	```
 - Linux[debian based]
 	```
@@ -84,7 +86,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 		sudo apt install build-essential
 		```
 	```
-	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer box2d lua sol2 stb imgui[docking-experimental,opengl3-binding,sdl2-binding]
+	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer box2d lua sol2 stb tinyfiledialogs imgui[docking-experimental,opengl3-binding,sdl2-binding]
 	```
 
 ## Clone the repository 
@@ -95,20 +97,6 @@ cmake -S . -B build
 ```
  
 * Also, in the main.lua file for the editor, comment out the loaded assets and files that don't exist. They will just error out.
-
-## Add a default font
-* The engine needs a default font. Use the code below and add the font of your choice.
-* We will be adding default font to the engine shortly that will be automatically loaded.
-* In the ```Application.cpp```, change the loading of the fonts to a .ttf file at a given location for your engine.
-
-```cpp
-// Temp Load pixel font // Change this to the font you use and its path
-if (!assetManager->AddFont("pixel", "./assets/fonts/pixel.ttf"))
-{
-  SCION_ERROR("Failed to load pixel font!");
-  return false;
-}
-```
 
 ## Use the built-in OpenGL debugger
 Note: this requires a graphics adapter with OpenGL version >= 4.3 capabilities.
