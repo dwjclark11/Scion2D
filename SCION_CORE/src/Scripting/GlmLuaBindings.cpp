@@ -180,29 +180,49 @@ void CreateVec4Bind( sol::state& lua )
 		[]( const glm::vec4& v ) { return glm::epsilonEqual( v.w, 0.f, 0.001f ); } );
 }
 
+void CreateQuaternionLuaBind( sol::state& lua )
+{
+	/* This might not be used */
+	lua.new_usertype<glm::quat>(
+		"quat",
+		sol::call_constructor,
+		sol::constructors<glm::quat( float, float, float, float )>(),
+		"x",
+		&glm::quat::x,
+		"y",
+		&glm::quat::y,
+		"z",
+		&glm::quat::z,
+		"w",
+		&glm::quat::w,
+		"normalize",
+		[]( const glm::quat& q ) { return glm::normalize( q ); },
+		"conjugate",
+		[]( const glm::quat& q ) { return glm::conjugate( q ); },
+		"cross",
+		[]( const glm::quat& q, const glm::quat& q2 ) { return glm::cross( q, q2 ); },
+		"dot",
+		[]( const glm::quat& q, const glm::quat& q2 ) { return glm::dot( q, q2 ); } );
+}
+
 /*
  * Some helper math functions
  */
 void MathFreeFunctions( sol::state& lua )
 {
-	lua.set_function( "distance",
+	lua.set_function( "S2D_distance",
 					  sol::overload( []( glm::vec2& a, glm::vec2& b ) { return glm::distance( a, b ); },
 									 []( glm::vec3& a, glm::vec3& b ) { return glm::distance( a, b ); },
 									 []( glm::vec4& a, glm::vec4& b ) { return glm::distance( a, b ); } ) );
 
-	lua.set_function( "lerp", []( float a, float b, float t ) { return std::lerp( a, b, t ); } );
+	lua.set_function( "S2D_lerp", []( float a, float b, float t ) { return std::lerp( a, b, t ); } );
 	lua.set_function(
-		"clamp",
+		"S2D_clamp",
 		sol::overload( []( float value, float min, float max ) { return std::clamp( value, min, max ); },
 					   []( double value, double min, double max ) { return std::clamp( value, min, max ); },
 					   []( int value, int min, int max ) { return std::clamp( value, min, max ); } ) );
 
-	lua.set_function( "distance",
-					  sol::overload( []( glm::vec2& a, glm::vec2& b ) { return glm::distance( a, b ); },
-									 []( glm::vec3& a, glm::vec3& b ) { return glm::distance( a, b ); },
-									 []( glm::vec4& a, glm::vec4& b ) { return glm::distance( a, b ); } ) );
-
-	lua.set_function( "nearly_zero",
+	lua.set_function( "S2D_nearly_zero",
 					  sol::overload(
 						  []( const glm::vec2& v ) {
 							  return glm::epsilonEqual( v.x, 0.f, 0.001f ) && glm::epsilonEqual( v.y, 0.f, 0.001f );
@@ -211,22 +231,32 @@ void MathFreeFunctions( sol::state& lua )
 							  return glm::epsilonEqual( v.x, 0.f, 0.001f ) && glm::epsilonEqual( v.y, 0.f, 0.001f ) &&
 									 glm::epsilonEqual( v.z, 0.f, 0.001f );
 						  } ) );
+
+	lua.set_function( "S2D_dot_product",
+					  sol::overload( []( const glm::vec2& v1, const glm::vec2& v2 ) { return glm::dot( v1, v2 ); },
+									 []( const glm::vec3& v1, const glm::vec3& v2 ) { return glm::dot( v1, v2 ); },
+									 []( const glm::vec4& v1, const glm::vec4& v2 ) { return glm::dot( v1, v2 ); } ) );
+
+	lua.set_function(
+		"S2D_cross_product",
+		sol::overload( []( const glm::vec2& v1, const glm::vec2& v2 ) { return v1.x * v2.y - v2.x * v1.y; },
+					   []( const glm::vec3& v1, const glm::vec3& v2 ) { return glm::cross( v1, v2 ); } ) );
 }
 
 void MathConstants( sol::state& lua )
 {
-	lua.set( "SCION_PI", 3.14159265359f );
-	lua.set( "SCION_TWO_PI", 6.28318530717f );
-	lua.set( "SCION_PI_SQUARED", 9.86960440108f );
-	lua.set( "SCION_PI_OVER_2", 1.57079632679f );
-	lua.set( "SCION_PI_OVER_4", 0.78539816339f );
-	lua.set( "SCION_PHI", 1.6180339887498948482045868343656381f );
-	lua.set( "SCION_EULERS", 2.71828182845904523536f );
+	lua.set( "S2D_PI", 3.14159265359f );
+	lua.set( "S2D_TWO_PI", 6.28318530717f );
+	lua.set( "S2D_PI_SQUARED", 9.86960440108f );
+	lua.set( "S2D_PI_OVER_2", 1.57079632679f );
+	lua.set( "S2D_PI_OVER_4", 0.78539816339f );
+	lua.set( "S2D_PHI", 1.6180339887498948482045868343656381f );
+	lua.set( "S2D_EULERS", 2.71828182845904523536f );
 
-	lua.set( "SCION_SQRT_2", 1.4142135623730950488016887242097f );
-	lua.set( "SCION_SQRT_3", 1.7320508075688772935274463415059f );
-	lua.set( "SCION_INV_SQRT_2", 0.70710678118654752440084436210485f );
-	lua.set( "SCION_INV_SQRT_3", 0.57735026918962576450914878050196f );
+	lua.set( "S2D_SQRT_2", 1.4142135623730950488016887242097f );
+	lua.set( "S2D_SQRT_3", 1.7320508075688772935274463415059f );
+	lua.set( "S2D_INV_SQRT_2", 0.70710678118654752440084436210485f );
+	lua.set( "S2D_INV_SQRT_3", 0.57735026918962576450914878050196f );
 }
 
 void GLMBindings::CreateGLMBindings( sol::state& lua )
