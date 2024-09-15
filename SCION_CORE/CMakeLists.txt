@@ -82,7 +82,12 @@ add_library(SCION_CORE
     "include/Core/Systems/RenderUISystem.h"
     "src/Systems/RenderUISystem.cpp"
     "include/Core/Systems/ScriptingSystem.h"
-    "src/Systems/ScriptingSystem.cpp" )
+    "src/Systems/ScriptingSystem.cpp"
+
+	"include/Core/ECS/Components/ComponentSerializer.h"
+	"include/Core/ECS/Components/ComponentSerializer.inl"
+	"src/ECS/Components/ComponentSerializer.cpp"
+ "include/Core/Loaders/TilemapLoader.h" "src/Loaders/TilemapLoader.cpp")
 
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

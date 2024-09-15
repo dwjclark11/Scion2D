@@ -51,6 +51,7 @@ find_package(glm CONFIG REQUIRED)
 find_package(Lua REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
 find_package(tinyfiledialogs CONFIG REQUIRED)
+find_package(RapidJSON CONFIG REQUIRED)
 target_link_libraries(sol2 INTERFACE ${LUA_LIBRARIES})
 
 add_subdirectory(SCION_LOGGER)

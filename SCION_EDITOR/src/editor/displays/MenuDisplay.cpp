@@ -31,7 +31,12 @@ void MenuDisplay::Draw()
 
 			if ( ImGui::MenuItem( "Save", "Ctrl + S" ) )
 			{
-				SCION_LOG( "SAVE PRESSED" );
+				SCION_FILESYSTEM::FileDialog fd{};
+				auto file = fd.SaveFileDialog( "Save Tilemap test", SDL_GetBasePath(), { "*.json" } );
+				if (!file.empty())
+				{
+					// TODO: Save the tilemap!!!
+				}
 			}
 
 			if ( ImGui::MenuItem( "Exit") )
