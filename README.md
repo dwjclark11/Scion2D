@@ -67,7 +67,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 ## Install dependencies 
 - Windows
 	```
-	vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer box2d lua sol2 stb tinyfiledialogs imgui[docking-experimental,opengl3-binding,sdl2-binding]
+	vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer box2d lua sol2 stb tinyfiledialogs rapidjson imgui[docking-experimental,opengl3-binding,sdl2-binding]
 	```
 - Linux[debian based]
 	```
@@ -86,7 +86,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 		sudo apt install build-essential
 		```
 	```
-	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer box2d lua sol2 stb tinyfiledialogs imgui[docking-experimental,opengl3-binding,sdl2-binding]
+	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer box2d lua sol2 stb tinyfiledialogs rapidjson imgui[docking-experimental,opengl3-binding,sdl2-binding]
 	```
 
 ## Clone the repository 
