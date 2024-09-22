@@ -10,8 +10,8 @@ class JSONSerializer;
 #define SERIALIZE_COMPONENT( serializer, component )                                                                   \
 	SCION_CORE::ECS::ComponentSerializer::Serialize( serializer, component )
 
-#define DESERIALIZE_COMPONENT( serializer, compref )                                                                   \
-	SCION_CORE::ECS::ComponentSerializer::Deserialize( serializer, compref )
+#define DESERIALIZE_COMPONENT( table, compref )                                                                   \
+	SCION_CORE::ECS::ComponentSerializer::Deserialize( table, compref )
 
 /* This should no longer be used unless you want to return the component rather than passing in a ref. */
 #define DESERIALIZE_COMPONENT_DEPRICATED( COMP, serailizer )                                                           \

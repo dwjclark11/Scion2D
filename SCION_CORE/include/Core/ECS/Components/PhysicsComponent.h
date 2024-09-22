@@ -44,6 +44,9 @@ class PhysicsComponent
 	SCION_PHYSICS::UserData* GetUserData() { return m_pUserData.get(); }
 	const bool IsSensor() const;
 
+	/* The attributes may have changed. we need to make a function that will refill the attributes */
+	const PhysicsAttributes& GetAttributes() const { return m_InitialAttribs; }
+
 	static void CreatePhysicsLuaBind( sol::state& lua, entt::registry& registry );
 };
 } // namespace SCION_CORE::ECS

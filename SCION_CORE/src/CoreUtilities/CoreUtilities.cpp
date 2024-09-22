@@ -3,7 +3,21 @@
 
 using namespace SCION_CORE::ECS;
 
-bool SCION_CORE::EntityInView( const TransformComponent& transform, float width, float height,
+
+static const std::unordered_map<std::string, SCION_CORE::ECS::RigidBodyType> StringToRigidBodyType{
+	{ "static", SCION_CORE::ECS::RigidBodyType::STATIC },
+	{ "kinematic", SCION_CORE::ECS::RigidBodyType::KINEMATIC },
+	{ "dynamic", SCION_CORE::ECS::RigidBodyType::DYNAMIC } };
+
+static const std::unordered_map<SCION_CORE::ECS::RigidBodyType, std::string> RigidBodyTypeToString{
+	{ SCION_CORE::ECS::RigidBodyType::STATIC, "static" },
+	{ SCION_CORE::ECS::RigidBodyType::KINEMATIC, "kinematic" },
+	{ SCION_CORE::ECS::RigidBodyType::DYNAMIC, "dynamic" } };
+
+namespace SCION_CORE
+{
+
+bool EntityInView( const TransformComponent& transform, float width, float height,
 							   const SCION_RENDERING::Camera2D& camera )
 {
 	const auto& cameraPos = camera.GetPosition() - camera.GetScreenOffset();
@@ -21,7 +35,7 @@ bool SCION_CORE::EntityInView( const TransformComponent& transform, float width,
 	return true;
 }
 
-glm::mat4 SCION_CORE::RSTModel( const TransformComponent& transform, float width, float height )
+glm::mat4 RSTModel( const TransformComponent& transform, float width, float height )
 {
 	glm::mat4 model{ 1.f };
 	if ( transform.rotation > 0.f || transform.rotation < 0.f || transform.scale.x > 1.f || transform.scale.x < 1.f ||
@@ -38,4 +52,24 @@ glm::mat4 SCION_CORE::RSTModel( const TransformComponent& transform, float width
 	}
 
 	return model;
+}
+
+std::string GetRigidBodyTypeString( SCION_CORE::ECS::RigidBodyType eRigidType )
+{
+	auto rigidItr = RigidBodyTypeToString.find( eRigidType );
+	if ( rigidItr == RigidBodyTypeToString.end() )
+		return {};
+
+	return rigidItr->second;
+}
+
+SCION_CORE::ECS::RigidBodyType GetRigidBodyTypeByString( const std::string sRigidType )
+{
+	auto rigidItr = StringToRigidBodyType.find( sRigidType );
+	if ( rigidItr == StringToRigidBodyType.end() )
+		return RigidBodyType::STATIC;
+
+	return rigidItr->second;
+}
+
 }

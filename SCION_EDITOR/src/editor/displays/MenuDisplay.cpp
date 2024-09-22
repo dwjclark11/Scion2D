@@ -1,7 +1,9 @@
 #include "MenuDisplay.h"
 #include "Logger/Logger.h"
 #include "ScionFilesystem/Dialogs/FileDialog.h"
-
+#include "Core/Loaders/TilemapLoader.h"
+#include "editor/scene/SceneManager.h"
+#include "editor/scene/SceneObject.h"
 #include <imgui.h>
 #include <SDL.h>
 
@@ -21,11 +23,23 @@ void MenuDisplay::Draw()
 			if ( ImGui::MenuItem( "Open", "Ctrl + O" ) )
 			{
 				SCION_FILESYSTEM::FileDialog fd{};
-				auto file = fd.OpenFileDialog( "Open tests", SDL_GetBasePath(), { "*.png", "*.jpg" } );
+				auto file = fd.OpenFileDialog( "Open tilemap test", SDL_GetBasePath(), { "*.json" } );
 
 				if (!file.empty())
 				{
-					SCION_LOG( "FILE OPENED: {}", file );
+					auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+					if ( pCurrentScene )
+					{
+						SCION_CORE::Loaders::TilemapLoader tl{};
+						if ( !tl.LoadTilemap( pCurrentScene->GetRegistry(), file, true ) )
+						{
+							SCION_ERROR( "Failed to load tilemap." );
+						}
+					}
+					else
+					{
+						SCION_ERROR( "Failed to load tilemap. No active scene." );
+					}
 				}
 			}
 
@@ -35,7 +49,19 @@ void MenuDisplay::Draw()
 				auto file = fd.SaveFileDialog( "Save Tilemap test", SDL_GetBasePath(), { "*.json" } );
 				if (!file.empty())
 				{
-					// TODO: Save the tilemap!!!
+					auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+					if (pCurrentScene)
+					{
+						SCION_CORE::Loaders::TilemapLoader tl{};
+						if (!tl.SaveTilemap(pCurrentScene->GetRegistry(), file, true))
+						{
+							SCION_ERROR( "Failed to save tilemap." );
+						}
+					}
+					else
+					{
+						SCION_ERROR( "Failed to save tilemap. No active scene." );
+					}
 				}
 			}
 
