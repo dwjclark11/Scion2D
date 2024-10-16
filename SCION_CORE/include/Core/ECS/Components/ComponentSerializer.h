@@ -13,10 +13,6 @@ class JSONSerializer;
 #define DESERIALIZE_COMPONENT( table, compref )                                                                   \
 	SCION_CORE::ECS::ComponentSerializer::Deserialize( table, compref )
 
-/* This should no longer be used unless you want to return the component rather than passing in a ref. */
-#define DESERIALIZE_COMPONENT_DEPRICATED( COMP, serailizer )                                                           \
-	SCION_CORE::ECS::ComponentSerializer::Deserialize<COMP>( serializer )
-
 
 namespace SCION_CORE::ECS
 {
@@ -30,10 +26,6 @@ class ComponentSerializer
 
 	template <typename TComponent, typename TTable>
 	static void Deserialize( const TTable& table, TComponent& component );
-
-	template <typename TComponent, typename TTable>
-	[[deprecated( "Deprecated because this uses a lot of constexpr checks for component types." )]]
-	static auto Deserialize( const TTable& table );
 
   private:
 	// JSON serializer
