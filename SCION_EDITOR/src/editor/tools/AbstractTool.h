@@ -15,6 +15,7 @@ namespace SCION_EDITOR
 {
 
 struct Canvas;
+class SceneObject;
 
 class AbstractTool
 {
@@ -42,6 +43,7 @@ class AbstractTool
 
 	SCION_CORE::ECS::Registry* m_pRegistry{ nullptr };
 	SCION_RENDERING::Camera2D* m_pCamera{ nullptr };
+	SceneObject* m_pCurrentScene{ nullptr };
 
   protected:
 	bool MouseBtnJustPressed( EMouseButton eButton );
@@ -69,7 +71,7 @@ class AbstractTool
 	/*
 	 * @brief Sets the current registry to the registry of the current scene and the camera.
 	 */
-	bool SetupTool( SCION_CORE::ECS::Registry* pRegistry, SCION_RENDERING::Camera2D* pCamera );
+	bool SetupTool( SceneObject* pSceneObject, SCION_RENDERING::Camera2D* pCamera );
 
 	inline void SetRelativeCoords( const glm::vec2& relativeCoords ) { m_GUIRelativeCoords = relativeCoords; }
 	inline void SetCursorCoords( const glm::vec2& cursorCoords ) { m_GUICursorCoords = cursorCoords; }

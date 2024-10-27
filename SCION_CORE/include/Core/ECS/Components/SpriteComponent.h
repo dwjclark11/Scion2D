@@ -12,7 +12,7 @@ struct UVs
 
 struct SpriteComponent
 {
-	float width{ 0.f }, height{ 0.f };
+	float width{ 16.f }, height{ 16.f };
 	UVs uvs{ .u = 0.f, .v = 0.f, .uv_width = 0.f, .uv_height = 0.f };
 
 	SCION_RENDERING::Color color{ .r = 255, .g = 255, .b = 255, .a = 255 };
@@ -21,7 +21,7 @@ struct SpriteComponent
 	bool bHidden{ false };
 	std::string texture_name{ "" };
 
-	void generate_uvs( int textureWidth, int textureHeight );
+	//void generate_uvs( int textureWidth, int textureHeight );
 	[[nodiscard]] std::string to_string() const;
 
 	static void CreateSpriteLuaBind( sol::state& lua );

@@ -4,6 +4,7 @@
 #include "Core/ECS/Registry.h"
 #include "Rendering/Core/Camera2D.h"
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/scene/SceneObject.h"
 
 namespace SCION_EDITOR
 {
@@ -72,21 +73,28 @@ void AbstractTool::Update( Canvas& canvas )
 	CheckOutOfBounds( canvas );
 }
 
-bool AbstractTool::SetupTool( SCION_CORE::ECS::Registry* pRegistry, SCION_RENDERING::Camera2D* pCamera )
+bool AbstractTool::SetupTool( SceneObject* pSceneObject, SCION_RENDERING::Camera2D* pCamera )
 {
-	if ( !pRegistry )
+	if ( !pSceneObject )
+	{
+		SCION_ERROR( "Failed to setup tool - SceneObject was nullptr." );
+		return false;
+	}
+
+	if ( !pSceneObject->GetRegistryPtr() )
 	{
 		SCION_ERROR( "Failed to setup tool - Registry was nullptr." );
 		return false;
 	}
+
 	if ( !pCamera )
 	{
 		SCION_ERROR( "Failed to setup tool - Camera was nullptr." );
 		return false;
 	}
-
+	m_pCurrentScene = pSceneObject;
 	m_pCamera = pCamera;
-	m_pRegistry = pRegistry;
+	m_pRegistry = pSceneObject->GetRegistryPtr();
 
 	return true;
 }

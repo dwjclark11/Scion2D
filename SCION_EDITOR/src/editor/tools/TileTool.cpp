@@ -3,8 +3,10 @@
 #include "editor/utilities/EditorUtilities.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
+#include "Core/CoreUtilities/CoreUtilities.h"
 #include "Rendering/Core/BatchRenderer.h"
 #include "Rendering/Core/Camera2D.h"
+#include "editor/scene/SceneObject.h"
 
 constexpr int MOUSE_SPRITE_LAYER = 10;
 
@@ -127,17 +129,21 @@ void TileTool::ClearMouseTextureData()
 
 void TileTool::LoadSpriteTextureData( const std::string& textureName )
 {
+	// We need to get the current sprite layer to ensure that if we change tilesets,
+	// the layer we are drawing on does not reset.
+	int currentLayer = m_pMouseTile->sprite.layer;
+
 	m_pMouseTile->sprite = SpriteComponent{ .width = m_MouseRect.x,
 											.height = m_MouseRect.y,
 											.color = SCION_RENDERING::Color{ 255, 255, 255, 255 },
 											.start_x = 0,
 											.start_y = 0,
-											.layer = 0,
+											.layer = currentLayer,
 											.texture_name = textureName };
 
 	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( textureName );
 	SCION_ASSERT( pTexture && "Texture must exist" );
-	m_pMouseTile->sprite.generate_uvs( pTexture->GetWidth(), pTexture->GetHeight() );
+	SCION_CORE::GenerateUVs( m_pMouseTile->sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 }
 
 const std::string& TileTool::GetSpriteTexture() const
@@ -191,7 +197,7 @@ void TileTool::SetSpriteRect( const glm::vec2& spriteRect )
 
 	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.texture_name );
 	SCION_ASSERT( pTexture && "Texture Must exist." );
-	sprite.generate_uvs( pTexture->GetWidth(), pTexture->GetHeight() );
+	SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 }
 
 void TileTool::SetCollider( bool bCollider )
@@ -220,6 +226,7 @@ const bool TileTool::SpriteValid() const
 }
 const bool TileTool::CanDrawOrCreate() const
 {
-	return IsActivated() && !OutOfBounds() && IsOverTilemapWindow() && SpriteValid();
+	return IsActivated() && !OutOfBounds() && IsOverTilemapWindow() && SpriteValid() && m_pCurrentScene &&
+		   m_pCurrentScene->HasTileLayers();
 }
 } // namespace SCION_EDITOR

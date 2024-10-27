@@ -35,7 +35,7 @@ void TileDetailsDisplay::DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& 
 
 		std::string sLayer{ "" };
 
-		// TODO: Add layer description
+		// Sets the layer description
 		if ( sprite.layer >= 0 && sprite.layer < pScene->GetLayerParams().size() )
 		{
 			sLayer = pScene->GetLayerParams()[ sprite.layer ].sLayerName;
@@ -82,11 +82,22 @@ void TileDetailsDisplay::DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& 
 
 	if ( bChanged )
 	{
-		auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.texture_name );
-		if ( !pTexture )
-			return;
+		auto pTileTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
+		if (pTileTool)
+		{
+			// Setting the sprite rect handles the UVs as well.
+			pTileTool->SetSpriteRect( glm::vec2{ sprite.width, sprite.height } );
+			// We should also adjust the tileset here so when we change the width/height
+			// It will show in the tileset.
+		}
+		else // In reality, this should never get here, should probably assert instead.
+		{
+			auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.texture_name );
+			if ( !pTexture )
+				return;
 
-		SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+			SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+		}
 	}
 }
 
@@ -174,6 +185,8 @@ void TileDetailsDisplay::Draw()
 		ImGui::SeparatorText( "Tile Layers" );
 		auto& spriteLayers = pCurrentScene->GetLayerParams();
 
+		std::string sCheckName{ m_sRenameLayerBuf.data() };
+
 		if ( ImGui::Button( "Add" ) )
 		{
 			pCurrentScene->AddNewLayer();
@@ -241,15 +254,38 @@ void TileDetailsDisplay::Draw()
 				m_sRenameLayerBuf = spriteLayer.sLayerName;
 			}
 
+			bool bCheckPassed{ pCurrentScene->CheckLayerName( sCheckName ) };
+
 			if ( m_bRename && bIsSelected )
 			{
-				// TODO: Rename stuff Challenge
+				ImGui::SetKeyboardFocusHere();
+				if ( ImGui::InputText(
+						 "##rename", m_sRenameLayerBuf.data(), 255, ImGuiInputTextFlags_EnterReturnsTrue ) &&
+					 bCheckPassed )
+				{
+					spriteLayer.sLayerName = sCheckName;
+					m_sRenameLayerBuf.clear();
+					m_bRename = false;
+				}
+				else if ( m_bRename && ImGui::IsKeyPressed( ImGui::GetKeyIndex( ImGuiKey_Escape ) ) )
+				{
+					m_sRenameLayerBuf.clear();
+					m_bRename = false;
+				}
 			}
 
 			ImGui::SameLine();
 
 			// Layer Visibility
 			ImGui::Checkbox( fmt::format( "##visible_{}", spriteLayer.sLayerName ).c_str(), &spriteLayer.bVisible );
+
+			// We want to display an error to the user if the name already exists. Try to prevent duplicate
+			// layer names.
+			if ( !bCheckPassed && bIsSelected )
+			{
+				ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f },
+									fmt::format( "{} - Already exists.", sCheckName ).c_str() );
+			}
 		}
 
 		ImGui::EndChild();

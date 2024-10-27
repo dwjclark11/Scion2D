@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <ranges>
+#include <functional>
 
 namespace SCION_UTIL
 {
@@ -45,6 +46,13 @@ bool KeyChange(Map& map, const typename Map::key_type& key, const typename Map::
 	node.key() = change;
 	const auto [itr, bSuccess, nType] = map.insert( std::move( node ) );
 	return bSuccess;
+}
+
+template <typename TCont, typename TFunc>
+bool CheckContainsValue(TCont& cont, TFunc func)
+{
+	auto itr = std::ranges::find_if( cont, func );
+	return itr == cont.end();
 }
 
 } // namespace SCION_UTIL

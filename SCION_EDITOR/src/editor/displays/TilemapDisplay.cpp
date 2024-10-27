@@ -84,7 +84,7 @@ void TilemapDisplay::LoadNewScene()
 	auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
 	if ( pActiveTool )
 	{
-		if ( !pActiveTool->SetupTool( pCurrentScene->GetRegistryPtr(), m_pTilemapCam.get() ) )
+		if ( !pActiveTool->SetupTool( pCurrentScene.get(), m_pTilemapCam.get() ) )
 		{
 			SCION_ASSERT( false && "This should work!!" );
 #ifdef _WIN32
