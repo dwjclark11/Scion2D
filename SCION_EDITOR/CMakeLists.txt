@@ -9,6 +9,8 @@ add_executable(SCION_EDITOR
 	"src/editor/utilities/ImGuiUtils.h"
 	"src/editor/utilities/ImGuiUtils.cpp"
 	"src/editor/utilities/EditorFramebuffers.h"
+	"src/editor/utilities/DrawComponentUtils.h"
+	"src/editor/utilities/DrawComponentUtils.cpp"
 
     # Editor Displays
     "src/editor/displays/IDisplay.h"
@@ -24,6 +26,8 @@ add_executable(SCION_EDITOR
     "src/editor/displays/AssetDisplay.cpp" 
 	"src/editor/displays/MenuDisplay.h"
 	"src/editor/displays/MenuDisplay.cpp"
+	"src/editor/displays/TileDetailsDisplay.h"
+	"src/editor/displays/TileDetailsDisplay.cpp"
 
     # Editor Systems
     "src/editor/systems/GridSystem.h" 
@@ -47,7 +51,7 @@ add_executable(SCION_EDITOR
 	"src/editor/tools/ToolManager.cpp"
 	"src/editor/tools/RectFillTool.h"
 	"src/editor/tools/RectFillTool.cpp"
- "src/editor/utilities/DrawComponentUtils.h" "src/editor/utilities/DrawComponentUtils.cpp")
+)
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

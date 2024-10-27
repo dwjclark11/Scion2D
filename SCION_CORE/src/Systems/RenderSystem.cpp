@@ -8,7 +8,11 @@
 #include <Rendering/Essentials/Shader.h>
 #include <Rendering/Core/BatchRenderer.h>
 
+#include "ScionUtilities/HelperUtilities.h"
+
 #include <Logger/Logger.h>
+
+#include <ranges>
 
 using namespace SCION_CORE::ECS;
 using namespace SCION_RENDERING;
@@ -21,12 +25,9 @@ RenderSystem::RenderSystem()
 {
 }
 
-void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
+void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera,
+						   const std::vector<SCION_UTIL::SpriteLayerParams>& layerFilters )
 {
-	auto view = registry.GetRegistry().view<SpriteComponent, TransformComponent>();
-	if ( view.size_hint() < 1 )
-		return;
-
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
 
@@ -45,10 +46,35 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING:
 
 	m_pBatchRenderer->Begin();
 
-	for ( const auto& entity : view )
+	auto spriteView = registry.GetRegistry().view<SpriteComponent, TransformComponent>();
+	std::function<bool( entt::entity )> filterFunc;
+
+	// Check to see if the layers are visible, if not, filter them out.
+	if ( layerFilters.empty() )
 	{
-		const auto& transform = view.get<TransformComponent>( entity );
-		const auto& sprite = view.get<SpriteComponent>( entity );
+		filterFunc = []( entt::entity ) { return true; };
+	}
+	else
+	{
+		filterFunc = [ & ]( entt::entity entity ) {
+			// We only want to filter tiles
+			if ( !registry.GetRegistry().all_of<TileComponent>( entity ) )
+				return true;
+
+			const auto& sprite = spriteView.get<SpriteComponent>( entity );
+			if ( sprite.layer >= 0 && sprite.layer < layerFilters.size() )
+			{
+				return layerFilters[ sprite.layer ].bVisible;
+			}
+
+			return false;
+		};
+	}
+
+	for ( const auto& entity : std::views::filter( spriteView, filterFunc ) )
+	{
+		const auto& transform = spriteView.get<TransformComponent>( entity );
+		const auto& sprite = spriteView.get<SpriteComponent>( entity );
 
 		if ( !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, camera ) )
 			continue;

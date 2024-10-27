@@ -60,7 +60,7 @@ void TilemapDisplay::RenderTilemap()
 	auto& gridSystem = mainRegistry.GetContext<std::shared_ptr<GridSystem>>();
 	gridSystem->Update( *pCurrentScene, *m_pTilemapCam );
 
-	renderSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
+	renderSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam, pCurrentScene->GetLayerParams() );
 	renderShapeSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
 	renderUISystem->Update( pCurrentScene->GetRegistry() );
 

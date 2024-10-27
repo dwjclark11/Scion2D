@@ -62,5 +62,7 @@ class TileTool : public AbstractTool
 
 	inline void EnableGridSnap() { m_bGridSnap = true; }
 	inline void DisableGridSnap() { m_bGridSnap = false; }
+
+	inline Tile& GetTileData() { return *m_pMouseTile; }
 };
 } // namespace SCION_EDITOR

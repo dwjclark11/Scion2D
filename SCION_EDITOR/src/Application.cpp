@@ -33,6 +33,7 @@
 #include "editor/displays/MenuDisplay.h"
 #include "editor/displays/AssetDisplay.h"
 #include "editor/displays/SceneDisplay.h"
+#include "editor/displays/TileDetailsDisplay.h"
 #include "editor/displays/TilesetDisplay.h"
 #include "editor/displays/TilemapDisplay.h"
 #include "editor/displays/LogDisplay.h"
@@ -41,6 +42,8 @@
 
 #include "editor/systems/GridSystem.h"
 #include "editor/scene/SceneManager.h"
+
+#include "ScionUtilities/HelperUtilities.h"
 
 namespace SCION_EDITOR
 {
@@ -469,6 +472,13 @@ bool Application::CreateDisplays()
 		return false;
 	}
 
+	auto pTileDetailsDisplay = std::make_unique<TileDetailsDisplay>();
+	if ( !pTileDetailsDisplay )
+	{
+		SCION_ERROR( "Failed to Create TileDetailsDisplay!" );
+		return false;
+	}
+
 	auto pAssetDisplay = std::make_unique<AssetDisplay>();
 	if ( !pAssetDisplay )
 	{
@@ -479,6 +489,7 @@ bool Application::CreateDisplays()
 	pDisplayHolder->displays.push_back( std::move( pMenuDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pLogDisplay ) );
+	pDisplayHolder->displays.push_back( std::move( pTileDetailsDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pTilesetDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pTilemapDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pAssetDisplay ) );
@@ -562,6 +573,7 @@ void Application::RenderImGui()
 		const auto LogNodeId =
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Down, 0.25f, nullptr, &centerNodeId );
 		ImGui::DockBuilderDockWindow( "Tileset", RightNodeId );
+		ImGui::DockBuilderDockWindow( "Tile Details", RightNodeId );
 		ImGui::DockBuilderDockWindow( "Dear ImGui Demo", leftNodeId );
 		ImGui::DockBuilderDockWindow( "Scene", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Tilemap Editor", centerNodeId );

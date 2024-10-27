@@ -6,6 +6,7 @@ add_library(SCION_UTILITIES
     "include/ScionUtilities/Timer.h"
     "src/Timer.cpp" 
     "include/ScionUtilities/ScionUtilities.h"
+	"include/ScionUtilities/HelperUtilities.h"
 )
 
 target_include_directories(
