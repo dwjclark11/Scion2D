@@ -48,17 +48,22 @@ void RectFillTool::CreateTiles()
 
 			if ( m_pMouseTile->bCollider )
 			{
-				// TODO: add collider component
+				tile.AddComponent<BoxColliderComponent>( m_pMouseTile->boxCollider );
+			}
+
+			if ( m_pMouseTile->bCircle )
+			{
+				tile.AddComponent<CircleColliderComponent>( m_pMouseTile->circleCollider );
 			}
 
 			if ( m_pMouseTile->bAnimation )
 			{
-				// TODO: add animation component
+				tile.AddComponent<AnimationComponent>( m_pMouseTile->animation );
 			}
 
 			if ( m_pMouseTile->bPhysics )
 			{
-				// TODO: add physics component
+				tile.AddComponent<PhysicsComponent>( m_pMouseTile->physics );
 			}
 
 			tile.AddComponent<TileComponent>( static_cast<uint32_t>( tile.GetEntity() ) );

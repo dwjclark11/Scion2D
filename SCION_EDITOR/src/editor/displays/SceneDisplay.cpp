@@ -55,7 +55,7 @@ void SceneDisplay::LoadScene()
 		std::make_shared<ScriptingSystem>( runtimeRegistry ) );
 
 	runtimeRegistry.AddToContext<std::shared_ptr<AnimationSystem>>(
-		std::make_shared<AnimationSystem>( runtimeRegistry ) );
+		std::make_shared<AnimationSystem>( ) );
 
 	runtimeRegistry.AddToContext<std::shared_ptr<PhysicsSystem>>( std::make_shared<PhysicsSystem>( runtimeRegistry ) );
 
@@ -129,7 +129,12 @@ void SceneDisplay::RenderScene() const
 		auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 		auto& camera = runtimeRegistry.GetContext<std::shared_ptr<Camera2D>>();
 		renderSystem->Update( runtimeRegistry, *camera );
-		renderShapeSystem->Update( runtimeRegistry, *camera );
+
+		if ( CORE_GLOBALS().RenderCollidersEnabled() )
+		{
+			renderShapeSystem->Update( runtimeRegistry, *camera );
+		}
+
 		renderUISystem->Update( runtimeRegistry );
 	}
 
@@ -280,6 +285,6 @@ void SceneDisplay::Update()
 	pPhysicsSystem->Update( runtimeRegistry.GetRegistry() );
 
 	auto& animationSystem = runtimeRegistry.GetContext<std::shared_ptr<SCION_CORE::Systems::AnimationSystem>>();
-	animationSystem->Update();
+	animationSystem->Update( runtimeRegistry, *camera );
 }
 } // namespace SCION_EDITOR

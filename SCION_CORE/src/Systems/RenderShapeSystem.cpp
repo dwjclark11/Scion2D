@@ -3,6 +3,7 @@
 #include "Core/ECS/Components/CircleColliderComponent.h"
 #include "Core/ECS/Components/TransformComponent.h"
 #include "Core/ECS/Components/PhysicsComponent.h"
+#include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
@@ -27,12 +28,9 @@ RenderShapeSystem::RenderShapeSystem()
 
 void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
 {
-	if ( !CoreEngineData::GetInstance().RenderCollidersEnabled() )
-		return;
+	auto& assetManager = MAIN_REGISTRY().GetAssetManager();
 
-	auto& assetManager = registry.GetContext<std::shared_ptr<AssetManager>>();
-
-	auto colorShader = assetManager->GetShader( "color" );
+	auto colorShader = assetManager.GetShader( "color" );
 	auto cam_mat = camera.GetCameraMatrix();
 
 	colorShader->Enable();
@@ -75,7 +73,7 @@ void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDE
 	m_pRectRenderer->Render();
 	colorShader->Disable();
 
-	auto circleShader = assetManager->GetShader( "circle" );
+	auto circleShader = assetManager.GetShader( "circle" );
 
 	circleShader->Enable();
 	circleShader->SetUniformMat4( "uProjection", cam_mat );

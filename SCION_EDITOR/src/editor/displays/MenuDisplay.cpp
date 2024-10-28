@@ -2,8 +2,12 @@
 #include "Logger/Logger.h"
 #include "ScionFilesystem/Dialogs/FileDialog.h"
 #include "Core/Loaders/TilemapLoader.h"
+#include "Core/CoreUtilities/CoreEngineData.h"
+
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
+#include "editor/tools/ToolManager.h"
+
 #include <imgui.h>
 #include <SDL.h>
 
@@ -75,6 +79,23 @@ void MenuDisplay::Draw()
 
 		if ( ImGui::BeginMenu( "Edit" ) )
 		{
+			auto& coreGlobals = CORE_GLOBALS();
+
+			static bool bGridSnap{ true };
+			if ( ImGui::Checkbox( "Enable Gridsnap", &bGridSnap ) )
+			{
+				SCENE_MANAGER().GetToolManager().EnableGridSnap( bGridSnap );
+			}
+
+			static bool bShowCollision{ false };
+			if ( ImGui::Checkbox( "Show Collision", &bShowCollision ) )
+			{
+				if ( bShowCollision )
+					coreGlobals.EnableColliderRender();
+				else
+					coreGlobals.DisableColliderRender();
+			}
+
 			ImGui::EndMenu();
 		}
 

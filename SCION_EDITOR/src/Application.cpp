@@ -207,6 +207,9 @@ bool Application::Initialize()
 		return false;
 	}
 
+	mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::Systems::AnimationSystem>>(
+		std::make_shared<SCION_CORE::Systems::AnimationSystem>() );
+
 	if ( !InitImGui() )
 	{
 		SCION_ERROR( "Failed to initialize ImGui!" );

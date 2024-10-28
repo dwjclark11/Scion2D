@@ -1,17 +1,23 @@
 #pragma once
-#include "Core/ECS/Registry.h"
+
+namespace SCION_CORE::ECS
+{
+class Registry;
+}
+
+namespace SCION_RENDERING
+{
+class Camera2D;
+}
 
 namespace SCION_CORE::Systems
 {
 class AnimationSystem
 {
-  private:
-	SCION_CORE::ECS::Registry& m_Registry;
-
   public:
-	AnimationSystem( SCION_CORE::ECS::Registry& registry );
+	AnimationSystem() = default;
 	~AnimationSystem() = default;
 
-	void Update();
+	void Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera );
 };
 } // namespace SCION_CORE::Systems

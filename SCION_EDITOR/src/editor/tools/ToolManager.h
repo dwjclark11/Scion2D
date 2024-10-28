@@ -32,5 +32,7 @@ class ToolManager
 	 * @return Returns a pointer to a TileTool if activated, else returns nullptr;
 	 */
 	TileTool* GetActiveTool();
+
+	void EnableGridSnap( bool bEnable );
 };
 } // namespace SCION_EDITOR

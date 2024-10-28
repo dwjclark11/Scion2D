@@ -5,6 +5,9 @@
 #include "Core/Systems/RenderSystem.h"
 #include "Core/Systems/RenderUISystem.h"
 #include "Core/Systems/RenderShapeSystem.h"
+#include "Core/Systems/AnimationSystem.h"
+
+#include "Core/CoreUtilities/CoreEngineData.h"
 
 #include "Rendering/Core/Camera2D.h"
 #include "Rendering/Core/Renderer.h"
@@ -61,7 +64,12 @@ void TilemapDisplay::RenderTilemap()
 	gridSystem->Update( *pCurrentScene, *m_pTilemapCam );
 
 	renderSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam, pCurrentScene->GetLayerParams() );
-	renderShapeSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
+
+	if ( CORE_GLOBALS().RenderCollidersEnabled() )
+	{
+		renderShapeSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
+	}
+
 	renderUISystem->Update( pCurrentScene->GetRegistry() );
 
 	auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
@@ -248,6 +256,10 @@ void TilemapDisplay::Update()
 		pActiveTool->Update( pCurrentScene->GetCanvas() );
 		pActiveTool->Create();
 	}
+
+	auto& mainRegistry = MAIN_REGISTRY();
+	auto& animationSystem = mainRegistry.GetContext<std::shared_ptr<AnimationSystem>>();
+	animationSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
 
 	m_pTilemapCam->Update();
 }

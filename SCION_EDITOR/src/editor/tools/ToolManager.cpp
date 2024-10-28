@@ -42,4 +42,15 @@ TileTool* ToolManager::GetActiveTool()
 	return nullptr;
 }
 
+void ToolManager::EnableGridSnap( bool bEnable )
+{
+	for ( auto& tool : m_mapTools )
+	{
+		if ( bEnable )
+			tool.second->EnableGridSnap();
+		else
+			tool.second->DisableGridSnap();
+	}
+}
+
 } // namespace SCION_EDITOR

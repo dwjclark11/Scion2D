@@ -3,6 +3,7 @@
 #include "Core/ECS/Components/SpriteComponent.h"
 #include "Core/ECS/Components/TransformComponent.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
+#include "Core/ECS/Registry.h"
 
 #include <SDL.h>
 
@@ -11,18 +12,11 @@ using namespace SCION_CORE::ECS;
 namespace SCION_CORE::Systems
 {
 
-AnimationSystem::AnimationSystem( SCION_CORE::ECS::Registry& registry )
-	: m_Registry{ registry }
+void AnimationSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
 {
-}
-
-void AnimationSystem::Update()
-{
-	auto view = m_Registry.GetRegistry().view<AnimationComponent, SpriteComponent, TransformComponent>();
+	auto view = registry.GetRegistry().view<AnimationComponent, SpriteComponent, TransformComponent>();
 	if ( view.size_hint() < 1 )
 		return;
-
-	auto& camera = m_Registry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
 
 	for ( auto entity : view )
 	{
@@ -30,7 +24,7 @@ void AnimationSystem::Update()
 		auto& sprite = view.get<SpriteComponent>( entity );
 		auto& animation = view.get<AnimationComponent>( entity );
 
-		if ( !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, *camera ) )
+		if ( !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, camera ) )
 			continue;
 
 		if ( animation.numFrames <= 0 )
