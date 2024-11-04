@@ -25,18 +25,10 @@ inline JSONSerializer& JSONSerializer::AddKeyValuePair( const std::string& key, 
 	}
 	else
 	{
-		static_assert( false, "Type is not supported!" );
+		assert( false && "Type not supported!" );
 	}
 
 	return *this;
 }
 
-template <>
-inline JSONSerializer& JSONSerializer::AddKeyValuePair( const std::string& key, const bool& value )
-{
-	m_pWriter->Key( key.c_str() );
-	m_pWriter->Bool( value );
-
-	return *this;
-}
 } // namespace SCION_FILESYSTEM

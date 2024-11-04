@@ -26,12 +26,10 @@ class JSONSerializer
 	JSONSerializer& StartNewArray( const std::string& key);
 	JSONSerializer& EndArray();
 
-	template <typename TValue>
-	JSONSerializer& AddKeyValuePair( const std::string& key, const TValue& value );
-
-	template <>
 	JSONSerializer& AddKeyValuePair( const std::string& key, const bool& value );
 
+	template <typename TValue>
+	JSONSerializer& AddKeyValuePair( const std::string& key, const TValue& value );
 };
 
 } // namespace SCION_FILESYSTEM

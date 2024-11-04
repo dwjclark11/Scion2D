@@ -131,4 +131,13 @@ JSONSerializer& JSONSerializer::EndArray()
 	m_pWriter->EndArray();
 	return *this;
 }
+
+JSONSerializer& JSONSerializer::AddKeyValuePair( const std::string& key, const bool& value )
+{
+	m_pWriter->Key( key.c_str() );
+	m_pWriter->Bool( value );
+
+	return *this;
+}
+
 } // namespace SCION_FILESYSTEM
