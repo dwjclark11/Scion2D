@@ -1,4 +1,5 @@
 #include "Core/Systems/RenderShapeSystem.h"
+#include "Core/ECS/Registry.h"
 #include "Core/ECS/Components/BoxColliderComponent.h"
 #include "Core/ECS/Components/CircleColliderComponent.h"
 #include "Core/ECS/Components/TransformComponent.h"

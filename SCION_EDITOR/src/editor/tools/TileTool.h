@@ -49,7 +49,6 @@ class TileTool : public AbstractTool
 	void SetAnimation( int numFrames, int frameRate, bool bVertical, bool bLooped, int frameOffset );
 	void SetSpriteUVs( int startX, int startY );
 
-	// TODO: Set physics props
 	void SetSpriteRect( const glm::vec2& spriteRect );
 
 	void SetCollider( bool bCollider );

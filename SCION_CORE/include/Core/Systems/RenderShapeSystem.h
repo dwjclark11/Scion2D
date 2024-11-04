@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/ECS/Registry.h"
+#include <memory>
 
 namespace SCION_RENDERING
 {
@@ -7,6 +7,11 @@ class Camera2D;
 class RectBatchRenderer;
 class CircleBatchRenderer;
 } // namespace SCION_RENDERING
+
+namespace SCION_CORE::ECS
+{
+class Registry;
+}
 
 namespace SCION_CORE::Systems
 {
