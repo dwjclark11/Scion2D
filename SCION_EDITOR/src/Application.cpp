@@ -33,6 +33,7 @@
 #include "editor/displays/MenuDisplay.h"
 #include "editor/displays/AssetDisplay.h"
 #include "editor/displays/SceneDisplay.h"
+#include "editor/displays/SceneHierarchyDisplay.h"
 #include "editor/displays/TileDetailsDisplay.h"
 #include "editor/displays/TilesetDisplay.h"
 #include "editor/displays/TilemapDisplay.h"
@@ -42,6 +43,7 @@
 
 #include "editor/systems/GridSystem.h"
 #include "editor/scene/SceneManager.h"
+#include "editor/utilities/DrawComponentUtils.h"
 
 #include "ScionUtilities/HelperUtilities.h"
 
@@ -268,6 +270,16 @@ bool Application::Initialize()
 		return false;
 	}
 
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::Identification>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::TransformComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::SpriteComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::AnimationComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::PhysicsComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::TextComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::RigidBodyComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::BoxColliderComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::CircleColliderComponent>();
+
 	// TEST SCENES -- TODO: Remove These after testing
 	SCENE_MANAGER().AddScene( "DefaultScene" );
 	SCENE_MANAGER().AddScene( "NewScene" );
@@ -454,6 +466,13 @@ bool Application::CreateDisplays()
 		return false;
 	}
 
+	auto pSceneHierarchyDisplay = std::make_unique<SceneHierarchyDisplay>();
+	if ( !pSceneHierarchyDisplay )
+	{
+		SCION_ERROR( "Failed to Create pSceneHierarchyDisplay !" );
+		return false;
+	}
+
 	auto pLogDisplay = std::make_unique<LogDisplay>();
 	if ( !pLogDisplay )
 	{
@@ -491,6 +510,7 @@ bool Application::CreateDisplays()
 
 	pDisplayHolder->displays.push_back( std::move( pMenuDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
+	pDisplayHolder->displays.push_back( std::move( pSceneHierarchyDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pLogDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pTileDetailsDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pTilesetDisplay ) );
@@ -575,9 +595,11 @@ void Application::RenderImGui()
 
 		const auto LogNodeId =
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Down, 0.25f, nullptr, &centerNodeId );
+
+		ImGui::DockBuilderDockWindow( "Object Details", RightNodeId );
 		ImGui::DockBuilderDockWindow( "Tileset", RightNodeId );
 		ImGui::DockBuilderDockWindow( "Tile Details", RightNodeId );
-		ImGui::DockBuilderDockWindow( "Dear ImGui Demo", leftNodeId );
+		ImGui::DockBuilderDockWindow( "Scene Hierarchy", leftNodeId );
 		ImGui::DockBuilderDockWindow( "Scene", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Tilemap Editor", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Assets", LogNodeId );
@@ -594,7 +616,7 @@ void Application::RenderImGui()
 		pDisplay->Draw();
 	}
 
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 }
 
 Application::Application()

@@ -52,6 +52,12 @@ auto add_component( Entity& entity, const sol::table& comp, sol::this_state s )
 }
 
 template <typename TComponent>
+auto add_component_default( Entity& entity )
+{
+	return entity.AddComponent<TComponent>( TComponent{} );
+}
+
+template <typename TComponent>
 bool has_component( Entity& entity )
 {
 	return entity.HasComponent<TComponent>();
@@ -77,6 +83,7 @@ inline void Entity::RegisterMetaComponent()
 	entt::meta<TComponent>()
 		.type( entt::type_hash<TComponent>::value() )
 		.template func<&add_component<TComponent>>( "add_component"_hs )
+		.template func<&add_component_default<TComponent>>( "add_component_default"_hs )
 		.template func<&has_component<TComponent>>( "has_component"_hs )
 		.template func<&get_component<TComponent>>( "get_component"_hs )
 		.template func<&remove_component<TComponent>>( "remove_component"_hs );
