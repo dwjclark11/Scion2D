@@ -14,7 +14,7 @@ using namespace entt::literals;
 namespace SCION_EDITOR
 {
 
-auto create_entity = [ & ]( SCION_EDITOR::SceneObject& currentScene ) {
+auto create_entity = [ ]( SCION_EDITOR::SceneObject& currentScene ) {
 	Entity newEntity{ currentScene.GetRegistry(), "GameObject", "" };
 	newEntity.AddComponent<TransformComponent>();
 };

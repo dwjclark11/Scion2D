@@ -225,7 +225,7 @@ void SceneDisplay::Draw()
 	if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal ) )
 		ImGui::SetTooltip( "Stop Scene" );
 
-	if ( ImGui::BeginChild( "##SceneChild", ImVec2{ 0.f, 0.f }, NULL, ImGuiWindowFlags_NoScrollWithMouse ) )
+	if ( ImGui::BeginChild( "##SceneChild", ImVec2{ 0.f, 0.f }, ImGuiChildFlags_None, ImGuiWindowFlags_NoScrollWithMouse ) )
 	{
 		auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
 		const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];

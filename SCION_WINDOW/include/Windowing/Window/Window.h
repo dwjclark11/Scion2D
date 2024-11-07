@@ -17,10 +17,7 @@ class Window
 	void CreateNewWindow( Uint32 flags );
 
   public:
-	Window()
-		: Window( "default_window", 640, 480, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, true, NULL )
-	{
-	}
+	Window();
 	Window( const std::string title, int width, int height, int x_pos, int y_pos, bool v_sync = true,
 			Uint32 flags = ( SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_CAPTURE ) );
 	~Window() = default;

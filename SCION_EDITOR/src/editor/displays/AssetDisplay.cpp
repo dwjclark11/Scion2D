@@ -343,7 +343,7 @@ void AssetDisplay::Draw()
 
 	if ( ImGui::BeginChild( "##AssetTable",
 							ImVec2{ 0.f, 0.f },
-							NULL,
+							ImGuiChildFlags_None,
 							ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_ChildWindow ) )
 	{
 		m_bWindowHovered = ImGui::IsWindowHovered();
