@@ -311,27 +311,6 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Reg
 	PhysicsComponent::CreatePhysicsLuaBind( lua, registry.GetRegistry() );
 	TextComponent::CreateLuaTextBindings( lua );
 	RigidBodyComponent::CreateRigidBodyBind( lua );
-
-	Entity::RegisterMetaComponent<TransformComponent>();
-	Entity::RegisterMetaComponent<SpriteComponent>();
-	Entity::RegisterMetaComponent<AnimationComponent>();
-	Entity::RegisterMetaComponent<BoxColliderComponent>();
-	Entity::RegisterMetaComponent<CircleColliderComponent>();
-	Entity::RegisterMetaComponent<PhysicsComponent>();
-	Entity::RegisterMetaComponent<TextComponent>();
-	Entity::RegisterMetaComponent<RigidBodyComponent>();
-
-	Registry::RegisterMetaComponent<TransformComponent>();
-	Registry::RegisterMetaComponent<SpriteComponent>();
-	Registry::RegisterMetaComponent<AnimationComponent>();
-	Registry::RegisterMetaComponent<BoxColliderComponent>();
-	Registry::RegisterMetaComponent<CircleColliderComponent>();
-	Registry::RegisterMetaComponent<PhysicsComponent>();
-	Registry::RegisterMetaComponent<TextComponent>();
-	Registry::RegisterMetaComponent<RigidBodyComponent>();
-
-	// Register User Data Types
-	SCION_CORE::Scripting::UserDataBinder::register_meta_user_data<ObjectData>();
 }
 
 void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Registry& registry )
@@ -425,4 +404,5 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 		return SCION_CORE::EntityInView( transform, width, height, *camera );
 	} );
 }
+
 } // namespace SCION_CORE::Systems

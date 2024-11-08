@@ -270,6 +270,7 @@ bool Application::Initialize()
 		return false;
 	}
 
+	// Register Meta Functions
 	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::Identification>();
 	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::TransformComponent>();
 	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::SpriteComponent>();
@@ -279,6 +280,8 @@ bool Application::Initialize()
 	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::RigidBodyComponent>();
 	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::BoxColliderComponent>();
 	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::CircleColliderComponent>();
+
+	SCION_CORE::CoreEngineData::RegisterMetaFunctions();
 
 	// TEST SCENES -- TODO: Remove These after testing
 	SCENE_MANAGER().AddScene( "DefaultScene" );

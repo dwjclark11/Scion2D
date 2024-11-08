@@ -50,5 +50,7 @@ class CoreEngineData
 	inline void UnPausePhysics() { m_bPhysicsPaused = false; }
 	inline const bool IsPhysicsEnabled() const { return m_bPhysicsEnabled; }
 	inline const bool IsPhysicsPaused() const { return m_bPhysicsPaused; }
+
+	static void RegisterMetaFunctions();
 };
 } // namespace SCION_CORE

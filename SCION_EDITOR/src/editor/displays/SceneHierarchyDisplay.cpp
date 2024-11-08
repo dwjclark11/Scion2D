@@ -101,7 +101,7 @@ void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool*
 				fmt::format( "Game Object already has [{}] - Please make another selection.", componentStr ).c_str() );
 		}
 
-		if ( ImGui::Button( "Ok" ) )
+		if ( ImGui::Button( "Ok" ) && !bError )
 		{
 			if ( !componentStr.empty() )
 			{
@@ -122,12 +122,7 @@ void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool*
 				}
 			}
 
-			if ( bError )
-			{
-				*bAddComponent = false;
-				ImGui::CloseCurrentPopup();
-			}
-			else
+			if ( !bError )
 			{
 				auto&& storage = registry.storage( id_type );
 				if ( !storage )
@@ -142,6 +137,7 @@ void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool*
 					}
 					else
 					{
+						// This should probably fail/throw
 						SCION_ASSERT( addComponent && "Failed to add component." );
 						*bAddComponent = false;
 						bError = true;
