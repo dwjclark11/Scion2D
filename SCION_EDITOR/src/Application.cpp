@@ -9,13 +9,6 @@
 #include <Core/Resources/AssetManager.h>
 #include <Core/CoreUtilities/CoreEngineData.h>
 
-#include <Core/Systems/ScriptingSystem.h>
-#include <Core/Systems/RenderSystem.h>
-#include <Core/Systems/RenderUISystem.h>
-#include <Core/Systems/RenderShapeSystem.h>
-#include <Core/Systems/AnimationSystem.h>
-#include <Core/Systems/PhysicsSystem.h>
-
 #include <Core/Scripting/InputManager.h>
 #include <Windowing/Inputs/Keyboard.h>
 #include <Windowing/Inputs/Mouse.h>
@@ -45,7 +38,6 @@
 #include "editor/scene/SceneManager.h"
 #include "editor/utilities/DrawComponentUtils.h"
 
-#include "ScionUtilities/HelperUtilities.h"
 
 namespace SCION_EDITOR
 {
@@ -154,63 +146,13 @@ bool Application::Initialize()
 	SCION_RENDERING::OpenGLDebugger::setSeverityLevel( SCION_RENDERING::OpenGLDebuggerSeverity::Medium );
 #endif
 
-	auto renderer = std::make_shared<SCION_RENDERING::Renderer>();
-
-	// Enable Alpha Blending
-	renderer->SetCapability( SCION_RENDERING::Renderer::GLCapability::BLEND, true );
-	renderer->SetBlendCapability( SCION_RENDERING::Renderer::BlendingFactors::SRC_ALPHA,
-								  SCION_RENDERING::Renderer::BlendingFactors::ONE_MINUS_SRC_ALPHA );
-
+	
 	auto& mainRegistry = MAIN_REGISTRY();
-	mainRegistry.Initialize();
-
-	if ( !mainRegistry.AddToContext<std::shared_ptr<SCION_RENDERING::Renderer>>( renderer ) )
+	if (!mainRegistry.Initialize())
 	{
-		SCION_ERROR( "Failed to add the renderer to the registry context!" );
+		SCION_ERROR( "Failed to initialize the Main Registry!" );
 		return false;
 	}
-
-	auto renderSystem = std::make_shared<SCION_CORE::Systems::RenderSystem>();
-	if ( !renderSystem )
-	{
-		SCION_ERROR( "Failed to create the render system!" );
-		return false;
-	}
-
-	if ( !mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderSystem>>( renderSystem ) )
-	{
-		SCION_ERROR( "Failed to add the render system to the registry context!" );
-		return false;
-	}
-
-	auto renderUISystem = std::make_shared<SCION_CORE::Systems::RenderUISystem>();
-	if ( !renderUISystem )
-	{
-		SCION_ERROR( "Failed to create the render UI system!" );
-		return false;
-	}
-
-	if ( !mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderUISystem>>( renderUISystem ) )
-	{
-		SCION_ERROR( "Failed to add the render UI system to the registry context!" );
-		return false;
-	}
-
-	auto renderShapeSystem = std::make_shared<SCION_CORE::Systems::RenderShapeSystem>();
-	if ( !renderShapeSystem )
-	{
-		SCION_ERROR( "Failed to create the render Shape system!" );
-		return false;
-	}
-
-	if ( !mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderShapeSystem>>( renderShapeSystem ) )
-	{
-		SCION_ERROR( "Failed to add the render Shape system to the registry context!" );
-		return false;
-	}
-
-	mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::Systems::AnimationSystem>>(
-		std::make_shared<SCION_CORE::Systems::AnimationSystem>() );
 
 	if ( !InitImGui() )
 	{
@@ -235,8 +177,6 @@ bool Application::Initialize()
 		SCION_ERROR( "Failed to create displays." );
 		return false;
 	}
-
-	renderer->SetLineWidth( 4.f );
 
 	if ( !mainRegistry.GetAssetManager().CreateDefaultFonts() )
 	{
@@ -271,16 +211,7 @@ bool Application::Initialize()
 	}
 
 	// Register Meta Functions
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::Identification>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::TransformComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::SpriteComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::AnimationComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::PhysicsComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::TextComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::RigidBodyComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::BoxColliderComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::CircleColliderComponent>();
-
+	RegistryEditorMetaFunctions();
 	SCION_CORE::CoreEngineData::RegisterMetaFunctions();
 
 	// TEST SCENES -- TODO: Remove These after testing
@@ -620,6 +551,19 @@ void Application::RenderImGui()
 	}
 
 	//ImGui::ShowDemoWindow();
+}
+
+void Application::RegistryEditorMetaFunctions()
+{
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::Identification>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::TransformComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::SpriteComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::AnimationComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::PhysicsComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::TextComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::RigidBodyComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::BoxColliderComponent>();
+	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::CircleColliderComponent>();
 }
 
 Application::Application()

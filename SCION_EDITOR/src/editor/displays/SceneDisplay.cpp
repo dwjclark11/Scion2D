@@ -54,11 +54,6 @@ void SceneDisplay::LoadScene()
 	auto scriptSystem = runtimeRegistry.AddToContext<std::shared_ptr<ScriptingSystem>>(
 		std::make_shared<ScriptingSystem>( runtimeRegistry ) );
 
-	runtimeRegistry.AddToContext<std::shared_ptr<AnimationSystem>>(
-		std::make_shared<AnimationSystem>( ) );
-
-	runtimeRegistry.AddToContext<std::shared_ptr<PhysicsSystem>>( std::make_shared<PhysicsSystem>( runtimeRegistry ) );
-
 	auto lua = runtimeRegistry.AddToContext<std::shared_ptr<sol::state>>( std::make_shared<sol::state>() );
 
 	if ( !lua )
@@ -97,8 +92,6 @@ void SceneDisplay::UnloadScene()
 	runtimeRegistry.RemoveContext<std::shared_ptr<sol::state>>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_PHYSICS::PhysicsWorld>>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>();
-	runtimeRegistry.RemoveContext<std::shared_ptr<AnimationSystem>>();
-	runtimeRegistry.RemoveContext<std::shared_ptr<PhysicsSystem>>();
 
 	auto& mainRegistry = MAIN_REGISTRY();
 	mainRegistry.GetMusicPlayer().Stop();
@@ -111,9 +104,9 @@ void SceneDisplay::RenderScene() const
 	auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
 	auto& renderer = mainRegistry.GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
 
-	auto& renderSystem = mainRegistry.GetContext<std::shared_ptr<RenderSystem>>();
-	auto& renderUISystem = mainRegistry.GetContext<std::shared_ptr<RenderUISystem>>();
-	auto& renderShapeSystem = mainRegistry.GetContext<std::shared_ptr<RenderShapeSystem>>();
+	auto& renderSystem = mainRegistry.GetRenderSystem();
+	auto& renderUISystem = mainRegistry.GetRenderUISystem();
+	auto& renderShapeSystem = mainRegistry.GetRenderShapeSystem();
 
 	const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];
 
@@ -128,14 +121,14 @@ void SceneDisplay::RenderScene() const
 	{
 		auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 		auto& camera = runtimeRegistry.GetContext<std::shared_ptr<Camera2D>>();
-		renderSystem->Update( runtimeRegistry, *camera );
+		renderSystem.Update( runtimeRegistry, *camera );
 
 		if ( CORE_GLOBALS().RenderCollidersEnabled() )
 		{
-			renderShapeSystem->Update( runtimeRegistry, *camera );
+			renderShapeSystem.Update( runtimeRegistry, *camera );
 		}
 
-		renderUISystem->Update( runtimeRegistry );
+		renderUISystem.Update( runtimeRegistry );
 	}
 
 	fb->Unbind();
@@ -225,7 +218,8 @@ void SceneDisplay::Draw()
 	if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal ) )
 		ImGui::SetTooltip( "Stop Scene" );
 
-	if ( ImGui::BeginChild( "##SceneChild", ImVec2{ 0.f, 0.f }, ImGuiChildFlags_None, ImGuiWindowFlags_NoScrollWithMouse ) )
+	if ( ImGui::BeginChild(
+			 "##SceneChild", ImVec2{ 0.f, 0.f }, ImGuiChildFlags_None, ImGuiWindowFlags_NoScrollWithMouse ) )
 	{
 		auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
 		const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];
@@ -259,7 +253,6 @@ void SceneDisplay::Update()
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 
 	auto& mainRegistry = MAIN_REGISTRY();
-	(void)mainRegistry; // TODO: unused
 	auto& coreGlobals = CORE_GLOBALS();
 
 	auto& camera = runtimeRegistry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
@@ -281,10 +274,10 @@ void SceneDisplay::Update()
 		pPhysicsWorld->ClearForces();
 	}
 
-	auto& pPhysicsSystem = runtimeRegistry.GetContext<std::shared_ptr<SCION_CORE::Systems::PhysicsSystem>>();
-	pPhysicsSystem->Update( runtimeRegistry.GetRegistry() );
+	auto& pPhysicsSystem = mainRegistry.GetPhysicsSystem();
+	pPhysicsSystem.Update( runtimeRegistry );
 
-	auto& animationSystem = runtimeRegistry.GetContext<std::shared_ptr<SCION_CORE::Systems::AnimationSystem>>();
-	animationSystem->Update( runtimeRegistry, *camera );
+	auto& animationSystem = mainRegistry.GetAnimationSystem();
+	animationSystem.Update( runtimeRegistry, *camera );
 }
 } // namespace SCION_EDITOR

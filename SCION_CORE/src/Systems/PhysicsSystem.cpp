@@ -1,24 +1,24 @@
 #include "Core/Systems/PhysicsSystem.h"
+#include "Core/ECS/Registry.h"
 #include "Core/ECS/Components/BoxColliderComponent.h"
 #include "Core/ECS/Components/CircleColliderComponent.h"
 #include "Core/ECS/Components/TransformComponent.h"
 #include "Core/ECS/Components/PhysicsComponent.h"
-#include <Logger/Logger.h>
 #include "Core/CoreUtilities/CoreEngineData.h"
+#include <Logger/Logger.h>
 
 using namespace SCION_CORE::ECS;
 
 namespace SCION_CORE::Systems
 {
 
-PhysicsSystem::PhysicsSystem( SCION_CORE::ECS::Registry& registry )
-	: m_Registry{ registry }
+PhysicsSystem::PhysicsSystem( )
 {
 }
 
-void PhysicsSystem::Update( entt::registry& registry )
+void PhysicsSystem::Update( SCION_CORE::ECS::Registry& registry )
 {
-	auto boxView = registry.view<PhysicsComponent, TransformComponent, BoxColliderComponent>();
+	auto boxView = registry.GetRegistry().view<PhysicsComponent, TransformComponent, BoxColliderComponent>();
 	auto& coreEngine = CoreEngineData::GetInstance();
 
 	float hScaledWidth = coreEngine.ScaledWidth() * 0.5f;
@@ -53,7 +53,7 @@ void PhysicsSystem::Update( entt::registry& registry )
 			transform.rotation = glm::degrees( pRigidBody->GetAngle() );
 	}
 
-	auto circleView = registry.view<PhysicsComponent, TransformComponent, CircleColliderComponent>();
+	auto circleView = registry.GetRegistry().view<PhysicsComponent, TransformComponent, CircleColliderComponent>();
 	for ( auto entity : circleView )
 	{
 		auto& physics = circleView.get<PhysicsComponent>( entity );

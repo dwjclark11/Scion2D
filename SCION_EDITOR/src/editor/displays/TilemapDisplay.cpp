@@ -43,9 +43,9 @@ void TilemapDisplay::RenderTilemap()
 	auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
 	auto& renderer = mainRegistry.GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
 
-	auto& renderSystem = mainRegistry.GetContext<std::shared_ptr<RenderSystem>>();
-	auto& renderUISystem = mainRegistry.GetContext<std::shared_ptr<RenderUISystem>>();
-	auto& renderShapeSystem = mainRegistry.GetContext<std::shared_ptr<RenderShapeSystem>>();
+	auto& renderSystem = mainRegistry.GetRenderSystem();
+	auto& renderUISystem = mainRegistry.GetRenderUISystem();
+	auto& renderShapeSystem = mainRegistry.GetRenderShapeSystem();
 
 	const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::TILEMAP ];
 
@@ -63,14 +63,14 @@ void TilemapDisplay::RenderTilemap()
 	auto& gridSystem = mainRegistry.GetContext<std::shared_ptr<GridSystem>>();
 	gridSystem->Update( *pCurrentScene, *m_pTilemapCam );
 
-	renderSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam, pCurrentScene->GetLayerParams() );
+	renderSystem.Update( pCurrentScene->GetRegistry(), *m_pTilemapCam, pCurrentScene->GetLayerParams() );
 
 	if ( CORE_GLOBALS().RenderCollidersEnabled() )
 	{
-		renderShapeSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
+		renderShapeSystem.Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
 	}
 
-	renderUISystem->Update( pCurrentScene->GetRegistry() );
+	renderUISystem.Update( pCurrentScene->GetRegistry() );
 
 	auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
 	if ( pActiveTool )
@@ -258,8 +258,8 @@ void TilemapDisplay::Update()
 	}
 
 	auto& mainRegistry = MAIN_REGISTRY();
-	auto& animationSystem = mainRegistry.GetContext<std::shared_ptr<AnimationSystem>>();
-	animationSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
+	auto& animationSystem = mainRegistry.GetAnimationSystem();
+	animationSystem.Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
 
 	m_pTilemapCam->Update();
 }

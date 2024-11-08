@@ -33,6 +33,7 @@ class Application
 	void Begin();
 	void End();
 	void RenderImGui();
+	void RegistryEditorMetaFunctions();
 
 	Application();
 	~Application() = default;

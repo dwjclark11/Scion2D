@@ -1,17 +1,18 @@
 #pragma once
-#include "Core/ECS/Registry.h"
+
+namespace SCION_CORE::ECS
+{
+class Registry;
+}
 
 namespace SCION_CORE::Systems
 {
 class PhysicsSystem
 {
-  private:
-	SCION_CORE::ECS::Registry& m_Registry;
-
   public:
-	PhysicsSystem( SCION_CORE::ECS::Registry& registry );
+	PhysicsSystem();
 	~PhysicsSystem() = default;
 
-	void Update( entt::registry& registry );
+	void Update( SCION_CORE::ECS::Registry& registry );
 };
 } // namespace SCION_CORE::Systems

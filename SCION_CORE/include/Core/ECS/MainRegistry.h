@@ -14,6 +14,15 @@ class MusicPlayer;
 class SoundFxPlayer;
 } // namespace SCION_SOUNDS
 
+namespace SCION_CORE::Systems
+{
+class RenderSystem;
+class RenderUISystem;
+class RenderShapeSystem;
+class AnimationSystem;
+class PhysicsSystem;
+} // namespace SCION_CORE::Systems
+
 namespace SCION_CORE::ECS
 {
 class MainRegistry
@@ -27,9 +36,11 @@ class MainRegistry
 	MainRegistry( const MainRegistry& ) = delete;
 	MainRegistry& operator=( const MainRegistry& ) = delete;
 
+	bool RegisterMainSystems();
+
   public:
 	static MainRegistry& GetInstance();
-	void Initialize();
+	bool Initialize();
 
 	SCION_RESOURCES::AssetManager& GetAssetManager();
 	SCION_SOUNDS::MusicPlayer& GetMusicPlayer();
@@ -46,5 +57,11 @@ class MainRegistry
 	{
 		return m_pMainRegistry->GetContext<TContext>();
 	}
+
+	SCION_CORE::Systems::RenderSystem& GetRenderSystem();
+	SCION_CORE::Systems::RenderUISystem& GetRenderUISystem();
+	SCION_CORE::Systems::RenderShapeSystem& GetRenderShapeSystem();
+	SCION_CORE::Systems::AnimationSystem& GetAnimationSystem();
+	SCION_CORE::Systems::PhysicsSystem& GetPhysicsSystem();
 };
 } // namespace SCION_CORE::ECS
