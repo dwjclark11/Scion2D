@@ -67,6 +67,7 @@ const float CoreEngineData::PixelsToMeters() const
 
 void CoreEngineData::RegisterMetaFunctions()
 {
+	Entity::RegisterMetaComponent<Identification>();
 	Entity::RegisterMetaComponent<TransformComponent>();
 	Entity::RegisterMetaComponent<SpriteComponent>();
 	Entity::RegisterMetaComponent<AnimationComponent>();
@@ -76,6 +77,7 @@ void CoreEngineData::RegisterMetaFunctions()
 	Entity::RegisterMetaComponent<TextComponent>();
 	Entity::RegisterMetaComponent<RigidBodyComponent>();
 
+	Registry::RegisterMetaComponent<Identification>();
 	Registry::RegisterMetaComponent<TransformComponent>();
 	Registry::RegisterMetaComponent<SpriteComponent>();
 	Registry::RegisterMetaComponent<AnimationComponent>();

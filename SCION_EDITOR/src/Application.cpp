@@ -211,7 +211,7 @@ bool Application::Initialize()
 	}
 
 	// Register Meta Functions
-	RegistryEditorMetaFunctions();
+	RegisterEditorMetaFunctions();
 	SCION_CORE::CoreEngineData::RegisterMetaFunctions();
 
 	// TEST SCENES -- TODO: Remove These after testing
@@ -553,7 +553,7 @@ void Application::RenderImGui()
 	//ImGui::ShowDemoWindow();
 }
 
-void Application::RegistryEditorMetaFunctions()
+void Application::RegisterEditorMetaFunctions()
 {
 	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::Identification>();
 	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::TransformComponent>();
