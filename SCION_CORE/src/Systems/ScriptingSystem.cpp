@@ -36,13 +36,12 @@ using namespace SCION_RESOURCES;
 namespace SCION_CORE::Systems
 {
 
-ScriptingSystem::ScriptingSystem( SCION_CORE::ECS::Registry& registry )
-	: m_Registry( registry )
-	, m_bMainLoaded{ false }
+ScriptingSystem::ScriptingSystem( )
+	: m_bMainLoaded{ false }
 {
 }
 
-bool ScriptingSystem::LoadMainScript( sol::state& lua )
+bool ScriptingSystem::LoadMainScript( SCION_CORE::ECS::Registry& registry,  sol::state& lua )
 {
 	try
 	{
@@ -75,7 +74,7 @@ bool ScriptingSystem::LoadMainScript( sol::state& lua )
 	sol::table render_script = main_lua[ 2 ];
 	sol::function render = render_script[ "render" ];
 
-	SCION_CORE::ECS::Entity mainLuaScript{ m_Registry, "main_script", "" };
+	SCION_CORE::ECS::Entity mainLuaScript{ registry, "main_script", "" };
 	mainLuaScript.AddComponent<SCION_CORE::ECS::ScriptComponent>(
 		SCION_CORE::ECS::ScriptComponent{ .update = update, .render = render } );
 
@@ -83,7 +82,7 @@ bool ScriptingSystem::LoadMainScript( sol::state& lua )
 	return true;
 }
 
-void ScriptingSystem::Update()
+void ScriptingSystem::Update( SCION_CORE::ECS::Registry& registry )
 {
 	if ( !m_bMainLoaded )
 	{
@@ -91,11 +90,11 @@ void ScriptingSystem::Update()
 		return;
 	}
 
-	auto view = m_Registry.GetRegistry().view<SCION_CORE::ECS::ScriptComponent>();
+	auto view = registry.GetRegistry().view<SCION_CORE::ECS::ScriptComponent>();
 
 	for ( const auto& entity : view )
 	{
-		SCION_CORE::ECS::Entity ent{ m_Registry, entity };
+		SCION_CORE::ECS::Entity ent{ registry, entity };
 		if ( ent.GetName() != "main_script" )
 			continue;
 
@@ -108,11 +107,11 @@ void ScriptingSystem::Update()
 		}
 	}
 
-	auto& lua = m_Registry.GetContext<std::shared_ptr<sol::state>>();
+	auto& lua = registry.GetContext<std::shared_ptr<sol::state>>();
 	if (lua) lua->collect_garbage();
 }
 
-void ScriptingSystem::Render()
+void ScriptingSystem::Render( SCION_CORE::ECS::Registry& registry )
 {
 	if ( !m_bMainLoaded )
 	{
@@ -120,11 +119,11 @@ void ScriptingSystem::Render()
 		return;
 	}
 
-	auto view = m_Registry.GetRegistry().view<SCION_CORE::ECS::ScriptComponent>();
+	auto view = registry.GetRegistry().view<SCION_CORE::ECS::ScriptComponent>();
 
 	for ( const auto& entity : view )
 	{
-		SCION_CORE::ECS::Entity ent{ m_Registry, entity };
+		SCION_CORE::ECS::Entity ent{ registry, entity };
 		if ( ent.GetName() != "main_script" )
 			continue;
 
@@ -137,7 +136,7 @@ void ScriptingSystem::Render()
 		}
 	}
 
-	auto& lua = m_Registry.GetContext<std::shared_ptr<sol::state>>();
+	auto& lua = registry.GetContext<std::shared_ptr<sol::state>>();
 	if (lua) lua->collect_garbage();
 }
 

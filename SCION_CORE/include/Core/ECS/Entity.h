@@ -96,6 +96,9 @@ auto get_component( Entity& entity, sol::this_state s );
 template <typename TComponent>
 auto remove_component( Entity& entity );
 
+template <typename TComponent>
+auto copy_component( Entity& entityToCopy, Entity& entityThatCopies );
+
 } // namespace SCION_CORE::ECS
 
 #include "Entity.inl"

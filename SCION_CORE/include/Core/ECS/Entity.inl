@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include "Logger/Logger.h"
 
 namespace SCION_CORE::ECS
 {
@@ -77,6 +78,14 @@ auto remove_component( Entity& entity )
 }
 
 template <typename TComponent>
+auto copy_component( Entity& entityToCopy, Entity& entityThatCopies )
+{
+	SCION_ASSERT( entityToCopy.HasComponent<TComponent>() && "Entity must have the specified component." );
+	const auto& component = entityToCopy.GetComponent<TComponent>();
+	return entityThatCopies.AddComponent<TComponent>( component );
+}
+
+template <typename TComponent>
 inline void Entity::RegisterMetaComponent()
 {
 	using namespace entt::literals;
@@ -86,6 +95,7 @@ inline void Entity::RegisterMetaComponent()
 		.template func<&add_component_default<TComponent>>( "add_component_default"_hs )
 		.template func<&has_component<TComponent>>( "has_component"_hs )
 		.template func<&get_component<TComponent>>( "get_component"_hs )
+		.template func<&copy_component<TComponent>>( "copy_component"_hs )
 		.template func<&remove_component<TComponent>>( "remove_component"_hs );
 }
 } // namespace SCION_CORE::ECS

@@ -36,6 +36,7 @@ void SceneDisplay::LoadScene()
 	if ( !pCurrentScene )
 		return;
 
+	pCurrentScene->CopySceneToRuntime();
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 
 	const auto& canvas = pCurrentScene->GetCanvas();
@@ -52,7 +53,7 @@ void SceneDisplay::LoadScene()
 
 	// Add necessary systems
 	auto scriptSystem = runtimeRegistry.AddToContext<std::shared_ptr<ScriptingSystem>>(
-		std::make_shared<ScriptingSystem>( runtimeRegistry ) );
+		std::make_shared<ScriptingSystem>( ) );
 
 	auto lua = runtimeRegistry.AddToContext<std::shared_ptr<sol::state>>( std::make_shared<sol::state>() );
 
@@ -70,7 +71,7 @@ void SceneDisplay::LoadScene()
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaBindings( *lua, runtimeRegistry );
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaFunctions( *lua, runtimeRegistry );
 
-	if ( !scriptSystem->LoadMainScript( *lua ) )
+	if ( !scriptSystem->LoadMainScript( runtimeRegistry, * lua ) )
 	{
 		SCION_ERROR( "Failed to load the main lua script!" );
 		return;
@@ -92,6 +93,7 @@ void SceneDisplay::UnloadScene()
 	runtimeRegistry.RemoveContext<std::shared_ptr<sol::state>>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_PHYSICS::PhysicsWorld>>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>();
+	runtimeRegistry.RemoveContext<std::shared_ptr<ScriptingSystem>>();
 
 	auto& mainRegistry = MAIN_REGISTRY();
 	mainRegistry.GetMusicPlayer().Stop();
@@ -265,7 +267,7 @@ void SceneDisplay::Update()
 	camera->Update();
 
 	auto& scriptSystem = runtimeRegistry.GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
-	scriptSystem->Update();
+	scriptSystem->Update( runtimeRegistry );
 
 	if ( coreGlobals.IsPhysicsEnabled() )
 	{
