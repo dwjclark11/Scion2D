@@ -1,11 +1,11 @@
 #include "Core/ECS/Components/RigidBodyComponent.h"
 #include <entt/entt.hpp>
 
-std::string SCION_CORE::ECS::RigidBodyComponent::to_string()
+std::string SCION_CORE::ECS::RigidBodyComponent::to_string() const
 {
 	std::stringstream ss;
 	ss << "==== RigidBody Component ==== \n"
-	   << "Velocity: [ x = " << velocity.x << ", y = " << velocity.y << "\n";
+	   << "Max Velocity: [ x = " << maxVelocity.x << ", y = " << maxVelocity.y << "\n";
 
 	return ss.str();
 }
@@ -17,9 +17,11 @@ void SCION_CORE::ECS::RigidBodyComponent::CreateRigidBodyBind( sol::state& lua )
 		"type_id",
 		entt::type_hash<RigidBodyComponent>::value,
 		sol::call_constructor,
-		sol::factories( []( const glm::vec2& velocity ) { return RigidBodyComponent{ .velocity = velocity }; } ),
-		"velocity",
-		&RigidBodyComponent::velocity,
+		sol::factories( []( const glm::vec2& velocity ) { return RigidBodyComponent{ .maxVelocity = velocity }; } ),
+		"currentVelocity",
+		&RigidBodyComponent::currentVelocity,
+		"maxVelocity",
+		&RigidBodyComponent::maxVelocity,
 		"to_string",
 		&RigidBodyComponent::to_string );
 }

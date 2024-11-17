@@ -1,6 +1,7 @@
 #pragma once
 #include <imgui.h>
 #include <string>
+#include <fmt/format.h>
 
 constexpr ImVec4 LABEL_RED = ImVec4{ 0.92f, 0.18f, 0.05f, 1.0f };
 constexpr ImVec4 LABEL_GREEN = ImVec4{ 0.05f, 0.93f, 0.25f, 1.f };
@@ -21,5 +22,24 @@ void ColoredLabel( const std::string& label, const ImVec2& size = ImVec2{ 32.f, 
 void OffsetTextX( const std::string& label, float position );
 void AddSpaces( int numSpaces );
 void InlineLabel( const std::string& label, float spaceSize = 128.f );
+
+template <typename... Args>
+void ItemToolTip( const std::string_view tipMsg, Args&&... args )
+{
+	if ( ImGui::IsItemHovered() )
+	{
+		ImGui::BeginTooltip();
+		ImGui::TextUnformatted( fmt::vformat( tipMsg, fmt::make_format_args( args... ) ).c_str() );
+		ImGui::EndTooltip();
+	}
+}
+
+template <typename... Args>
+void TextFormatted( const std::string_view text, Args&&... args )
+{
+	ImGui::TextUnformatted( fmt::vformat( text, fmt::make_format_args( args... ) ).c_str() );
+	ImGui::EndTooltip();
+}
+
 
 } // namespace ImGui

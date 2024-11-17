@@ -15,7 +15,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TransformComponent
 {
 	ImGui::SeparatorText( "Transform" );
 	ImGui::PushID( entt::type_hash<TransformComponent>::value() );
-	if ( ImGui::TreeNodeEx( "##TranformTree", ImGuiTreeNodeFlags_DefaultOpen ) )
+	if ( ImGui::TreeNodeEx( "##TransformTree", ImGuiTreeNodeFlags_DefaultOpen ) )
 	{
 		ImGui::PushItemWidth( 120.f );
 		ImGui::InlineLabel( "position" );
@@ -81,6 +81,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 		// Color picker
 		ImVec4 col = { sprite.color.r / 255.f, sprite.color.g / 255.f, sprite.color.b / 255.f, sprite.color.a / 255.f };
 		ImGui::InlineLabel( "color" );
+		ImGui::ItemToolTip( "Sprite color override." );
 		if ( ImGui::ColorEdit4( "##color", &col.x, IMGUI_COLOR_PICKER_FLAGS ) )
 		{
 			sprite.color.r = static_cast<GLubyte>( col.x * 255.f );
@@ -93,6 +94,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 
 		std::string sSelectedTexture{ sprite.texture_name };
 		ImGui::InlineLabel( "texture" );
+		ImGui::ItemToolTip( "The current active texture of the sprite to be drawn." );
 		if ( ImGui::BeginCombo( "##texture", sSelectedTexture.c_str() ) )
 		{
 			for ( const auto& sTextureName : assetManager.GetAssetKeyNames( SCION_UTIL::AssetType::TEXTURE ) )
@@ -111,6 +113,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 
 		ImGui::PushItemWidth( 120.f );
 		ImGui::InlineLabel( "width" );
+		ImGui::ItemToolTip( "The width of the sprite. This is used in UV calculations." );
 		if ( ImGui::InputFloat( "##width", &sprite.width, 8.f, 8.f ) )
 		{
 			sprite.width = std::clamp( sprite.width, 8.f, 1366.f );
@@ -118,6 +121,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 		}
 
 		ImGui::InlineLabel( "height" );
+		ImGui::ItemToolTip( "The height of the sprite. This is used in UV calculations." );
 		if ( ImGui::InputFloat( "##height", &sprite.height, 8.f, 8.f ) )
 		{
 			sprite.height = std::clamp( sprite.height, 8.f, 768.f );
@@ -125,12 +129,14 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 		}
 
 		ImGui::InlineLabel( "layer" );
+		ImGui::ItemToolTip( "Z-Index in which to draw the sprite." );
 		if ( ImGui::InputInt( "##layer", &sprite.layer, 1, 1 ) )
 		{
 			sprite.layer = std::clamp( sprite.layer, 0, 10 );
 		}
 
-		ImGui::InlineLabel( "Sprite Sheet Position" );
+		ImGui::InlineLabel( "start pos" );
+		ImGui::ItemToolTip( "The index positions where we want to start our UV calculations." );
 		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
 		if ( ImGui::InputInt( "##start_x", &sprite.start_x, 1, 1 ) )
@@ -139,7 +145,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 			bChanged = true;
 		}
 		ImGui::SameLine();
-		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_RED );
+		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_GREEN );
 		ImGui::SameLine();
 		if ( ImGui::InputInt( "##start_y", &sprite.start_y, 1, 1 ) )
 		{
@@ -183,8 +189,10 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::AnimationComponent
 			animation.frameOffset = std::clamp( animation.frameOffset, 0, 15 );
 
 		ImGui::InlineLabel( "vertical" );
+		ImGui::ItemToolTip( "Does the sprite animations scroll vertically?" );
 		ImGui::Checkbox( "##vertical", &animation.bVertical );
 		ImGui::InlineLabel( "looped" );
+		ImGui::ItemToolTip( "Are the sprite animatons to be looped?" );
 		ImGui::Checkbox( "##looped", &animation.bLooped );
 		ImGui::TreePop();
 		ImGui::PopItemWidth();
@@ -208,12 +216,13 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::BoxColliderCompone
 			boxCollider.height = std::clamp( boxCollider.height, 4, 768 );
 
 		ImGui::InlineLabel( "offset" );
+		ImGui::ItemToolTip( "The offset of the box collider from the origin. Origin is the TL corner." );
 		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##offset_x", &boxCollider.offset.x, 4.f, 4.f ) )
 			boxCollider.offset.x = std::clamp( boxCollider.offset.x, 0.f, 128.f );
 		ImGui::SameLine();
-		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_RED );
+		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_GREEN );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##offset_y", &boxCollider.offset.y, 4.f, 4.f ) )
 			boxCollider.offset.y = std::clamp( boxCollider.offset.y, 0.f, 128.f );
@@ -235,12 +244,13 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::CircleColliderComp
 			circleCollider.radius = std::clamp( circleCollider.radius, 4.f, 1366.f );
 
 		ImGui::InlineLabel( "offset" );
+		ImGui::ItemToolTip( "The offset of the circle collider from the origin. Origin is the TL corner." );
 		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##offset_x", &circleCollider.offset.x, 4.f, 4.f ) )
 			circleCollider.offset.x = std::clamp( circleCollider.offset.x, 0.f, 128.f );
 		ImGui::SameLine();
-		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_RED );
+		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_GREEN );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##offset_y", &circleCollider.offset.y, 4.f, 4.f ) )
 			circleCollider.offset.y = std::clamp( circleCollider.offset.y, 0.f, 128.f );
@@ -268,7 +278,16 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::RigidBodyComponent
 	ImGui::PushID( entt::type_hash<RigidBodyComponent>::value() );
 	if ( ImGui::TreeNodeEx( "", ImGuiTreeNodeFlags_DefaultOpen ) )
 	{
-		// TODO:
+		ImGui::PushItemWidth( 120.f );
+		ImGui::InlineLabel( "max velocity" );
+		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
+		ImGui::SameLine();
+		ImGui::InputFloat( "##maxVelocity_x", &rigidbody.maxVelocity.x, 1.f, 10.f, "%.1f" );
+		ImGui::SameLine();
+		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_GREEN );
+		ImGui::SameLine();
+		ImGui::InputFloat( "##maxVelocity_y", &rigidbody.maxVelocity.y, 1.f, 10.f, "%.1f" );
+
 		ImGui::TreePop();
 	}
 	ImGui::PopID();

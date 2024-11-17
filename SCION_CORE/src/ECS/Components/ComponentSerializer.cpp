@@ -153,10 +153,10 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 											  const RigidBodyComponent& rigidBody )
 {
 	serializer
-		.StartNewObject( "rigidBody" ) // Start rigidbody table
-		.StartNewObject( "velocity" )  // Start velocity table
-		.AddKeyValuePair( "x", rigidBody.velocity.x )
-		.AddKeyValuePair( "y", rigidBody.velocity.y )
+		.StartNewObject( "rigidBody" )	 // Start rigidbody table
+		.StartNewObject( "maxVelocity" ) // Start velocity table
+		.AddKeyValuePair( "x", rigidBody.maxVelocity.x )
+		.AddKeyValuePair( "y", rigidBody.maxVelocity.y )
 		.EndObject()  // end velocity table
 		.EndObject(); // End rigid body table
 }
@@ -226,59 +226,13 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 
 void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, PhysicsComponent& physics )
 {
+	// TODO:
 }
 
 void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, RigidBodyComponent& rigidBody )
 {
-	rigidBody.velocity.x = jsonValue[ "velocity" ][ "x" ].GetFloat();
-	rigidBody.velocity.y = jsonValue[ "velocity" ][ "x" ].GetFloat();
+	rigidBody.maxVelocity.x = jsonValue[ "maxVelocity" ][ "x" ].GetFloat();
+	rigidBody.maxVelocity.y = jsonValue[ "maxVelocity" ][ "y" ].GetFloat();
 }
 
-TransformComponent ComponentSerializer::DeserializeTransform( const rapidjson::Value& jsonValue )
-{
-	return TransformComponent{
-		.position = glm::vec2{ jsonValue[ "position" ][ "x" ].GetFloat(), jsonValue[ "position" ][ "y" ].GetFloat() },
-		.scale = glm::vec2{ jsonValue[ "scale" ][ "x" ].GetFloat(), jsonValue[ "scale" ][ "y" ].GetFloat() },
-		.rotation = jsonValue[ "rotation" ].GetFloat() };
-}
-
-SpriteComponent ComponentSerializer::DeserializeSprite( const rapidjson::Value& jsonValue )
-{
-	return SpriteComponent{ .width = jsonValue[ "width" ].GetFloat(),
-							.height = jsonValue[ "height" ].GetFloat(),
-							.uvs = UVs{ .u = jsonValue[ "uvs" ][ "u" ].GetFloat(),
-										.v = jsonValue[ "uvs" ][ "v" ].GetFloat(),
-										.uv_width = jsonValue[ "uvs" ][ "uv_width" ].GetFloat(),
-										.uv_height = jsonValue[ "uvs" ][ "uv_height" ].GetFloat() },
-							.start_x = jsonValue[ "startX" ].GetInt(),
-							.start_y = jsonValue[ "startY" ].GetInt(),
-							.layer = jsonValue[ "layer" ].GetInt(),
-							.bHidden = jsonValue[ "bHidden" ].GetBool(),
-							.texture_name = jsonValue[ "sTexture" ].GetString() };
-}
-
-AnimationComponent ComponentSerializer::DeserializeAnimation( const rapidjson::Value& jsonValue )
-{
-	return AnimationComponent();
-}
-BoxColliderComponent ComponentSerializer::DeserializeBoxCollider( const rapidjson::Value& jsonValue )
-{
-	return BoxColliderComponent();
-}
-CircleColliderComponent ComponentSerializer::DeserializeCircleCollider( const rapidjson::Value& jsonValue )
-{
-	return CircleColliderComponent();
-}
-TextComponent ComponentSerializer::DeserializeTextComponent( const rapidjson::Value& jsonValue )
-{
-	return TextComponent();
-}
-PhysicsComponent ComponentSerializer::DeserializePhysics( const rapidjson::Value& jsonValue )
-{
-	return PhysicsComponent();
-}
-RigidBodyComponent ComponentSerializer::DeserializeRigidBody( const rapidjson::Value& jsonValue )
-{
-	return RigidBodyComponent();
-}
 } // namespace SCION_CORE::ECS
