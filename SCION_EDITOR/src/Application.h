@@ -27,12 +27,15 @@ class Application
 	void Render();
 
 	void CleanUp();
-
 	bool CreateDisplays();
+
+	/* TODO: Move to class to handle ImGui */
 	bool InitImGui();
 	void Begin();
 	void End();
 	void RenderImGui();
+
+
 	void RegisterEditorMetaFunctions();
 
 	Application();

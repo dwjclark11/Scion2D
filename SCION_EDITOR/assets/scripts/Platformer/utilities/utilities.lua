@@ -284,7 +284,7 @@ function LoadMap(mapDef)
 					)
 					
 					-- If Box2d is enable, create a physics component
-					if IsPhysicsEnabled() then 
+					if S2D_IsPhysicsEnabled() then 
 						local physicsAttribs = PhysicsAttributes()
 
 						-- Adjust properties to desired values, properties that are unchanged use default
@@ -377,10 +377,10 @@ end
 
 function Debug()
 	if Keyboard.just_pressed(KEY_C) then 
-		if IsRenderCollidersEnabled() then 
-			DisableRenderColliders()
+		if S2D_CollisionRenderingEnabled() then 
+			S2D_DisableCollisionRendering()
 		else 
-			EnableRenderColliders()
+			S2D_EnableCollisionRendering()
 		end 
 	end
 end

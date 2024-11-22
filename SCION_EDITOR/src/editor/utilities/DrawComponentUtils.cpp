@@ -4,10 +4,24 @@
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "ScionUtilities/ScionUtilities.h"
 #include "Logger/Logger.h"
-
 #include "editor/utilities/ImGuiUtils.h"
+#include "Physics/PhysicsUtilities.h"
+#include <map>
 
+using namespace SCION_UTIL;
+using namespace SCION_PHYSICS;
 using namespace SCION_CORE::ECS;
+
+static constexpr std::string GetPhysicsBodyDescription( RigidBodyType eType )
+{
+	switch ( eType )
+	{
+	case RigidBodyType::STATIC: return "zero mass, zero velocity, may be manually moved";
+	case RigidBodyType::KINEMATIC: return "zero mass, velocity set by user, moved by solver";
+	case RigidBodyType::DYNAMIC: return "positive mass, velocity determined by forces, moved by solver";
+	default: return "";
+	}
+}
 
 namespace SCION_EDITOR
 {
@@ -240,6 +254,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::CircleColliderComp
 	{
 		ImGui::PushItemWidth( 120.f );
 		ImGui::InlineLabel( "radius" );
+		ImGui::ItemToolTip( "The radius of the circle component. This is clamped to [4 : 1366]" );
 		if ( ImGui::InputFloat( "##radius", &circleCollider.radius, 4, 4 ) )
 			circleCollider.radius = std::clamp( circleCollider.radius, 4.f, 1366.f );
 
@@ -266,7 +281,212 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& 
 	ImGui::PushID( entt::type_hash<PhysicsComponent>::value() );
 	if ( ImGui::TreeNodeEx( "", ImGuiTreeNodeFlags_DefaultOpen ) )
 	{
-		// TODO:
+		ImGui::AddSpaces( 2 );
+
+		PhysicsAttributes& physicsAttributes = physics.GetChangableAttributes();
+		static std::string sSelectedBodyType{ "" };
+
+		ImGui::InlineLabel( "body type" );
+		ImGui::ItemToolTip( "The body type: static, kinematic, or dynamic." );
+		if ( ImGui::BeginCombo( "##body_type", sSelectedBodyType.c_str() ) )
+		{
+			for ( const auto& [ eBodyType, sBodyStr ] : GetRigidBodyStringMap() )
+			{
+				if ( ImGui::Selectable( sBodyStr.c_str(), sBodyStr == sSelectedBodyType ) )
+				{
+					sSelectedBodyType = sBodyStr;
+					physicsAttributes.eType = eBodyType;
+				}
+
+				ImGui::ItemToolTip( "{}", GetPhysicsBodyDescription( eBodyType ) );
+			}
+
+			ImGui::EndCombo();
+		}
+
+		static std::string sSelectedCategoryType{ "" };
+		ImGui::InlineLabel( "category type" );
+		ImGui::ItemToolTip( "The collision category bits. Bodies will usually only use one category type." );
+		if ( ImGui::BeginCombo( "##category_type", sSelectedCategoryType.c_str() ) )
+		{
+			for ( const auto& [ eCategoryType, sCategoryStr ] : GetFilterCategoryToStringMap() )
+			{
+				if ( ImGui::Selectable( sCategoryStr.c_str(), sCategoryStr == sSelectedCategoryType ) )
+				{
+					sSelectedCategoryType = sCategoryStr;
+					physicsAttributes.filterCategory = static_cast<uint16_t>( eCategoryType );
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		ImGui::Separator();
+		ImGui::AddSpaces( 2 );
+
+		static std::string sSelectedMaskBit{ "" };
+		static FilterCategory eMaskCategory{ FilterCategory::NO_CATEGORY };
+		ImGui::InlineLabel( "masks" );
+		ImGui::ItemToolTip(
+			"The collision mask bits. This states the categories that this shape would accept for collision." );
+		if ( ImGui::BeginCombo( "##mask_bits", sSelectedMaskBit.c_str() ) )
+		{
+			for ( const auto& [ eCategoryType, sCategoryStr ] : GetFilterCategoryToStringMap() )
+			{
+				if ( ImGui::Selectable( sCategoryStr.c_str(), sCategoryStr == sSelectedMaskBit ) )
+				{
+					sSelectedMaskBit = sCategoryStr;
+					eMaskCategory = eCategoryType;
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		if ( !sSelectedMaskBit.empty() && eMaskCategory != FilterCategory::NO_CATEGORY )
+		{
+			ImGui::SetCursorPosX( 128.f );
+			if ( ImGui::Button( "apply mask" ) )
+			{
+				uint16_t filterCat = static_cast<uint16_t>( eMaskCategory );
+				if ( !( IsBitSet( physicsAttributes.filterMask, filterCat ) ) )
+				{
+					physicsAttributes.filterMask += filterCat;
+					eMaskCategory = FilterCategory::NO_CATEGORY;
+					sSelectedMaskBit.clear();
+				}
+				else
+				{
+					SCION_ERROR( "Masks already contain [{}]", sSelectedMaskBit );
+				}
+			}
+		}
+
+		if (physicsAttributes.filterMask > 0)
+		{
+			ImGui::InlineLabel( "applied masks" );
+			if ( ImGui::BeginListBox( "##applied_masks", ImVec2{0.f, 32.f} ) )
+			{
+				auto setMaskBits{ GetAllSetBits( physicsAttributes.filterMask ) };
+				for ( auto mask : setMaskBits )
+				{
+					ImGui::Selectable( GetFilterCategoryString( static_cast<FilterCategory>( Bit( mask ) ) ).c_str() );
+				}
+
+				ImGui::EndListBox();
+			}
+
+			ImGui::SetCursorPosX( 128.f );
+			if ( ImGui::Button( "clear masks" ) )
+			{
+				physicsAttributes.filterMask = 0;
+				eMaskCategory = FilterCategory::NO_CATEGORY;
+				sSelectedMaskBit.clear();
+			}
+		}
+
+		ImGui::AddSpaces( 2 );
+		ImGui::Separator();
+		ImGui::AddSpaces( 2 );
+
+		ImGui::PushItemWidth( 120.f );
+		ImGui::InlineLabel( "density" );
+		ImGui::ItemToolTip( "The density, usually in kg/m^2." );
+		ImGui::InputFloat( "##density", &physicsAttributes.density, 1.f, 1.f, "%.1f" );
+
+		ImGui::InlineLabel( "friction" );
+		ImGui::ItemToolTip( "The Coulomb (dry) friction coefficient, usually in the range [0,1]." );
+		if ( ImGui::InputFloat( "##friction", &physicsAttributes.friction, 0.1f, 0.1f, "%.1f" ) )
+		{
+			physicsAttributes.friction = std::clamp( physicsAttributes.friction, 0.f, 1.f );
+		}
+
+		ImGui::InlineLabel( "restitution" );
+		ImGui::ItemToolTip( "The restitution (bounce) usually in the range [0,1]." );
+		if ( ImGui::InputFloat( "##restitution", &physicsAttributes.restitution, 0.1f, 0.1f, "%.1f" ) )
+		{
+			physicsAttributes.restitution = std::clamp( physicsAttributes.restitution, 0.f, 1.f );
+		}
+
+		ImGui::InlineLabel( "gravityScale" );
+		ImGui::ItemToolTip( "Scale the gravity applied to this body. Non-dimensional." );
+		ImGui::InputFloat( "##gravityScale", &physicsAttributes.gravityScale, 1.f, 1.f, "%.1f" );
+
+		ImGui::AddSpaces( 2 );
+		ImGui::Separator();
+		ImGui::AddSpaces( 2 );
+
+		ImGui::InlineLabel( "is a box?" );
+		ImGui::ItemToolTip( "If the entity is a box, the box collider is used in construction for the size." );
+		if ( ImGui::Checkbox( "##boxShape", &physicsAttributes.bBoxShape ) )
+		{
+			if ( physicsAttributes.bCircle )
+				physicsAttributes.bCircle = false;
+		}
+
+		if ( physicsAttributes.bBoxShape && !physicsAttributes.bCircle )
+		{
+			ImGui::SameLine(0, 32.f);
+			ImGui::TextColored( ImVec4{ 1.f, 1.f, 0.f, 1.f }, "Must have a Box Collider Component." );
+		}
+
+		ImGui::InlineLabel( "is a circle" );
+		ImGui::ItemToolTip( "If the entity is a circle, the circle collider is used in construction for the size." );
+		if ( ImGui::Checkbox( "##circle", &physicsAttributes.bCircle ) )
+		{
+			if ( physicsAttributes.bBoxShape )
+				physicsAttributes.bBoxShape = false;
+		}
+
+		if ( !physicsAttributes.bBoxShape && physicsAttributes.bCircle )
+		{
+			ImGui::SameLine(0, 32.f);
+			ImGui::TextColored( ImVec4{ 1.f, 1.f, 0.f, 1.f }, "Must have a Circle Collider Component." );
+		}
+
+		ImGui::AddSpaces( 2 );
+		ImGui::Separator();
+
+		ImGui::InlineLabel( "fixed rotation" );
+		ImGui::ItemToolTip( "Should the body be prevented from rotating?" );
+		ImGui::Checkbox( "##fixedRotation", &physicsAttributes.bFixedRotation );
+
+		ImGui::InlineLabel( "sensor" );
+		ImGui::ItemToolTip( "A sensor shape generates overlap events but never generates a collision response.\n"
+							"Sensors do not collide with other sensors and do not have continuous collision" );
+		ImGui::Checkbox( "##sensor", &physicsAttributes.bIsSensor );
+
+		ImGui::SeparatorText( "Physics Object Data" );
+		ImGui::AddSpaces( 2 );
+
+		ImGui::PopItemWidth();
+		auto& objectData = physicsAttributes.objectData;
+
+		std::string sTagBuffer{ objectData.tag };
+		ImGui::InlineLabel( "tag" );
+		if ( ImGui::InputText(
+				 "##_tag", sTagBuffer.data(), sizeof( char ) * 255, ImGuiInputTextFlags_EnterReturnsTrue ) )
+		{
+			objectData.tag = std::string{ sTagBuffer.data() };
+		}
+
+		std::string sGroupBuffer{ objectData.group };
+		ImGui::InlineLabel( "group" );
+		if ( ImGui::InputText(
+				 "##_group", sGroupBuffer.data(), sizeof( char ) * 255, ImGuiInputTextFlags_EnterReturnsTrue ) )
+		{
+			objectData.group = std::string{ sGroupBuffer.data() };
+		}
+
+		ImGui::InlineLabel( "collider?" );
+		ImGui::Checkbox( "##objectDataCollider", &objectData.bCollider );
+
+		ImGui::InlineLabel( "trigger?" );
+		ImGui::Checkbox( "##objectDataTrigger", &objectData.bTrigger );
+
+		ImGui::InlineLabel( "friendly?" );
+		ImGui::Checkbox( "##objectDataFriendly", &objectData.bIsFriendly );
+
 		ImGui::TreePop();
 	}
 	ImGui::PopID();

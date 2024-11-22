@@ -25,7 +25,7 @@ void SoundFxPlayer::Play( SoundFX& soundFx, int loops, int channel )
 	}
 }
 
-void SoundFxPlayer::SetVolume( int channel, int volume )
+void SoundFxPlayer::SetVolume( int volume, int channel )
 {
 	if ( volume < 0 || volume > 100 )
 	{

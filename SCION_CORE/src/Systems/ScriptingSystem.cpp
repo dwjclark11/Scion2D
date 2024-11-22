@@ -1,13 +1,5 @@
 #include "Core/Systems/ScriptingSystem.h"
 #include "Core/ECS/Components/ScriptComponent.h"
-#include "Core/ECS/Components/TransformComponent.h"
-#include "Core/ECS/Components/SpriteComponent.h"
-#include "Core/ECS/Components/AnimationComponent.h"
-#include "Core/ECS/Components/BoxColliderComponent.h"
-#include "Core/ECS/Components/CircleColliderComponent.h"
-#include "Core/ECS/Components/PhysicsComponent.h"
-#include "Core/ECS/Components/TextComponent.h"
-#include "Core/ECS/Components/RigidBodyComponent.h"
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/MainRegistry.h"
 
@@ -36,12 +28,12 @@ using namespace SCION_RESOURCES;
 namespace SCION_CORE::Systems
 {
 
-ScriptingSystem::ScriptingSystem( )
+ScriptingSystem::ScriptingSystem()
 	: m_bMainLoaded{ false }
 {
 }
 
-bool ScriptingSystem::LoadMainScript( SCION_CORE::ECS::Registry& registry,  sol::state& lua )
+bool ScriptingSystem::LoadMainScript( SCION_CORE::ECS::Registry& registry, sol::state& lua )
 {
 	try
 	{
@@ -108,7 +100,8 @@ void ScriptingSystem::Update( SCION_CORE::ECS::Registry& registry )
 	}
 
 	auto& lua = registry.GetContext<std::shared_ptr<sol::state>>();
-	if (lua) lua->collect_garbage();
+	if ( lua )
+		lua->collect_garbage();
 }
 
 void ScriptingSystem::Render( SCION_CORE::ECS::Registry& registry )
@@ -137,7 +130,8 @@ void ScriptingSystem::Render( SCION_CORE::ECS::Registry& registry )
 	}
 
 	auto& lua = registry.GetContext<std::shared_ptr<sol::state>>();
-	if (lua) lua->collect_garbage();
+	if ( lua )
+		lua->collect_garbage();
 }
 
 auto create_timer = []( sol::state& lua ) {
@@ -170,7 +164,7 @@ auto create_timer = []( sol::state& lua ) {
 							 } );
 };
 
-auto create_lua_logger = [ ]( sol::state& lua ) {
+auto create_lua_logger = []( sol::state& lua ) {
 	auto& logger = SCION_LOGGER::Logger::GetInstance();
 
 	lua.new_usertype<SCION_LOGGER::Logger>(
@@ -316,7 +310,7 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 
-	lua.set_function( "S2D_run_script", [ & ]( const std::string& path ) {
+	lua.set_function( "S2D_RunScript", [ & ]( const std::string& path ) {
 		try
 		{
 			lua.safe_script_file( path );
@@ -330,7 +324,7 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 		return true;
 	} );
 
-	lua.set_function( "S2D_load_script_table", [ & ]( const sol::table& scriptList ) {
+	lua.set_function( "S2D_LoadScriptTable", [ & ]( const sol::table& scriptList ) {
 		if ( !scriptList.valid() )
 		{
 			SCION_ERROR( "Failed to load script list: Table is invalid." );
@@ -356,10 +350,10 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 		}
 	} );
 
-	lua.set_function( "S2D_get_ticks", [] { return SDL_GetTicks(); } );
+	lua.set_function( "S2D_GetTicks", [] { return SDL_GetTicks(); } );
 
 	auto& assetManager = mainRegistry.GetAssetManager();
-	lua.set_function( "S2D_measure_text", [ & ]( const std::string& text, const std::string& fontName ) {
+	lua.set_function( "S2D_MeasureText", [ & ]( const std::string& text, const std::string& fontName ) {
 		const auto& pFont = assetManager.GetFont( fontName );
 		if ( !pFont )
 		{
@@ -375,28 +369,33 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 	} );
 
 	auto& engine = CoreEngineData::GetInstance();
-	lua.set_function( "GetDeltaTime", [ & ] { return engine.GetDeltaTime(); } );
-	lua.set_function( "WindowWidth", [ & ] { return engine.WindowWidth(); } );
-	lua.set_function( "WindowHeight", [ & ] { return engine.WindowHeight(); } );
+	lua.set_function( "S2D_DeltaTime", [ & ] { return engine.GetDeltaTime(); } );
+	lua.set_function( "S2D_WindowWidth", [ & ] { return engine.WindowWidth(); } );
+	lua.set_function( "S2D_WindowHeight", [ & ] { return engine.WindowHeight(); } );
 
 	// Physics Enable functions
-	lua.set_function( "DisablePhysics", [ & ] { engine.DisablePhysics(); } );
-	lua.set_function( "EnablePhysics", [ & ] { engine.EnablePhysics(); } );
-	lua.set_function( "IsPhysicsEnabled", [ & ] { return engine.IsPhysicsEnabled(); } );
+	lua.set_function( "S2D_DisablePhysics", [ & ] { engine.DisablePhysics(); } );
+	lua.set_function( "S2D_EnablePhysics", [ & ] { engine.EnablePhysics(); } );
+	lua.set_function( "S2D_IsPhysicsEnabled", [ & ] { return engine.IsPhysicsEnabled(); } );
 
 	// Render Colliders Enable functions
-	lua.set_function( "DisableRenderColliders", [ & ] { engine.DisableColliderRender(); } );
-	lua.set_function( "EnableRenderColliders", [ & ] { engine.EnableColliderRender(); } );
-	lua.set_function( "IsRenderCollidersEnabled", [ & ] { return engine.RenderCollidersEnabled(); } );
+	lua.set_function( "S2D_DisableCollisionRendering", [ & ] { engine.DisableColliderRender(); } );
+	lua.set_function( "S2D_EnableCollisionRendering", [ & ] { engine.EnableColliderRender(); } );
+	lua.set_function( "S2D_CollisionRenderingEnabled", [ & ] { return engine.RenderCollidersEnabled(); } );
 
-	lua.new_usertype<SCION_UTIL::RandomGenerator>(
-		"Random",
+	lua.new_usertype<SCION_UTIL::RandomIntGenerator>(
+		"RandomInt",
 		sol::call_constructor,
-		sol::constructors<SCION_UTIL::RandomGenerator( uint32_t, uint32_t ), SCION_UTIL::RandomGenerator()>(),
-		"get_float",
-		&SCION_UTIL::RandomGenerator::GetFloat,
-		"get_int",
-		&SCION_UTIL::RandomGenerator::GetInt );
+		sol::constructors<SCION_UTIL::RandomIntGenerator( uint32_t, uint32_t ), SCION_UTIL::RandomIntGenerator()>(),
+		"get_value",
+		&SCION_UTIL::RandomIntGenerator::GetValue);
+
+	lua.new_usertype<SCION_UTIL::RandomFloatGenerator>(
+		"RandomFloat",
+		sol::call_constructor,
+		sol::constructors<SCION_UTIL::RandomFloatGenerator( float, float ), SCION_UTIL::RandomFloatGenerator()>(),
+		"get_value",
+		&SCION_UTIL::RandomFloatGenerator::GetValue );
 
 	lua.set_function( "S2D_EntityInView", [ & ]( const TransformComponent& transform, float width, float height ) {
 		auto& camera = registry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();

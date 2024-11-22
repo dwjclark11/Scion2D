@@ -3,6 +3,7 @@
 #include "Rendering/Core/Camera2D.h"
 #include "Rendering/Core/Renderer.h"
 #include "Core/ECS/MainRegistry.h"
+#include "Core/ECS/Components/AllComponents.h"
 #include "Core/Systems/AnimationSystem.h"
 #include "Core/Systems/RenderSystem.h"
 #include "Core/Systems/RenderUISystem.h"
@@ -24,6 +25,7 @@
 #include <imgui.h>
 
 using namespace SCION_CORE::Systems;
+using namespace SCION_CORE::ECS;
 using namespace SCION_RENDERING;
 
 constexpr float one_over_sixty = 1.f / 60.f;
@@ -70,6 +72,52 @@ void SceneDisplay::LoadScene()
 
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaBindings( *lua, runtimeRegistry );
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaFunctions( *lua, runtimeRegistry );
+
+	// We need to initialize all of the physics entities
+	auto physicsEntities = runtimeRegistry.GetRegistry().view<PhysicsComponent>();
+
+	for (auto entity : physicsEntities)
+	{
+		Entity ent{ runtimeRegistry, entity };
+
+		bool bBoxCollider{ ent.HasComponent<BoxColliderComponent>() };
+		bool bCircleCollider{ ent.HasComponent<CircleColliderComponent>() };
+
+		if (!bBoxCollider && !bCircleCollider)
+		{
+			SCION_ERROR( "Entity must have a box or circle collider component to initialize physics on it." );
+			continue;
+		}
+
+		auto& physics = ent.GetComponent<PhysicsComponent>();
+		auto& physicsAttributes = physics.GetChangableAttributes();
+
+		if (bBoxCollider)
+		{
+			const auto& boxCollider = ent.GetComponent<BoxColliderComponent>();
+			physicsAttributes.boxSize = glm::vec2{ boxCollider.width, boxCollider.height };
+			physicsAttributes.offset = boxCollider.offset;
+		}
+
+		else if (bCircleCollider)
+		{
+			const auto& circleCollider = ent.GetComponent<CircleColliderComponent>();
+			physicsAttributes.radius = circleCollider.radius;
+			physicsAttributes.offset = circleCollider.offset;
+		}
+
+		const auto& transform = ent.GetComponent<TransformComponent>();
+		physicsAttributes.position = transform.position;
+		physicsAttributes.scale = transform.scale;
+		physicsAttributes.objectData.entityID = static_cast<std::int32_t>( entity );
+
+		/*
+		* TODO: Set Filters/Masks/Group Index
+		*/
+
+		physics.Init( pPhysicsWorld, 640, 480);
+				
+	}
 
 	if ( !scriptSystem->LoadMainScript( runtimeRegistry, * lua ) )
 	{

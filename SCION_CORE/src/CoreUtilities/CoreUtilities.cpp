@@ -3,17 +3,6 @@
 
 using namespace SCION_CORE::ECS;
 
-
-static const std::unordered_map<std::string, SCION_CORE::ECS::RigidBodyType> StringToRigidBodyType{
-	{ "static", SCION_CORE::ECS::RigidBodyType::STATIC },
-	{ "kinematic", SCION_CORE::ECS::RigidBodyType::KINEMATIC },
-	{ "dynamic", SCION_CORE::ECS::RigidBodyType::DYNAMIC } };
-
-static const std::unordered_map<SCION_CORE::ECS::RigidBodyType, std::string> RigidBodyTypeToString{
-	{ SCION_CORE::ECS::RigidBodyType::STATIC, "static" },
-	{ SCION_CORE::ECS::RigidBodyType::KINEMATIC, "kinematic" },
-	{ SCION_CORE::ECS::RigidBodyType::DYNAMIC, "dynamic" } };
-
 namespace SCION_CORE
 {
 
@@ -52,24 +41,6 @@ glm::mat4 RSTModel( const TransformComponent& transform, float width, float heig
 	}
 
 	return model;
-}
-
-std::string GetRigidBodyTypeString( SCION_CORE::ECS::RigidBodyType eRigidType )
-{
-	auto rigidItr = RigidBodyTypeToString.find( eRigidType );
-	if ( rigidItr == RigidBodyTypeToString.end() )
-		return {};
-
-	return rigidItr->second;
-}
-
-SCION_CORE::ECS::RigidBodyType GetRigidBodyTypeByString( const std::string sRigidType )
-{
-	auto rigidItr = StringToRigidBodyType.find( sRigidType );
-	if ( rigidItr == StringToRigidBodyType.end() )
-		return RigidBodyType::STATIC;
-
-	return rigidItr->second;
 }
 
 void GenerateUVs( SCION_CORE::ECS::SpriteComponent& sprite, int textureWidth, int textureHeight )

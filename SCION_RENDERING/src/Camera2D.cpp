@@ -4,10 +4,8 @@ namespace SCION_RENDERING
 {
 void Camera2D::Initialize()
 {
-	float width = static_cast<float>( m_Width );
-	float height = static_cast<float>( m_Height );
 	// Init ortho projection
-	m_OrthoProjection = glm::ortho( 0.f, width, height, 0.f, 0.f, 1.f );
+	m_OrthoProjection = glm::ortho( 0.f, static_cast<float>( m_Width ), static_cast<float>( m_Height ), 0.f, 0.f, 1.f );
 
 	Update();
 }
@@ -57,10 +55,10 @@ void Camera2D::Reset()
 	m_bNeedsUpdate = true;
 }
 
-void Camera2D::Resize( int width, int height )
+void Camera2D::Resize( int newWidth, int newHeight )
 {
-	m_Width = width;
-	m_Height = height;
+	m_Width = newWidth;
+	m_Height = newHeight;
 
 	Initialize();
 }

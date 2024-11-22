@@ -140,7 +140,8 @@ void TileDetailsDisplay::Draw()
 	ImGui::Separator();
 	ImGui::AddSpaces( 2 );
 
-	ImGui::Checkbox( "Box Collider", &tileData.bCollider );
+	ImGui::InlineLabel( "Box Collider" );
+	ImGui::Checkbox( "##Box_Collider", &tileData.bCollider );
 	if ( tileData.bCollider )
 	{
 		DrawComponentsUtil::DrawComponentInfo( tileData.boxCollider );
@@ -150,7 +151,8 @@ void TileDetailsDisplay::Draw()
 	ImGui::Separator();
 	ImGui::AddSpaces( 2 );
 
-	ImGui::Checkbox( "Cicle Collider", &tileData.bCircle );
+	ImGui::InlineLabel( "Circle Collider" );
+	ImGui::Checkbox( "##Cicle_Collider", &tileData.bCircle );
 	if ( tileData.bCircle )
 	{
 		DrawComponentsUtil::DrawComponentInfo( tileData.circleCollider );
@@ -160,7 +162,8 @@ void TileDetailsDisplay::Draw()
 	ImGui::Separator();
 	ImGui::AddSpaces( 2 );
 
-	ImGui::Checkbox( "Animation", &tileData.bAnimation );
+	ImGui::InlineLabel( "Animation" );
+	ImGui::Checkbox( "##Animation", &tileData.bAnimation );
 	if ( tileData.bAnimation )
 	{
 		DrawComponentsUtil::DrawComponentInfo( tileData.animation );
@@ -170,7 +173,8 @@ void TileDetailsDisplay::Draw()
 	ImGui::Separator();
 	ImGui::AddSpaces( 2 );
 
-	ImGui::Checkbox( "Physics", &tileData.bPhysics );
+	ImGui::InlineLabel( "Physics" );
+	ImGui::Checkbox( "##Physics", &tileData.bPhysics );
 	if ( tileData.bPhysics )
 	{
 		DrawComponentsUtil::DrawComponentInfo( tileData.physics );
@@ -180,7 +184,9 @@ void TileDetailsDisplay::Draw()
 	ImGui::Separator();
 	ImGui::AddSpaces( 2 );
 
-	if ( ImGui::BeginChild( " Tile Layers" ) )
+	ImGui::End();
+
+	if ( ImGui::Begin( "Tile Layers" ) )
 	{
 		ImGui::SeparatorText( "Tile Layers" );
 		auto& spriteLayers = pCurrentScene->GetLayerParams();
@@ -288,10 +294,8 @@ void TileDetailsDisplay::Draw()
 			}
 		}
 
-		ImGui::EndChild();
+		ImGui::End();
 	}
-
-	ImGui::End();
 }
 
 } // namespace SCION_EDITOR

@@ -16,7 +16,7 @@ function SceneDimmer:Create(params)
 	this.m_OnUpdate = params.onUpdate or function() this:Update() end 
 	this.m_Timer:start() 
 
-	this.m_DimmerEntity:add_component(Transform(vec2(0, 0), vec2(WindowWidth() / 16, WindowHeight() / 16), 0))
+	this.m_DimmerEntity:add_component(Transform(vec2(0, 0), vec2(S2D_WindowWidth() / 16, S2D_WindowHeight() / 16), 0))
 
 	local darkSprite = this.m_DimmerEntity:add_component(Sprite("white_box", 16, 16, 0, 0, 4))
 	darkSprite.color = Color(0, 0, 0, 100)

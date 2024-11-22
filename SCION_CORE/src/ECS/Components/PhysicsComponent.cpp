@@ -396,6 +396,17 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 				return false;
 			}
 			return body->IsBullet();
-		} );
+		},
+		"set_filter_category",
+		[]( PhysicsComponent& pc ) {
+			auto body = pc.GetBody();
+			if (!body)
+			{
+				return;
+			}
+
+		}
+
+		);
 }
 } // namespace SCION_CORE::ECS

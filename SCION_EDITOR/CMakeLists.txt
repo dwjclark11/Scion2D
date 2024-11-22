@@ -30,6 +30,8 @@ add_executable(SCION_EDITOR
 	"src/editor/displays/TileDetailsDisplay.cpp"
 	"src/editor/displays/SceneHierarchyDisplay.h"
 	"src/editor/displays/SceneHierarchyDisplay.cpp"
+	"src/editor/displays/EditorStyleToolDisplay.h"
+	"src/editor/displays/EditorStyleToolDisplay.cpp"
 
     # Editor Systems
     "src/editor/systems/GridSystem.h" 
@@ -53,7 +55,7 @@ add_executable(SCION_EDITOR
 	"src/editor/tools/ToolManager.cpp"
 	"src/editor/tools/RectFillTool.h"
 	"src/editor/tools/RectFillTool.cpp"
- )
+)
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

@@ -31,13 +31,17 @@
 #include "editor/displays/TilesetDisplay.h"
 #include "editor/displays/TilemapDisplay.h"
 #include "editor/displays/LogDisplay.h"
+#include "editor/displays/EditorStyleToolDisplay.h"
+
 #include "editor/utilities/editor_textures.h"
 #include "editor/utilities/EditorFramebuffers.h"
-
-#include "editor/systems/GridSystem.h"
-#include "editor/scene/SceneManager.h"
+#include "editor/utilities/ImGuiUtils.h"
 #include "editor/utilities/DrawComponentUtils.h"
 
+#include "editor/systems/GridSystem.h"
+
+// TODO: This needs to be removed. Scenes are added by default for testing.
+#include "editor/scene/SceneManager.h"
 
 namespace SCION_EDITOR
 {
@@ -146,9 +150,8 @@ bool Application::Initialize()
 	SCION_RENDERING::OpenGLDebugger::setSeverityLevel( SCION_RENDERING::OpenGLDebuggerSeverity::Medium );
 #endif
 
-	
 	auto& mainRegistry = MAIN_REGISTRY();
-	if (!mainRegistry.Initialize())
+	if ( !mainRegistry.Initialize() )
 	{
 		SCION_ERROR( "Failed to initialize the Main Registry!" );
 		return false;
@@ -442,6 +445,13 @@ bool Application::CreateDisplays()
 		return false;
 	}
 
+	// auto pEditorStylesDisplay = std::make_unique<EditorStyleToolDisplay>();
+	// if ( !pEditorStylesDisplay )
+	//{
+	//	SCION_ERROR( "Failed to Create Editor Styles Display!" );
+	//	return false;
+	// }
+
 	pDisplayHolder->displays.push_back( std::move( pMenuDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pSceneHierarchyDisplay ) );
@@ -450,6 +460,7 @@ bool Application::CreateDisplays()
 	pDisplayHolder->displays.push_back( std::move( pTilesetDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pTilemapDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pAssetDisplay ) );
+	// pDisplayHolder->displays.push_back( std::move( pEditorStylesDisplay ) );
 
 	return true;
 }
@@ -483,6 +494,8 @@ bool Application::InitImGui()
 		SCION_ERROR( "Failed to intialize ImGui OpenGL3!" );
 		return false;
 	}
+
+	ImGui::InitDefaultStyles();
 
 	return true;
 }
@@ -524,15 +537,18 @@ void Application::RenderImGui()
 		const auto leftNodeId =
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Left, 0.2f, nullptr, &centerNodeId );
 
-		const auto RightNodeId =
+		auto RightNodeId =
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Right, 0.3f, nullptr, &centerNodeId );
 
 		const auto LogNodeId =
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Down, 0.25f, nullptr, &centerNodeId );
 
+		auto TileLayerId = ImGui::DockBuilderSplitNode( RightNodeId, ImGuiDir_Down, 0.4f, nullptr, &RightNodeId );
+
 		ImGui::DockBuilderDockWindow( "Object Details", RightNodeId );
 		ImGui::DockBuilderDockWindow( "Tileset", RightNodeId );
 		ImGui::DockBuilderDockWindow( "Tile Details", RightNodeId );
+		ImGui::DockBuilderDockWindow( "Tile Layers", TileLayerId );
 		ImGui::DockBuilderDockWindow( "Scene Hierarchy", leftNodeId );
 		ImGui::DockBuilderDockWindow( "Scene", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Tilemap Editor", centerNodeId );
@@ -550,7 +566,7 @@ void Application::RenderImGui()
 		pDisplay->Draw();
 	}
 
-	//ImGui::ShowDemoWindow();
+	// ImGui::ShowDemoWindow();
 }
 
 void Application::RegisterEditorMetaFunctions()

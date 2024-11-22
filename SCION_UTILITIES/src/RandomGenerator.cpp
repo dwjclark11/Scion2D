@@ -3,30 +3,48 @@
 namespace SCION_UTIL
 {
 
-void RandomGenerator::Initialize()
+void RandomIntGenerator::Initialize()
 {
 	m_RandomEngine.seed( std::random_device()() );
 }
 
-RandomGenerator::RandomGenerator()
-	: RandomGenerator( 0, std::numeric_limits<uint32_t>::max() )
+RandomIntGenerator::RandomIntGenerator()
+	: RandomIntGenerator( 0, std::numeric_limits<uint32_t>::max() )
 {
 }
 
-RandomGenerator::RandomGenerator( uint32_t min, uint32_t max )
+RandomIntGenerator::RandomIntGenerator( uint32_t min, uint32_t max )
 	: m_RandomEngine{}
-	, m_Distribution{ min, max }
+	, m_IntDistribution{ min, max }
 {
 	Initialize();
 }
 
-float RandomGenerator::GetFloat()
+int RandomIntGenerator::GetValue()
 {
-	return (float)m_Distribution( m_RandomEngine );
+	return static_cast<int>(m_IntDistribution( m_RandomEngine ));
 }
 
-uint32_t RandomGenerator::GetInt()
+void RandomFloatGenerator::Initialize()
 {
-	return m_Distribution( m_RandomEngine );
+	m_RandomEngine.seed( std::random_device()() );
 }
+
+RandomFloatGenerator::RandomFloatGenerator()
+	: RandomFloatGenerator( 0.f, std::numeric_limits<float>::max() )
+{
+}
+
+RandomFloatGenerator::RandomFloatGenerator( float min, float max )
+	: m_RandomEngine{}
+	, m_RealDistribution{ min, max }
+{
+	Initialize();
+}
+
+float RandomFloatGenerator::GetValue()
+{
+	return m_RealDistribution( m_RandomEngine );
+}
+
 } // namespace SCION_UTIL
