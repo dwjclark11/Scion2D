@@ -4,6 +4,8 @@
 #include "editor/tools/ToolManager.h"
 #include "editor/tools/TileTool.h"
 
+#include "editor/commands/CommandManager.h"
+
 #include "Logger/Logger.h"
 
 namespace SCION_EDITOR
@@ -67,6 +69,16 @@ ToolManager& SceneManager::GetToolManager()
 	SCION_ASSERT( m_pToolManager && "Tool manager must be valid" );
 
 	return *m_pToolManager;
+}
+
+CommandManager& SceneManager::GetCommandManager()
+{
+	if ( !m_pCommandManager )
+		m_pCommandManager = std::make_unique<CommandManager>();
+
+	SCION_ASSERT( m_pCommandManager && "Command manager must be valid" );
+
+	return *m_pCommandManager;
 }
 
 void SceneManager::SetTileset( const std::string& sTileset )

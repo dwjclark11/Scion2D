@@ -55,6 +55,13 @@ add_executable(SCION_EDITOR
 	"src/editor/tools/ToolManager.cpp"
 	"src/editor/tools/RectFillTool.h"
 	"src/editor/tools/RectFillTool.cpp"
+
+	# Commands
+	"src/editor/commands/AbstractCommandManager.h"
+	"src/editor/commands/AbstractCommandManager.inl"
+	"src/editor/commands/CommandManager.h"
+	"src/editor/commands/cmds/CreateTileToolCmds.h"
+	"src/editor/commands/cmds/CreateTileToolCmds.cpp"
 )
 
 target_include_directories(

@@ -22,6 +22,8 @@
 #include "editor/tools/ToolManager.h"
 #include "editor/tools/CreateTileTool.h"
 
+#include "editor/commands/CommandManager.h"
+
 #include "Core/Scripting/InputManager.h"
 #include "Windowing/Inputs/Mouse.h"
 
@@ -262,6 +264,16 @@ void TilemapDisplay::Update()
 	animationSystem.Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
 
 	m_pTilemapCam->Update();
+
+	auto& keyboard = INPUT_MANAGER().GetKeyboard();
+	if (keyboard.IsKeyPressed(SCION_KEY_LCTRL) && keyboard.IsKeyJustPressed(SCION_KEY_Z))
+	{
+		if ( keyboard.IsKeyPressed( SCION_KEY_LSHIFT ) )
+			COMMAND_MANAGER().Redo();
+		else
+			COMMAND_MANAGER().Undo();
+	}
+
 }
 
 } // namespace SCION_EDITOR

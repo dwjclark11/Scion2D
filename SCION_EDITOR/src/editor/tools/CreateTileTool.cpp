@@ -3,7 +3,12 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Rendering/Core/Camera2D.h"
 #include "Logger/Logger.h"
+
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/commands/CommandManager.h"
+
+#include "editor/scene/SceneManager.h"
+#include "editor/scene/SceneObject.h"
 
 using namespace SCION_CORE::ECS;
 
@@ -43,6 +48,12 @@ if ( m_pMouseTile->bCollider )
 	}
 
 	tile.AddComponent<TileComponent>( static_cast<uint32_t>( tile.GetEntity() ) );
+
+	auto createToolAddCmd =
+		UndoableCommands{ CreateTileToolAddCmd{ .pRegistry = SCENE_MANAGER().GetCurrentScene()->GetRegistryPtr(),
+												.pTile = std::make_shared<Tile>( *m_pMouseTile ) } };
+
+	COMMAND_MANAGER().Execute( createToolAddCmd );
 }
 
 void CreateTileTool::RemoveTile()

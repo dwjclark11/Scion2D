@@ -5,11 +5,12 @@
 #include <vector>
 
 #define SCENE_MANAGER() SCION_EDITOR::SceneManager::GetInstance()
-
+#define COMMAND_MANAGER() SCENE_MANAGER().GetCommandManager()
 namespace SCION_EDITOR
 {
 class ToolManager;
 class SceneObject;
+class CommandManager;
 
 class SceneManager
 {
@@ -18,6 +19,7 @@ class SceneManager
 	std::string m_sCurrentScene{ "" }, m_sCurrentTileset{ "" };
 
 	std::unique_ptr<ToolManager> m_pToolManager{ nullptr };
+	std::unique_ptr<CommandManager> m_pCommandManager{ nullptr };
 
   private:
 	SceneManager() = default;
@@ -33,6 +35,8 @@ class SceneManager
 	std::shared_ptr<SCION_EDITOR::SceneObject> GetCurrentScene();
 	std::vector<std::string> GetSceneNames() const;
 	ToolManager& GetToolManager();
+	CommandManager& GetCommandManager();
+
 	void SetTileset( const std::string& sTileset );
 
 	inline void SetCurrentScene( const std::string& sSceneName ) { m_sCurrentScene = sSceneName; }
