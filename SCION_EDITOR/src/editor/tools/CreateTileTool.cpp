@@ -65,11 +65,42 @@ void CreateTileTool::RemoveTile()
 	{
 		// Create an entity from that id
 		Entity tileToRemove{ CreateEntity( id ) };
+		Tile removedTile{};
 
-		// TODO: We need to eventually get all of the component information from
-		// the tile entity so we can place it into the Undo/Redo Commands that will be
-		// coming in the future. For now we will just delete the tile.
+		removedTile.transform = tileToRemove.GetComponent<TransformComponent>();
+		removedTile.sprite = tileToRemove.GetComponent<SpriteComponent>();
+
+		if (tileToRemove.HasComponent<BoxColliderComponent>())
+		{
+			removedTile.bCollider = true;
+			removedTile.boxCollider = tileToRemove.GetComponent<BoxColliderComponent>();
+		}
+
+		if ( tileToRemove.HasComponent<CircleColliderComponent>() )
+		{
+			removedTile.bCircle = true;
+			removedTile.circleCollider = tileToRemove.GetComponent<CircleColliderComponent>();
+		}
+
+		if ( tileToRemove.HasComponent<AnimationComponent>() )
+		{
+			removedTile.bAnimation = true;
+			removedTile.animation = tileToRemove.GetComponent<AnimationComponent>();
+		}
+
+		if ( tileToRemove.HasComponent<PhysicsComponent>() )
+		{
+			removedTile.bPhysics = true;
+			removedTile.physics = tileToRemove.GetComponent<PhysicsComponent>();
+		}
+
 		tileToRemove.Kill();
+
+		auto createToolRemoveCmd =
+			UndoableCommands{ CreateTileToolRemoveCmd{ .pRegistry = SCENE_MANAGER().GetCurrentScene()->GetRegistryPtr(),
+													   .pTile = std::make_shared<Tile>( removedTile ) } };
+
+		COMMAND_MANAGER().Execute( createToolRemoveCmd );
 	}
 }
 

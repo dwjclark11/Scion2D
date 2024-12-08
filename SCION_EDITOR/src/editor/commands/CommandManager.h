@@ -1,13 +1,16 @@
 #pragma once
 #include "AbstractCommandManager.h"
 #include "cmds/CreateTileToolCmds.h"
+#include "cmds/RectToolCmds.h"
 // TODO: add other commands as necessary
 
 namespace SCION_EDITOR
 {
-using UndoableCommands = VarCommands<CreateTileToolAddCmd /* Add other command types */>;
+using UndoableCommands = VarCommands<CreateTileToolAddCmd, CreateTileToolRemoveCmd, RectToolAddTilesCmd,
+									 RectToolRemoveTilesCmd /* Add other command types */>;
 
-class CommandManager : public AbstractCommandManager<CreateTileToolAddCmd /* Add other command types */>
+class CommandManager : public AbstractCommandManager<CreateTileToolAddCmd, CreateTileToolRemoveCmd, RectToolAddTilesCmd,
+													 RectToolRemoveTilesCmd /* Add other command types */>
 {
 };
 

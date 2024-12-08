@@ -6,7 +6,11 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Logger/Logger.h"
+
+#include "editor/scene/SceneManager.h"
+#include "editor/scene/SceneObject.h"
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/commands/CommandManager.h"
 
 using namespace SCION_RENDERING;
 using namespace SCION_CORE::ECS;
@@ -29,6 +33,8 @@ void RectFillTool::CreateTiles()
 	auto spriteWidth = static_cast<int>( sprite.width * transform.scale.x * ( dx > 0 ? 1.f : -1.f ) );
 	auto spriteHeight = static_cast<int>( sprite.height * transform.scale.y * ( dy > 0 ? 1.f : -1.f ) );
 
+	std::vector<Tile> createdTiles;
+
 	for ( int y = 0; ( dy > 0 ? y < dy : y > dy ); y += spriteHeight )
 	{
 		for ( int x = 0; ( dx > 0 ? x < dx : x > dx ); x += spriteWidth )
@@ -40,35 +46,53 @@ void RectFillTool::CreateTiles()
 				continue;
 
 			Entity tile{ CreateEntity() };
+			Tile createdTile{};
 
 			auto& newTransform = tile.AddComponent<TransformComponent>( transform );
 			newTransform.position = newTilePosition;
+			createdTile.transform = newTransform;
 
 			tile.AddComponent<SpriteComponent>( sprite );
+
+			createdTile.sprite = sprite;
 
 			if ( m_pMouseTile->bCollider )
 			{
 				tile.AddComponent<BoxColliderComponent>( m_pMouseTile->boxCollider );
+				createdTile.boxCollider = m_pMouseTile->boxCollider;
+				createdTile.bCollider = true;
 			}
 
 			if ( m_pMouseTile->bCircle )
 			{
 				tile.AddComponent<CircleColliderComponent>( m_pMouseTile->circleCollider );
+				createdTile.circleCollider = m_pMouseTile->circleCollider;
+				createdTile.bCircle = true;
 			}
 
 			if ( m_pMouseTile->bAnimation )
 			{
 				tile.AddComponent<AnimationComponent>( m_pMouseTile->animation );
+				createdTile.animation = m_pMouseTile->animation;
+				createdTile.bAnimation = true;
 			}
 
 			if ( m_pMouseTile->bPhysics )
 			{
 				tile.AddComponent<PhysicsComponent>( m_pMouseTile->physics );
+				createdTile.physics = m_pMouseTile->physics;
+				createdTile.bPhysics = true;
 			}
 
 			tile.AddComponent<TileComponent>( static_cast<uint32_t>( tile.GetEntity() ) );
+			createdTiles.push_back( createdTile );
 		}
 	}
+
+	auto rectToolAddCmd = UndoableCommands{ RectToolAddTilesCmd{
+		.pRegistry = SCENE_MANAGER().GetCurrentScene()->GetRegistryPtr(), .tiles = createdTiles } };
+
+	COMMAND_MANAGER().Execute( rectToolAddCmd );
 }
 
 void RectFillTool::RemoveTiles()
@@ -87,18 +111,55 @@ void RectFillTool::RemoveTiles()
 	{
 		for ( int x = 0; ( dx > 0 ? x < dx : x > dx ); x += spriteWidth )
 		{
-			if (auto id = CheckForTile(glm::vec2{ m_StartPressPos.x + x, m_StartPressPos.y + y }); id != entt::null)
+			if ( auto id = CheckForTile( glm::vec2{ m_StartPressPos.x + x, m_StartPressPos.y + y } ); id != entt::null )
 			{
 				entitiesToRemove.insert( id );
 			}
 		}
 	}
 
-	for (auto id : entitiesToRemove)
+	std::vector<Tile> removedTiles{};
+
+	for ( auto id : entitiesToRemove )
 	{
-		Entity removedTile{ CreateEntity( id ) };
-		removedTile.Kill();
+		Entity tileToRemove{ CreateEntity( id ) };
+		Tile removedTile{};
+
+		removedTile.transform = tileToRemove.GetComponent<TransformComponent>();
+		removedTile.sprite = tileToRemove.GetComponent<SpriteComponent>();
+
+		if ( tileToRemove.HasComponent<BoxColliderComponent>() )
+		{
+			removedTile.boxCollider = tileToRemove.GetComponent<BoxColliderComponent>();
+			removedTile.bCollider = true;
+		}
+
+		if ( tileToRemove.HasComponent<CircleColliderComponent>() )
+		{
+			removedTile.circleCollider = tileToRemove.GetComponent<CircleColliderComponent>();
+			removedTile.bCircle = true;
+		}
+
+		if ( tileToRemove.HasComponent<AnimationComponent>() )
+		{
+			removedTile.animation = tileToRemove.GetComponent<AnimationComponent>();
+			removedTile.bAnimation = true;
+		}
+
+		if ( tileToRemove.HasComponent<PhysicsComponent>() )
+		{
+			removedTile.physics = tileToRemove.GetComponent<PhysicsComponent>();
+			removedTile.bPhysics = true;
+		}
+
+		tileToRemove.Kill();
+		removedTiles.push_back( removedTile );
 	}
+
+	auto rectToolRemovedCmd = UndoableCommands{ RectToolRemoveTilesCmd{
+		.pRegistry = SCENE_MANAGER().GetCurrentScene()->GetRegistryPtr(), .tiles = removedTiles } };
+
+	COMMAND_MANAGER().Execute( rectToolRemovedCmd );
 }
 
 void RectFillTool::DrawPreview( int dx, int dy )
@@ -219,7 +280,7 @@ void RectFillTool::Draw()
 
 	pColorShader->Enable();
 	m_pShapeRenderer->Begin();
-	m_pShapeRenderer->AddRect( Rect{ .position = {newPosX, newPosY}, .width = dx, .height = dy, .color = color } );
+	m_pShapeRenderer->AddRect( Rect{ .position = { newPosX, newPosY }, .width = dx, .height = dy, .color = color } );
 	m_pShapeRenderer->End();
 	m_pShapeRenderer->Render();
 	pColorShader->Disable();

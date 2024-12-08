@@ -12,7 +12,7 @@ ToolManager::ToolManager()
 
 	// TODO: Add other tools as needed.
 
-	SetToolActive( EToolType::CREATE_TILE );
+	SetToolActive( EToolType::RECT_FILL_TILE );
 }
 
 void ToolManager::Update( Canvas& canvas )
