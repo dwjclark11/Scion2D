@@ -20,6 +20,9 @@ class TilemapDisplay : public IDisplay
 	void LoadNewScene();
 	void PanZoomCamera( const glm::vec2& mousePos );
 
+  protected:
+	virtual void DrawToolbar() override;
+
   public:
 	TilemapDisplay();
 	virtual ~TilemapDisplay();
@@ -28,4 +31,3 @@ class TilemapDisplay : public IDisplay
 	virtual void Update() override;
 };
 } // namespace SCION_EDITOR
-

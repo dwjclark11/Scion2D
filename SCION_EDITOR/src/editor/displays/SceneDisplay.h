@@ -14,6 +14,9 @@ class SceneDisplay : public IDisplay
 	void UnloadScene();
 	void RenderScene() const;
 
+  protected:
+	virtual void DrawToolbar() override;
+
   public:
 	SceneDisplay();
 	~SceneDisplay() = default;

@@ -6,6 +6,8 @@
 
 #define SCENE_MANAGER() SCION_EDITOR::SceneManager::GetInstance()
 #define COMMAND_MANAGER() SCENE_MANAGER().GetCommandManager()
+#define TOOL_MANAGER() SCENE_MANAGER().GetToolManager()
+
 namespace SCION_EDITOR
 {
 class ToolManager;

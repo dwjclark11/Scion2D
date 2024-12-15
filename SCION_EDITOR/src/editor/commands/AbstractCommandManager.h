@@ -29,6 +29,18 @@ class AbstractCommandManager
 	void Redo();
 	void Clear();
 
+	/*
+	* @brief Checks to see if there are any commands to undo.
+	* @return Returns true if empty, false otherwise.
+	*/
+	bool UndoEmpty() const noexcept { return m_UndoStack.empty(); }
+
+	/*
+	 * @brief Checks to see if there are any commands to redo.
+	 * @return Returns true if empty, false otherwise.
+	 */
+	bool RedoEmpty() const noexcept { return m_RedoStack.empty(); }
+
 	void Execute( VarCommands<Cmds...>& undoableVariant );
 
   private:

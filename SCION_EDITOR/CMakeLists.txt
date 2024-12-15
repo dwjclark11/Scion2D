@@ -64,7 +64,7 @@ add_executable(SCION_EDITOR
 	"src/editor/commands/cmds/CreateTileToolCmds.cpp"
 	"src/editor/commands/cmds/RectToolCmds.h"
 	"src/editor/commands/cmds/RectToolCmds.cpp"
-)
+ "src/editor/utilities/fonts/IconsFontAwesome5.h")
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

@@ -7,10 +7,10 @@ namespace ImGui
 void InitDefaultStyles()
 {
 	// TODO: Add this to a custom init file that we can change/adjust easier.
-	
+
 	// Get the styles
 	ImGuiStyle& style = ImGui::GetStyle();
-	
+
 	style.TabRounding = 4.f;
 	style.TabBorderSize = 1.f;
 	style.FrameBorderSize = 0.1f;
@@ -62,5 +62,44 @@ void InlineLabel( const std::string& label, float spaceSize )
 	ImGui::Text( label.c_str() );
 	ImGui::SameLine();
 	ImGui::SetCursorPosX( spaceSize );
+}
+void ActiveButton( const char* label, ImVec2 size )
+{
+	ImGui::PushStyleColor( ImGuiCol_Button, BUTTON_HELD );
+	ImGui::PushStyleColor( ImGuiCol_ButtonHovered, BUTTON_HELD );
+	ImGui::PushStyleColor( ImGuiCol_ButtonActive, BUTTON_HELD );
+	ImGui::Button( label, size );
+	ImGui::PopStyleColor( 3 );
+}
+
+void DisabledButton( const char* label, ImVec2 size, const std::string& disabledMsg )
+{
+	ImGui::BeginDisabled();
+	ImGui::Button( label, size );
+
+	if ( !disabledMsg.empty() )
+		ImGui::SetItemTooltip( disabledMsg.c_str() );
+
+	ImGui::EndDisabled();
+}
+
+void ActiveImageButton( ImTextureID textureID, ImVec2 size )
+{
+	ImGui::PushStyleColor( ImGuiCol_Button, BUTTON_HELD );
+	ImGui::PushStyleColor( ImGuiCol_ButtonHovered, BUTTON_HELD );
+	ImGui::PushStyleColor( ImGuiCol_ButtonActive, BUTTON_HELD );
+	ImGui::ImageButton( textureID, size );
+	ImGui::PopStyleColor( 3 );
+}
+
+void DisabledImageButton( ImTextureID textureID, ImVec2 size, const std::string& disabledMsg )
+{
+	ImGui::BeginDisabled();
+	ImGui::ImageButton( textureID, size );
+
+	if ( !disabledMsg.empty() )
+		ImGui::SetItemTooltip( disabledMsg.c_str() );
+
+	ImGui::EndDisabled();
 }
 } // namespace ImGui

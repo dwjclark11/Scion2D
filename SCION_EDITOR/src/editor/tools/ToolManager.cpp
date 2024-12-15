@@ -2,6 +2,8 @@
 #include "CreateTileTool.h"
 #include "RectFillTool.h"
 #include "ToolAccessories.h"
+#include "editor/scene/SceneObject.h"
+#include "Rendering/Core/Camera2D.h"
 
 namespace SCION_EDITOR
 {
@@ -24,6 +26,9 @@ void ToolManager::Update( Canvas& canvas )
 
 void ToolManager::SetToolActive( EToolType eToolType )
 {
+	// TODO: Deactivate all gizmos when map exists
+	m_eActiveGizmoType = EGizmoType::NO_GIZMO;
+
 	for ( const auto& [ eType, pTool ] : m_mapTools )
 	{
 		if ( eType == eToolType )
@@ -31,6 +36,23 @@ void ToolManager::SetToolActive( EToolType eToolType )
 		else
 			pTool->Deactivate();
 	}
+
+	m_eActiveToolType = eToolType;
+}
+
+void ToolManager::SetGizmoActive( EGizmoType eGizmoType )
+{
+	// Deactivate all tools
+	for ( const auto& [ eType, pTool ] : m_mapTools )
+	{
+		pTool->Deactivate();
+	}
+	m_eActiveToolType = EToolType::NO_TOOL;
+
+	// Activate the specified gizmo
+	// TODO: Create the gizmo map and set active
+
+	m_eActiveGizmoType = eGizmoType;
 }
 
 TileTool* ToolManager::GetActiveTool()
@@ -40,6 +62,19 @@ TileTool* ToolManager::GetActiveTool()
 		return activeTool->second.get();
 
 	return nullptr;
+}
+
+bool ToolManager::SetupTools( SceneObject* pSceneObject, SCION_RENDERING::Camera2D* pCamera )
+{
+	for ( auto& [ eType, pTool ] : m_mapTools )
+	{
+		if ( !pTool->SetupTool( pSceneObject, pCamera ) )
+			return false;
+	}
+
+	// TODO: Setup gizmos
+
+	return true;
 }
 
 void ToolManager::EnableGridSnap( bool bEnable )

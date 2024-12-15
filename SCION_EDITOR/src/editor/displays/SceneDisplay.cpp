@@ -17,8 +17,9 @@
 #include "Physics/Box2DWrappers.h"
 #include "Physics/ContactListener.h"
 #include "Core/Resources/AssetManager.h"
-#include "editor/utilities/EditorFramebuffers.h"
 
+#include "editor/utilities/EditorFramebuffers.h"
+#include "editor/utilities/ImGuiUtils.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 
@@ -185,6 +186,57 @@ void SceneDisplay::RenderScene() const
 	fb->CheckResize();
 }
 
+void SceneDisplay::DrawToolbar()
+{
+	auto& mainRegistry = MAIN_REGISTRY();
+	auto& assetManager = mainRegistry.GetAssetManager();
+
+	auto pPlayTexture = assetManager.GetTexture( "play_button" );
+	auto pStopTexture = assetManager.GetTexture( "stop_button" );
+
+	SCION_ASSERT( pPlayTexture && pStopTexture );
+
+	ImGui::Separator();
+	ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, { 0.f, 0.f } );
+
+	auto playTextureID = (ImTextureID)(intptr_t)pPlayTexture->GetID();
+	if ( m_bPlayScene && m_bSceneLoaded )
+	{
+		ImGui::ActiveImageButton( playTextureID );
+	}
+	else
+	{
+		if ( ImGui::ImageButton( playTextureID, TOOL_BUTTON_SIZE ) )
+		{
+			LoadScene();
+		}
+	}
+
+	if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal ) )
+		ImGui::SetTooltip( "Play Scene" );
+
+	ImGui::SameLine();
+
+	auto stopTextureID = (ImTextureID)(intptr_t)pStopTexture->GetID();
+	if ( !m_bPlayScene && !m_bSceneLoaded )
+	{
+		ImGui::ActiveImageButton( stopTextureID );
+	}
+	else
+	{
+		if ( ImGui::ImageButton( stopTextureID, TOOL_BUTTON_SIZE ) )
+		{
+			UnloadScene();
+		}
+	}
+
+	if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal ) )
+		ImGui::SetTooltip( "Stop Scene" );
+
+	ImGui::Separator();
+	ImGui::PopStyleVar( 1 );
+}
+
 SceneDisplay::SceneDisplay()
 	: m_bPlayScene{ false }
 	, m_bSceneLoaded{ false }
@@ -200,78 +252,14 @@ void SceneDisplay::Draw()
 		return;
 	}
 
-	auto& mainRegistry = MAIN_REGISTRY();
-	auto& assetManager = mainRegistry.GetAssetManager();
-
-	auto pPlayTexture = assetManager.GetTexture( "play_button" );
-	auto pStopTexture = assetManager.GetTexture( "stop_button" );
-
-	static int numStyleColors = 0;
-
-	if ( m_bPlayScene )
-	{
-		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
-		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
-		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
-
-		numStyleColors += 3;
-	}
-
-	if ( ImGui::ImageButton( (ImTextureID)(intptr_t)pPlayTexture->GetID(),
-							 ImVec2{
-								 (float)pPlayTexture->GetWidth() * 0.25f,
-								 (float)pPlayTexture->GetHeight() * 0.25f,
-							 } ) &&
-		 !m_bSceneLoaded )
-	{
-		LoadScene();
-	}
-
-	if ( numStyleColors > 0 )
-	{
-		ImGui::PopStyleColor( numStyleColors );
-		numStyleColors = 0;
-	}
-
-	if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal ) )
-		ImGui::SetTooltip( "Play Scene" );
-
-	ImGui::SameLine();
-
-	if ( !m_bPlayScene )
-	{
-		ImGui::PushStyleColor( ImGuiCol_Button, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
-		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
-		ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
-
-		numStyleColors += 3;
-	}
-
+	DrawToolbar();
 	RenderScene();
 
-	if ( ImGui::ImageButton( (ImTextureID)(intptr_t)pStopTexture->GetID(),
-							 ImVec2{
-								 (float)pStopTexture->GetWidth() * 0.25f,
-								 (float)pStopTexture->GetHeight() * 0.25f,
-							 } ) &&
-		 m_bSceneLoaded )
-	{
-		UnloadScene();
-	}
-
-	if ( numStyleColors > 0 )
-	{
-		ImGui::PopStyleColor( numStyleColors );
-		numStyleColors = 0;
-	}
-
-	if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayNormal ) )
-		ImGui::SetTooltip( "Stop Scene" );
-
+	
 	if ( ImGui::BeginChild(
 			 "##SceneChild", ImVec2{ 0.f, 0.f }, ImGuiChildFlags_None, ImGuiWindowFlags_NoScrollWithMouse ) )
 	{
-		auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
+		auto& editorFramebuffers = MAIN_REGISTRY().GetContext<std::shared_ptr<EditorFramebuffers>>();
 		const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];
 
 		ImGui::SetCursorPos( ImVec2{ 0.f, 0.f } );

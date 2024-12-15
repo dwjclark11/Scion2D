@@ -522,11 +522,11 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TextComponent& tex
 		std::string sTextBuffer{ textComponent.sTextStr };
 		ImGui::InlineLabel( "text" );
 		if ( ImGui::InputText(
-				 "##_textStr", sTextBuffer.data(), sizeof( char ) * 255, ImGuiInputTextFlags_EnterReturnsTrue ) )
+				 "##_textStr", sTextBuffer.data(), sizeof( char ) * 1024, 0/*ImGuiInputTextFlags_EnterReturnsTrue*/ ) )
 		{
 			textComponent.sTextStr = std::string{ sTextBuffer.data() };
 		}
-
+		
 		std::string sFontName{ textComponent.sFontName };
 		ImGui::PushItemWidth( 164.f );
 		ImGui::InlineLabel( "font" );

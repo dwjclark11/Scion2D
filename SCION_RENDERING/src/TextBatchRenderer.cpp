@@ -77,9 +77,17 @@ void TextBatchRenderer::GenerateBatches()
 
 					if ( text_size > 0 )
 					{
-						textChunks.push_back( text_holder );
-						temp_pos = textGlyph->position;
-						text_holder.clear();
+						if ( std::isalpha( text_holder[ 0 ] ) )
+						{
+							textChunks.push_back( text_holder );
+							temp_pos = textGlyph->position;
+							text_holder.clear();
+						}
+						else
+						{
+							text_holder.erase( 0, 1 );
+							temp_pos.x -= fontSize;
+						}
 					}
 				}
 			}

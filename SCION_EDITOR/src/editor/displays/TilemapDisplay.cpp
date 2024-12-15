@@ -15,11 +15,13 @@
 #include "editor/systems/GridSystem.h"
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/EditorUtilities.h"
-
+#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 
 #include "editor/tools/ToolManager.h"
+#include "editor/tools/ToolAccessories.h"
 #include "editor/tools/CreateTileTool.h"
 
 #include "editor/commands/CommandManager.h"
@@ -91,18 +93,21 @@ void TilemapDisplay::LoadNewScene()
 	if ( !pCurrentScene )
 		return;
 
-	auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
+	auto& toolManager = TOOL_MANAGER();
+
+	if ( !toolManager.SetupTools( pCurrentScene.get(), m_pTilemapCam.get() ) )
+	{
+		SCION_ASSERT( false && "This should work!!" );
+#ifdef _WIN32
+		__debugbreak();
+#elif __linux
+		raise( SIGTRAP );
+#endif
+	}
+
+	auto pActiveTool = toolManager.GetActiveTool();
 	if ( pActiveTool )
 	{
-		if ( !pActiveTool->SetupTool( pCurrentScene.get(), m_pTilemapCam.get() ) )
-		{
-			SCION_ASSERT( false && "This should work!!" );
-#ifdef _WIN32
-			__debugbreak();
-#elif __linux
-			raise( SIGTRAP );
-#endif
-		}
 
 		if ( !SCENE_MANAGER().GetCurrentTileset().empty() )
 			pActiveTool->LoadSpriteTextureData( SCENE_MANAGER().GetCurrentTileset() );
@@ -168,6 +173,143 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 	startPosition = mousePos;
 }
 
+void TilemapDisplay::DrawToolbar()
+{
+	ImGui::Separator();
+
+	ImGui::PushStyleVar( ImGuiStyleVar_FrameBorderSize, 1.f );
+	ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, { 0.f, 0.f } );
+
+	auto& commandManager = COMMAND_MANAGER();
+	if ( commandManager.UndoEmpty() )
+	{
+		ImGui::DisabledButton( ICON_FA_UNDO, TOOL_BUTTON_SIZE, "Undo [CTRL + Z] - Nothing to undo." );
+	}
+	else
+	{
+		if ( ImGui::Button( ICON_FA_UNDO, TOOL_BUTTON_SIZE ) )
+		{
+			commandManager.Undo();
+		}
+	}
+	ImGui::ItemToolTip( "Undo [CTRL + Z]" );
+
+	ImGui::SameLine();
+
+	if ( commandManager.RedoEmpty() )
+	{
+		ImGui::DisabledButton( ICON_FA_REDO, TOOL_BUTTON_SIZE, "Redo [CTRL + SHIFT + Z] - Nothing to redo." );
+	}
+	else
+	{
+		if ( ImGui::Button( ICON_FA_REDO, TOOL_BUTTON_SIZE ) )
+		{
+			commandManager.Redo();
+		}
+	}
+	ImGui::ItemToolTip( "Redo [CTRL + SHIFT + Z]" );
+
+	ImGui::SameLine( 0.f, 32.f );
+
+	auto& toolManager = TOOL_MANAGER();
+	const EToolType eActiveToolType = toolManager.GetActiveToolType();
+	const EGizmoType eActiveGizmoType = toolManager.GetActiveGizmoType();
+
+	ImGui::DisabledButton( ICON_FA_TOOLS, TOOL_BUTTON_SIZE );
+
+	ImGui::SameLine();
+
+	if ( eActiveGizmoType == EGizmoType::TRANSLATE )
+	{
+		ImGui::ActiveButton( ICON_FA_ARROWS_ALT, TOOL_BUTTON_SIZE );
+	}
+	else
+	{
+		if ( ImGui::Button( ICON_FA_ARROWS_ALT, TOOL_BUTTON_SIZE ) )
+		{
+			toolManager.SetGizmoActive( EGizmoType::TRANSLATE );
+		}
+	}
+
+	ImGui::ItemToolTip( "Translate [W] - Translate/Move game objects" );
+
+	ImGui::SameLine();
+
+	if ( eActiveGizmoType == EGizmoType::SCALE )
+	{
+		ImGui::ActiveButton( ICON_FA_EXPAND, TOOL_BUTTON_SIZE );
+	}
+	else
+	{
+		if ( ImGui::Button( ICON_FA_EXPAND, TOOL_BUTTON_SIZE ) )
+		{
+			toolManager.SetGizmoActive( EGizmoType::SCALE );
+		}
+	}
+
+	ImGui::ItemToolTip( "Scale [E] - Scale game objects" );
+
+	ImGui::SameLine();
+
+	if ( eActiveGizmoType == EGizmoType::ROTATE )
+	{
+		// ImGui::ActiveButton( ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE );
+		ImGui::DisabledButton(
+			ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE, "Rotate [R] - Rotates game object - Currently Unavailable." );
+	}
+	else
+	{
+		/*	if ( ImGui::Button( ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE ) )
+			{
+				toolManager.SetGizmoActive( EGizmoType::ROTATE);
+			}*/
+		ImGui::DisabledButton(
+			ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE, "Rotate [R] - Rotates game object - Currently Unavailable." );
+	}
+
+	// ImGui::ItemToolTip( "Rotate [R] - Rotates game object" );
+
+	ImGui::SameLine();
+
+	if ( eActiveToolType == EToolType::CREATE_TILE )
+	{
+		ImGui::ActiveButton( ICON_FA_STAMP, TOOL_BUTTON_SIZE );
+	}
+	else
+	{
+		if ( ImGui::Button( ICON_FA_STAMP, TOOL_BUTTON_SIZE ) )
+		{
+			toolManager.SetToolActive( EToolType::CREATE_TILE );
+		}
+	}
+
+	ImGui::ItemToolTip( "Create Tile [T] - Creates a single tile." );
+
+	ImGui::SameLine();
+
+	if ( eActiveToolType == EToolType::RECT_FILL_TILE )
+	{
+		ImGui::ActiveButton( ICON_FA_CHESS_BOARD, TOOL_BUTTON_SIZE );
+	}
+	else
+	{
+		if ( ImGui::Button( ICON_FA_CHESS_BOARD, TOOL_BUTTON_SIZE ) )
+		{
+			toolManager.SetToolActive( EToolType::RECT_FILL_TILE );
+		}
+	}
+
+	ImGui::ItemToolTip( "Rect Tile Tool [Y] - Creates tiles inside of created rectangle." );
+
+	ImGui::SameLine();
+
+	ImGui::DisabledButton( ICON_FA_TOOLS, TOOL_BUTTON_SIZE );
+
+	ImGui::PopStyleVar( 2 );
+	ImGui::Separator();
+	ImGui::AddSpaces( 1 );
+}
+
 TilemapDisplay::TilemapDisplay()
 	: m_pTilemapCam{ std::make_unique<SCION_RENDERING::Camera2D>() }
 {
@@ -185,6 +327,7 @@ void TilemapDisplay::Draw()
 		return;
 	}
 
+	DrawToolbar();
 	RenderTilemap();
 
 	auto& mainRegistry = MAIN_REGISTRY();
@@ -266,14 +409,13 @@ void TilemapDisplay::Update()
 	m_pTilemapCam->Update();
 
 	auto& keyboard = INPUT_MANAGER().GetKeyboard();
-	if (keyboard.IsKeyPressed(SCION_KEY_LCTRL) && keyboard.IsKeyJustPressed(SCION_KEY_Z))
+	if ( keyboard.IsKeyPressed( SCION_KEY_LCTRL ) && keyboard.IsKeyJustPressed( SCION_KEY_Z ) )
 	{
 		if ( keyboard.IsKeyPressed( SCION_KEY_LSHIFT ) )
 			COMMAND_MANAGER().Redo();
 		else
 			COMMAND_MANAGER().Undo();
 	}
-
 }
 
 } // namespace SCION_EDITOR

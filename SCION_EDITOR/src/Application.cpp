@@ -37,7 +37,7 @@
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/ImGuiUtils.h"
 #include "editor/utilities/DrawComponentUtils.h"
-
+#include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/systems/GridSystem.h"
 
 // TODO: This needs to be removed. Scenes are added by default for testing.
@@ -483,6 +483,19 @@ bool Application::InitImGui()
 
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
+	io.Fonts->AddFontDefault();
+	float baseFontSize = 16.0f;
+	float iconFontSize = baseFontSize * 2.0f / 3.0f;
+
+	// merge in icons from Font Awesome
+	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+	ImFontConfig icons_config;
+	icons_config.MergeMode = true;
+	icons_config.PixelSnapH = true;
+	icons_config.GlyphMinAdvanceX = iconFontSize;
+	icons_config.GlyphOffset = ImVec2{ 0.f, 2.f };
+	io.Fonts->AddFontFromFileTTF( FONT_ICON_FILE_NAME_FAS, baseFontSize, &icons_config, icons_ranges );
+
 	if ( !ImGui_ImplSDL2_InitForOpenGL( m_pWindow->GetWindow().get(), m_pWindow->GetGLContext() ) )
 	{
 		SCION_ERROR( "Failed to intialize ImGui SDL2 for OpenGL!" );
@@ -537,8 +550,7 @@ void Application::RenderImGui()
 		const auto leftNodeId =
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Left, 0.2f, nullptr, &centerNodeId );
 
-		auto RightNodeId =
-			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Right, 0.3f, nullptr, &centerNodeId );
+		auto RightNodeId = ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Right, 0.3f, nullptr, &centerNodeId );
 
 		const auto LogNodeId =
 			ImGui::DockBuilderSplitNode( centerNodeId, ImGuiDir_Down, 0.25f, nullptr, &centerNodeId );
