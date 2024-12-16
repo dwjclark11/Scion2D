@@ -7,6 +7,8 @@
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 #include "editor/tools/ToolManager.h"
+#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/fonts/IconsFontAwesome5.h"
 
 #include <imgui.h>
 #include <SDL.h>
@@ -17,13 +19,15 @@ void MenuDisplay::Draw()
 {
 	if (ImGui::BeginMainMenuBar())
 	{
-		if (ImGui::BeginMenu("File"))
+		if ( ImGui::BeginMenu( ICON_FA_FILE " File" ) )
 		{
+			ImGui::InlineLabel( ICON_FA_FILE_ALT, 32.f );
 			if (ImGui::MenuItem("New", "Ctrl + N"))
 			{
 				SCION_LOG( "NEW PRESSED" );
 			}
 
+			ImGui::InlineLabel( ICON_FA_FOLDER_OPEN, 32.f );
 			if ( ImGui::MenuItem( "Open", "Ctrl + O" ) )
 			{
 				SCION_FILESYSTEM::FileDialog fd{};
@@ -46,7 +50,7 @@ void MenuDisplay::Draw()
 					}
 				}
 			}
-
+			ImGui::InlineLabel( ICON_FA_SAVE, 32.f );
 			if ( ImGui::MenuItem( "Save", "Ctrl + S" ) )
 			{
 				SCION_FILESYSTEM::FileDialog fd{};
@@ -69,7 +73,8 @@ void MenuDisplay::Draw()
 				}
 			}
 
-			if ( ImGui::MenuItem( "Exit") )
+			ImGui::InlineLabel( ICON_FA_WINDOW_CLOSE, 32.f );
+			if ( ImGui::MenuItem("Exit") )
 			{
 				SCION_LOG( "SHOULD EVENTUALLY EXIT!" );				
 			}
@@ -77,7 +82,7 @@ void MenuDisplay::Draw()
 			ImGui::EndMenu();
 		}
 
-		if ( ImGui::BeginMenu( "Edit" ) )
+		if ( ImGui::BeginMenu( ICON_FA_EDIT " Edit" ) )
 		{
 			auto& coreGlobals = CORE_GLOBALS();
 
@@ -99,17 +104,17 @@ void MenuDisplay::Draw()
 			ImGui::EndMenu();
 		}
 
-		if ( ImGui::BeginMenu( "Tools" ) )
+		if ( ImGui::BeginMenu( ICON_FA_TOOLS " Tools" ) )
 		{
 			ImGui::EndMenu();
 		}
 
-		if ( ImGui::BeginMenu( "Settings" ) )
+		if ( ImGui::BeginMenu( ICON_FA_COG " Settings" ) )
 		{
 			ImGui::EndMenu();
 		}
 
-		if ( ImGui::BeginMenu( "Help" ) )
+		if ( ImGui::BeginMenu( ICON_FA_QUESTION_CIRCLE " Help" ) )
 		{
 			ImGui::EndMenu();
 		}

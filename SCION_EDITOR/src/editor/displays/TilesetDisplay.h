@@ -10,6 +10,9 @@ class TilesetDisplay : public IDisplay
 	std::string m_sTileset{ "" };
 	int m_Selected{ -1 };
 
+ protected:
+	virtual void DrawToolbar() override;
+
   public:
 	TilesetDisplay() = default;
 	~TilesetDisplay() = default;

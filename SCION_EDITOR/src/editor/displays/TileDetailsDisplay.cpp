@@ -2,6 +2,7 @@
 
 #include "editor/utilities/ImGuiUtils.h"
 #include "editor/utilities/DrawComponentUtils.h"
+#include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 #include "editor/tools/ToolManager.h"
@@ -193,16 +194,17 @@ void TileDetailsDisplay::Draw()
 
 		std::string sCheckName{ m_sRenameLayerBuf.data() };
 
-		if ( ImGui::Button( "Add" ) )
+		if ( ImGui::Button( ICON_FA_PLUS_CIRCLE " Add Layer" ) )
 		{
 			pCurrentScene->AddNewLayer();
 		}
-
+		ImGui::ItemToolTip( "Add Layer" );
+		
 		ImGui::AddSpaces( 2 );
 		ImGui::Separator();
 		ImGui::AddSpaces( 2 );
 
-		float itemWidth{ ImGui::GetWindowWidth() - 32.f };
+		float itemWidth{ ImGui::GetWindowWidth() - 64.f };
 		auto rView = spriteLayers | std::ranges::views::reverse;
 
 		for ( auto rit = rView.begin(); rit != rView.end(); rit++ )
@@ -262,6 +264,17 @@ void TileDetailsDisplay::Draw()
 
 			bool bCheckPassed{ pCurrentScene->CheckLayerName( sCheckName ) };
 
+			ImGui::SameLine();
+			ImGui::PushID( n );
+			ImGui::PushStyleColor( ImGuiCol_Button, BLACK_TRANSPARENT );
+			ImGui::PushStyleColor( ImGuiCol_ButtonActive, BLACK_TRANSPARENT );
+			if (ImGui::Button(spriteLayer.bVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH, { 24.f, 24.f }))
+			{
+				spriteLayer.bVisible = !spriteLayer.bVisible;
+			}
+
+			ImGui::PopStyleColor( 2 );
+
 			if ( m_bRename && bIsSelected )
 			{
 				ImGui::SetKeyboardFocusHere();
@@ -280,11 +293,6 @@ void TileDetailsDisplay::Draw()
 				}
 			}
 
-			ImGui::SameLine();
-
-			// Layer Visibility
-			ImGui::Checkbox( fmt::format( "##visible_{}", spriteLayer.sLayerName ).c_str(), &spriteLayer.bVisible );
-
 			// We want to display an error to the user if the name already exists. Try to prevent duplicate
 			// layer names.
 			if ( !bCheckPassed && bIsSelected )
@@ -292,6 +300,8 @@ void TileDetailsDisplay::Draw()
 				ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f },
 									fmt::format( "{} - Already exists.", sCheckName ).c_str() );
 			}
+
+			ImGui::PopID();
 		}
 
 		ImGui::End();

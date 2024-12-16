@@ -3,6 +3,7 @@
 #include "Core/ECS/Registry.h"
 
 #define MAIN_REGISTRY() SCION_CORE::ECS::MainRegistry::GetInstance()
+#define ASSET_MANAGER() MAIN_REGISTRY().GetAssetManager()
 
 namespace SCION_RESOURCES
 {

@@ -122,7 +122,7 @@ void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool*
 				}
 			}
 
-			if ( !bError )
+			if ( !bError && id_type != 0 )
 			{
 				auto&& storage = registry.storage( id_type );
 				if ( !storage )
@@ -144,7 +144,7 @@ void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool*
 						ImGui::CloseCurrentPopup();
 					}
 				}
-				else
+				else 
 				{
 					storage->push( entity.GetEntity() );
 					*bAddComponent = false;

@@ -6,11 +6,13 @@
 #include "Logger/Logger.h"
 
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/scene/SceneManager.h"
 
 #include <imgui.h>
 
-constexpr float DEFAULT_ASSET_SIZE = 128.f;
+constexpr float DEFAULT_ASSET_SIZE = 64.f;
 constexpr ImVec2 DRAG_ASSET_SIZE = ImVec2{ 32.f, 32.f };
 
 namespace SCION_EDITOR
@@ -315,10 +317,41 @@ void AssetDisplay::Draw()
 		return;
 	}
 
+	DrawToolbar();
+
+	if ( ImGui::BeginChild( "##AssetTable",
+							ImVec2{ 0.f, 0.f },
+							ImGuiChildFlags_None,
+							ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_ChildWindow ) )
+	{
+		m_bWindowHovered = ImGui::IsWindowHovered();
+		m_bWindowSelected = ImGui::IsWindowFocused();
+
+		DrawSelectedAssets();
+
+		ImGui::EndChild();
+	}
+
+	ImGui::End();
+}
+
+void AssetDisplay::Update()
+{
+}
+
+void AssetDisplay::DrawToolbar()
+{
+
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
 
-	ImGui::Text( "Asset Type" );
+	ImGui::Separator();
+	ImGui::PushStyleColor( ImGuiCol_Button, BLACK_TRANSPARENT );
+	ImGui::PushStyleColor( ImGuiCol_ButtonHovered, BLACK_TRANSPARENT );
+	ImGui::PushStyleColor( ImGuiCol_ButtonActive, BLACK_TRANSPARENT );
+	ImGui::Button( "Asset Type" );
+	ImGui::PopStyleColor( 3 );
+
 	ImGui::SameLine( 0.f, 10.f );
 	if ( ImGui::BeginCombo( "##AssetType", m_sSelectedType.c_str() ) )
 	{
@@ -341,24 +374,7 @@ void AssetDisplay::Draw()
 		ImGui::EndCombo();
 	}
 
-	if ( ImGui::BeginChild( "##AssetTable",
-							ImVec2{ 0.f, 0.f },
-							ImGuiChildFlags_None,
-							ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_ChildWindow ) )
-	{
-		m_bWindowHovered = ImGui::IsWindowHovered();
-		m_bWindowSelected = ImGui::IsWindowFocused();
-
-		DrawSelectedAssets();
-
-		ImGui::EndChild();
-	}
-
-	ImGui::End();
-}
-
-void AssetDisplay::Update()
-{
+	ImGui::Separator();
 }
 
 } // namespace SCION_EDITOR

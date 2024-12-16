@@ -6,23 +6,33 @@
 #include "editor/scene/SceneManager.h"
 #include "editor/tools/ToolManager.h"
 #include "editor/tools/TileTool.h"
+#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/fonts/IconsFontAwesome5.h"
 
 #include <imgui.h>
 
 namespace SCION_EDITOR
 {
-void TilesetDisplay::Draw()
+void TilesetDisplay::DrawToolbar()
 {
-	if ( !ImGui::Begin( "Tileset" ) )
+	auto& assetManager = ASSET_MANAGER();
+
+	ImGui::Separator();
+	if ( ImGui::Button( ICON_FA_PLUS_CIRCLE ) )
 	{
-		ImGui::End();
-		return;
+		// TODO: Add new tileset functionality
 	}
+	ImGui::ItemToolTip( "Add Tileset" );
+	ImGui::SameLine();
 
-	auto& mainRegistry = MAIN_REGISTRY();
-	auto& assetManager = mainRegistry.GetAssetManager();
+	ImGui::PushStyleColor( ImGuiCol_Button, BLACK_TRANSPARENT );
+	ImGui::PushStyleColor( ImGuiCol_ButtonHovered, BLACK_TRANSPARENT );
+	ImGui::PushStyleColor( ImGuiCol_ButtonActive, BLACK_TRANSPARENT );
+	ImGui::Button( "Choose Tileset" );
+	ImGui::PopStyleColor( 3 );
 
-	if ( ImGui::BeginCombo( "Choose Tileset", m_sTileset.c_str() ) )
+	ImGui::SameLine();
+	if ( ImGui::BeginCombo( "##Choose_Tileset", m_sTileset.c_str() ) )
 	{
 		for ( const auto& sTileset : assetManager.GetTilesetNames() )
 		{
@@ -41,6 +51,18 @@ void TilesetDisplay::Draw()
 
 		ImGui::EndCombo();
 	}
+	ImGui::Separator();
+}
+
+void TilesetDisplay::Draw()
+{
+	if ( !ImGui::Begin( "Tileset" ) )
+	{
+		ImGui::End();
+		return;
+	}
+
+	DrawToolbar();
 
 	if ( m_sTileset.empty() )
 	{
@@ -48,7 +70,7 @@ void TilesetDisplay::Draw()
 		return;
 	}
 
-	auto pTexture = assetManager.GetTexture( m_sTileset );
+	auto pTexture = ASSET_MANAGER().GetTexture( m_sTileset );
 	if ( !pTexture )
 	{
 		ImGui::End();
@@ -72,9 +94,9 @@ void TilesetDisplay::Draw()
 
 	int k{ 0 }, id{ 0 };
 
-	if (ImGui::BeginTable("Tileset", cols, tableFlags))
+	if ( ImGui::BeginTable( "Tileset", cols, tableFlags ) )
 	{
-		for (int i = 0; i < rows; i++)
+		for ( int i = 0; i < rows; i++ )
 		{
 			ImGui::TableNextRow();
 			for ( int j = 0; j < cols; j++ )
@@ -88,7 +110,13 @@ void TilesetDisplay::Draw()
 				// Create unique id for the buttons
 				ImGui::PushID( k++ );
 
-				if (ImGui::ImageButton((ImTextureID)(intptr_t)pTexture->GetID(), ImVec2{ 16.f * 1.5f, 16.f * 1.5f, }, ImVec2{ ux, uy }, ImVec2{ vx, vy }))
+				if ( ImGui::ImageButton( (ImTextureID)(intptr_t)pTexture->GetID(),
+										 ImVec2{
+											 16.f * 1.5f,
+											 16.f * 1.5f,
+										 },
+										 ImVec2{ ux, uy },
+										 ImVec2{ vx, vy } ) )
 				{
 					m_Selected = id;
 					auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
@@ -103,7 +131,7 @@ void TilesetDisplay::Draw()
 				vx += uv_w;
 				++id;
 			}
-			// Put the UVs back to the start column of the next row 
+			// Put the UVs back to the start column of the next row
 			ux = 0.f;
 			vx = uv_w;
 			uy += uv_h;

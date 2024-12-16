@@ -11,6 +11,24 @@ namespace SCION_EDITOR
 {
 class AssetDisplay : public IDisplay
 {
+  public:
+	AssetDisplay();
+	~AssetDisplay() = default;
+
+	virtual void Draw() override;
+	virtual void Update() override;
+
+  protected:
+	virtual void DrawToolbar() override;
+
+  private:
+	void SetAssetType();
+	void DrawSelectedAssets();
+	unsigned int GetTextureID( const std::string& sAssetName ) const;
+	bool DoRenameAsset( const std::string& sOldName, const std::string& sNewName ) const;
+	void CheckRename( const std::string& sCheckName ) const;
+	void OpenAssetContext( const std::string& sAssetName );
+
   private:
 	const std::vector<std::string> m_SelectableTypes{ "TEXTURES", "FONTS", "MUSIC", "SOUNDFX", "SCENES" };
 	bool m_bAssetTypeChanged, m_bRename;
@@ -19,20 +37,5 @@ class AssetDisplay : public IDisplay
 	SCION_UTIL::AssetType m_eSelectedType;
 	float m_AssetSize;
 	int m_SelectedID;
-
-  private:
-	void SetAssetType();
-	void DrawSelectedAssets();
-	unsigned int GetTextureID( const std::string& sAssetName ) const; 
-	bool DoRenameAsset( const std::string& sOldName, const std::string& sNewName ) const;
-	void CheckRename( const std::string& sCheckName ) const;
-	void OpenAssetContext( const std::string& sAssetName );
-
-  public:
-	AssetDisplay();
-	~AssetDisplay() = default;
-
-	virtual void Draw() override;
-	virtual void Update() override;
 };
 } // namespace SCION_EDITOR
