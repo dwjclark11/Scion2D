@@ -40,8 +40,15 @@ class Camera2D
 	*/
 	void Resize( int newWidth, int newHeight );
 
+	/*
+	* @brief Converts the passed in screen coordinates to world coordinates.
+	*/
 	glm::vec2 ScreenCoordsToWorld( const glm::vec2& screenCoords ) const;
-	glm::vec2 WorldCoordsToScreen( const glm::vec2& screenCoords ) const;
+
+	/*
+	 * @brief Converts the passed in world coordinates to screen coordinates.
+	 */
+	glm::vec2 WorldCoordsToScreen( const glm::vec2& worldCoords ) const;
 
 	inline void SetPosition( glm::vec2 newPosition )
 	{

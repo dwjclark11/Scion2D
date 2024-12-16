@@ -151,32 +151,6 @@ const std::string& TileTool::GetSpriteTexture() const
 	return m_pMouseTile->sprite.texture_name;
 }
 
-void TileTool::SetBoxCollider( int width, int height, const glm::vec2& offset )
-{
-	m_pMouseTile->boxCollider.width = width;
-	m_pMouseTile->boxCollider.height = height;
-	m_pMouseTile->boxCollider.offset = offset;
-}
-
-void TileTool::SetSpriteLayer( int layer )
-{
-	m_pMouseTile->sprite.layer = layer;
-}
-
-void TileTool::SetScale( const glm::vec2& scale )
-{
-	m_pMouseTile->transform.scale = scale;
-}
-
-void TileTool::SetAnimation( int numFrames, int frameRate, bool bVertical, bool bLooped, int frameOffset )
-{
-	m_pMouseTile->animation.numFrames = numFrames;
-	m_pMouseTile->animation.frameRate = frameRate;
-	m_pMouseTile->animation.bVertical = bVertical;
-	m_pMouseTile->animation.bLooped = bLooped;
-	m_pMouseTile->animation.frameOffset = frameOffset;
-}
-
 void TileTool::SetSpriteUVs( int startX, int startY )
 {
 	m_pMouseTile->sprite.start_x = startX;
@@ -200,30 +174,11 @@ void TileTool::SetSpriteRect( const glm::vec2& spriteRect )
 	SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 }
 
-void TileTool::SetCollider( bool bCollider )
-{
-	m_pMouseTile->bCollider = bCollider;
-}
-
-void TileTool::SetCircle( bool bCircle )
-{
-	m_pMouseTile->bCircle = bCircle;
-}
-
-void TileTool::SetAnimation( bool bAnimation )
-{
-	m_pMouseTile->bAnimation = bAnimation;
-}
-
-void TileTool::SetPhysics( bool bPhysics )
-{
-	m_pMouseTile->bPhysics = bPhysics;
-}
-
 const bool TileTool::SpriteValid() const
 {
 	return !m_pMouseTile->sprite.texture_name.empty();
 }
+
 const bool TileTool::CanDrawOrCreate() const
 {
 	return IsActivated() && !OutOfBounds() && IsOverTilemapWindow() && SpriteValid() && m_pCurrentScene &&

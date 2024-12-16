@@ -5,6 +5,10 @@
 
 namespace SCION_EDITOR
 {
+/*
+* @brief Concept for Command Interface to ensure that all structs/types passed
+* into the command manager have the necessary undo/redo functionality.
+*/
 template <typename T>
 concept CommandType = requires( T t ) {
 	{
@@ -25,8 +29,22 @@ template <CommandType... Cmds>
 class AbstractCommandManager
 {
   public:
+
+	/*
+	* @brief Runs Undo function for whatever action/cmd is on the undo stack.
+	* Pushes that function onto the redo stack.
+	*/
 	void Undo();
+
+	/*
+	* @brief Runs Redo function for whatever action/cmd is on the redo stack.
+	* Pushes that function onto the undo stack.
+	*/
 	void Redo();
+
+	/*
+	* @brief Clears both the undo and redo stacks.
+	*/
 	void Clear();
 
 	/*
@@ -41,6 +59,11 @@ class AbstractCommandManager
 	 */
 	bool RedoEmpty() const noexcept { return m_RedoStack.empty(); }
 
+	/*
+	* @brief Clears the redo stack and pushes the passed in command onto the
+	* Undo stack.
+	* @param Takes in a specified std::variant VarCommands.
+	*/
 	void Execute( VarCommands<Cmds...>& undoableVariant );
 
   private:
