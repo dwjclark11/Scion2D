@@ -84,11 +84,11 @@ CommandManager& SceneManager::GetCommandManager()
 void SceneManager::SetTileset( const std::string& sTileset )
 {
 	m_sCurrentTileset = sTileset;
+
 	if ( !m_pToolManager )
 		return;
 
-	auto pActiveTool = m_pToolManager->GetActiveTool();
-	if ( pActiveTool )
-		pActiveTool->LoadSpriteTextureData( m_sCurrentTileset );
+	m_pToolManager->SetToolsCurrentTileset(sTileset);
 }
+
 } // namespace SCION_EDITOR

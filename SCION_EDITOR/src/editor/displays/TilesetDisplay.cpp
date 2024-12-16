@@ -119,9 +119,7 @@ void TilesetDisplay::Draw()
 										 ImVec2{ vx, vy } ) )
 				{
 					m_Selected = id;
-					auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
-					if ( pActiveTool )
-						pActiveTool->SetSpriteUVs( j, i );
+					TOOL_MANAGER().SetTileToolStartCoords( j, i );					
 				}
 
 				ImGui::PopID();

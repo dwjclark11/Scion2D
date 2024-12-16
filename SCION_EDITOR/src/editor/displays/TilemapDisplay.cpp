@@ -105,13 +105,8 @@ void TilemapDisplay::LoadNewScene()
 #endif
 	}
 
-	auto pActiveTool = toolManager.GetActiveTool();
-	if ( pActiveTool )
-	{
-
-		if ( !SCENE_MANAGER().GetCurrentTileset().empty() )
-			pActiveTool->LoadSpriteTextureData( SCENE_MANAGER().GetCurrentTileset() );
-	}
+	if ( !SCENE_MANAGER().GetCurrentTileset().empty() )
+		toolManager.SetToolsCurrentTileset( SCENE_MANAGER().GetCurrentTileset() );
 }
 
 void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )

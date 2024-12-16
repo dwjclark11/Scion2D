@@ -111,7 +111,7 @@ CreateTileTool::CreateTileTool()
 
 void CreateTileTool::Create()
 {
-	if ( OutOfBounds() || !IsActivated() || !SpriteValid() || !m_pRegistry )
+	if ( !CanDrawOrCreate() )
 		return;
 
 	if ( MouseBtnJustPressed( EMouseButton::LEFT ) || MouseBtnPressed( EMouseButton::LEFT ) )
@@ -126,7 +126,7 @@ void CreateTileTool::Create()
 
 void CreateTileTool::Draw()
 {
-	if ( OutOfBounds() || !IsActivated() || !SpriteValid() || !m_pCamera )
+	if ( !CanDrawOrCreate() )
 		return;
 
 	auto pShader = MAIN_REGISTRY().GetAssetManager().GetShader( "basic" );

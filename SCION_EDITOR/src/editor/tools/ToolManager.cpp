@@ -77,6 +77,22 @@ bool ToolManager::SetupTools( SceneObject* pSceneObject, SCION_RENDERING::Camera
 	return true;
 }
 
+void ToolManager::SetToolsCurrentTileset( const std::string& sTileset )
+{
+	for ( auto& [ eType, pTool ] : m_mapTools )
+	{
+		pTool->LoadSpriteTextureData( sTileset );
+	}
+}
+
+void ToolManager::SetTileToolStartCoords( int x, int y )
+{
+	for ( auto& [ eType, pTool ] : m_mapTools )
+	{
+		pTool->SetSpriteUVs(x, y);
+	}
+}
+
 void ToolManager::EnableGridSnap( bool bEnable )
 {
 	for ( auto& tool : m_mapTools )

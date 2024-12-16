@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <memory>
+#include <string>
 
 namespace SCION_RENDERING
 {
@@ -54,6 +55,13 @@ class ToolManager
 	 * @brief Calls SetupTool for all tools and gizmos
 	 */
 	bool SetupTools( SceneObject* pSceneObject, SCION_RENDERING::Camera2D* pCamera );
+
+	/*
+	* @brief Sets the passed in tileset for all tools.
+	*/
+	void SetToolsCurrentTileset( const std::string& sTileset );
+
+	void SetTileToolStartCoords( int x, int y );
 
 	inline EToolType GetActiveToolType() const { return m_eActiveToolType; }
 	inline EGizmoType GetActiveGizmoType() const { return m_eActiveGizmoType; }
