@@ -17,6 +17,7 @@ CoreEngineData::CoreEngineData()
 	: m_DeltaTime{ 0.f }
 	, m_ScaledWidth{ 0.f }
 	, m_ScaledHeight{ 0.f }
+	, m_Gravity{ 9.8f }
 	, m_WindowWidth{ 640 }
 	, m_WindowHeight{ 480 }
 	, m_VelocityIterations{ 10 }

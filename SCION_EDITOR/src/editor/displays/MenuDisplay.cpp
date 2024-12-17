@@ -106,16 +106,115 @@ void MenuDisplay::Draw()
 
 		if ( ImGui::BeginMenu( ICON_FA_TOOLS " Tools" ) )
 		{
+			/*auto& toolManager = TOOL_MANAGER();
+			ImGui::InlineLabel( ICON_FA_ARROWS_ALT "Translate" );*/
+
+			ImGui::EndMenu();
+		}
+
+		if ( ImGui::BeginMenu( ICON_FA_VIDEO " Scene" ) )
+		{
+			if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene())
+			{
+				ImGui::Text( "Current Scene" );
+				if ( ImGui::TreeNode( "Canvas" ) )
+				{
+					auto& canvas = pCurrentScene->GetCanvas();
+
+					ImGui::InlineLabel( "width" );
+					if (ImGui::InputInt("##_width", &canvas.width, canvas.tileWidth, canvas.tileWidth))
+					{
+						if ( canvas.width < 640 )
+							canvas.width = 640;
+					}
+					ImGui::ItemToolTip( "Canvas Width - Clamped minimum = 640" );
+
+					ImGui::InlineLabel( "height" );
+					if (ImGui::InputInt("##_height", &canvas.height, canvas.tileHeight, canvas.tileHeight))
+					{
+						if ( canvas.height < 320 )
+							canvas.height = 320;
+					}
+					ImGui::ItemToolTip( "Canvas Height - Clamped minimum = 320" );
+
+					ImGui::InlineLabel( "tile width" );
+					if (ImGui::InputInt("##tile_width", &canvas.tileWidth, 8, 8))
+					{
+						canvas.tileWidth = std::clamp( canvas.tileWidth, 8, 128 );
+					}
+					ImGui::ItemToolTip( "Tile Width - Range [8 : 128]" );
+
+					ImGui::InlineLabel( "tile height" );
+					if (ImGui::InputInt("##tile_height", &canvas.tileHeight, 8, 8))
+					{
+						canvas.tileHeight = std::clamp( canvas.tileHeight, 8, 128 );
+					}
+					ImGui::ItemToolTip( "Tile Height - Range [8 : 128]" );
+
+					ImGui::TreePop();
+				}
+			}
+		
 			ImGui::EndMenu();
 		}
 
 		if ( ImGui::BeginMenu( ICON_FA_COG " Settings" ) )
 		{
+			if (ImGui::TreeNode("Physics"))
+			{
+				ImGui::Separator();
+				auto& coreGlobals = CORE_GLOBALS();
+				bool bEnablePhysics = coreGlobals.IsPhysicsEnabled();
+				ImGui::InlineLabel( "Enable Physics", 176.f );
+				if (ImGui::Checkbox("##enable_physics", &bEnablePhysics))
+				{
+					if (bEnablePhysics)
+						coreGlobals.EnablePhysics();
+					else
+						coreGlobals.DisablePhysics();
+				}
+
+				int32 velocityIterations = coreGlobals.GetVelocityIterations();
+				int32 positionIterations = coreGlobals.GetPositionIterations();
+				float gravity = coreGlobals.GetGravity();
+				ImGui::InlineLabel( "Gravity", 176.f );
+				if ( ImGui::InputFloat( "##Gravity", &gravity, .1f, .1f, "%.1f" ) )
+				{
+					coreGlobals.SetGravity( gravity );
+				}
+
+				ImGui::InlineLabel( "Velocity Iterations", 176.f );
+				if (ImGui::InputInt("##VelocityIterations", &velocityIterations, 1, 1))
+				{
+					coreGlobals.SetVelocityIterations( velocityIterations );
+				}
+
+				ImGui::InlineLabel( "Position Iterations", 176.f );
+				if ( ImGui::InputInt( "##PositionIterations", &positionIterations, 1, 1 ) )
+				{
+					coreGlobals.SetPositionIterations( positionIterations );
+				}
+				ImGui::TreePop();
+			}
 			ImGui::EndMenu();
 		}
 
 		if ( ImGui::BeginMenu( ICON_FA_QUESTION_CIRCLE " Help" ) )
 		{
+			if (ImGui::TreeNode("About Scion2D"))
+			{
+				ImGui::Separator();
+				ImGui::Text( "Scion2D is a simple 2D game engine and editor written in C++." );
+				ImGui::Text( "The goal of the engine is to be able to quickly create games and learn more about C++ Programming." );
+				ImGui::Text( "By Dustin Clark and all contributors." );
+				ImGui::AddSpaces( 2 );
+				ImGui::Text( "Helpful Links: " );
+				ImGui::TextLinkOpenURL( "Github", "https://github.com/dwjclark11/Scion2D" );
+				ImGui::TextLinkOpenURL( "YouTube", "https://www.youtube.com/@JADE-iteGames" );
+				ImGui::TextLinkOpenURL( "Documentation", "https://dwjclark11.github.io/Scion2D_Docs/" );
+				ImGui::Separator();
+				ImGui::TreePop();
+			}
 			ImGui::EndMenu();
 		}
 

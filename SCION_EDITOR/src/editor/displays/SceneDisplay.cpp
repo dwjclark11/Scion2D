@@ -46,8 +46,8 @@ void SceneDisplay::LoadScene()
 	runtimeRegistry.AddToContext<std::shared_ptr<Camera2D>>(
 		std::make_shared<Camera2D>( canvas.width, canvas.height ) );
 
-	auto pPhysicsWorld =
-		runtimeRegistry.AddToContext<SCION_PHYSICS::PhysicsWorld>( std::make_shared<b2World>( b2Vec2{ 0.f, 9.8f } ) );
+	auto pPhysicsWorld = runtimeRegistry.AddToContext<SCION_PHYSICS::PhysicsWorld>(
+		std::make_shared<b2World>( b2Vec2{ 0.f, CORE_GLOBALS().GetGravity() } ) );
 
 	auto pContactListener = runtimeRegistry.AddToContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>(
 		std::make_shared<SCION_PHYSICS::ContactListener>() );
@@ -140,7 +140,7 @@ void SceneDisplay::UnloadScene()
 	runtimeRegistry.ClearRegistry();
 	runtimeRegistry.RemoveContext<std::shared_ptr<Camera2D>>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<sol::state>>();
-	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_PHYSICS::PhysicsWorld>>();
+	runtimeRegistry.RemoveContext<SCION_PHYSICS::PhysicsWorld>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<ScriptingSystem>>();
 
