@@ -1,6 +1,9 @@
 #include "SceneHierarchyDisplay.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
+#include "editor/utilities/fonts/IconsFontAwesome5.h"
+#include "editor/utilities/ImGuiUtils.h"
+
 #include "Core/ECS/MainRegistry.h"
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/MetaUtilities.h"
@@ -253,12 +256,22 @@ void SceneHierarchyDisplay::Draw()
 		ImGui::EndPopup();
 	}
 
+	ImGui::Separator();
+	ImGui::AddSpaces( 1 );
+	ImGui::InlineLabel( ICON_FA_SEARCH, 32.f );
+	m_TextFilter.Draw( "##search_filter" );
+	ImGui::AddSpaces( 1 );
+	ImGui::Separator();
+
 	auto& registry = pCurrentScene->GetRegistry();
 	auto sceneEntities = registry.GetRegistry().view<entt::entity>( entt::exclude<TileComponent, ScriptComponent> );
 
 	for ( auto entity : sceneEntities )
 	{
 		Entity ent{ registry, entity };
+		if ( !m_TextFilter.PassFilter(ent.GetName().c_str() ))
+			continue;
+
 		if ( OpenTreeNode( ent ) )
 			ImGui::TreePop();
 	}

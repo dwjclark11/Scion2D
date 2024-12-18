@@ -1,5 +1,6 @@
 #pragma once
 #include "IDisplay.h"
+#include <imgui.h>
 
 namespace SCION_CORE::ECS
 {
@@ -12,6 +13,7 @@ class SceneHierarchyDisplay : public IDisplay
 {
   private:
 	std::shared_ptr<SCION_CORE::ECS::Entity> m_pSelectedEntity{ nullptr };
+	ImGuiTextFilter m_TextFilter;
 	bool m_bAddComponent{ false };
 
   private:
