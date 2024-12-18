@@ -24,7 +24,9 @@ class AbstractTool
 	glm::vec2 m_GUICursorCoords, m_GUIRelativeCoords;
 	glm::vec2 m_WindowPos, m_WindowSize;
 
-	bool m_bActivated, m_bOutOfBounds, m_bOverTilemapWindow;
+	bool m_bActivated;
+	bool m_bOutOfBounds;
+	bool m_bOverTilemapWindow;
 
   private:
 	void UpdateMouseWorldCoords();

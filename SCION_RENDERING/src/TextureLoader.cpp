@@ -90,7 +90,7 @@ bool TextureLoader::LoadTextureFromMemory( const unsigned char* imageData, size_
 	// Get the width and height data from the texture
 	glBindTexture( GL_TEXTURE_2D, id );
 	glad_glGetTextureLevelParameteriv( id, 0, GL_TEXTURE_WIDTH, &width );
-	glad_glGetTextureLevelParameteriv( id, 0, GL_TEXTURE_HEIGHT, &height);
+	glad_glGetTextureLevelParameteriv( id, 0, GL_TEXTURE_HEIGHT, &height );
 
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );

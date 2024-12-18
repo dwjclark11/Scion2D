@@ -17,7 +17,6 @@ Texture::Texture( GLuint id, int width, int height, TextureType type, const std:
 	, m_bTileset{ bIsTileset }
 	, m_bEditorTexture{ false }
 {
-
 }
 
 void Texture::Bind()

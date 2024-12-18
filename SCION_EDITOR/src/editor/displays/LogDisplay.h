@@ -14,7 +14,7 @@ class LogDisplay : public IDisplay
   private:
 	void GetLogs();
 
-	public:
+  public:
 	LogDisplay();
 	~LogDisplay() = default;
 

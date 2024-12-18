@@ -12,7 +12,7 @@ struct RigidBodyComponent
 {
 	glm::vec2 currentVelocity{ 0.f };
 	glm::vec2 maxVelocity{ 0.f };
-	
+
 	[[nodiscard]] std::string to_string() const;
 
 	static void CreateRigidBodyBind( sol::state& lua );

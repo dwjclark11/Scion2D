@@ -25,13 +25,13 @@ class DrawComponentsUtil
   private:
 	static void DrawImGuiComponent( SCION_CORE::ECS::TransformComponent& transform );
 	static void DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& sprite );
-	static void DrawImGuiComponent( SCION_CORE::ECS::AnimationComponent& animation);
-	static void DrawImGuiComponent( SCION_CORE::ECS::BoxColliderComponent& boxCollider);
-	static void DrawImGuiComponent( SCION_CORE::ECS::CircleColliderComponent& circleCollider);
-	static void DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& physics);
-	static void DrawImGuiComponent( SCION_CORE::ECS::RigidBodyComponent& rigidbody);
-	static void DrawImGuiComponent( SCION_CORE::ECS::TextComponent& textComponent);
-	static void DrawImGuiComponent( SCION_CORE::ECS::Identification& identification);
+	static void DrawImGuiComponent( SCION_CORE::ECS::AnimationComponent& animation );
+	static void DrawImGuiComponent( SCION_CORE::ECS::BoxColliderComponent& boxCollider );
+	static void DrawImGuiComponent( SCION_CORE::ECS::CircleColliderComponent& circleCollider );
+	static void DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& physics );
+	static void DrawImGuiComponent( SCION_CORE::ECS::RigidBodyComponent& rigidbody );
+	static void DrawImGuiComponent( SCION_CORE::ECS::TextComponent& textComponent );
+	static void DrawImGuiComponent( SCION_CORE::ECS::Identification& identification );
 };
 
 } // namespace SCION_EDITOR

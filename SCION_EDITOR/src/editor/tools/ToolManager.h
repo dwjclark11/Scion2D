@@ -57,14 +57,14 @@ class ToolManager
 	bool SetupTools( SceneObject* pSceneObject, SCION_RENDERING::Camera2D* pCamera );
 
 	/*
-	* @brief Sets the passed in tileset for all tools.
-	*/
+	 * @brief Sets the passed in tileset for all tools.
+	 */
 	void SetToolsCurrentTileset( const std::string& sTileset );
 
 	/*
-	* @brief Sets the Tile Tools Start sprite coords for all tile tools.
-	* @param Takes in an int for both the startX and startY positions.
-	*/
+	 * @brief Sets the Tile Tools Start sprite coords for all tile tools.
+	 * @param Takes in an int for both the startX and startY positions.
+	 */
 	void SetTileToolStartCoords( int x, int y );
 
 	inline EToolType GetActiveToolType() const { return m_eActiveToolType; }

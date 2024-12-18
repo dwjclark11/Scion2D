@@ -10,9 +10,7 @@ class JSONSerializer;
 #define SERIALIZE_COMPONENT( serializer, component )                                                                   \
 	SCION_CORE::ECS::ComponentSerializer::Serialize( serializer, component )
 
-#define DESERIALIZE_COMPONENT( table, compref )                                                                   \
-	SCION_CORE::ECS::ComponentSerializer::Deserialize( table, compref )
-
+#define DESERIALIZE_COMPONENT( table, compref ) SCION_CORE::ECS::ComponentSerializer::Deserialize( table, compref )
 
 namespace SCION_CORE::ECS
 {

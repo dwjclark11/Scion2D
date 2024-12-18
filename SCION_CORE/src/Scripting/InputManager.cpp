@@ -205,11 +205,11 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 		"Keyboard",
 		sol::no_constructor,
 		"just_pressed",
-		[ & ]( int key ) { return keyboard.IsKeyJustPressed(  key  ); },
+		[ & ]( int key ) { return keyboard.IsKeyJustPressed( key ); },
 		"just_released",
-		[ & ]( int key ) { return keyboard.IsKeyJustReleased(  key  ); },
+		[ & ]( int key ) { return keyboard.IsKeyJustReleased( key ); },
 		"pressed",
-		[ & ]( int key ) { return keyboard.IsKeyPressed(  key  ); },
+		[ & ]( int key ) { return keyboard.IsKeyPressed( key ); },
 		"pressed_keys",
 		[ & ]() {
 			std::vector<int> keys;
@@ -227,11 +227,11 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 		"Mouse",
 		sol::no_constructor,
 		"just_pressed",
-		[ & ]( int btn ) { return mouse.IsBtnJustPressed(  btn  ); },
+		[ & ]( int btn ) { return mouse.IsBtnJustPressed( btn ); },
 		"just_released",
-		[ & ]( int btn ) { return mouse.IsBtnJustReleased(  btn  ); },
+		[ & ]( int btn ) { return mouse.IsBtnJustReleased( btn ); },
 		"pressed",
-		[ & ]( int btn ) { return mouse.IsBtnPressed(  btn  ); },
+		[ & ]( int btn ) { return mouse.IsBtnPressed( btn ); },
 		"screen_position",
 		[ & ]() {
 			auto [ x, y ] = mouse.GetMouseScreenPosition();
@@ -352,7 +352,7 @@ bool InputManager::AddGamepad( Sint32 gamepadIndex )
 bool InputManager::RemoveGamepad( Sint32 gamepadID )
 {
 	auto gamepadRemoved = std::erase_if(
-		m_mapGameControllers, [ & ]( auto& gamepad ) { return gamepad.second->CheckJoystickID(  gamepadID  ); } );
+		m_mapGameControllers, [ & ]( auto& gamepad ) { return gamepad.second->CheckJoystickID( gamepadID ); } );
 
 	if ( gamepadRemoved > 0 )
 	{

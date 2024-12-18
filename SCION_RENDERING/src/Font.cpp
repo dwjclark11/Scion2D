@@ -9,7 +9,7 @@ Font::Font( GLuint fontAtlasID, int width, int height, float fontSize, void* dat
 	, m_Width{ width }
 	, m_Height{ height }
 	, m_FontSize{ fontSize }
-	, m_pData{ std::move(data) }
+	, m_pData{ std::move( data ) }
 {
 }
 

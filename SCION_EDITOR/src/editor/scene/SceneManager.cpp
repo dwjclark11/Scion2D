@@ -88,7 +88,7 @@ void SceneManager::SetTileset( const std::string& sTileset )
 	if ( !m_pToolManager )
 		return;
 
-	m_pToolManager->SetToolsCurrentTileset(sTileset);
+	m_pToolManager->SetToolsCurrentTileset( sTileset );
 }
 
 } // namespace SCION_EDITOR

@@ -64,4 +64,4 @@ inline void AbstractCommandManager<Cmds...>::RunRedo_Impl( TCmd& undoCmd )
 	undoCmd.redo();
 }
 
-}
+} // namespace SCION_EDITOR

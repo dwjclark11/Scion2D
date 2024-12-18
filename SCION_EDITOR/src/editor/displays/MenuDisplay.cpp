@@ -17,12 +17,12 @@ namespace SCION_EDITOR
 {
 void MenuDisplay::Draw()
 {
-	if (ImGui::BeginMainMenuBar())
+	if ( ImGui::BeginMainMenuBar() )
 	{
 		if ( ImGui::BeginMenu( ICON_FA_FILE " File" ) )
 		{
 			ImGui::InlineLabel( ICON_FA_FILE_ALT, 32.f );
-			if (ImGui::MenuItem("New", "Ctrl + N"))
+			if ( ImGui::MenuItem( "New", "Ctrl + N" ) )
 			{
 				SCION_LOG( "NEW PRESSED" );
 			}
@@ -33,7 +33,7 @@ void MenuDisplay::Draw()
 				SCION_FILESYSTEM::FileDialog fd{};
 				auto file = fd.OpenFileDialog( "Open tilemap test", SDL_GetBasePath(), { "*.json" } );
 
-				if (!file.empty())
+				if ( !file.empty() )
 				{
 					auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
 					if ( pCurrentScene )
@@ -55,13 +55,13 @@ void MenuDisplay::Draw()
 			{
 				SCION_FILESYSTEM::FileDialog fd{};
 				auto file = fd.SaveFileDialog( "Save Tilemap test", SDL_GetBasePath(), { "*.json" } );
-				if (!file.empty())
+				if ( !file.empty() )
 				{
 					auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
-					if (pCurrentScene)
+					if ( pCurrentScene )
 					{
 						SCION_CORE::Loaders::TilemapLoader tl{};
-						if (!tl.SaveTilemap(pCurrentScene->GetRegistry(), file, true))
+						if ( !tl.SaveTilemap( pCurrentScene->GetRegistry(), file, true ) )
 						{
 							SCION_ERROR( "Failed to save tilemap." );
 						}
@@ -74,9 +74,9 @@ void MenuDisplay::Draw()
 			}
 
 			ImGui::InlineLabel( ICON_FA_WINDOW_CLOSE, 32.f );
-			if ( ImGui::MenuItem("Exit") )
+			if ( ImGui::MenuItem( "Exit" ) )
 			{
-				SCION_LOG( "SHOULD EVENTUALLY EXIT!" );				
+				SCION_LOG( "SHOULD EVENTUALLY EXIT!" );
 			}
 
 			ImGui::EndMenu();
@@ -114,7 +114,7 @@ void MenuDisplay::Draw()
 
 		if ( ImGui::BeginMenu( ICON_FA_VIDEO " Scene" ) )
 		{
-			if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene())
+			if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene() )
 			{
 				ImGui::Text( "Current Scene" );
 				if ( ImGui::TreeNode( "Canvas" ) )
@@ -122,7 +122,7 @@ void MenuDisplay::Draw()
 					auto& canvas = pCurrentScene->GetCanvas();
 
 					ImGui::InlineLabel( "width" );
-					if (ImGui::InputInt("##_width", &canvas.width, canvas.tileWidth, canvas.tileWidth))
+					if ( ImGui::InputInt( "##_width", &canvas.width, canvas.tileWidth, canvas.tileWidth ) )
 					{
 						if ( canvas.width < 640 )
 							canvas.width = 640;
@@ -130,7 +130,7 @@ void MenuDisplay::Draw()
 					ImGui::ItemToolTip( "Canvas Width - Clamped minimum = 640" );
 
 					ImGui::InlineLabel( "height" );
-					if (ImGui::InputInt("##_height", &canvas.height, canvas.tileHeight, canvas.tileHeight))
+					if ( ImGui::InputInt( "##_height", &canvas.height, canvas.tileHeight, canvas.tileHeight ) )
 					{
 						if ( canvas.height < 320 )
 							canvas.height = 320;
@@ -138,14 +138,14 @@ void MenuDisplay::Draw()
 					ImGui::ItemToolTip( "Canvas Height - Clamped minimum = 320" );
 
 					ImGui::InlineLabel( "tile width" );
-					if (ImGui::InputInt("##tile_width", &canvas.tileWidth, 8, 8))
+					if ( ImGui::InputInt( "##tile_width", &canvas.tileWidth, 8, 8 ) )
 					{
 						canvas.tileWidth = std::clamp( canvas.tileWidth, 8, 128 );
 					}
 					ImGui::ItemToolTip( "Tile Width - Range [8 : 128]" );
 
 					ImGui::InlineLabel( "tile height" );
-					if (ImGui::InputInt("##tile_height", &canvas.tileHeight, 8, 8))
+					if ( ImGui::InputInt( "##tile_height", &canvas.tileHeight, 8, 8 ) )
 					{
 						canvas.tileHeight = std::clamp( canvas.tileHeight, 8, 128 );
 					}
@@ -154,21 +154,21 @@ void MenuDisplay::Draw()
 					ImGui::TreePop();
 				}
 			}
-		
+
 			ImGui::EndMenu();
 		}
 
 		if ( ImGui::BeginMenu( ICON_FA_COG " Settings" ) )
 		{
-			if (ImGui::TreeNode("Physics"))
+			if ( ImGui::TreeNode( "Physics" ) )
 			{
 				ImGui::Separator();
 				auto& coreGlobals = CORE_GLOBALS();
 				bool bEnablePhysics = coreGlobals.IsPhysicsEnabled();
 				ImGui::InlineLabel( "Enable Physics", 176.f );
-				if (ImGui::Checkbox("##enable_physics", &bEnablePhysics))
+				if ( ImGui::Checkbox( "##enable_physics", &bEnablePhysics ) )
 				{
-					if (bEnablePhysics)
+					if ( bEnablePhysics )
 						coreGlobals.EnablePhysics();
 					else
 						coreGlobals.DisablePhysics();
@@ -184,7 +184,7 @@ void MenuDisplay::Draw()
 				}
 
 				ImGui::InlineLabel( "Velocity Iterations", 176.f );
-				if (ImGui::InputInt("##VelocityIterations", &velocityIterations, 1, 1))
+				if ( ImGui::InputInt( "##VelocityIterations", &velocityIterations, 1, 1 ) )
 				{
 					coreGlobals.SetVelocityIterations( velocityIterations );
 				}
@@ -201,11 +201,12 @@ void MenuDisplay::Draw()
 
 		if ( ImGui::BeginMenu( ICON_FA_QUESTION_CIRCLE " Help" ) )
 		{
-			if (ImGui::TreeNode("About Scion2D"))
+			if ( ImGui::TreeNode( "About Scion2D" ) )
 			{
 				ImGui::Separator();
 				ImGui::Text( "Scion2D is a simple 2D game engine and editor written in C++." );
-				ImGui::Text( "The goal of the engine is to be able to quickly create games and learn more about C++ Programming." );
+				ImGui::Text( "The goal of the engine is to be able to quickly create games and learn more about C++ "
+							 "Programming." );
 				ImGui::Text( "By Dustin Clark and all contributors." );
 				ImGui::AddSpaces( 2 );
 				ImGui::Text( "Helpful Links: " );

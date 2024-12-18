@@ -50,7 +50,7 @@ void CreateTileToolAddCmd::undo()
 	}
 
 	SCION_ASSERT( entityToRemove != entt::null && "Entity should not be null." );
-	if (entityToRemove != entt::null)
+	if ( entityToRemove != entt::null )
 	{
 		Entity ent{ *pRegistry, entityToRemove };
 		ent.Kill();
@@ -77,27 +77,27 @@ void CreateTileToolAddCmd::redo()
 
 	Entity tile{ *pRegistry, "", "" };
 	tile.AddComponent<TransformComponent>( pTile->transform );
-	tile.AddComponent<SpriteComponent>( pTile->sprite);
+	tile.AddComponent<SpriteComponent>( pTile->sprite );
 	tile.AddComponent<TileComponent>( static_cast<std::uint32_t>( tile.GetEntity() ) );
 
-	if (pTile->bAnimation)
+	if ( pTile->bAnimation )
 	{
 		tile.AddComponent<AnimationComponent>( pTile->animation );
 	}
 
-	if ( pTile->bCollider)
+	if ( pTile->bCollider )
 	{
-		tile.AddComponent<BoxColliderComponent>( pTile->boxCollider);
+		tile.AddComponent<BoxColliderComponent>( pTile->boxCollider );
 	}
 
-	if ( pTile->bCircle)
+	if ( pTile->bCircle )
 	{
-		tile.AddComponent<CircleColliderComponent>( pTile->circleCollider);
+		tile.AddComponent<CircleColliderComponent>( pTile->circleCollider );
 	}
 
-	if ( pTile->bPhysics)
+	if ( pTile->bPhysics )
 	{
-		tile.AddComponent<PhysicsComponent>( pTile->physics);
+		tile.AddComponent<PhysicsComponent>( pTile->physics );
 	}
 }
 

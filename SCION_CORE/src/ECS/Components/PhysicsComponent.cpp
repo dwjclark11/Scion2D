@@ -400,13 +400,12 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 		"set_filter_category",
 		[]( PhysicsComponent& pc ) {
 			auto body = pc.GetBody();
-			if (!body)
+			if ( !body )
 			{
 				return;
 			}
-
 		}
 
-		);
+	);
 }
 } // namespace SCION_CORE::ECS

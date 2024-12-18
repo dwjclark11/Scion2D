@@ -4,7 +4,10 @@ namespace SCION_WINDOWING::Inputs
 {
 struct Button
 {
-	bool bIsPressed{ false }, bJustPressed{ false }, bJustReleased{ false };
+	bool bIsPressed{ false };
+	bool bJustPressed{ false };
+	bool bJustReleased{ false };
+
 	void Update( bool bPressed );
 	void Reset();
 };

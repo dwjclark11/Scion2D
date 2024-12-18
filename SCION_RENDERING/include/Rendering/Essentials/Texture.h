@@ -17,10 +17,12 @@ class Texture
 
   private:
 	GLuint m_TextureID;
-	int m_Width, m_Height;
+	int m_Width;
+	int m_Height;
 	std::string m_sPath;
 	TextureType m_eType;
-	bool m_bTileset, m_bEditorTexture;
+	bool m_bTileset;
+	bool m_bEditorTexture;
 
   public:
 	Texture();
@@ -36,7 +38,6 @@ class Texture
 
 	inline const bool IsEditorTexture() const { return m_bEditorTexture; }
 	inline void SetIsEditorTexture( bool bIsEditorTexture ) { m_bEditorTexture = bIsEditorTexture; }
-
 
 	void Bind();
 	void Unbind();

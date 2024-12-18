@@ -14,7 +14,7 @@ bool ObjectData::AddContact( const ObjectData& objectData )
 	if ( objectData.tag == tag && objectData.group == group )
 		return false;
 
-	if (bIsFriendly && objectData.bIsFriendly && bTrigger && objectData.bTrigger)
+	if ( bIsFriendly && objectData.bIsFriendly && bTrigger && objectData.bTrigger )
 		return false;
 
 	auto contactItr = std::find_if( contactEntities.begin(), contactEntities.end(), [ & ]( ObjectData& contactInfo ) {

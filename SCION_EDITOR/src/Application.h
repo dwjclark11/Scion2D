@@ -35,7 +35,6 @@ class Application
 	void End();
 	void RenderImGui();
 
-
 	void RegisterEditorMetaFunctions();
 
 	Application();

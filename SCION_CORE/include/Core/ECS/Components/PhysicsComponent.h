@@ -12,18 +12,28 @@ namespace SCION_CORE::ECS
 struct PhysicsAttributes
 {
 	SCION_PHYSICS::RigidBodyType eType{ SCION_PHYSICS::RigidBodyType::STATIC };
-	float density{ 1.f }, friction{ 0.2f }, restitution{ 0.2f };
-	float restitutionThreshold{ 1.f }, radius{ 0.f }, gravityScale{ 1.f };
+	float density{ 1.f };
+	float friction{ 0.2f };
+	float restitution{ 0.2f };
+	float restitutionThreshold{ 1.f };
+	float radius{ 0.f };
+	float gravityScale{ 1.f };
 
-	glm::vec2 position{ 0.f }, scale{ 1.f }, boxSize{ 0.f }, offset{ 0.f };
-	bool bCircle{ false }, bBoxShape{ true }, bFixedRotation{ true }, bIsSensor{ false };
+	glm::vec2 position{ 0.f };
+	glm::vec2 scale{ 1.f };
+	glm::vec2 boxSize{ 0.f };
+	glm::vec2 offset{ 0.f };
+	bool bCircle{ false };
+	bool bBoxShape{ true };
+	bool bFixedRotation{ true };
+	bool bIsSensor{ false };
 	bool bIsBullet{ false };
 
 	/*
-	* Filters - This is used to filter collisions on shapes.
-	* It affects shape-vs-shape collision and shape-versus-query collision (such as b2World_CastRay).
-	* See https://box2d.org/documentation/group__shape.html#structb2_filter for more information.
-	*/
+	 * Filters - This is used to filter collisions on shapes.
+	 * It affects shape-vs-shape collision and shape-versus-query collision (such as b2World_CastRay).
+	 * See https://box2d.org/documentation/group__shape.html#structb2_filter for more information.
+	 */
 	uint16_t filterCategory{ 0 };
 	uint16_t filterMask{ 0 };
 	int16_t groupIndex{ 0 };

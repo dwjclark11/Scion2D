@@ -27,5 +27,4 @@ inline void DrawComponentsUtil::RegisterUIComponent()
 		.template func<&DrawEntityComponentInfo<TComponent>>( "DrawEntityComponentInfo"_hs );
 }
 
-
-}
+} // namespace SCION_EDITOR

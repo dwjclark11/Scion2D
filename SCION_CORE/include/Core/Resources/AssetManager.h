@@ -50,14 +50,14 @@ class AssetManager
 					 bool bTileset = false );
 
 	/*
-	* @brief Checks to see if the texture exists, and if not, creates and loads the texture into the asset manager.
-	* @param std::string for the texture name to be used as the key.
-	* @param const unsigned char* this is the image data needed to be converted to an OpenGL texture.
-	* @param size_t length, this is the size of the image data array passed in. 
-	* @param A bool value to determine if it is pixel art. That controls the type of Min/Mag filter to use.
-	* @param A bool value to determine if the texture is being used as a tileset.
-	* @return Returns true if the texture was created and loaded successfully, false otherwise. 
-	*/
+	 * @brief Checks to see if the texture exists, and if not, creates and loads the texture into the asset manager.
+	 * @param std::string for the texture name to be used as the key.
+	 * @param const unsigned char* this is the image data needed to be converted to an OpenGL texture.
+	 * @param size_t length, this is the size of the image data array passed in.
+	 * @param A bool value to determine if it is pixel art. That controls the type of Min/Mag filter to use.
+	 * @param A bool value to determine if the texture is being used as a tileset.
+	 * @return Returns true if the texture was created and loaded successfully, false otherwise.
+	 */
 	bool AddTextureFromMemory( const std::string& textureName, const unsigned char* imageData, size_t length,
 							   bool pixelArt = true, bool bTileset = false );
 	/*
@@ -165,35 +165,35 @@ class AssetManager
 	}
 
 	/*
-	* @brief Grab all the asset key names for the specific asset type.
-	* @param Takes in an enum for the desired AssetType.
-	* @return Returns an std::vector of strings of the asset names.
-	*/
+	 * @brief Grab all the asset key names for the specific asset type.
+	 * @param Takes in an enum for the desired AssetType.
+	 * @return Returns an std::vector of strings of the asset names.
+	 */
 	std::vector<std::string> GetAssetKeyNames( SCION_UTIL::AssetType eAssetType ) const;
 
 	/*
-	* @brief Try to change the name of the asset based on the asset type.
-	* @param std::string of the old asset name.
-	* @param std::string of the new asset name.
-	* @param An enum of the asset type.
-	* @return Returns true if the name was changed successfully, false otherwise.
-	*/
+	 * @brief Try to change the name of the asset based on the asset type.
+	 * @param std::string of the old asset name.
+	 * @param std::string of the new asset name.
+	 * @param An enum of the asset type.
+	 * @return Returns true if the name was changed successfully, false otherwise.
+	 */
 	bool ChangeAssetName( const std::string& sOldName, const std::string& sNewName, SCION_UTIL::AssetType eAssetType );
-	
+
 	/*
-	* @brief Checks to see if the asset exists.
-	* @param std::string of the name to check.
-	* @param an enum of the asset type to check.
-	* @return Returns true if the asset exists, false otherwise.
-	*/
+	 * @brief Checks to see if the asset exists.
+	 * @param std::string of the name to check.
+	 * @param an enum of the asset type to check.
+	 * @return Returns true if the asset exists, false otherwise.
+	 */
 	bool CheckHasAsset( const std::string& sNameCheck, SCION_UTIL::AssetType eAssetType );
 
 	/*
-	* @brief Checks to see if the asset exists based on it's name and type. Then deletes the asset.
-	* @param std::string of the name to check.
-	* @param an enum of the asset type to check.
-	* @return Returns true if the asset was deleted successfully, false otherwise.
-	*/
+	 * @brief Checks to see if the asset exists based on it's name and type. Then deletes the asset.
+	 * @param std::string of the name to check.
+	 * @param an enum of the asset type to check.
+	 * @return Returns true if the asset was deleted successfully, false otherwise.
+	 */
 	bool DeleteAsset( const std::string& sAssetName, SCION_UTIL::AssetType eAssetType );
 
 	/*

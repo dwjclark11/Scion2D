@@ -7,46 +7,62 @@ namespace SCION_RENDERING
 {
 struct Batch
 {
-	GLuint numIndices{ 0 }, offset{ 0 }, textureID{ 0 };
+	GLuint numIndices{ 0 };
+	GLuint offset{ 0 };
+	GLuint textureID{ 0 };
 };
 
 struct LineBatch
 {
-	GLuint offset{ 2 }, numVertices{ 0 };
+	GLuint offset{ 2 };
+	GLuint numVertices{ 0 };
 	float lineWidth{ 1.f };
 };
 
 struct SpriteGlyph
 {
-	Vertex topLeft, bottomLeft, topRight, bottomRight;
+	Vertex topLeft;
+	Vertex bottomLeft;
+	Vertex topRight;
+	Vertex bottomRight;
 	int layer;
 	GLuint textureID;
 };
 
 struct LineGlyph
 {
-	Vertex p1, p2;
+	Vertex p1;
+	Vertex p2;
 	float lineWidth;
 };
 
 struct RectBatch
 {
-	GLuint numIndices{ 0 }, offset{ 0 };
+	GLuint numIndices{ 0 };
+	GLuint offset{ 0 };
 };
 
 struct RectGlyph
 {
-	Vertex topLeft, bottomLeft, topRight, bottomRight;
+	Vertex topLeft;
+	Vertex bottomLeft;
+	Vertex topRight;
+	Vertex bottomRight;
 };
 
 struct CircleGlyph
 {
-	CircleVertex topLeft, bottomLeft, topRight, bottomRight;
+	CircleVertex topLeft;
+	CircleVertex bottomLeft;
+	CircleVertex topRight;
+	CircleVertex bottomRight;
 };
 
 struct TextBatch
 {
-	GLuint offset{ 0 }, numVertices{ 0 }, fontAtlasID{ 0 };
+	GLuint offset{ 0 };
+	GLuint numVertices{ 0 };
+	GLuint fontAtlasID{ 0 };
 };
 
 struct TextGlyph

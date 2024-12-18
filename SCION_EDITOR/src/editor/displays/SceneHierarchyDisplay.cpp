@@ -17,7 +17,7 @@ using namespace entt::literals;
 namespace SCION_EDITOR
 {
 
-auto create_entity = [ ]( SCION_EDITOR::SceneObject& currentScene ) {
+auto create_entity = []( SCION_EDITOR::SceneObject& currentScene ) {
 	Entity newEntity{ currentScene.GetRegistry(), "GameObject", "" };
 	newEntity.AddComponent<TransformComponent>();
 };
@@ -147,7 +147,7 @@ void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool*
 						ImGui::CloseCurrentPopup();
 					}
 				}
-				else 
+				else
 				{
 					storage->push( entity.GetEntity() );
 					*bAddComponent = false;
@@ -269,7 +269,7 @@ void SceneHierarchyDisplay::Draw()
 	for ( auto entity : sceneEntities )
 	{
 		Entity ent{ registry, entity };
-		if ( !m_TextFilter.PassFilter(ent.GetName().c_str() ))
+		if ( !m_TextFilter.PassFilter( ent.GetName().c_str() ) )
 			continue;
 
 		if ( OpenTreeNode( ent ) )

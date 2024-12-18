@@ -6,15 +6,6 @@
 
 using namespace SCION_RESOURCES;
 
-//void SCION_CORE::ECS::SpriteComponent::generate_uvs( int textureWidth, int textureHeight )
-//{
-//	uvs.uv_width = width / textureWidth;
-//	uvs.uv_height = height / textureHeight;
-//
-//	uvs.u = start_x * uvs.uv_width;
-//	uvs.v = start_y * uvs.uv_height;
-//}
-
 std::string SCION_CORE::ECS::SpriteComponent::to_string() const
 {
 	std::stringstream ss;
@@ -116,7 +107,7 @@ void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
 				return;
 			}
 
-			SCION_CORE::GenerateUVs(sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+			SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 		},
 		"inspect_uvs",
 		[]( SpriteComponent& sprite ) {

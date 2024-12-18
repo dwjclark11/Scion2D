@@ -7,13 +7,11 @@
 #include "Rendering/Essentials/Vertex.h"
 #include "editor/scene/SceneObject.h"
 
-
 namespace SCION_EDITOR
 {
 GridSystem::GridSystem()
 	: m_pBatchRenderer{ std::make_unique<SCION_RENDERING::RectBatchRenderer>() }
 {
-
 }
 
 void GridSystem::Update( SceneObject& currentScene, SCION_RENDERING::Camera2D& camera )
@@ -23,7 +21,7 @@ void GridSystem::Update( SceneObject& currentScene, SCION_RENDERING::Camera2D& c
 	auto camMat = camera.GetCameraMatrix();
 
 	auto pColorShader = assetManager.GetShader( "color" );
-	
+
 	pColorShader->Enable();
 	pColorShader->SetUniformMat4( "uProjection", camMat );
 
@@ -37,25 +35,21 @@ void GridSystem::Update( SceneObject& currentScene, SCION_RENDERING::Camera2D& c
 
 	SCION_RENDERING::Color color{};
 
-	for (int row = 0; row < rows; row++)
+	for ( int row = 0; row < rows; row++ )
 	{
-		for (int col = 0; col < cols; col++)
+		for ( int col = 0; col < cols; col++ )
 		{
 			// Create the checkboard colors
 			if ( ( col - row ) % 2 == 0 && ( row - col ) % 2 == 0 )
 				color = { 125, 125, 125, 70 };
-			else 
+			else
 				color = { 200, 200, 200, 70 };
 
 			SCION_RENDERING::Rect rect{
-				.position = glm::vec2{ 
-					static_cast<float>(col * tileWidth),
-					static_cast<float>(row * tileHeight)
-				},
-				.width = static_cast<float>(tileWidth),
-				.height = static_cast<float>(tileHeight),
-				.color = color
-			};
+				.position = glm::vec2{ static_cast<float>( col * tileWidth ), static_cast<float>( row * tileHeight ) },
+				.width = static_cast<float>( tileWidth ),
+				.height = static_cast<float>( tileHeight ),
+				.color = color };
 
 			m_pBatchRenderer->AddRect( rect );
 		}

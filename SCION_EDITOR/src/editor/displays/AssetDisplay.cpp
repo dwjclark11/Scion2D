@@ -156,7 +156,7 @@ void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 		else
 		{
 			auto& assetManager = MAIN_REGISTRY().GetAssetManager();
-			if (!assetManager.DeleteAsset(sAssetName, m_eSelectedType))
+			if ( !assetManager.DeleteAsset( sAssetName, m_eSelectedType ) )
 			{
 				SCION_ERROR( "Failed to delete asset {}.", sAssetName );
 			}

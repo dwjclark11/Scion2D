@@ -6,7 +6,7 @@ namespace SCION_RENDERING
 {
 class RectBatchRenderer;
 class Camera2D;
-}
+} // namespace SCION_RENDERING
 
 namespace SCION_EDITOR
 {

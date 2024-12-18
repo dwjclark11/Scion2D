@@ -20,7 +20,7 @@ class TileDetailsDisplay : public IDisplay
 	bool m_bRename;
 
   private:
-	void DrawSpriteComponent(SCION_CORE::ECS::SpriteComponent& sprite, SceneObject* pScene);
+	void DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& sprite, SceneObject* pScene );
 
   public:
 	TileDetailsDisplay();

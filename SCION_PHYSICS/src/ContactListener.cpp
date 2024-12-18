@@ -48,7 +48,7 @@ void ContactListener::BeginContact( b2Contact* contact )
 	}
 	catch ( const std::bad_any_cast& ex )
 	{
-		//SCION_ERROR( "Failed to cast user contacts: {}", ex.what() );
+		// SCION_ERROR( "Failed to cast user contacts: {}", ex.what() );
 		SetUserContacts( nullptr, nullptr );
 		// Eat this exception for now
 	}
@@ -91,8 +91,8 @@ void ContactListener::EndContact( b2Contact* contact )
 	}
 	catch ( const std::bad_any_cast& ex )
 	{
-		//SCION_ERROR( "Failed to cast user contacts: {}", ex.what() );
-		// Eat this exception for now
+		// SCION_ERROR( "Failed to cast user contacts: {}", ex.what() );
+		//  Eat this exception for now
 	}
 
 	SetUserContacts( nullptr, nullptr );

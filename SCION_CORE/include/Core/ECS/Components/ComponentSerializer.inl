@@ -14,4 +14,4 @@ inline void ComponentSerializer::Deserialize( const TTable& table, TComponent& c
 	DeserializeComponent( table, component );
 }
 
-}
+} // namespace SCION_CORE::ECS

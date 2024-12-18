@@ -31,7 +31,7 @@ bool JSONSerializer::StartDocument()
 {
 	SCION_ASSERT( m_NumObjectsStarted == 0 && "Document has already been started. Please Reset the serializer." );
 
-	if (m_NumObjectsStarted != 0)
+	if ( m_NumObjectsStarted != 0 )
 	{
 		SCION_ERROR( "Document has already been started. Please Reset the serializer." );
 		return false;
@@ -49,7 +49,8 @@ bool JSONSerializer::EndDocument()
 
 	if ( m_NumObjectsStarted != 1 )
 	{
-		SCION_ERROR( "Failed to end document correctly. There should only be one object open. Did you forget to call EndObject()?" );
+		SCION_ERROR( "Failed to end document correctly. There should only be one object open. Did you forget to call "
+					 "EndObject()?" );
 		return false;
 	}
 

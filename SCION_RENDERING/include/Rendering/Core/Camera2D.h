@@ -30,19 +30,19 @@ class Camera2D
 	void Update();
 
 	/*
-	* @brief Resets all camera parameters back to default values.
-	*/
+	 * @brief Resets all camera parameters back to default values.
+	 */
 	void Reset();
 
 	/*
-	* @brief Resizes the width and the height of the camera and
-	* reinitializes the camera matrix.
-	*/
+	 * @brief Resizes the width and the height of the camera and
+	 * reinitializes the camera matrix.
+	 */
 	void Resize( int newWidth, int newHeight );
 
 	/*
-	* @brief Converts the passed in screen coordinates to world coordinates.
-	*/
+	 * @brief Converts the passed in screen coordinates to world coordinates.
+	 */
 	glm::vec2 ScreenCoordsToWorld( const glm::vec2& screenCoords ) const;
 
 	/*

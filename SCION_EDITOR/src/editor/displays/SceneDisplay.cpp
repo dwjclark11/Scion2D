@@ -55,8 +55,8 @@ void SceneDisplay::LoadScene()
 	pPhysicsWorld->SetContactListener( pContactListener.get() );
 
 	// Add necessary systems
-	auto scriptSystem = runtimeRegistry.AddToContext<std::shared_ptr<ScriptingSystem>>(
-		std::make_shared<ScriptingSystem>( ) );
+	auto scriptSystem =
+		runtimeRegistry.AddToContext<std::shared_ptr<ScriptingSystem>>( std::make_shared<ScriptingSystem>() );
 
 	auto lua = runtimeRegistry.AddToContext<std::shared_ptr<sol::state>>( std::make_shared<sol::state>() );
 
@@ -77,14 +77,14 @@ void SceneDisplay::LoadScene()
 	// We need to initialize all of the physics entities
 	auto physicsEntities = runtimeRegistry.GetRegistry().view<PhysicsComponent>();
 
-	for (auto entity : physicsEntities)
+	for ( auto entity : physicsEntities )
 	{
 		Entity ent{ runtimeRegistry, entity };
 
 		bool bBoxCollider{ ent.HasComponent<BoxColliderComponent>() };
 		bool bCircleCollider{ ent.HasComponent<CircleColliderComponent>() };
 
-		if (!bBoxCollider && !bCircleCollider)
+		if ( !bBoxCollider && !bCircleCollider )
 		{
 			SCION_ERROR( "Entity must have a box or circle collider component to initialize physics on it." );
 			continue;
@@ -93,14 +93,14 @@ void SceneDisplay::LoadScene()
 		auto& physics = ent.GetComponent<PhysicsComponent>();
 		auto& physicsAttributes = physics.GetChangableAttributes();
 
-		if (bBoxCollider)
+		if ( bBoxCollider )
 		{
 			const auto& boxCollider = ent.GetComponent<BoxColliderComponent>();
 			physicsAttributes.boxSize = glm::vec2{ boxCollider.width, boxCollider.height };
 			physicsAttributes.offset = boxCollider.offset;
 		}
 
-		else if (bCircleCollider)
+		else if ( bCircleCollider )
 		{
 			const auto& circleCollider = ent.GetComponent<CircleColliderComponent>();
 			physicsAttributes.radius = circleCollider.radius;
@@ -113,14 +113,13 @@ void SceneDisplay::LoadScene()
 		physicsAttributes.objectData.entityID = static_cast<std::int32_t>( entity );
 
 		/*
-		* TODO: Set Filters/Masks/Group Index
-		*/
+		 * TODO: Set Filters/Masks/Group Index
+		 */
 
-		physics.Init( pPhysicsWorld, 640, 480);
-				
+		physics.Init( pPhysicsWorld, 640, 480 );
 	}
 
-	if ( !scriptSystem->LoadMainScript( runtimeRegistry, * lua ) )
+	if ( !scriptSystem->LoadMainScript( runtimeRegistry, *lua ) )
 	{
 		SCION_ERROR( "Failed to load the main lua script!" );
 		return;
@@ -255,7 +254,6 @@ void SceneDisplay::Draw()
 	DrawToolbar();
 	RenderScene();
 
-	
 	if ( ImGui::BeginChild(
 			 "##SceneChild", ImVec2{ 0.f, 0.f }, ImGuiChildFlags_None, ImGuiWindowFlags_NoScrollWithMouse ) )
 	{

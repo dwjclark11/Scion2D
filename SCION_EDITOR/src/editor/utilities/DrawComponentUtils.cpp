@@ -362,10 +362,10 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& 
 			}
 		}
 
-		if (physicsAttributes.filterMask > 0)
+		if ( physicsAttributes.filterMask > 0 )
 		{
 			ImGui::InlineLabel( "applied masks" );
-			if ( ImGui::BeginListBox( "##applied_masks", ImVec2{0.f, 32.f} ) )
+			if ( ImGui::BeginListBox( "##applied_masks", ImVec2{ 0.f, 32.f } ) )
 			{
 				auto setMaskBits{ GetAllSetBits( physicsAttributes.filterMask ) };
 				for ( auto mask : setMaskBits )
@@ -426,7 +426,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& 
 
 		if ( physicsAttributes.bBoxShape && !physicsAttributes.bCircle )
 		{
-			ImGui::SameLine(0, 32.f);
+			ImGui::SameLine( 0, 32.f );
 			ImGui::TextColored( ImVec4{ 1.f, 1.f, 0.f, 1.f }, "Must have a Box Collider Component." );
 		}
 
@@ -440,7 +440,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& 
 
 		if ( !physicsAttributes.bBoxShape && physicsAttributes.bCircle )
 		{
-			ImGui::SameLine(0, 32.f);
+			ImGui::SameLine( 0, 32.f );
 			ImGui::TextColored( ImVec4{ 1.f, 1.f, 0.f, 1.f }, "Must have a Circle Collider Component." );
 		}
 
@@ -522,11 +522,11 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TextComponent& tex
 		std::string sTextBuffer{ textComponent.sTextStr };
 		ImGui::InlineLabel( "text" );
 		if ( ImGui::InputText(
-				 "##_textStr", sTextBuffer.data(), sizeof( char ) * 1024, 0/*ImGuiInputTextFlags_EnterReturnsTrue*/ ) )
+				 "##_textStr", sTextBuffer.data(), sizeof( char ) * 1024, 0 /*ImGuiInputTextFlags_EnterReturnsTrue*/ ) )
 		{
 			textComponent.sTextStr = std::string{ sTextBuffer.data() };
 		}
-		
+
 		std::string sFontName{ textComponent.sFontName };
 		ImGui::PushItemWidth( 164.f );
 		ImGui::InlineLabel( "font" );

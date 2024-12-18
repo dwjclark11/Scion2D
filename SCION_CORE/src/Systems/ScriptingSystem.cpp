@@ -388,7 +388,7 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 		sol::call_constructor,
 		sol::constructors<SCION_UTIL::RandomIntGenerator( uint32_t, uint32_t ), SCION_UTIL::RandomIntGenerator()>(),
 		"get_value",
-		&SCION_UTIL::RandomIntGenerator::GetValue);
+		&SCION_UTIL::RandomIntGenerator::GetValue );
 
 	lua.new_usertype<SCION_UTIL::RandomFloatGenerator>(
 		"RandomFloat",

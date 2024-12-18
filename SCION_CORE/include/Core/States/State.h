@@ -13,7 +13,8 @@ struct State
 	sol::protected_function handle_inputs{ sol::lua_nil };
 
 	sol::object variables{ sol::lua_nil };
-	bool bKillState{ false }, bAddState{ false };
+	bool bKillState{ false };
+	bool bAddState{ false };
 
 	static void CreateLuaStateBind( sol::state& lua );
 };

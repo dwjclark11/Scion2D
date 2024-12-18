@@ -10,7 +10,7 @@ class TilesetDisplay : public IDisplay
 	std::string m_sTileset{ "" };
 	int m_Selected{ -1 };
 
- protected:
+  protected:
 	virtual void DrawToolbar() override;
 
   public:

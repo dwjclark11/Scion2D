@@ -14,7 +14,7 @@ class ScriptingSystem
 	bool m_bMainLoaded;
 
   public:
-	ScriptingSystem( );
+	ScriptingSystem();
 	~ScriptingSystem() = default;
 
 	bool LoadMainScript( SCION_CORE::ECS::Registry& registry, sol::state& lua );

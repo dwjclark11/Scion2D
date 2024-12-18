@@ -30,18 +30,21 @@ struct UserData
 
 	function UpdateContacts()
 		local uda, udb = ContactListener.get_user_data()
-		if uda and udb then 
+		if uda and udb then
 			if uda.tag == "player" and udb.group == "spikes" then
 				RunSpikeDeath(uda, udb)
 			end
-		end 
+		end
 	end
 */
 
 struct ObjectData
 {
-	std::string tag{ "" }, group{ "" };
-	bool bCollider{ false }, bTrigger{ false }, bIsFriendly{ false };
+	std::string tag{ "" };
+	std::string group{ "" };
+	bool bCollider{ false };
+	bool bTrigger{ false };
+	bool bIsFriendly{ false };
 	std::uint32_t entityID{};
 	std::vector<ObjectData> contactEntities;
 

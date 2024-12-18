@@ -28,4 +28,4 @@ struct RectToolRemoveTilesCmd
 	void redo();
 };
 
-}
+} // namespace SCION_EDITOR

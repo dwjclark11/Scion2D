@@ -21,7 +21,7 @@ SceneObject::SceneObject( const std::string& sceneName )
 void SceneObject::CopySceneToRuntime()
 {
 	auto& registryToCopy = m_Registry.GetRegistry();
-	
+
 	for ( auto entityToCopy : registryToCopy.view<entt::entity>( entt::exclude<ScriptComponent> ) )
 	{
 		entt::entity newEntity = m_RuntimeRegistry.CreateEntity();

@@ -89,7 +89,7 @@ void ToolManager::SetTileToolStartCoords( int x, int y )
 {
 	for ( auto& [ eType, pTool ] : m_mapTools )
 	{
-		pTool->SetSpriteUVs(x, y);
+		pTool->SetSpriteUVs( x, y );
 	}
 }
 

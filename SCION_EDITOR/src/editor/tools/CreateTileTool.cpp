@@ -27,7 +27,7 @@ void CreateTileTool::CreateNewTile()
 	tile.AddComponent<TransformComponent>( m_pMouseTile->transform );
 	tile.AddComponent<SpriteComponent>( m_pMouseTile->sprite );
 
-if ( m_pMouseTile->bCollider )
+	if ( m_pMouseTile->bCollider )
 	{
 		tile.AddComponent<BoxColliderComponent>( m_pMouseTile->boxCollider );
 	}
@@ -70,7 +70,7 @@ void CreateTileTool::RemoveTile()
 		removedTile.transform = tileToRemove.GetComponent<TransformComponent>();
 		removedTile.sprite = tileToRemove.GetComponent<SpriteComponent>();
 
-		if (tileToRemove.HasComponent<BoxColliderComponent>())
+		if ( tileToRemove.HasComponent<BoxColliderComponent>() )
 		{
 			removedTile.bCollider = true;
 			removedTile.boxCollider = tileToRemove.GetComponent<BoxColliderComponent>();

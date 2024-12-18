@@ -7,8 +7,10 @@ namespace SCION_UTIL
 class Timer
 {
   private:
-	time_point<steady_clock> m_StartPoint, m_PausedPoint;
-	bool m_bIsRunning{ false }, m_bIsPaused{ false };
+	time_point<steady_clock> m_StartPoint;
+	time_point<steady_clock> m_PausedPoint;
+	bool m_bIsRunning{ false };
+	bool m_bIsPaused{ false };
 
   public:
 	Timer() = default;

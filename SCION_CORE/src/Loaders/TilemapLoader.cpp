@@ -113,13 +113,13 @@ bool TilemapLoader::LoadTilemapJSON( SCION_CORE::ECS::Registry& registry, const 
 	}
 
 	const rapidjson::Value& tilemap = doc[ "tilemap" ];
-	if (!tilemap.IsArray() || tilemap.Size() < 1)
+	if ( !tilemap.IsArray() || tilemap.Size() < 1 )
 	{
 		SCION_ERROR( "Failed to load tilemap: File: [{}] - There needs to be at least 1 tile.", sTilemapFile );
 		return false;
 	}
 
-	for (const auto& tile : tilemap.GetArray())
+	for ( const auto& tile : tilemap.GetArray() )
 	{
 		Entity newTile{ registry, "", "" };
 		const auto& components = tile[ "components" ];
@@ -132,9 +132,9 @@ bool TilemapLoader::LoadTilemapJSON( SCION_CORE::ECS::Registry& registry, const 
 		// Sprite
 		const auto& jsonSprite = components[ "sprite" ];
 		auto& sprite = newTile.AddComponent<SpriteComponent>();
-		DESERIALIZE_COMPONENT( jsonSprite, sprite);
+		DESERIALIZE_COMPONENT( jsonSprite, sprite );
 
-		if (components.HasMember("boxCollider"))
+		if ( components.HasMember( "boxCollider" ) )
 		{
 			const auto& jsonBoxCollider = components[ "boxCollider" ];
 			auto& boxCollider = newTile.AddComponent<BoxColliderComponent>();

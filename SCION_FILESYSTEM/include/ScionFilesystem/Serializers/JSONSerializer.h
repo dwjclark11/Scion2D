@@ -11,7 +11,7 @@ class JSONSerializer
 	rapidjson::StringBuffer m_StringBuffer;
 	std::unique_ptr<rapidjson::PrettyWriter<rapidjson::StringBuffer>> m_pWriter;
 	int m_NumObjectsStarted, m_NumArraysStarted;
-	
+
   public:
 	JSONSerializer( const std::string& sFilename );
 	~JSONSerializer();
@@ -22,8 +22,8 @@ class JSONSerializer
 	bool Reset( const std::string& sFilename );
 
 	JSONSerializer& StartNewObject( const std::string& key = "" );
-	JSONSerializer& EndObject( );
-	JSONSerializer& StartNewArray( const std::string& key);
+	JSONSerializer& EndObject();
+	JSONSerializer& StartNewArray( const std::string& key );
 	JSONSerializer& EndArray();
 
 	JSONSerializer& AddKeyValuePair( const std::string& key, const bool& value );
@@ -35,4 +35,3 @@ class JSONSerializer
 } // namespace SCION_FILESYSTEM
 
 #include "JSONSerializer.inl"
-

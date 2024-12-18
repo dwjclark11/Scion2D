@@ -12,7 +12,7 @@ using namespace SCION_CORE::ECS;
 namespace SCION_CORE::Systems
 {
 
-PhysicsSystem::PhysicsSystem( )
+PhysicsSystem::PhysicsSystem()
 {
 }
 

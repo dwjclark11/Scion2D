@@ -6,7 +6,6 @@
 #include "Logger/Logger.h"
 #include "editor/utilities/EditorUtilities.h"
 
-
 using namespace SCION_CORE::ECS;
 
 namespace SCION_EDITOR
@@ -22,12 +21,12 @@ void RectToolAddTilesCmd::undo()
 	}
 
 	auto tileView = pRegistry->GetRegistry().view<TileComponent, TransformComponent>();
-	for (const auto& tile : tiles)
+	for ( const auto& tile : tiles )
 	{
 		const auto& tilePos = tile.transform.position;
 		const auto layer = tile.sprite.layer;
 
-		for (auto entity : tileView)
+		for ( auto entity : tileView )
 		{
 			Entity checkedTile{ *pRegistry, entity };
 			const auto& transform = checkedTile.GetComponent<TransformComponent>();
@@ -36,10 +35,9 @@ void RectToolAddTilesCmd::undo()
 			if ( tilePos.x >= transform.position.x &&
 				 tilePos.x < transform.position.x + sprite.width * transform.scale.x &&
 				 tilePos.y >= transform.position.y &&
-				 tilePos.y < transform.position.y + sprite.height * transform.scale.y &&
-				 layer == sprite.layer )
+				 tilePos.y < transform.position.y + sprite.height * transform.scale.y && layer == sprite.layer )
 			{
-				if (entity != entt::null)
+				if ( entity != entt::null )
 				{
 					pRegistry->GetRegistry().destroy( entity );
 				}
@@ -60,7 +58,7 @@ void RectToolAddTilesCmd::redo()
 		return;
 	}
 
-	for (const auto& tile : tiles)
+	for ( const auto& tile : tiles )
 	{
 		Entity addedTile{ *pRegistry, "", "" };
 

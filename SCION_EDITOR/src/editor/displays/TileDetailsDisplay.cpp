@@ -84,7 +84,7 @@ void TileDetailsDisplay::DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& 
 	if ( bChanged )
 	{
 		auto pTileTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
-		if (pTileTool)
+		if ( pTileTool )
 		{
 			// Setting the sprite rect handles the UVs as well.
 			pTileTool->SetSpriteRect( glm::vec2{ sprite.width, sprite.height } );
@@ -199,7 +199,7 @@ void TileDetailsDisplay::Draw()
 			pCurrentScene->AddNewLayer();
 		}
 		ImGui::ItemToolTip( "Add Layer" );
-		
+
 		ImGui::AddSpaces( 2 );
 		ImGui::Separator();
 		ImGui::AddSpaces( 2 );
@@ -268,7 +268,7 @@ void TileDetailsDisplay::Draw()
 			ImGui::PushID( n );
 			ImGui::PushStyleColor( ImGuiCol_Button, BLACK_TRANSPARENT );
 			ImGui::PushStyleColor( ImGuiCol_ButtonActive, BLACK_TRANSPARENT );
-			if (ImGui::Button(spriteLayer.bVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH, { 24.f, 24.f }))
+			if ( ImGui::Button( spriteLayer.bVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH, { 24.f, 24.f } ) )
 			{
 				spriteLayer.bVisible = !spriteLayer.bVisible;
 			}

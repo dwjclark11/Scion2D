@@ -8,7 +8,10 @@ namespace SCION_CORE
 
 struct FollowCamParams
 {
-	float minX{ 0.f }, minY{ 0.f }, scale{ 1.f }, springback{ 1.f };
+	float minX{ 0.f };
+	float minY{ 0.f };
+	float scale{ 1.f };
+	float springback{ 1.f };
 	float maxX{ static_cast<float>( CoreEngineData::GetInstance().WindowWidth() ) };
 	float maxY{ static_cast<float>( CoreEngineData::GetInstance().WindowHeight() ) };
 };

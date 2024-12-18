@@ -63,8 +63,8 @@ void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDE
 
 		Rect rect{ .position = glm::vec2{ transform.position.x + boxCollider.offset.x,
 										  transform.position.y + boxCollider.offset.y },
-				   .width = static_cast<float>(boxCollider.width),
-				   .height = static_cast<float>(boxCollider.height),
+				   .width = static_cast<float>( boxCollider.width ),
+				   .height = static_cast<float>( boxCollider.height ),
 				   .color = color };
 
 		m_pRectRenderer->AddRect( rect, model );

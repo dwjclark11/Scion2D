@@ -141,7 +141,6 @@ void EditorStyleToolDisplay::DrawColorPicker()
 
 EditorStyleToolDisplay::EditorStyleToolDisplay()
 {
-
 }
 
 void EditorStyleToolDisplay::Draw()

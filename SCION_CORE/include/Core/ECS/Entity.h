@@ -9,7 +9,8 @@ class Entity
   private:
 	Registry& m_Registry;
 	entt::entity m_Entity;
-	std::string m_sName, m_sGroup;
+	std::string m_sName;
+	std::string m_sGroup;
 
   public:
 	Entity( Registry& registry );
@@ -85,7 +86,7 @@ template <typename TComponent>
 auto add_component( Entity& entity, const sol::table& comp, sol::this_state s );
 
 template <typename TComponent>
-auto add_component_default( Entity& entity);
+auto add_component_default( Entity& entity );
 
 template <typename TComponent>
 bool has_component( Entity& entity );

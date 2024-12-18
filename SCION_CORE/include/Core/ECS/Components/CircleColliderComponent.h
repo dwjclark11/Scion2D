@@ -7,7 +7,7 @@ namespace SCION_CORE::ECS
 struct CircleColliderComponent
 {
 	float radius{ 4.f };
-	glm::vec2 offset{ glm::vec2{ 0 } };
+	glm::vec2 offset{ 0.f };
 	bool bColliding{ false };
 
 	[[nodiscard]] std::string to_string() const;

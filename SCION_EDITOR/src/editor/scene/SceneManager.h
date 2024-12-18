@@ -18,7 +18,8 @@ class SceneManager
 {
   private:
 	std::map<std::string, std::shared_ptr<SCION_EDITOR::SceneObject>> m_mapScenes;
-	std::string m_sCurrentScene{ "" }, m_sCurrentTileset{ "" };
+	std::string m_sCurrentScene{ "" };
+	std::string m_sCurrentTileset{ "" };
 
 	std::unique_ptr<ToolManager> m_pToolManager{ nullptr };
 	std::unique_ptr<CommandManager> m_pCommandManager{ nullptr };

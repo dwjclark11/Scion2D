@@ -119,7 +119,7 @@ void TilesetDisplay::Draw()
 										 ImVec2{ vx, vy } ) )
 				{
 					m_Selected = id;
-					TOOL_MANAGER().SetTileToolStartCoords( j, i );					
+					TOOL_MANAGER().SetTileToolStartCoords( j, i );
 				}
 
 				ImGui::PopID();
