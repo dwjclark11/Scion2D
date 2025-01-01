@@ -15,7 +15,9 @@ template <typename TBatch, typename TGlyph>
 class Batcher
 {
   private:
-	GLuint m_VAO, m_VBO, m_IBO;
+	GLuint m_VAO;
+	GLuint m_VBO;
+	GLuint m_IBO;
 	bool m_bUseIBO;
 
   private:

@@ -10,10 +10,12 @@ class Shader
 {
   private:
 	GLuint m_ShaderProgramID;
-	std::string m_sVertexPath, m_sFragmentPath;
+	std::string m_sVertexPath;
+	std::string m_sFragmentPath;
 
 	std::unordered_map<std::string, GLuint> m_UniformLocationMap;
 
+  private:
 	GLuint GetUniformLocation( const std::string& uniformName );
 
   public:

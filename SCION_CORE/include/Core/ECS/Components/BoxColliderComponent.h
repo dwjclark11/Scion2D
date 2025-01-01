@@ -6,9 +6,13 @@ namespace SCION_CORE::ECS
 {
 struct BoxColliderComponent
 {
+	/* Width of the box collider. */
 	int width{ 4 };
+	/* Height of the box collider. */
 	int height{ 4 };
+	/* X/Y offset of the collider based on the TL position of the owner. */
 	glm::vec2 offset{ 0.f };
+	/* Is the Collider currently colliding? */
 	bool bColliding{ false };
 
 	[[nodiscard]] std::string to_string() const;

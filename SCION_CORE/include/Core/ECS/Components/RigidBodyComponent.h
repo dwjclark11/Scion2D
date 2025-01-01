@@ -10,7 +10,9 @@ namespace SCION_CORE::ECS
  */
 struct RigidBodyComponent
 {
+	/* The current velocity the the body is moving at. */
 	glm::vec2 currentVelocity{ 0.f };
+	/* The max velocity to clamp the object. */
 	glm::vec2 maxVelocity{ 0.f };
 
 	[[nodiscard]] std::string to_string() const;

@@ -7,11 +7,14 @@ namespace SCION_RENDERING
 class Camera2D
 {
   private:
-	int m_Width, m_Height;
+	int m_Width;
+	int m_Height;
 	float m_Scale;
 
-	glm::vec2 m_Position, m_ScreenOffset;
-	glm::mat4 m_CameraMatrix, m_OrthoProjection;
+	glm::vec2 m_Position;
+	glm::vec2 m_ScreenOffset;
+	glm::mat4 m_CameraMatrix;
+	glm::mat4 m_OrthoProjection;
 
 	bool m_bNeedsUpdate;
 
@@ -22,6 +25,7 @@ class Camera2D
 	Camera2D();
 	Camera2D( int width, int height );
 	~Camera2D();
+
 	/*
 	 * @brief Updates the camera's position, scale,
 	 * and rotation if needed. If there has been no changes,
@@ -74,6 +78,7 @@ class Camera2D
 	inline const float GetScale() const { return m_Scale; }
 	inline const int GetWidth() const { return m_Width; }
 	inline const int GetHeight() const { return m_Height; }
+
 	/*
 	 * @brief Get the camera projection based on the orthographic projection matrix.
 	 * @return Returns the camera matrix glm::mat4

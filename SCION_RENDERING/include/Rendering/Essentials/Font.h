@@ -7,14 +7,16 @@ namespace SCION_RENDERING
 {
 struct FontGlyph
 {
-	Vertex min, max;
+	Vertex min;
+	Vertex max;
 };
 
 class Font
 {
   private:
 	GLuint m_FontAtlasID;
-	int m_Width, m_Height;
+	int m_Width;
+	int m_Height;
 	float m_FontSize;
 	void* m_pData;
 

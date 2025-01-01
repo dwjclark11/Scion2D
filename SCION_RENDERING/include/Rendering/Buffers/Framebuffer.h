@@ -10,10 +10,13 @@ namespace SCION_RENDERING
 class Framebuffer
 {
   private:
-	GLuint m_FboID, m_RboID;
+	GLuint m_FboID;
+	GLuint m_RboID;
 	std::shared_ptr<Texture> m_pTexture;
-	int m_Width, m_Height;
-	bool m_bShouldResize, m_bUseRbo;
+	int m_Width;
+	int m_Height;
+	bool m_bShouldResize;
+	bool m_bUseRbo;
 
   private:
 	bool Initialize();

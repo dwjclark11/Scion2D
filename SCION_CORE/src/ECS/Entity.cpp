@@ -19,7 +19,7 @@ Entity::Entity( Registry& registry, const std::string& name, const std::string& 
 	, m_sGroup{ group }
 {
 	AddComponent<Identification>(
-		Identification{ .name = name, .group = group, .entity_id = static_cast<int32_t>( m_Entity ) } );
+		Identification{ .name = name, .group = group, .entity_id = static_cast<uint32_t>( m_Entity ) } );
 }
 Entity::Entity( Registry& registry, const entt::entity& entity )
 	: m_Registry( registry )
