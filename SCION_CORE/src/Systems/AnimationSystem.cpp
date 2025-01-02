@@ -40,7 +40,7 @@ void AnimationSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERI
 
 		if ( animation.bVertical )
 		{
-			sprite.uvs.v = animation.currentFrame * sprite.uvs.uv_width;
+			sprite.uvs.v = animation.currentFrame * sprite.uvs.uv_height;
 			sprite.uvs.u = animation.frameOffset * sprite.uvs.uv_width;
 		}
 		else
