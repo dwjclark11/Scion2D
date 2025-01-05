@@ -297,6 +297,50 @@ bool Application::LoadEditorTextures()
 
 	assetManager.GetTexture( "scene_icon" )->SetIsEditorTexture( true );
 
+	// ====== Gizmo Textures Start ======
+
+	if ( !assetManager.AddTextureFromMemory( "S2D_x_axis_translate", x_axis_arrow, x_axis_arrow_size ) )
+	{
+		SCION_ERROR( "Failed to load texture [S2D_x_axis_translate] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "S2D_x_axis_translate" )->SetIsEditorTexture( true );
+
+	if ( !assetManager.AddTextureFromMemory( "S2D_y_axis_translate", y_axis_arrow, y_axis_arrow_size ) )
+	{
+		SCION_ERROR( "Failed to load texture [S2D_y_axis_translate] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "S2D_y_axis_translate" )->SetIsEditorTexture( true );
+
+	if ( !assetManager.AddTextureFromMemory( "S2D_x_axis_scale", x_axis_scale, x_axis_scale_size ) )
+	{
+		SCION_ERROR( "Failed to load texture [S2D_x_axis_scale] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "S2D_x_axis_scale" )->SetIsEditorTexture( true );
+
+	if ( !assetManager.AddTextureFromMemory( "S2D_y_axis_scale", y_axis_scale, y_axis_scale_size ) )
+	{
+		SCION_ERROR( "Failed to load texture [S2D_y_axis_scale] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "S2D_y_axis_scale" )->SetIsEditorTexture( true );
+
+	if ( !assetManager.AddTextureFromMemory( "S2D_rotate_tool", rotate_tool, rotate_tool_size ) )
+	{
+		SCION_ERROR( "Failed to load texture [S2D_rotate_tool] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "S2D_rotate_tool" )->SetIsEditorTexture( true );
+
+	// ====== Gizmo Textures End   ======
+
 	return true;
 }
 
