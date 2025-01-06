@@ -70,6 +70,9 @@ class Entity
 	template <typename TComponent>
 	TComponent& GetComponent();
 
+	template <typename TComponent>
+	TComponent* TryGetComponent();
+
 	/*
 	 * @brief Checks to see if the entity has the given component.
 	 * @tparam The desired component to check.

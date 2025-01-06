@@ -29,4 +29,23 @@ struct Tile
 	bool bCollider{ false }, bAnimation{ false }, bPhysics{ false }, bCircle{ false };
 };
 
+constexpr SCION_RENDERING::Color XAXIS_GIZMO_COLOR = { 255, 0, 0, 175 };
+constexpr SCION_RENDERING::Color XAXIS_HOVERED_GIZMO_COLOR = { 255, 255, 0, 175 };
+constexpr SCION_RENDERING::Color YAXIS_GIZMO_COLOR = { 0, 255, 0, 175 };
+constexpr SCION_RENDERING::Color YAXIS_HOVERED_GIZMO_COLOR = { 0, 255, 255, 175 };
+
+constexpr SCION_RENDERING::Color GRAYED_OUT_GIZMO_COLOR = { 135, 135, 135, 175 };
+
+struct GizmoAxisParams
+{
+	SCION_CORE::ECS::TransformComponent transform{};
+	SCION_CORE::ECS::SpriteComponent sprite{};
+	glm::vec2 axisOffset;
+
+	SCION_RENDERING::Color axisColor;
+	SCION_RENDERING::Color axisHoveredColor;
+	SCION_RENDERING::Color axisDisabledColor;
+};
+
+
 } // namespace SCION_EDITOR
