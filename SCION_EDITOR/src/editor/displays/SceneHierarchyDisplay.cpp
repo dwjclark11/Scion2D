@@ -4,6 +4,8 @@
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/utilities/ImGuiUtils.h"
 
+#include "editor/tools/ToolManager.h"
+
 #include "Core/ECS/MainRegistry.h"
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/MetaUtilities.h"
@@ -43,6 +45,7 @@ bool SceneHierarchyDisplay::OpenTreeNode( SCION_CORE::ECS::Entity& entity )
 	{
 		m_pSelectedEntity =
 			std::make_shared<Entity>( SCENE_MANAGER().GetCurrentScene()->GetRegistry(), entity.GetEntity() );
+		TOOL_MANAGER().SetSelectedEntity( entity.GetEntity() );
 	}
 
 	ImGui::PopID();

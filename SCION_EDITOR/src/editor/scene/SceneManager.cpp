@@ -3,7 +3,7 @@
 #include "ScionUtilities/ScionUtilities.h"
 #include "editor/tools/ToolManager.h"
 #include "editor/tools/TileTool.h"
-
+#include "editor/tools/gizmos/Gizmo.h"
 #include "editor/commands/CommandManager.h"
 
 #include "Logger/Logger.h"

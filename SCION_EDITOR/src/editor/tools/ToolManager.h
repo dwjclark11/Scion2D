@@ -2,6 +2,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <entt/entt.hpp>
 
 namespace SCION_RENDERING
 {
@@ -12,7 +13,9 @@ namespace SCION_EDITOR
 {
 
 struct Canvas;
+class AbstractTool;
 class TileTool;
+class Gizmo;
 class SceneObject;
 enum class EToolType;
 enum class EGizmoType;
@@ -21,6 +24,7 @@ class ToolManager
 {
   private:
 	std::map<EToolType, std::unique_ptr<TileTool>> m_mapTools;
+	std::map<EGizmoType, std::unique_ptr<Gizmo>> m_mapGizmos;
 
 	EToolType m_eActiveToolType;
 	EGizmoType m_eActiveGizmoType;
@@ -52,6 +56,18 @@ class ToolManager
 	TileTool* GetActiveTool();
 
 	/*
+	 * @brief Gets the current activated gizmo.
+	 * @return Returns a pointer to a Gizmo if activated, else returns nullptr;
+	 */
+	Gizmo* GetActiveGizmo();
+
+	/*
+	 * @brief Gets the current activated abstract tool.
+	 * @return Returns a pointer to a Abstract tool if activated, else returns nullptr;
+	 */
+	AbstractTool* GetActiveToolFromAbstract();
+
+	/*
 	 * @brief Calls SetupTool for all tools and gizmos
 	 */
 	bool SetupTools( SceneObject* pSceneObject, SCION_RENDERING::Camera2D* pCamera );
@@ -69,6 +85,8 @@ class ToolManager
 
 	inline EToolType GetActiveToolType() const { return m_eActiveToolType; }
 	inline EGizmoType GetActiveGizmoType() const { return m_eActiveGizmoType; }
+
+	void SetSelectedEntity( entt::entity entity );
 
 	void EnableGridSnap( bool bEnable );
 };

@@ -60,6 +60,8 @@ add_executable(SCION_EDITOR
 	# Gizmos
 	"src/editor/tools/gizmos/Gizmo.h"
 	"src/editor/tools/gizmos/Gizmo.cpp"
+	"src/editor/tools/gizmos/TranslateGizmo.h"
+	"src/editor/tools/gizmos/TranslateGizmo.cpp"
 
 	# Commands
 	"src/editor/commands/AbstractCommandManager.h"

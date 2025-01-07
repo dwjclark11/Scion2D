@@ -24,6 +24,7 @@ class Gizmo : public AbstractTool
   public:
 	Gizmo();
 	Gizmo( const GizmoAxisParams& xAxisParams, const GizmoAxisParams& yAxisParams, bool bOneAxis );
+	virtual ~Gizmo();
 
 	virtual void Update( Canvas& canvas ) override;
 	virtual void Draw() = 0;

@@ -24,6 +24,8 @@
 #include "editor/tools/ToolAccessories.h"
 #include "editor/tools/CreateTileTool.h"
 
+#include "editor/tools/gizmos/Gizmo.h"
+
 #include "editor/commands/CommandManager.h"
 
 #include "Core/Scripting/InputManager.h"
@@ -51,6 +53,8 @@ void TilemapDisplay::RenderTilemap()
 	auto& renderUISystem = mainRegistry.GetRenderUISystem();
 	auto& renderShapeSystem = mainRegistry.GetRenderShapeSystem();
 
+	auto pActiveGizmo = TOOL_MANAGER().GetActiveGizmo();
+
 	const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::TILEMAP ];
 
 	fb->Bind();
@@ -76,9 +80,12 @@ void TilemapDisplay::RenderTilemap()
 
 	renderUISystem.Update( pCurrentScene->GetRegistry() );
 
-	auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
+	auto pActiveTool = TOOL_MANAGER().GetActiveTool();
 	if ( pActiveTool )
 		pActiveTool->Draw();
+
+	if ( pActiveGizmo )
+		pActiveGizmo->Draw();
 
 	fb->Unbind();
 	fb->CheckResize();
@@ -343,7 +350,7 @@ void TilemapDisplay::Draw()
 		auto relativePos = ImGui::GetCursorScreenPos();
 		auto windowPos = ImGui::GetWindowPos();
 
-		auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
+		auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveToolFromAbstract();
 		if ( pActiveTool )
 		{
 			pActiveTool->SetRelativeCoords( glm::vec2{ relativePos.x, relativePos.y } );
@@ -388,13 +395,20 @@ void TilemapDisplay::Update()
 	if ( !pCurrentScene )
 		return;
 
-	auto pActiveTool = SCENE_MANAGER().GetToolManager().GetActiveTool();
+	auto pActiveTool = TOOL_MANAGER().GetActiveTool();
 	if ( pActiveTool && pActiveTool->IsOverTilemapWindow() && !ImGui::GetDragDropPayload() )
 	{
 		PanZoomCamera( pActiveTool->GetMouseScreenCoords() );
 
 		pActiveTool->Update( pCurrentScene->GetCanvas() );
 		pActiveTool->Create();
+	}
+
+	auto pActiveGizmo = TOOL_MANAGER().GetActiveGizmo();
+	if ( pActiveGizmo && pActiveGizmo->IsOverTilemapWindow() && !ImGui::GetDragDropPayload() )
+	{
+		PanZoomCamera( pActiveGizmo->GetMouseScreenCoords() );
+		pActiveGizmo->Update( pCurrentScene->GetCanvas() );
 	}
 
 	auto& mainRegistry = MAIN_REGISTRY();

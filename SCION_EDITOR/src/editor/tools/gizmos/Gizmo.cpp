@@ -53,6 +53,11 @@ Gizmo::Gizmo( const GizmoAxisParams& xAxisParams, const GizmoAxisParams& yAxisPa
 	m_pYAxisParams = std::make_unique<GizmoAxisParams>( yAxisParams );
 }
 
+Gizmo::~Gizmo()
+{
+
+}
+
 void Gizmo::Update( Canvas& canvas )
 {
 	m_LastMousePos = GetMouseScreenCoords();
@@ -254,9 +259,9 @@ void Gizmo::SetGizmoPosition( SCION_CORE::ECS::Entity& selectedEntity )
 		m_pYAxisParams->transform.position =
 			selectedTransform.position + m_pYAxisParams->axisOffset +
 			glm::vec2{ ( spriteWidth * selectedTransform.scale.x * 0.5f ) -
-						   -( m_pYAxisParams->sprite.width * m_pYAxisParams->transform.scale.x * 0.5f ),
+						   ( m_pYAxisParams->sprite.width * m_pYAxisParams->transform.scale.x * 0.5f ),
 					   ( spriteHeight * selectedTransform.scale.y * 0.5f ) -
-						   ( m_pYAxisParams->sprite.height * m_pYAxisParams->transform.scale.y * 0.5f ) };
+						   ( m_pYAxisParams->sprite.height * m_pYAxisParams->transform.scale.y ) };
 	}
 	else
 	{
