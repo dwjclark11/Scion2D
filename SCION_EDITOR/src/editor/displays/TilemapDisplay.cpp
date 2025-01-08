@@ -255,21 +255,18 @@ void TilemapDisplay::DrawToolbar()
 
 	if ( eActiveGizmoType == EGizmoType::ROTATE )
 	{
-		// ImGui::ActiveButton( ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE );
-		ImGui::DisabledButton(
-			ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE, "Rotate [R] - Rotates game object - Currently Unavailable." );
+		ImGui::ActiveButton( ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE );
+		
 	}
 	else
 	{
-		/*	if ( ImGui::Button( ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE ) )
-			{
-				toolManager.SetGizmoActive( EGizmoType::ROTATE);
-			}*/
-		ImGui::DisabledButton(
-			ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE, "Rotate [R] - Rotates game object - Currently Unavailable." );
+		if ( ImGui::Button( ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE ) )
+		{
+			toolManager.SetGizmoActive( EGizmoType::ROTATE);
+		}
 	}
 
-	// ImGui::ItemToolTip( "Rotate [R] - Rotates game object" );
+	ImGui::ItemToolTip( "Rotate [R] - Rotates game object" );
 
 	ImGui::SameLine();
 

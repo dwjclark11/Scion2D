@@ -268,7 +268,7 @@ void Gizmo::SetGizmoPosition( SCION_CORE::ECS::Entity& selectedEntity )
 		m_pXAxisParams->transform.position =
 			selectedTransform.position + m_pXAxisParams->axisOffset +
 			glm::vec2{ ( spriteWidth * selectedTransform.scale.x * 0.5f ) -
-						   -( m_pXAxisParams->sprite.width * m_pXAxisParams->transform.scale.x * 0.5f ),
+						   ( m_pXAxisParams->sprite.width * m_pXAxisParams->transform.scale.x * 0.5f ),
 					   ( spriteHeight * selectedTransform.scale.y * 0.5f ) -
 						   ( m_pXAxisParams->sprite.height * m_pXAxisParams->transform.scale.y * 0.5f ) };
 	}

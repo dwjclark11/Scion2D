@@ -3,6 +3,8 @@
 #include "RectFillTool.h"
 #include "ToolAccessories.h"
 #include "editor/tools/gizmos/TranslateGizmo.h"
+#include "editor/tools/gizmos/ScaleGizmo.h"
+#include "editor/tools/gizmos/RotateGizmo.h"
 #include "editor/scene/SceneObject.h"
 #include "Rendering/Core/Camera2D.h"
 
@@ -14,6 +16,8 @@ ToolManager::ToolManager()
 	m_mapTools.emplace( EToolType::RECT_FILL_TILE, std::make_unique<RectFillTool>() );
 
 	m_mapGizmos.emplace( EGizmoType::TRANSLATE, std::make_unique<TranslateGizmo>() );
+	m_mapGizmos.emplace( EGizmoType::SCALE, std::make_unique<ScaleGizmo>() );
+	m_mapGizmos.emplace( EGizmoType::ROTATE, std::make_unique<RotateGizmo>() );
 
 	// TODO: Add other tools as needed.
 
