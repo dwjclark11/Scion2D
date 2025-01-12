@@ -1,5 +1,6 @@
 
-![logo](https://github.com/dwjclark11/Scion2D/assets/63356975/cc26ef0c-b190-4af9-9ac1-cac8cd9f2ed5)
+![new_logo](https://github.com/user-attachments/assets/1c6b585d-6b34-4f38-a9e3-84af16954a2c)
+
 
 # Introduction
 The goal for **Scion2D** is to make a simple 2D game engine where I can teach what I am learning through my [youtube channel](https://www.youtube.com/playlist?list=PL3HUvSWOJR7XRDwVVQqqWO-zyyscb8L-v). 
