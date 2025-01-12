@@ -40,6 +40,8 @@ add_library(SCION_CORE
     "include/Core/ECS/Components/TransformComponent.h"
     "src/ECS/Components/TransformComponent.cpp"
     "include/Core/ECS/Components/TileComponent.h"
+	"include/Core/ECS/Components/Relationship.h"
+	"src/ECS/Components/Relationship.cpp"
 	"include/Core/ECS/Components/AllComponents.h"
 
 	# Resources
@@ -89,7 +91,8 @@ add_library(SCION_CORE
 	"include/Core/ECS/Components/ComponentSerializer.inl"
 	"src/ECS/Components/ComponentSerializer.cpp"
 	"include/Core/Loaders/TilemapLoader.h"
-	"src/Loaders/TilemapLoader.cpp")
+	"src/Loaders/TilemapLoader.cpp"
+)
 
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

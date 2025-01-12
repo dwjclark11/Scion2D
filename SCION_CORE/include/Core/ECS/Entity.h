@@ -28,6 +28,9 @@ class Entity
 
 	~Entity() = default;
 
+	bool AddChild( entt::entity child );
+	void UpdateTransform();
+
 	inline const std::string& GetName() const { return m_sName; }
 	inline const std::string& GetGroup() const { return m_sGroup; }
 	/*
@@ -48,7 +51,9 @@ class Entity
 	 * @brief All entities have a reference to the registry that they were created in.
 	 * @return Returns the actual underlying entt::registry as a reference.
 	 */
-	inline entt::registry& GetRegistry() { return m_Registry.GetRegistry(); }
+	inline entt::registry& GetEnttRegistry() { return m_Registry.GetRegistry(); }
+
+	inline Registry& GetRegistry() { return m_Registry; }
 
 	static void CreateLuaEntityBind( sol::state& lua, Registry& registry );
 
