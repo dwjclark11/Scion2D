@@ -7,9 +7,13 @@ namespace SCION_CORE::ECS
 class Entity
 {
   private:
+	/* Reference to the registry this entity belongs to. */
 	Registry& m_Registry;
+	/* Underlying entity. */
 	entt::entity m_Entity;
+	/* Entities specific name. Eventually they will be unique names. */
 	std::string m_sName;
+	/* The group this entity belongs to. We could add multiple groups if needed later. */
 	std::string m_sGroup;
 
   public:
@@ -25,8 +29,20 @@ class Entity
 
 		return *this;
 	}
-
+	
 	~Entity() = default;
+
+	/*
+	 * @brief Adds a new child to the entity.
+	 * @param underlying entity of the child to add.
+	 */
+	bool AddChild( entt::entity child );
+
+	/*
+	 * @brief Updates the position of the entity. If the entity
+	 * has children, it will update all the children as well.
+	 */
+	void UpdateTransform();
 
 	inline const std::string& GetName() const { return m_sName; }
 	inline const std::string& GetGroup() const { return m_sGroup; }
@@ -48,7 +64,9 @@ class Entity
 	 * @brief All entities have a reference to the registry that they were created in.
 	 * @return Returns the actual underlying entt::registry as a reference.
 	 */
-	inline entt::registry& GetRegistry() { return m_Registry.GetRegistry(); }
+	inline entt::registry& GetEnttRegistry() { return m_Registry.GetRegistry(); }
+
+	inline Registry& GetRegistry() { return m_Registry; }
 
 	static void CreateLuaEntityBind( sol::state& lua, Registry& registry );
 

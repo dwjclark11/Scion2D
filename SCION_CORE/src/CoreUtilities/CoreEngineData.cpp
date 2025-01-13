@@ -78,6 +78,7 @@ void CoreEngineData::RegisterMetaFunctions()
 	Entity::RegisterMetaComponent<TextComponent>();
 	Entity::RegisterMetaComponent<RigidBodyComponent>();
 	Entity::RegisterMetaComponent<TileComponent>();
+	Entity::RegisterMetaComponent<Relationship>();
 
 	Registry::RegisterMetaComponent<Identification>();
 	Registry::RegisterMetaComponent<TransformComponent>();
@@ -89,6 +90,7 @@ void CoreEngineData::RegisterMetaFunctions()
 	Registry::RegisterMetaComponent<TextComponent>();
 	Registry::RegisterMetaComponent<RigidBodyComponent>();
 	Registry::RegisterMetaComponent<TileComponent>();
+	Registry::RegisterMetaComponent<Relationship>();
 
 	// Register User Data Types
 	SCION_CORE::Scripting::UserDataBinder::register_meta_user_data<ObjectData>();

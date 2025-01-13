@@ -31,6 +31,8 @@ void SCION_CORE::ECS::TransformComponent::CreateLuaTransformBind( sol::state& lu
 			} ),
 		"position",
 		&TransformComponent::position,
+		"localPosition",
+		&TransformComponent::localPosition,
 		"scale",
 		&TransformComponent::scale,
 		"rotation",

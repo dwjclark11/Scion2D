@@ -8,13 +8,19 @@ template <typename TComponent>
 inline void DrawComponentsUtil::DrawEntityComponentInfo( SCION_CORE::ECS::Entity& entity )
 {
 	auto& component = entity.GetComponent<TComponent>();
-	DrawImGuiComponent( component );
+	DrawImGuiComponent( entity, component );
 }
 
 template <typename TComponent>
 inline void DrawComponentsUtil::DrawComponentInfo( TComponent& component )
 {
 	DrawImGuiComponent( component );
+}
+
+template <typename TComponent>
+inline void DrawComponentsUtil::DrawComponentInfo( SCION_CORE::ECS::Entity& entity, TComponent& component )
+{
+	DrawImGuiComponent( entity, component );
 }
 
 template <typename TComponent>
