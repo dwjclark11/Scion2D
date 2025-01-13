@@ -28,7 +28,16 @@ class Entity
 
 	~Entity() = default;
 
+	/*
+	 * @brief Adds a new child to the entity.
+	 * @param underlying entity of the child to add.
+	 */
 	bool AddChild( entt::entity child );
+
+	/*
+	 * @brief Updates the position of the entity. If the entity
+	 * has children, it will update all the children as well.
+	 */
 	void UpdateTransform();
 
 	inline const std::string& GetName() const { return m_sName; }

@@ -142,8 +142,8 @@ bool Entity::AddChild( entt::entity child )
 	childRelationship.parent = m_Entity;
 
 	// Set the childs local position
-	 auto& childTransform = childEntity.GetComponent<TransformComponent>();
-	 childTransform.localPosition = childTransform.position - GetComponent<TransformComponent>().position;
+	auto& childTransform = childEntity.GetComponent<TransformComponent>();
+	childTransform.localPosition = childTransform.position - GetComponent<TransformComponent>().position;
 
 	// Check to see if the parent has any children
 	// Parent has no children, add as the first child
@@ -233,6 +233,10 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 		&Entity::GetGroup,
 		"kill",
 		&Entity::Kill,
+		"addChild",
+		[]( Entity& entity, Entity& child ) { entity.AddChild( child.GetEntity() ); },
+		"updateTransform",
+		&Entity::UpdateTransform,
 		"id",
 		[]( Entity& entity ) { return static_cast<uint32_t>( entity.GetEntity() ); } );
 }
