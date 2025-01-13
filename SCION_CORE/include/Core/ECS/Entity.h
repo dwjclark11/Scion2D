@@ -7,9 +7,13 @@ namespace SCION_CORE::ECS
 class Entity
 {
   private:
+	/* Reference to the registry this entity belongs to. */
 	Registry& m_Registry;
+	/* Underlying entity. */
 	entt::entity m_Entity;
+	/* Entities specific name. Eventually they will be unique names. */
 	std::string m_sName;
+	/* The group this entity belongs to. We could add multiple groups if needed later. */
 	std::string m_sGroup;
 
   public:
@@ -25,7 +29,7 @@ class Entity
 
 		return *this;
 	}
-
+	
 	~Entity() = default;
 
 	/*
