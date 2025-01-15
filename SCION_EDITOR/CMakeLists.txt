@@ -6,6 +6,7 @@ add_executable(SCION_EDITOR
     # Editor Utilities
     "src/editor/utilities/editor_textures.h" 
     "src/editor/utilities/EditorUtilities.h"
+    "src/editor/utilities/EditorUtilities.cpp"
 	"src/editor/utilities/ImGuiUtils.h"
 	"src/editor/utilities/ImGuiUtils.cpp"
 	"src/editor/utilities/EditorFramebuffers.h"
@@ -33,6 +34,8 @@ add_executable(SCION_EDITOR
 	"src/editor/displays/SceneHierarchyDisplay.cpp"
 	"src/editor/displays/EditorStyleToolDisplay.h"
 	"src/editor/displays/EditorStyleToolDisplay.cpp"
+	"src/editor/displays/ContentDisplay.h"
+	"src/editor/displays/ContentDisplay.cpp"
 
     # Editor Systems
     "src/editor/systems/GridSystem.h" 
@@ -75,6 +78,9 @@ add_executable(SCION_EDITOR
 	"src/editor/commands/cmds/CreateTileToolCmds.cpp"
 	"src/editor/commands/cmds/RectToolCmds.h"
 	"src/editor/commands/cmds/RectToolCmds.cpp"
+	
+	# Events
+	"src/editor/events/EditorEventTypes.h"
 )
 
 target_include_directories(

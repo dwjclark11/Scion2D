@@ -9,6 +9,7 @@
 #include <Core/Systems/RenderShapeSystem.h>
 #include <Core/Systems/AnimationSystem.h>
 #include <Core/Systems/PhysicsSystem.h>
+#include <Core/Events/EventDispatcher.h>
 #include <Rendering/Core/Renderer.h>
 #include <ScionUtilities/HelperUtilities.h>
 
@@ -102,7 +103,16 @@ bool MainRegistry::RegisterMainSystems()
 	AddToContext<std::shared_ptr<SCION_CORE::Systems::AnimationSystem>>(
 		std::make_shared<SCION_CORE::Systems::AnimationSystem>() );
 
+	AddToContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>(
+		std::make_shared<SCION_CORE::Events::EventDispatcher>() );
+
 	return true;
+}
+
+SCION_CORE::Events::EventDispatcher& MainRegistry::GetEventDispatcher()
+{
+	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
+	return *m_pMainRegistry->GetContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>();
 }
 
 SCION_RESOURCES::AssetManager& MainRegistry::GetAssetManager()

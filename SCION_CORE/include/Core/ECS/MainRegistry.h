@@ -4,6 +4,8 @@
 
 #define MAIN_REGISTRY() SCION_CORE::ECS::MainRegistry::GetInstance()
 #define ASSET_MANAGER() MAIN_REGISTRY().GetAssetManager()
+#define EVENT_DISPATCHER() MAIN_REGISTRY().GetEventDispatcher()
+#define ADD_EVENT_HANDLER( Event, Func, Handler ) EVENT_DISPATCHER().AddHandler<Event, Func>( Handler );
 
 namespace SCION_RESOURCES
 {
@@ -14,6 +16,11 @@ namespace SCION_SOUNDS
 class MusicPlayer;
 class SoundFxPlayer;
 } // namespace SCION_SOUNDS
+
+namespace SCION_CORE::Events
+{
+class EventDispatcher;
+}
 
 namespace SCION_CORE::Systems
 {
@@ -43,6 +50,7 @@ class MainRegistry
 	static MainRegistry& GetInstance();
 	bool Initialize();
 
+	SCION_CORE::Events::EventDispatcher& GetEventDispatcher();
 	SCION_RESOURCES::AssetManager& GetAssetManager();
 	SCION_SOUNDS::MusicPlayer& GetMusicPlayer();
 	SCION_SOUNDS::SoundFxPlayer& GetSoundPlayer();

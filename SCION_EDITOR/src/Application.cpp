@@ -32,6 +32,7 @@
 #include "editor/displays/TilemapDisplay.h"
 #include "editor/displays/LogDisplay.h"
 #include "editor/displays/EditorStyleToolDisplay.h"
+#include "editor/displays/ContentDisplay.h"
 
 #include "editor/utilities/editor_textures.h"
 #include "editor/utilities/EditorFramebuffers.h"
@@ -39,6 +40,9 @@
 #include "editor/utilities/DrawComponentUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/systems/GridSystem.h"
+
+#include "editor/events/EditorEventTypes.h"
+#include "Core/Events/EventDispatcher.h"
 
 // TODO: This needs to be removed. Scenes are added by default for testing.
 #include "editor/scene/SceneManager.h"
@@ -341,6 +345,44 @@ bool Application::LoadEditorTextures()
 
 	// ====== Gizmo Textures End   ======
 
+	// ====== Content Display Textures Start ======
+	if ( !assetManager.AddTextureFromMemory(
+			 "S2D_file_icon", file_icon, sizeof( file_icon ) / sizeof( file_icon[ 0 ] ) ) )
+	{
+		SCION_ERROR( "Failed to load texture [file_icon] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "S2D_file_icon" )->SetIsEditorTexture( true );
+
+	if ( !assetManager.AddTextureFromMemory(
+			 "S2D_music_icon", music_icon, sizeof( music_icon ) / sizeof( music_icon[ 0 ] ) ) )
+	{
+		SCION_ERROR( "Failed to load texture [music_icon] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "S2D_music_icon" )->SetIsEditorTexture( true );
+
+	if ( !assetManager.AddTextureFromMemory(
+			 "S2D_folder_icon", folder_icon, sizeof( folder_icon ) / sizeof( folder_icon[ 0 ] ) ) )
+	{
+		SCION_ERROR( "Failed to load texture [folder_icon] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "S2D_folder_icon" )->SetIsEditorTexture( true );
+
+	if ( !assetManager.AddTextureFromMemory(
+			 "S2D_image_icon", image_icon, sizeof( image_icon ) / sizeof( image_icon[ 0 ] ) ) )
+	{
+		SCION_ERROR( "Failed to load texture [image_icon] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "S2D_image_icon" )->SetIsEditorTexture( true );
+	// ====== Content Display Textures End   ======
+
 	return true;
 }
 
@@ -379,6 +421,12 @@ void Application::ProcessEvents()
 			case SDL_WINDOWEVENT_SIZE_CHANGED: m_pWindow->SetSize( m_Event.window.data1, m_Event.window.data2 ); break;
 			default: break;
 			}
+			break;
+		}
+		case SDL_DROPFILE: {
+			EVENT_DISPATCHER().EmitEvent( SCION_EDITOR::Events::FileEvent{
+				.eAction = Events::EFileAction::FileDropped, .sFilepath = std::string{ m_Event.drop.file } } );
+
 			break;
 		}
 		default: break;
@@ -489,6 +537,13 @@ bool Application::CreateDisplays()
 		return false;
 	}
 
+	auto pContentDisplay = std::make_unique<ContentDisplay>();
+	if ( !pContentDisplay )
+	{
+		SCION_ERROR( "Failed to Create Content Display!" );
+		return false;
+	}
+
 	// auto pEditorStylesDisplay = std::make_unique<EditorStyleToolDisplay>();
 	// if ( !pEditorStylesDisplay )
 	//{
@@ -504,6 +559,7 @@ bool Application::CreateDisplays()
 	pDisplayHolder->displays.push_back( std::move( pTilesetDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pTilemapDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pAssetDisplay ) );
+	pDisplayHolder->displays.push_back( std::move( pContentDisplay ) );
 	// pDisplayHolder->displays.push_back( std::move( pEditorStylesDisplay ) );
 
 	return true;
@@ -610,6 +666,7 @@ void Application::RenderImGui()
 		ImGui::DockBuilderDockWindow( "Tilemap Editor", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Assets", LogNodeId );
 		ImGui::DockBuilderDockWindow( "Logs", LogNodeId );
+		ImGui::DockBuilderDockWindow( "Content Browser", LogNodeId );
 
 		ImGui::DockBuilderFinish( dockSpaceId );
 	}

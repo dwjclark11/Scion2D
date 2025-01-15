@@ -92,6 +92,9 @@ add_library(SCION_CORE
 	"src/ECS/Components/ComponentSerializer.cpp"
 	"include/Core/Loaders/TilemapLoader.h"
 	"src/Loaders/TilemapLoader.cpp"
+
+	# Events
+	"include/Core/Events/EventDispatcher.h"
 )
 
 target_include_directories(
