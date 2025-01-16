@@ -4,16 +4,19 @@
 
 # Introduction
 The goal for **Scion2D** is to make a simple 2D game engine where I can teach what I am learning through my [youtube channel](https://www.youtube.com/playlist?list=PL3HUvSWOJR7XRDwVVQqqWO-zyyscb8L-v). 
-This is for educational purposes and to constantly learn more about programming and gaming everyday. There are definitely better 
-engines out there; however, I find it more fun to try to build your own, learn from others, and grow as a developer.
+
+This is for educational purposes and to constantly learn more about programming and gaming everyday. 
+
+There are definitely better engines out there; however, I find it more fun to try to build your own, learn from others, and grow as a developer.
 
 ![scion2d](https://github.com/dwjclark11/Scion2D/assets/63356975/ba9c466d-780d-4217-bf9e-5ed0dc4981d9)
 
 ## Check the Docs
 The documentation is still a work in progress; however, you can check it out here:
 [Scion2D Docs](https://dwjclark11.github.io/Scion2D_Docs/)
+---- 
+![neweditorpic](https://github.com/user-attachments/assets/147c74eb-82e7-42e5-a065-4b86b6cb1f88)
 
-![scion_pic](https://github.com/user-attachments/assets/5b09cb12-e749-471f-a541-9398d0ac6bc9)
 
 # Build
 ----
