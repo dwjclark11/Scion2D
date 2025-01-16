@@ -1,4 +1,5 @@
 #include "AssetDisplay.h"
+#include "AssetDisplayUtils.h"
 #include "ScionUtilities/ScionUtilities.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Scripting/InputManager.h"
@@ -298,6 +299,7 @@ AssetDisplay::AssetDisplay()
 	, m_bRename{ false }
 	, m_bWindowSelected{ false }
 	, m_bWindowHovered{ false }
+	, m_bOpenAddAssetModal{ false }
 	, m_sSelectedAssetName{ "" }
 	, m_sSelectedType{ "TEXTURES" }
 	, m_sDragSource{ "" }
@@ -328,6 +330,19 @@ void AssetDisplay::Draw()
 		m_bWindowSelected = ImGui::IsWindowFocused();
 
 		DrawSelectedAssets();
+
+		if ( m_SelectedID == -1 && ImGui::BeginPopupContextWindow( "##AddAsset" ) )
+		{
+			if ( ImGui::Selectable( AssetDisplayUtils::AddAssetBasedOnType( m_eSelectedType ).c_str() ) )
+			{
+				m_bOpenAddAssetModal = true;
+			}
+
+			ImGui::EndPopup();
+		}
+
+		if ( m_bOpenAddAssetModal )
+			AssetDisplayUtils::OpenAddAssetModalBasedOnType( m_eSelectedType, &m_bOpenAddAssetModal );
 
 		ImGui::EndChild();
 	}

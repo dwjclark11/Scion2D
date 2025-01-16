@@ -31,9 +31,15 @@ class AssetDisplay : public IDisplay
 
   private:
 	const std::vector<std::string> m_SelectableTypes{ "TEXTURES", "FONTS", "MUSIC", "SOUNDFX", "SCENES" };
-	bool m_bAssetTypeChanged, m_bRename;
-	bool m_bWindowSelected, m_bWindowHovered;
-	std::string m_sSelectedAssetName, m_sSelectedType, m_sDragSource, m_sRenameBuf;
+	bool m_bAssetTypeChanged;
+	bool m_bRename;
+	bool m_bWindowSelected;
+	bool m_bWindowHovered;
+	bool m_bOpenAddAssetModal;
+	std::string m_sSelectedAssetName;
+	std::string m_sSelectedType;
+	std::string m_sDragSource;
+	std::string m_sRenameBuf;
 	SCION_UTIL::AssetType m_eSelectedType;
 	float m_AssetSize;
 	int m_SelectedID;

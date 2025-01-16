@@ -36,6 +36,8 @@ add_executable(SCION_EDITOR
 	"src/editor/displays/EditorStyleToolDisplay.cpp"
 	"src/editor/displays/ContentDisplay.h"
 	"src/editor/displays/ContentDisplay.cpp"
+	"src/editor/displays/AssetDisplayUtils.h"
+	"src/editor/displays/AssetDisplayUtils.cpp"
 
     # Editor Systems
     "src/editor/systems/GridSystem.h" 

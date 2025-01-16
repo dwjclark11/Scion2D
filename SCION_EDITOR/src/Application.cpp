@@ -221,10 +221,6 @@ bool Application::Initialize()
 	RegisterEditorMetaFunctions();
 	SCION_CORE::CoreEngineData::RegisterMetaFunctions();
 
-	// TEST SCENES -- TODO: Remove These after testing
-	SCENE_MANAGER().AddScene( "DefaultScene" );
-	SCENE_MANAGER().AddScene( "NewScene" );
-
 	return true;
 }
 

@@ -34,6 +34,8 @@ class SceneManager
 	static SceneManager& GetInstance();
 
 	bool AddScene( const std::string& sSceneName );
+	bool HasScene( const std::string& sSceneName );
+
 	std::shared_ptr<SCION_EDITOR::SceneObject> GetScene( const std::string& sSceneName );
 	std::shared_ptr<SCION_EDITOR::SceneObject> GetCurrentScene();
 	std::vector<std::string> GetSceneNames() const;

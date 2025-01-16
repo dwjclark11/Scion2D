@@ -29,6 +29,11 @@ bool SceneManager::AddScene( const std::string& sSceneName )
 	return bSuccess;
 }
 
+bool SceneManager::HasScene( const std::string& sSceneName )
+{
+	return m_mapScenes.contains( sSceneName );
+}
+
 std::shared_ptr<SCION_EDITOR::SceneObject> SceneManager::GetScene( const std::string& sSceneName )
 {
 	auto sceneItr = m_mapScenes.find( sSceneName );
