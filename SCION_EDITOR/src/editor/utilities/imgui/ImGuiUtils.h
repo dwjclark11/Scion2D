@@ -34,8 +34,9 @@ void InlineLabel( const std::string& label, float spaceSize = 128.f );
 void ActiveButton( const char* label, ImVec2 size = TOOL_BUTTON_SIZE );
 void DisabledButton( const char* label, ImVec2 size = TOOL_BUTTON_SIZE, const std::string& disabledMsg = "" );
 
-void ActiveImageButton( ImTextureID textureID, ImVec2 size = TOOL_BUTTON_SIZE );
-void DisabledImageButton( ImTextureID textureID, ImVec2 size = TOOL_BUTTON_SIZE, const std::string& disabledMsg = "" );
+void ActiveImageButton( const char* buttonId, ImTextureID textureID, ImVec2 size = TOOL_BUTTON_SIZE );
+void DisabledImageButton( const char* buttonId, ImTextureID textureID, ImVec2 size = TOOL_BUTTON_SIZE,
+						  const std::string& disabledMsg = "" );
 
 template <typename... Args>
 void ItemToolTip( const std::string_view tipMsg, Args&&... args )

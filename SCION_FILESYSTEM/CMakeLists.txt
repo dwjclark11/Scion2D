@@ -7,7 +7,9 @@ add_library(SCION_FILESYSTEM
 	"include/ScionFilesystem/Serializers/JSONSerializer.h"
 	"include/ScionFilesystem/Serializers/JSONSerializer.inl"
 	"src/JSONSerializer.cpp"
-)
+	"include/ScionFilesystem/Serializers/LuaSerializer.h"
+	"include/ScionFilesystem/Serializers/LuaSerializer.inl"
+	"src/LuaSerializer.cpp")
 
 target_include_directories(
 	SCION_FILESYSTEM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include

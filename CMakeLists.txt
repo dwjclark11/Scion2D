@@ -37,6 +37,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin") # .exe
 
 if(WIN32)
     add_definitions(-DNOMINMAX)
+	set(APP_ICON_RESOURCE "${CMAKE_CURRENT_SOURCE_DIR}/resources/scion2d.rc")
 endif()
 
 find_package(glad CONFIG REQUIRED)

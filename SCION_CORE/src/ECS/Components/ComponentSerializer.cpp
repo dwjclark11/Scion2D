@@ -161,6 +161,15 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.EndObject(); // End rigid body table
 }
 
+void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const Identification& id )
+{
+	serializer
+		.StartNewObject( "id" ) // Start id table
+		.AddKeyValuePair( "name", id.name )
+		.AddKeyValuePair( "group", id.group )
+		.EndObject(); // End id table
+}
+
 void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, TransformComponent& transform )
 {
 	transform.position =
@@ -233,6 +242,12 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 {
 	rigidBody.maxVelocity.x = jsonValue[ "maxVelocity" ][ "x" ].GetFloat();
 	rigidBody.maxVelocity.y = jsonValue[ "maxVelocity" ][ "y" ].GetFloat();
+}
+
+void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, Identification& id )
+{
+	id.name = jsonValue[ "name" ].GetString();
+	id.group = jsonValue[ "group" ].GetString();
 }
 
 } // namespace SCION_CORE::ECS

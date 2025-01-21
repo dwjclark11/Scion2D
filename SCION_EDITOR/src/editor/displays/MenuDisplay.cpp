@@ -3,13 +3,18 @@
 #include "ScionFilesystem/Dialogs/FileDialog.h"
 #include "Core/Loaders/TilemapLoader.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
+#include "Core/ECS/MainRegistry.h"
 
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 #include "editor/tools/ToolManager.h"
-#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
+#include "editor/utilities/SaveProject.h"
+#include "editor/loaders/ProjectLoader.h"
 
+#include "Core/Events/EventDispatcher.h"
+#include "editor/events/EditorEventTypes.h"
 #include <imgui.h>
 #include <SDL.h>
 
@@ -30,53 +35,28 @@ void MenuDisplay::Draw()
 			ImGui::InlineLabel( ICON_FA_FOLDER_OPEN, 32.f );
 			if ( ImGui::MenuItem( "Open", "Ctrl + O" ) )
 			{
-				SCION_FILESYSTEM::FileDialog fd{};
-				auto file = fd.OpenFileDialog( "Open tilemap test", SDL_GetBasePath(), { "*.json" } );
-
-				if ( !file.empty() )
-				{
-					auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
-					if ( pCurrentScene )
-					{
-						SCION_CORE::Loaders::TilemapLoader tl{};
-						if ( !tl.LoadTilemap( pCurrentScene->GetRegistry(), file, true ) )
-						{
-							SCION_ERROR( "Failed to load tilemap." );
-						}
-					}
-					else
-					{
-						SCION_ERROR( "Failed to load tilemap. No active scene." );
-					}
-				}
+				SCION_LOG( "OPEN PRESSED" );
 			}
 			ImGui::InlineLabel( ICON_FA_SAVE, 32.f );
 			if ( ImGui::MenuItem( "Save", "Ctrl + S" ) )
 			{
-				SCION_FILESYSTEM::FileDialog fd{};
-				auto file = fd.SaveFileDialog( "Save Tilemap test", SDL_GetBasePath(), { "*.json" } );
-				if ( !file.empty() )
+				auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>();
+				SCION_ASSERT( pSaveProject && "Save Project must exist!" );
+				// Save entire project
+				ProjectLoader pl{};
+				if (!pl.SaveLoadedProject(*pSaveProject))
 				{
-					auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
-					if ( pCurrentScene )
-					{
-						SCION_CORE::Loaders::TilemapLoader tl{};
-						if ( !tl.SaveTilemap( pCurrentScene->GetRegistry(), file, true ) )
-						{
-							SCION_ERROR( "Failed to save tilemap." );
-						}
-					}
-					else
-					{
-						SCION_ERROR( "Failed to save tilemap. No active scene." );
-					}
+					SCION_ERROR( "Failed to save project [{}] at file [{}]",
+								 pSaveProject->sProjectName,
+								 pSaveProject->sProjectFilePath );
+
 				}
 			}
 
 			ImGui::InlineLabel( ICON_FA_WINDOW_CLOSE, 32.f );
 			if ( ImGui::MenuItem( "Exit" ) )
 			{
-				SCION_LOG( "SHOULD EVENTUALLY EXIT!" );
+				EVENT_DISPATCHER().EmitEvent( Events::CloseEditorEvent{} );
 			}
 
 			ImGui::EndMenu();

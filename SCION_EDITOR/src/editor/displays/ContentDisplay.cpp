@@ -2,13 +2,14 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "ScionUtilities/ScionUtilities.h"
-#include "ScionFilesystem/dialogs/FileDialog.h"
+#include "ScionFilesystem/Dialogs/FileDialog.h"
 #include "editor/utilities/EditorUtilities.h"
-#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "Logger/Logger.h"
 
 #include "editor/events/EditorEventTypes.h"
+#include "editor/utilities/SaveProject.h"
 #include "Core/Events/EventDispatcher.h"
 
 #include <imgui.h>
@@ -21,7 +22,7 @@ namespace SCION_EDITOR
 {
 ContentDisplay::ContentDisplay()
 	: m_pFileDispatcher{ std::make_unique<SCION_CORE::Events::EventDispatcher>() }
-	, m_CurrentDir{ DEFAULT_PROJECT_PATH }
+	, m_CurrentDir{ MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>()->sProjectPath + "content" }
 	, m_sFilepathToAction{ "" }
 	, m_Selected{ -1 }
 	, m_eFileAction{ Events::EFileAction::NoAction }
@@ -79,7 +80,7 @@ void ContentDisplay::Draw()
 					break;
 
 				const auto& path = itr->path();
-				
+
 				auto relativePath = fs::relative( path, m_CurrentDir );
 				auto filenameStr = relativePath.filename().string();
 
@@ -96,10 +97,11 @@ void ContentDisplay::Draw()
 				const auto* icon = GetIconTexture( path.string() );
 				static bool bItemPop{ false };
 
+				std::string contentBtn = "##content_" + std::to_string( id );
 				if ( itr->is_directory() )
 				{
 					// Change to the next Directory
-					ImGui::ImageButton( (ImTextureID)icon->GetID(), ImVec2{ 80.f, 80.f } );
+					ImGui::ImageButton( contentBtn.c_str(), ( ImTextureID )( intptr_t ) icon->GetID(), ImVec2{ 80.f, 80.f } );
 					if ( ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked( 0 ) )
 					{
 						m_CurrentDir /= path.filename();
@@ -117,7 +119,7 @@ void ContentDisplay::Draw()
 				else
 				{
 					ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, { 0.0f, 0.0f } );
-					ImGui::ImageButton( (ImTextureID)icon->GetID(), ImVec2{ 80.f, 80.f } );
+					ImGui::ImageButton( contentBtn.c_str(), ( ImTextureID )( intptr_t ) icon->GetID(), ImVec2{ 80.f, 80.f } );
 					ImGui::PopStyleVar( 1 );
 
 					if ( ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked( 0 ) )
@@ -215,9 +217,10 @@ void ContentDisplay::DrawToolbar()
 	ImGui::ItemToolTip( "Create Folder" );
 	ImGui::SameLine( 0.f, 16.f );
 
+	const auto& savedPath = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>()->sProjectPath;
 	std::string pathStr{ m_CurrentDir.string() };
-	std::string pathToSplit = pathStr.substr( pathStr.find( BASE_PATH ) + BASE_PATH.size() );
-	auto dir = SplitStr( pathToSplit, '\\' );
+	std::string pathToSplit = pathStr.substr( pathStr.find( savedPath ) + savedPath.size() );
+	auto dir = SplitStr( pathToSplit, PATH_SEPARATOR );
 	for ( size_t i = 0; i < dir.size(); i++ )
 	{
 		if ( ImGui::Button( dir[ i ].c_str() ) )

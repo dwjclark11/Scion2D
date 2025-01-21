@@ -20,4 +20,9 @@ struct FileEvent
 	std::string sFilepath{ "" };
 };
 
+struct CloseEditorEvent
+{
+	// 
+};
+
 } // namespace SCION_EDITOR::Events

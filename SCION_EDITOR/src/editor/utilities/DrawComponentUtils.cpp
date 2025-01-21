@@ -4,7 +4,7 @@
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "ScionUtilities/ScionUtilities.h"
 #include "Logger/Logger.h"
-#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/imgui/ImGuiUtils.h"
 #include "Physics/PhysicsUtilities.h"
 #include <map>
 

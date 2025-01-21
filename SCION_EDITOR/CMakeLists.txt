@@ -7,12 +7,15 @@ add_executable(SCION_EDITOR
     "src/editor/utilities/editor_textures.h" 
     "src/editor/utilities/EditorUtilities.h"
     "src/editor/utilities/EditorUtilities.cpp"
-	"src/editor/utilities/ImGuiUtils.h"
-	"src/editor/utilities/ImGuiUtils.cpp"
+	"src/editor/utilities/imgui/ImGuiUtils.h"
+	"src/editor/utilities/imgui/ImGuiUtils.cpp"
 	"src/editor/utilities/EditorFramebuffers.h"
 	"src/editor/utilities/DrawComponentUtils.h"
 	"src/editor/utilities/DrawComponentUtils.cpp"
 	"src/editor/utilities/fonts/IconsFontAwesome5.h"
+	"src/editor/utilities/imgui/Gui.h"
+	"src/editor/utilities/imgui/Gui.cpp"
+	"src/editor/utilities/SaveProject.h"
 
     # Editor Displays
     "src/editor/displays/IDisplay.h"
@@ -83,7 +86,15 @@ add_executable(SCION_EDITOR
 	
 	# Events
 	"src/editor/events/EditorEventTypes.h"
-)
+	"src/editor/hub/Hub.cpp"
+	"src/editor/hub/Hub.h"
+	
+	# Loaders
+	"src/editor/loaders/ProjectLoader.h"
+	"src/editor/loaders/ProjectLoader.cpp"
+
+	${APP_ICON_RESOURCE}
+ "src/editor/utilities/fonts/editor_fonts.h")
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

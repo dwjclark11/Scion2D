@@ -22,6 +22,10 @@
 #include "Core/States/StateStack.h"
 #include "Core/States/StateMachine.h"
 
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
 using namespace SCION_CORE::ECS;
 using namespace SCION_RESOURCES;
 
@@ -33,15 +37,23 @@ ScriptingSystem::ScriptingSystem()
 {
 }
 
-bool ScriptingSystem::LoadMainScript( SCION_CORE::ECS::Registry& registry, sol::state& lua )
+bool ScriptingSystem::LoadMainScript( const std::string& sMainLuaFile, SCION_CORE::ECS::Registry& registry,
+									  sol::state& lua )
 {
+	std::error_code ec;
+	if ( !fs::exists( sMainLuaFile, ec ) )
+	{
+		SCION_ERROR( "Error loading the main lua script: {}", ec.message() );
+		return false;
+	}
+
 	try
 	{
-		auto result = lua.safe_script_file( "./assets/scripts/main.lua" );
+		auto result = lua.safe_script_file( sMainLuaFile );
 	}
 	catch ( const sol::error& err )
 	{
-		SCION_ERROR( "Error loading the main lua script: {0}", err.what() );
+		SCION_ERROR( "Error loading the main lua script: {}", err.what() );
 		return false;
 	}
 

@@ -57,7 +57,7 @@ class AbstractTool
 	 * @brief Used for different tools to make adjustments to the mouse position if necessary.
 	 */
 	virtual void ExamineMousePosition() = 0;
-
+	virtual void ResetSelectedEntity() { /* Override if tool uses selected entities */ }
 	inline void SetMouseWorldCoords( const glm::vec2& newCoords ) { m_MouseWorldCoords = newCoords; }
 
   public:

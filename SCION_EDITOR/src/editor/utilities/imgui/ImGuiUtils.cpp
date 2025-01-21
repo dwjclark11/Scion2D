@@ -83,19 +83,19 @@ void DisabledButton( const char* label, ImVec2 size, const std::string& disabled
 	ImGui::EndDisabled();
 }
 
-void ActiveImageButton( ImTextureID textureID, ImVec2 size )
+void ActiveImageButton(const char* buttonId,  ImTextureID textureID, ImVec2 size )
 {
 	ImGui::PushStyleColor( ImGuiCol_Button, BUTTON_HELD );
 	ImGui::PushStyleColor( ImGuiCol_ButtonHovered, BUTTON_HELD );
 	ImGui::PushStyleColor( ImGuiCol_ButtonActive, BUTTON_HELD );
-	ImGui::ImageButton( textureID, size );
+	ImGui::ImageButton( buttonId, textureID, size );
 	ImGui::PopStyleColor( 3 );
 }
 
-void DisabledImageButton( ImTextureID textureID, ImVec2 size, const std::string& disabledMsg )
+void DisabledImageButton( const char* buttonId, ImTextureID textureID, ImVec2 size, const std::string& disabledMsg )
 {
 	ImGui::BeginDisabled();
-	ImGui::ImageButton( textureID, size );
+	ImGui::ImageButton( buttonId, textureID, size );
 
 	if ( !disabledMsg.empty() )
 		ImGui::SetItemTooltip( disabledMsg.c_str() );

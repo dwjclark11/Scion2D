@@ -95,7 +95,7 @@ add_library(SCION_CORE
 
 	# Events
 	"include/Core/Events/EventDispatcher.h"
-)
+  "include/Core/CoreUtilities/EngineShaders.h")
 
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

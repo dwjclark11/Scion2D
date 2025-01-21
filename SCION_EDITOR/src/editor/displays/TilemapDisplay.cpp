@@ -15,7 +15,7 @@
 #include "editor/systems/GridSystem.h"
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/EditorUtilities.h"
-#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
@@ -366,7 +366,9 @@ void TilemapDisplay::Draw()
 			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( DROP_SCENE_SRC );
 			if ( payload )
 			{
+				SCENE_MANAGER().UnloadCurrentScene();
 				SCENE_MANAGER().SetCurrentScene( std::string{ (const char*)payload->Data } );
+				SCENE_MANAGER().LoadCurrentScene();
 				LoadNewScene();
 				m_pTilemapCam->Reset();
 			}

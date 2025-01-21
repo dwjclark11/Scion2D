@@ -1,5 +1,6 @@
 #pragma once
 #include <sol/sol.hpp>
+#include <string>
 
 namespace SCION_CORE::ECS
 {
@@ -17,7 +18,7 @@ class ScriptingSystem
 	ScriptingSystem();
 	~ScriptingSystem() = default;
 
-	bool LoadMainScript( SCION_CORE::ECS::Registry& registry, sol::state& lua );
+	bool LoadMainScript( const std::string& sMainLuaFile, SCION_CORE::ECS::Registry& registry, sol::state& lua );
 	void Update( SCION_CORE::ECS::Registry& registry );
 	void Render( SCION_CORE::ECS::Registry& registry );
 

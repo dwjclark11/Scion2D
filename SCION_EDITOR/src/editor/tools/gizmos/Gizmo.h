@@ -43,6 +43,7 @@ class Gizmo : public AbstractTool
 	float GetDeltaY();
 
 	void SetGizmoPosition( SCION_CORE::ECS::Entity& selectedEntity );
+	virtual void ResetSelectedEntity() override { m_SelectedEntity = entt::null; }
 
   protected:
 	std::unique_ptr<GizmoAxisParams> m_pXAxisParams;

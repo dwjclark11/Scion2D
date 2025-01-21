@@ -10,18 +10,12 @@
 #include <Core/CoreUtilities/CoreEngineData.h>
 
 #include <Core/Scripting/InputManager.h>
+#include <Core/CoreUtilities/EngineShaders.h>
+
 #include <Windowing/Inputs/Keyboard.h>
 #include <Windowing/Inputs/Mouse.h>
 #include <Windowing/Inputs/Gamepad.h>
 #include <Windowing/Window/Window.h>
-
-// IMGUI TESTING
-// ===================================
-#include <imgui_internal.h>
-#include <imgui_impl_sdl2.h>
-#include <imgui_impl_opengl3.h>
-#include <SDL_opengl.h>
-// ===================================
 
 #include "editor/displays/MenuDisplay.h"
 #include "editor/displays/AssetDisplay.h"
@@ -36,23 +30,29 @@
 
 #include "editor/utilities/editor_textures.h"
 #include "editor/utilities/EditorFramebuffers.h"
-#include "editor/utilities/ImGuiUtils.h"
 #include "editor/utilities/DrawComponentUtils.h"
-#include "editor/utilities/fonts/IconsFontAwesome5.h"
+#include "editor/utilities/SaveProject.h"
 #include "editor/systems/GridSystem.h"
 
 #include "editor/events/EditorEventTypes.h"
 #include "Core/Events/EventDispatcher.h"
 
-// TODO: This needs to be removed. Scenes are added by default for testing.
-#include "editor/scene/SceneManager.h"
+#include "editor/hub/Hub.h"
+
+// IMGUI
+// ===================================
+#include <imgui_internal.h>
+#include <imgui_impl_sdl2.h>
+#include <imgui_impl_opengl3.h>
+#include <SDL_opengl.h>
+#include "editor/utilities/imgui/Gui.h"
+// ===================================
 
 namespace SCION_EDITOR
 {
 bool Application::Initialize()
 {
 	SCION_INIT_LOGS( false, true );
-	// TODO: LOAD CORE ENGINE DATA
 	// Init SDL
 	if ( SDL_Init( SDL_INIT_EVERYTHING ) != 0 )
 	{
@@ -83,18 +83,16 @@ bool Application::Initialize()
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 	SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 );
 
-	SDL_DisplayMode displayMode;
-	SDL_GetCurrentDisplayMode( 0, &displayMode );
-
 	// Create the Window
-	m_pWindow = std::make_unique<SCION_WINDOWING::Window>( "SCION 2D",
-														   displayMode.w,
-														   displayMode.h,
-														   SDL_WINDOWPOS_CENTERED,
-														   SDL_WINDOWPOS_CENTERED,
-														   true,
-														   SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
-															   SDL_WINDOW_MOUSE_CAPTURE | SDL_WINDOW_MAXIMIZED );
+	m_pWindow = std::make_unique<SCION_WINDOWING::Window>(
+		"SCION 2D", 800, 600, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, true, SDL_WINDOW_OPENGL );
+
+	/*
+	 * SDL Hack - If we create the window as borderless, we lose the icon in the title bar.
+	 * Therefore, after testing I found that if we create the window with a border, then hide
+	 * the border. When we show the border later on, the icon will be there.
+	 */
+	SDL_SetWindowBordered( m_pWindow->GetWindow().get(), SDL_FALSE );
 
 	if ( !m_pWindow->GetWindow() )
 	{
@@ -161,15 +159,9 @@ bool Application::Initialize()
 		return false;
 	}
 
-	if ( !InitImGui() )
+	if ( !Gui::InitImGui( m_pWindow.get() ) )
 	{
 		SCION_ERROR( "Failed to initialize ImGui!" );
-		return false;
-	}
-
-	if ( !LoadShaders() )
-	{
-		SCION_ERROR( "Failed to load the shaders!" );
 		return false;
 	}
 
@@ -179,13 +171,27 @@ bool Application::Initialize()
 		return false;
 	}
 
+	mainRegistry.AddToContext<std::shared_ptr<SaveProject>>( std::make_shared<SaveProject>() );
+	m_pHub = std::make_unique<Hub>( *m_pWindow );
+
+	return true;
+}
+
+bool Application::InitApp()
+{
+	if ( !LoadShaders() )
+	{
+		SCION_ERROR( "Failed to load the shaders!" );
+		return false;
+	}
+
 	if ( !CreateDisplays() )
 	{
 		SCION_ERROR( "Failed to create displays." );
 		return false;
 	}
 
-	if ( !mainRegistry.GetAssetManager().CreateDefaultFonts() )
+	if ( !ASSET_MANAGER().CreateDefaultFonts() )
 	{
 		SCION_ERROR( "Failed to create default fonts" );
 		return false;
@@ -199,7 +205,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	if ( !mainRegistry.AddToContext<std::shared_ptr<EditorFramebuffers>>( pEditorFramebuffers ) )
+	if ( !MAIN_REGISTRY().AddToContext<std::shared_ptr<EditorFramebuffers>>( pEditorFramebuffers ) )
 	{
 		SCION_ERROR( "Failed add the editor frame buffers to registry context!" );
 		return false;
@@ -211,11 +217,13 @@ bool Application::Initialize()
 	pEditorFramebuffers->mapFramebuffers.emplace( FramebufferType::TILEMAP,
 												  std::make_shared<SCION_RENDERING::Framebuffer>( 640, 480, false ) );
 
-	if ( !mainRegistry.AddToContext<std::shared_ptr<GridSystem>>( std::make_shared<GridSystem>() ) )
+	if ( !MAIN_REGISTRY().AddToContext<std::shared_ptr<GridSystem>>( std::make_shared<GridSystem>() ) )
 	{
 		SCION_ERROR( "Failed add the grid system registry context!" );
 		return false;
 	}
+
+	ADD_EVENT_HANDLER( SCION_EDITOR::Events::CloseEditorEvent, &Application::OnCloseEditor, *this );
 
 	// Register Meta Functions
 	RegisterEditorMetaFunctions();
@@ -229,25 +237,29 @@ bool Application::LoadShaders()
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
 
-	if ( !assetManager.AddShader( "basic", "assets/shaders/basicShader.vert", "assets/shaders/basicShader.frag" ) )
+	if ( !assetManager.AddShaderFromMemory(
+			 "basic", SCION_CORE::Shaders::basicShaderVert, SCION_CORE::Shaders::basicShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the basic shader to the asset manager" );
 		return false;
 	}
 
-	if ( !assetManager.AddShader( "color", "assets/shaders/colorShader.vert", "assets/shaders/colorShader.frag" ) )
+	if ( !assetManager.AddShaderFromMemory(
+			 "color", SCION_CORE::Shaders::colorShaderVert, SCION_CORE::Shaders::colorShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the color shader to the asset manager" );
 		return false;
 	}
 
-	if ( !assetManager.AddShader( "circle", "assets/shaders/circleShader.vert", "assets/shaders/circleShader.frag" ) )
+	if ( !assetManager.AddShaderFromMemory(
+			 "circle", SCION_CORE::Shaders::circleShaderVert, SCION_CORE::Shaders::circleShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the color shader to the asset manager" );
 		return false;
 	}
 
-	if ( !assetManager.AddShader( "font", "assets/shaders/fontShader.vert", "assets/shaders/fontShader.frag" ) )
+	if ( !assetManager.AddShaderFromMemory(
+			 "font", SCION_CORE::Shaders::fontShaderVert, SCION_CORE::Shaders::fontShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the font shader to the asset manager" );
 		return false;
@@ -379,6 +391,14 @@ bool Application::LoadEditorTextures()
 	assetManager.GetTexture( "S2D_image_icon" )->SetIsEditorTexture( true );
 	// ====== Content Display Textures End   ======
 
+	if ( !assetManager.AddTextureFromMemory( "S2D_scion_logo", scion_logo, scion_logo_size ) )
+	{
+		SCION_ERROR( "Failed to load texture [scion_logo] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "S2D_scion_logo" )->SetIsEditorTexture( true );
+
 	return true;
 }
 
@@ -453,9 +473,9 @@ void Application::Update()
 
 void Application::Render()
 {
-	Begin();
-	RenderImGui();
-	End();
+	Gui::Begin();
+	RenderDisplays();
+	Gui::End( m_pWindow.get() );
 
 	SDL_GL_SwapWindow( m_pWindow->GetWindow().get() );
 }
@@ -540,13 +560,6 @@ bool Application::CreateDisplays()
 		return false;
 	}
 
-	// auto pEditorStylesDisplay = std::make_unique<EditorStyleToolDisplay>();
-	// if ( !pEditorStylesDisplay )
-	//{
-	//	SCION_ERROR( "Failed to Create Editor Styles Display!" );
-	//	return false;
-	// }
-
 	pDisplayHolder->displays.push_back( std::move( pMenuDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pSceneHierarchyDisplay ) );
@@ -556,85 +569,14 @@ bool Application::CreateDisplays()
 	pDisplayHolder->displays.push_back( std::move( pTilemapDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pAssetDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pContentDisplay ) );
-	// pDisplayHolder->displays.push_back( std::move( pEditorStylesDisplay ) );
 
 	return true;
 }
 
-bool Application::InitImGui()
-{
-	const char* glslVersion = "#version 450";
-	IMGUI_CHECKVERSION();
-
-	if ( !ImGui::CreateContext() )
-	{
-		SCION_ERROR( "Failed to create ImGui Context" );
-		return false;
-	}
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-	io.ConfigWindowsMoveFromTitleBarOnly = true;
-
-	io.Fonts->AddFontDefault();
-	float baseFontSize = 16.0f;
-	float iconFontSize = baseFontSize * 2.0f / 3.0f;
-
-	// merge in icons from Font Awesome
-	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
-	ImFontConfig icons_config;
-	icons_config.MergeMode = true;
-	icons_config.PixelSnapH = true;
-	icons_config.GlyphMinAdvanceX = iconFontSize;
-	icons_config.GlyphOffset = ImVec2{ 0.f, 2.f };
-	io.Fonts->AddFontFromFileTTF( FONT_ICON_FILE_NAME_FAS, baseFontSize, &icons_config, icons_ranges );
-
-	if ( !ImGui_ImplSDL2_InitForOpenGL( m_pWindow->GetWindow().get(), m_pWindow->GetGLContext() ) )
-	{
-		SCION_ERROR( "Failed to intialize ImGui SDL2 for OpenGL!" );
-		return false;
-	}
-
-	if ( !ImGui_ImplOpenGL3_Init( glslVersion ) )
-	{
-		SCION_ERROR( "Failed to intialize ImGui OpenGL3!" );
-		return false;
-	}
-
-	ImGui::InitDefaultStyles();
-
-	return true;
-}
-
-void Application::Begin()
-{
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame();
-	ImGui::NewFrame();
-}
-
-void Application::End()
-{
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
-
-	ImGuiIO& io = ImGui::GetIO();
-	if ( io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable )
-	{
-		SDL_GLContext backupContext = SDL_GL_GetCurrentContext();
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-
-		SDL_GL_MakeCurrent( m_pWindow->GetWindow().get(), backupContext );
-	}
-}
-
-void Application::RenderImGui()
+void Application::InitDisplays()
 {
 	const auto dockSpaceId = ImGui::DockSpaceOverViewport( 0, ImGui::GetMainViewport() );
+
 	if ( static auto firstTime = true; firstTime ) [[unlikely]]
 	{
 		firstTime = false;
@@ -666,6 +608,11 @@ void Application::RenderImGui()
 
 		ImGui::DockBuilderFinish( dockSpaceId );
 	}
+}
+
+void Application::RenderDisplays()
+{
+	InitDisplays();
 
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& pDisplayHolder = mainRegistry.GetContext<std::shared_ptr<DisplayHolder>>();
@@ -674,8 +621,6 @@ void Application::RenderImGui()
 	{
 		pDisplay->Draw();
 	}
-
-	// ImGui::ShowDemoWindow();
 }
 
 void Application::RegisterEditorMetaFunctions()
@@ -689,6 +634,12 @@ void Application::RegisterEditorMetaFunctions()
 	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::RigidBodyComponent>();
 	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::BoxColliderComponent>();
 	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::CircleColliderComponent>();
+}
+
+void Application::OnCloseEditor( SCION_EDITOR::Events::CloseEditorEvent& close )
+{
+	// TODO: Maybe add a check for save??
+	m_bIsRunning = false;
 }
 
 Application::Application()
@@ -711,6 +662,14 @@ void Application::Run()
 		SCION_ERROR( "Initialization Failed!" );
 		return;
 	}
+
+	if ( !m_pHub || !m_pHub->Run() )
+	{
+		// If it makes it here, the app is closing.
+		return;
+	}
+
+	InitApp();
 
 	while ( m_bIsRunning )
 	{

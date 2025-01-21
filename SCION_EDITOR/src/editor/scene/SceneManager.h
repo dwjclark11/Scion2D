@@ -34,15 +34,29 @@ class SceneManager
 	static SceneManager& GetInstance();
 
 	bool AddScene( const std::string& sSceneName );
+	bool AddScene( const std::string& sSceneName, const std::string& sSceneData);
 	bool HasScene( const std::string& sSceneName );
 
 	std::shared_ptr<SCION_EDITOR::SceneObject> GetScene( const std::string& sSceneName );
 	std::shared_ptr<SCION_EDITOR::SceneObject> GetCurrentScene();
+
+	// TODO: May not be necessary
+	void AddLayerToCurrentScene( const std::string& sLayerName, bool bVisible );
+
 	std::vector<std::string> GetSceneNames() const;
 	ToolManager& GetToolManager();
 	CommandManager& GetCommandManager();
 
 	void SetTileset( const std::string& sTileset );
+	bool LoadCurrentScene();
+	bool UnloadCurrentScene();
+
+	bool SaveAllScenes();
+
+	inline const std::map<std::string, std::shared_ptr<SCION_EDITOR::SceneObject>>& GetAllScenes() const
+	{
+		return m_mapScenes;
+	}
 
 	inline void SetCurrentScene( const std::string& sSceneName ) { m_sCurrentScene = sSceneName; }
 	inline const std::string& GetCurrentSceneName() const { return m_sCurrentScene; }

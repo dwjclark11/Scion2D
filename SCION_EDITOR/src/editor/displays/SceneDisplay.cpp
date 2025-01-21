@@ -19,7 +19,8 @@
 #include "Core/Resources/AssetManager.h"
 
 #include "editor/utilities/EditorFramebuffers.h"
-#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/imgui/ImGuiUtils.h"
+#include "editor/utilities/SaveProject.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 
@@ -119,7 +120,9 @@ void SceneDisplay::LoadScene()
 		physics.Init( pPhysicsWorld, 640, 480 );
 	}
 
-	if ( !scriptSystem->LoadMainScript( runtimeRegistry, *lua ) )
+	// Get the main script path
+	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>();
+	if ( !scriptSystem->LoadMainScript( pSaveProject->sMainLuaScript, runtimeRegistry, *lua ) )
 	{
 		SCION_ERROR( "Failed to load the main lua script!" );
 		return;
@@ -201,11 +204,11 @@ void SceneDisplay::DrawToolbar()
 	auto playTextureID = (ImTextureID)(intptr_t)pPlayTexture->GetID();
 	if ( m_bPlayScene && m_bSceneLoaded )
 	{
-		ImGui::ActiveImageButton( playTextureID );
+		ImGui::ActiveImageButton( "##playButton", playTextureID );
 	}
 	else
 	{
-		if ( ImGui::ImageButton( playTextureID, TOOL_BUTTON_SIZE ) )
+		if ( ImGui::ImageButton( "##playButton", playTextureID, TOOL_BUTTON_SIZE ) )
 		{
 			LoadScene();
 		}
@@ -219,11 +222,11 @@ void SceneDisplay::DrawToolbar()
 	auto stopTextureID = (ImTextureID)(intptr_t)pStopTexture->GetID();
 	if ( !m_bPlayScene && !m_bSceneLoaded )
 	{
-		ImGui::ActiveImageButton( stopTextureID );
+		ImGui::ActiveImageButton( "##stopButton", stopTextureID );
 	}
 	else
 	{
-		if ( ImGui::ImageButton( stopTextureID, TOOL_BUTTON_SIZE ) )
+		if ( ImGui::ImageButton( "##stopButton", stopTextureID, TOOL_BUTTON_SIZE ) )
 		{
 			UnloadScene();
 		}

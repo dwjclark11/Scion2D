@@ -7,7 +7,7 @@
 #include "Logger/Logger.h"
 
 #include "editor/utilities/EditorUtilities.h"
-#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/scene/SceneManager.h"
 
@@ -222,7 +222,10 @@ void AssetDisplay::DrawSelectedAssets()
 				if ( textureID == 0 )
 					break;
 
-				ImGui::ImageButton( (ImTextureID)(intptr_t)textureID, ImVec2{ m_AssetSize, m_AssetSize } );
+				std::string assetBtn = "##asset" + std::to_string( id );
+
+				ImGui::ImageButton(
+					assetBtn.c_str(), (ImTextureID)(intptr_t)textureID, ImVec2{ m_AssetSize, m_AssetSize } );
 
 				if ( ImGui::IsItemHovered() && ImGui::IsMouseClicked( 0 ) && !m_bRename )
 					m_SelectedID = id;
@@ -264,7 +267,7 @@ void AssetDisplay::DrawSelectedAssets()
 						m_sRenameBuf.clear();
 						m_bRename = false;
 					}
-					else if ( m_bRename && ImGui::IsKeyPressed( ImGui::GetKeyIndex( ImGuiKey_Escape ) ) )
+					else if ( m_bRename && ImGui::IsKeyPressed( ImGuiKey_Escape ) )
 					{
 						m_sRenameBuf.clear();
 						m_bRename = false;

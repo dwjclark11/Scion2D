@@ -1,6 +1,6 @@
 #include "TileDetailsDisplay.h"
 
-#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/DrawComponentUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/scene/SceneManager.h"
@@ -286,7 +286,7 @@ void TileDetailsDisplay::Draw()
 					m_sRenameLayerBuf.clear();
 					m_bRename = false;
 				}
-				else if ( m_bRename && ImGui::IsKeyPressed( ImGui::GetKeyIndex( ImGuiKey_Escape ) ) )
+				else if ( m_bRename && ImGui::IsKeyPressed(  ImGuiKey_Escape ) )
 				{
 					m_sRenameLayerBuf.clear();
 					m_bRename = false;

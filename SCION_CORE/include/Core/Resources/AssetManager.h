@@ -164,6 +164,26 @@ class AssetManager
 		return m_mapTextures;
 	}
 
+	inline const std::map<std::string, std::shared_ptr<SCION_SOUNDS::SoundFX>>& GetAllSoundFx() const
+	{
+		return m_mapSoundFx;
+	}
+
+	inline const std::map<std::string, std::shared_ptr<SCION_RENDERING::Shader>>& GetAllShaders() const
+	{
+		return m_mapShader;
+	}
+
+	inline const std::map<std::string, std::shared_ptr<SCION_RENDERING::Font>>& GetAllFonts() const
+	{
+		return m_mapFonts;
+	}
+
+	inline const std::map<std::string, std::shared_ptr<SCION_SOUNDS::Music>>& GetAllMusic() const
+	{
+		return m_mapMusic;
+	}
+
 	/*
 	 * @brief Grab all the asset key names for the specific asset type.
 	 * @param Takes in an enum for the desired AssetType.

@@ -55,6 +55,7 @@ void Window::SetSize( int width, int height )
 {
 	m_Width = width;
 	m_Height = height;
+	SDL_SetWindowSize( m_pWindow.get(), width, height );
 }
 
 void Window::SetWindowName( const std::string& name )

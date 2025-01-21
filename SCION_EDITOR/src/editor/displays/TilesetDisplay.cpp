@@ -6,7 +6,7 @@
 #include "editor/scene/SceneManager.h"
 #include "editor/tools/ToolManager.h"
 #include "editor/tools/TileTool.h"
-#include "editor/utilities/ImGuiUtils.h"
+#include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 
 #include <imgui.h>
@@ -109,8 +109,10 @@ void TilesetDisplay::Draw()
 
 				// Create unique id for the buttons
 				ImGui::PushID( k++ );
+				std::string buttonStr = "##tile_" + std::to_string(k);
 
-				if ( ImGui::ImageButton( (ImTextureID)(intptr_t)pTexture->GetID(),
+				if ( ImGui::ImageButton( buttonStr.c_str(),
+										 (ImTextureID)(intptr_t)pTexture->GetID(),
 										 ImVec2{
 											 16.f * 1.5f,
 											 16.f * 1.5f,

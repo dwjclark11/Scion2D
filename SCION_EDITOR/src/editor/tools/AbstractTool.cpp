@@ -96,6 +96,8 @@ bool AbstractTool::SetupTool( SceneObject* pSceneObject, SCION_RENDERING::Camera
 	m_pCamera = pCamera;
 	m_pRegistry = pSceneObject->GetRegistryPtr();
 
+	ResetSelectedEntity();
+
 	return true;
 }
 
