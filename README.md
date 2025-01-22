@@ -9,14 +9,22 @@ This is for educational purposes and to constantly learn more about programming 
 
 There are definitely better engines out there; however, I find it more fun to try to build your own, learn from others, and grow as a developer.
 
-![scion2d](https://github.com/dwjclark11/Scion2D/assets/63356975/ba9c466d-780d-4217-bf9e-5ed0dc4981d9)
+---- 
 
 ## Check the Docs
-The documentation is still a work in progress; however, you can check it out here:
+The documentation is still a work in progress, a lot of stuff has changed and it needs to be updated; however, you can check it out here:
+
 [Scion2D Docs](https://dwjclark11.github.io/Scion2D_Docs/)
+
 ---- 
+### Hub
+![scionhub](https://github.com/user-attachments/assets/d9be3935-fa0f-470a-ad03-d1c31a241565)
+
+----
+#### Scion Editor
 ![neweditorpic](https://github.com/user-attachments/assets/147c74eb-82e7-42e5-a065-4b86b6cb1f88)
 
+----
 
 # Build
 ----
