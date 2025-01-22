@@ -118,15 +118,16 @@ std::shared_ptr<Texture> TextureLoader::Create( Texture::TextureType type, const
 	glGenTextures( 1, &id );
 	glBindTexture( GL_TEXTURE_2D, id );
 
+	bool bLoadSuccessful{ false };
 	switch ( type )
 	{
-	case Texture::TextureType::PIXEL: LoadTexture( texturePath, id, width, height, false ); break;
-	case Texture::TextureType::BLENDED: LoadTexture( texturePath, id, width, height, true ); break;
+	case Texture::TextureType::PIXEL: bLoadSuccessful = LoadTexture( texturePath, id, width, height, false ); break;
+	case Texture::TextureType::BLENDED: bLoadSuccessful = LoadTexture( texturePath, id, width, height, true ); break;
 	// TODO: Add other texture types for loading as needed -- Ex Framebuffer texture
 	default: assert( false && "The current type is not defined, Please use a defined texture type!" ); return nullptr;
 	}
 
-	return std::make_shared<Texture>( id, width, height, type, texturePath, bTileset );
+	return bLoadSuccessful ? std::make_shared<Texture>( id, width, height, type, texturePath, bTileset ) : nullptr;
 }
 
 std::shared_ptr<Texture> TextureLoader::Create( Texture::TextureType type, int width, int height, bool bTileset )
@@ -141,9 +142,12 @@ std::shared_ptr<Texture> TextureLoader::Create( Texture::TextureType type, int w
 
 	GLuint id;
 	glGenTextures( 1, &id );
-	LoadFBTexture( id, width, height );
+	if ( LoadFBTexture( id, width, height ) )
+	{
+		return std::make_shared<Texture>( id, width, height, type, "", bTileset );
+	}
 
-	return std::make_shared<Texture>( id, width, height, type, "", bTileset );
+	return nullptr;
 }
 
 std::shared_ptr<Texture> TextureLoader::CreateFromMemory( const unsigned char* imageData, size_t length, bool blended,
@@ -152,9 +156,12 @@ std::shared_ptr<Texture> TextureLoader::CreateFromMemory( const unsigned char* i
 	GLuint id;
 	int width, height;
 
-	LoadTextureFromMemory( imageData, length, id, width, height, blended );
+	if ( LoadTextureFromMemory( imageData, length, id, width, height, blended ) )
+	{
+		return std::make_shared<Texture>(
+			id, width, height, blended ? Texture::TextureType::BLENDED : Texture::TextureType::PIXEL, "", bTileset );
+	}
 
-	return std::make_shared<Texture>(
-		id, width, height, blended ? Texture::TextureType::BLENDED : Texture::TextureType::PIXEL, "", bTileset );
+	return nullptr;
 }
 } // namespace SCION_RENDERING
