@@ -13,10 +13,11 @@
 #include "Core/Events/EventDispatcher.h"
 
 #include "ScionFilesystem/Process/FileProcessor.h"
-
+#include "ScionFilesystem/Serializers/LuaSerializer.h"
 #include <imgui.h>
 
 using namespace SCION_EDITOR::Events;
+using namespace SCION_FILESYSTEM;
 
 namespace fs = std::filesystem;
 
@@ -103,7 +104,8 @@ void ContentDisplay::Draw()
 				if ( itr->is_directory() )
 				{
 					// Change to the next Directory
-					ImGui::ImageButton( contentBtn.c_str(), ( ImTextureID )( intptr_t ) icon->GetID(), ImVec2{ 80.f, 80.f } );
+					ImGui::ImageButton(
+						contentBtn.c_str(), (ImTextureID)(intptr_t)icon->GetID(), ImVec2{ 80.f, 80.f } );
 					if ( ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked( 0 ) )
 					{
 						m_CurrentDir /= path.filename();
@@ -121,13 +123,14 @@ void ContentDisplay::Draw()
 				else
 				{
 					ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, { 0.0f, 0.0f } );
-					ImGui::ImageButton( contentBtn.c_str(), ( ImTextureID )( intptr_t ) icon->GetID(), ImVec2{ 80.f, 80.f } );
+					ImGui::ImageButton(
+						contentBtn.c_str(), (ImTextureID)(intptr_t)icon->GetID(), ImVec2{ 80.f, 80.f } );
 					ImGui::PopStyleVar( 1 );
 
 					if ( ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked( 0 ) )
 					{
 						SCION_FILESYSTEM::FileProcessor fp{};
-						if (!fp.OpenApplicationFromFile(path.string(), {}))
+						if ( !fp.OpenApplicationFromFile( path.string(), {} ) )
 						{
 							SCION_ERROR( "Failed to open file {}", path.string() );
 						}
@@ -144,18 +147,18 @@ void ContentDisplay::Draw()
 					if ( m_bItemCut )
 					{
 						ImGui::BeginDisabled();
-						ImGui::Selectable( "Cut" );
+						ImGui::Selectable( ICON_FA_CUT " Cut" );
 						ImGui::EndDisabled();
 					}
 					else
 					{
-						if ( ImGui::Selectable( "Cut" ) )
+						if ( ImGui::Selectable( ICON_FA_CUT " Cut" ) )
 						{
 							m_sFilepathToAction = path.string();
 							m_bItemCut = true;
 						}
 
-						if ( ImGui::Selectable( "Delete" ) )
+						if ( ImGui::Selectable( ICON_FA_TRASH " Delete" ) )
 						{
 							if ( m_Selected == id )
 							{
@@ -189,7 +192,7 @@ void ContentDisplay::Draw()
 			{
 				if ( m_bItemCut && !m_sFilepathToAction.empty() )
 				{
-					if ( ImGui::Selectable( "Paste" ) )
+					if ( ImGui::Selectable( ICON_FA_PASTE " Paste" ) )
 					{
 						m_pFileDispatcher->EnqueueEvent( FileEvent{ .eAction = EFileAction::Paste } );
 					}
@@ -197,9 +200,33 @@ void ContentDisplay::Draw()
 				else
 				{
 					ImGui::BeginDisabled();
-					ImGui::Selectable( "Paste" );
+					ImGui::Selectable( ICON_FA_PASTE " Paste" );
 					ImGui::EndDisabled();
 				}
+
+				if ( ImGui::Selectable( ICON_FA_FOLDER " New Folder" ) )
+				{
+					m_sFilepathToAction = m_CurrentDir.string();
+					m_eCreateAction = Events::EContentCreateAction::Folder;
+				}
+
+				if ( ImGui::TreeNode( "Lua Objects" ) )
+				{
+					if ( ImGui::Selectable( ICON_FA_FILE " Create Lua Class" ) )
+					{
+						m_sFilepathToAction = m_CurrentDir.string();
+						m_eCreateAction = Events::EContentCreateAction::LuaClass;
+					}
+					ImGui::ItemToolTip( "Generates an empty lua class." );
+
+					if ( ImGui::Selectable( ICON_FA_FILE " Create Lua Table" ) )
+					{
+					}
+					ImGui::ItemToolTip( "Generates an empty lua table." );
+
+					ImGui::TreePop();
+				}
+
 				ImGui::EndPopup();
 			}
 		}
@@ -207,7 +234,7 @@ void ContentDisplay::Draw()
 		ImGui::EndTable();
 	}
 
-	OpenDeletePopup();
+	HandlePopups();
 
 	ImGui::End();
 }
@@ -355,6 +382,37 @@ void ContentDisplay::HandleFileEvent( const SCION_EDITOR::Events::FileEvent& fil
 	}
 }
 
+void ContentDisplay::HandleCreateEvent( const SCION_EDITOR::Events::ContentCreateEvent& createEvent )
+{
+	if ( createEvent.eAction == EContentCreateAction::NoAction )
+		return;
+
+	switch ( createEvent.eAction )
+	{
+	case EContentCreateAction::Folder: OpenCreateFolderPopup(); break;
+	}
+}
+
+void ContentDisplay::HandlePopups()
+{
+	if ( m_eFileAction != EFileAction::NoAction )
+	{
+		switch ( m_eFileAction )
+		{
+		case EFileAction::Delete: OpenDeletePopup(); break;
+		}
+	}
+
+	if ( m_eCreateAction != EContentCreateAction::NoAction )
+	{
+		switch ( m_eCreateAction )
+		{
+		case EContentCreateAction::Folder: OpenCreateFolderPopup(); break;
+		case EContentCreateAction::LuaClass: OpenCreateLuaClassPopup(); break;
+		}
+	}
+}
+
 void ContentDisplay::OpenDeletePopup()
 {
 	if ( m_eFileAction != Events::EFileAction::Delete )
@@ -377,6 +435,225 @@ void ContentDisplay::OpenDeletePopup()
 		{
 			m_eFileAction = Events::EFileAction::NoAction;
 		}
+		ImGui::EndPopup();
+	}
+}
+
+void ContentDisplay::OpenCreateFolderPopup()
+{
+	if ( m_eCreateAction != EContentCreateAction::Folder )
+		return;
+
+	ImGui::OpenPopup( "Create Folder" );
+
+	if ( ImGui::BeginPopupModal( "Create Folder" ) )
+	{
+		static std::string newFolderStr{ "" };
+		char temp[ 256 ];
+		memset( temp, 0, sizeof( temp ) );
+		strcpy_s( temp, newFolderStr.c_str() );
+		bool bNameEntered{ false }, bExit{ false };
+
+		ImGui::Text( "folder name" );
+		ImGui::SameLine();
+
+		if ( !ImGui::IsAnyItemActive() )
+			ImGui::SetKeyboardFocusHere();
+
+		if ( ImGui::InputText( "##folder name", temp, sizeof( temp ), ImGuiInputTextFlags_EnterReturnsTrue ) )
+		{
+			newFolderStr = std::string{ temp };
+			bNameEntered = true;
+		}
+		else if ( ImGui::IsKeyPressed( ImGui::GetKeyIndex( ImGuiKey_Escape ) ) )
+		{
+			bExit = true;
+		}
+
+		static std::string errorText{ "" };
+		if ( bNameEntered && !newFolderStr.empty() )
+		{
+			std::string folderPathStr = m_CurrentDir.string() + "\\" + newFolderStr;
+			std::error_code error{};
+			if ( !fs::create_directory( fs::path{ folderPathStr }, error ) )
+			{
+				SCION_ERROR( "Failed to create new folder - {}", error.message() );
+				errorText = "Failed to create new folder - " + error.message();
+			}
+			else
+			{
+				m_eCreateAction = EContentCreateAction::NoAction;
+				m_sFilepathToAction.clear();
+				newFolderStr.clear();
+				errorText.clear();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		if ( ImGui::Button( "Cancel" ) || bExit )
+		{
+			m_eCreateAction = EContentCreateAction::NoAction;
+			m_sFilepathToAction.clear();
+			errorText.clear();
+			newFolderStr.clear();
+			ImGui::CloseCurrentPopup();
+		}
+
+		if ( !errorText.empty() )
+		{
+			ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f }, errorText.c_str() );
+		}
+
+		ImGui::EndPopup();
+	}
+}
+
+void ContentDisplay::OpenCreateLuaClassPopup()
+{
+	if ( m_eCreateAction != EContentCreateAction::LuaClass )
+		return;
+
+	ImGui::OpenPopup( "Create Lua Class" );
+
+	if ( ImGui::BeginPopupModal( "Create Lua Class" ) )
+	{
+		char buffer[ 256 ];
+		static std::string className{ "" };
+		memset( buffer, 0, sizeof( buffer ) );
+		strcpy_s( buffer, className.c_str() );
+		bool bNameEntered{ false }, bExit{ false };
+		ImGui::Text( "Class Name" );
+		ImGui::SameLine();
+
+		if ( !ImGui::IsAnyItemActive() )
+			ImGui::SetKeyboardFocusHere();
+
+		if ( ImGui::InputText( "##ClassName", buffer, sizeof( buffer ), ImGuiInputTextFlags_EnterReturnsTrue ) )
+		{
+			className = std::string{ buffer };
+			bNameEntered = true;
+		}
+		else if ( ImGui::IsKeyPressed( ImGui::GetKeyIndex( ImGuiKey_Escape ) ) )
+		{
+			bExit = true;
+		}
+
+		static std::string errorText{ "" };
+
+		if ( bNameEntered && !className.empty() )
+		{
+			std::string filename = m_sFilepathToAction + +"\\" + className + ".lua";
+
+			if ( fs::exists( fs::path{ filename } ) )
+			{
+				SCION_ERROR( "Class file: [{}] already exists at [{}]", className, filename );
+				errorText = "Class file: [" + className + "] already exists at [" + filename + "]";
+			}
+			else
+			{
+				LuaSerializer lw{ filename };
+
+				lw.AddWords( className + " = {}" )
+					.AddWords( className + ".__index = " + className, true )
+					.AddWords( "function " + className + ":Create(params)", true )
+					.AddWords( "local this = {}", true, true )
+					.AddWords( "setmetatable(this, self)", true, true )
+					.AddWords( "return this", true, true )
+					.AddWords( "end", true );
+
+				errorText.clear();
+				className.clear();
+				m_eCreateAction = EContentCreateAction::NoAction;
+				m_sFilepathToAction.clear();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		if ( ImGui::Button( "Cancel" ) || bExit )
+		{
+			ImGui::CloseCurrentPopup();
+			m_eCreateAction = EContentCreateAction::NoAction;
+			className.clear();
+			m_sFilepathToAction.clear();
+		}
+
+		if ( !errorText.empty() )
+		{
+			ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f }, errorText.c_str() );
+		}
+
+		ImGui::EndPopup();
+	}
+}
+
+void ContentDisplay::OpenCreateLuaTablePopup()
+{
+	if ( m_eCreateAction != EContentCreateAction::LuaTable )
+		return;
+
+	ImGui::OpenPopup( "Create Lua Table" );
+
+	if ( ImGui::BeginPopupModal( "Create Lua Table" ) )
+	{
+		char buffer[ 256 ];
+		static std::string tableName{ "" };
+		memset( buffer, 0, sizeof( buffer ) );
+		strcpy_s( buffer, tableName.c_str() );
+		bool bNameEntered{ false }, bExit{ false };
+		ImGui::Text( "Table Name" );
+		ImGui::SameLine();
+
+		if ( !ImGui::IsAnyItemActive() )
+			ImGui::SetKeyboardFocusHere();
+
+		if ( ImGui::InputText( "##TableName", buffer, sizeof( buffer ), ImGuiInputTextFlags_EnterReturnsTrue ) )
+		{
+			tableName = std::string{ buffer };
+			bNameEntered = true;
+		}
+		else if ( ImGui::IsKeyPressed( ImGui::GetKeyIndex( ImGuiKey_Escape ) ) )
+		{
+			bExit = true;
+		}
+
+		static std::string errorText{ "" };
+
+		if ( bNameEntered && !tableName.empty() )
+		{
+			std::string filename = m_sFilepathToAction + +"\\" + tableName + ".lua";
+
+			if ( fs::exists( fs::path{ filename } ) )
+			{
+				SCION_ERROR( "Table file: [{}] already exists at [{}]", tableName, filename );
+				errorText = "Table file: [" + tableName + "] already exists at [" + filename + "]";
+			}
+			else
+			{
+				LuaSerializer lw{ filename };
+
+				lw.StartNewTable( tableName ).EndTable().FinishStream();
+
+				errorText.clear();
+				tableName.clear();
+				m_eCreateAction = EContentCreateAction::NoAction;
+				m_sFilepathToAction.clear();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		if ( ImGui::Button( "Cancel" ) || bExit )
+		{
+			ImGui::CloseCurrentPopup();
+			m_eCreateAction = EContentCreateAction::NoAction;
+			tableName.clear();
+			m_sFilepathToAction.clear();
+		}
+
+		if ( !errorText.empty() )
+		{
+			ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f }, errorText.c_str() );
+		}
+
 		ImGui::EndPopup();
 	}
 }

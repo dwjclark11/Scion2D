@@ -1,6 +1,10 @@
 #include "Core/ECS/Components/PhysicsComponent.h"
-#include <Logger/Logger.h>
 #include "Core/CoreUtilities/CoreEngineData.h"
+
+#include "Physics/RayCastCallback.h"
+#include "Physics/BoxTraceCallback.h"
+
+#include <Logger/Logger.h>
 
 using namespace SCION_PHYSICS;
 
@@ -105,6 +109,111 @@ const bool PhysicsComponent::IsSensor() const
 		return false;
 
 	return m_pRigidBody->GetFixtureList()->IsSensor();
+}
+
+SCION_PHYSICS::ObjectData PhysicsComponent::CastRay( const b2Vec2& point1, const b2Vec2& point2 ) const
+{
+	if ( !m_pRigidBody )
+	{
+		return {};
+	}
+
+	// Get the world
+	auto* pWorld = m_pRigidBody->GetWorld();
+	if ( !pWorld )
+		return {};
+
+	RayCastCallback callback{};
+
+	auto& coreGlobals = CORE_GLOBALS();
+	const auto& M2P = coreGlobals.MetersToPixels();
+	const auto& P2M = coreGlobals.PixelsToMeters();
+
+	const auto& scaledWidth = coreGlobals.ScaledWidth();
+	const auto& scaledHeight = coreGlobals.ScaledHeight();
+
+	auto ax = ( point1.x / M2P ) - scaledWidth * 0.5f;
+	auto ay = ( point1.y / M2P ) - scaledHeight * 0.5f;
+
+	auto bx = ( point2.x / M2P ) - scaledWidth * 0.5f;
+	auto by = ( point2.y / M2P ) - scaledHeight * 0.5f;
+
+	pWorld->RayCast( &callback, b2Vec2{ ax, ay }, b2Vec2{ bx, by } );
+
+	if ( callback.IsHit() )
+	{
+		auto& userData = callback.HitFixture()->GetUserData();
+		if ( UserData* pData = reinterpret_cast<UserData*>( userData.pointer ) )
+		{
+			try
+			{
+				auto objectData = std::any_cast<ObjectData>( pData->userData );
+				return objectData;
+			}
+			catch ( const std::bad_any_cast& ex )
+			{
+				SCION_ERROR( "Failed to cast to object data. Error: {}", ex.what() );
+			}
+		}
+	}
+
+	return SCION_PHYSICS::ObjectData{};
+}
+
+std::vector<SCION_PHYSICS::ObjectData> PhysicsComponent::BoxTrace( const b2Vec2& lowerBounds,
+																   const b2Vec2& upperBounds ) const
+{
+	if ( !m_pRigidBody )
+	{
+		return {};
+	}
+
+	// Get the world
+	auto* pWorld = m_pRigidBody->GetWorld();
+	if ( !pWorld )
+		return {};
+
+	std::vector<SCION_PHYSICS::ObjectData> objectDataVec{};
+
+	BoxTraceCallback callback{};
+
+	auto& coreGlobals = CORE_GLOBALS();
+	const auto& M2P = coreGlobals.MetersToPixels();
+	const auto& P2M = coreGlobals.PixelsToMeters();
+
+	const auto& scaledWidth = coreGlobals.ScaledWidth();
+	const auto& scaledHeight = coreGlobals.ScaledHeight();
+
+	b2AABB aabb{};
+	aabb.lowerBound =
+		b2Vec2{ ( lowerBounds.x / M2P ) - scaledWidth * 0.5f, ( lowerBounds.y / M2P ) - scaledHeight * 0.5f };
+
+	aabb.upperBound =
+		b2Vec2{ ( upperBounds.x / M2P ) - scaledWidth * 0.5f, ( upperBounds.y / M2P ) - scaledHeight * 0.5f };
+
+	pWorld->QueryAABB( &callback, aabb );
+
+	const auto& hitBodies = callback.GetBodies();
+	if ( hitBodies.empty() )
+		return objectDataVec;
+
+	for ( const auto pBody : hitBodies )
+	{
+		auto& userData = pBody->GetFixtureList()->GetUserData();
+		UserData* pData = reinterpret_cast<UserData*>( userData.pointer );
+
+		try
+		{
+			auto objectData = std::any_cast<ObjectData>( pData->userData );
+			objectDataVec.push_back( objectData );
+		}
+		catch ( const std::bad_any_cast& e )
+		{
+			SCION_ERROR( "Failed to cast to object data - " + std::string{ e.what() } );
+		}
+	}
+
+	return objectDataVec;
 }
 
 void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& registry )
@@ -404,6 +513,17 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			{
 				return;
 			}
+		},
+		"cast_ray",
+		[]( PhysicsComponent& pc, const glm::vec2& p1, const glm::vec2& p2, sol::this_state s ) {
+			auto objectData = pc.CastRay( b2Vec2{ p1.x, p1.y }, b2Vec2{ p2.x, p2.y } );
+			return objectData.entityID == entt::null ? sol::lua_nil_t{} : sol::make_object( s, objectData );
+		},
+		"box_trace",
+		[]( PhysicsComponent& pc, const glm::vec2& lowerBounds, const glm::vec2& upperBounds, sol::this_state s ) {
+			auto vecObjectData =
+				pc.BoxTrace( b2Vec2{ lowerBounds.x, lowerBounds.y }, b2Vec2{ upperBounds.x, upperBounds.y } );
+			return vecObjectData.empty() ? sol::lua_nil_t{} : sol::make_object( s, vecObjectData );
 		}
 
 	);

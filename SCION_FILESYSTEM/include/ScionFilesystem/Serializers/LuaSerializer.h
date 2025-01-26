@@ -50,6 +50,9 @@ class LuaSerializer
 	LuaSerializer& AddKeyValuePair( TKey key, const TValue& value, bool bAddNewLine = true, bool bFinalValue = false,
 									bool bQuoteKey = false, bool bQuoteValue = false );
 
+	template<Streamable T>
+	LuaSerializer& AddWords( T words, bool bNewLine = false, bool bIndent = false, int indentSize = 1);
+
   private:
 	void AddIndents();
 	void AddNewLine();

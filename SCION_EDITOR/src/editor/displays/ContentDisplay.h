@@ -6,7 +6,9 @@
 namespace SCION_EDITOR::Events
 {
 enum class EFileAction;
+enum class EContentCreateAction;
 struct FileEvent;
+struct ContentCreateEvent;
 } // namespace SCION_EDITOR::Events
 
 namespace SCION_CORE::Events
@@ -31,7 +33,14 @@ class ContentDisplay : public IDisplay
 	void CopyDroppedFile( const std::string& sFileToCopy, const std::filesystem::path& droppedPath );
 	void MoveFolderOrFile( const std::filesystem::path& movedPath, const std::filesystem::path& path );
 	void HandleFileEvent( const SCION_EDITOR::Events::FileEvent& fileEvent );
+	void HandleCreateEvent( const SCION_EDITOR::Events::ContentCreateEvent& createEvent );
+	void HandlePopups();
+
 	void OpenDeletePopup();
+	void OpenCreateFolderPopup();
+
+	void OpenCreateLuaClassPopup();
+	void OpenCreateLuaTablePopup();
 
   private:
 	std::unique_ptr<SCION_CORE::Events::EventDispatcher> m_pFileDispatcher;
@@ -40,6 +49,10 @@ class ContentDisplay : public IDisplay
 	int m_Selected;
 
 	SCION_EDITOR::Events::EFileAction m_eFileAction;
-	bool m_bItemCut, m_bWindowHovered;
+	SCION_EDITOR::Events::EContentCreateAction m_eCreateAction;
+
+	bool m_bItemCut;
+	bool m_bWindowHovered;
+
 };
 } // namespace SCION_EDITOR

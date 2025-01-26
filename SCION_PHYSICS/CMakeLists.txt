@@ -7,7 +7,8 @@ add_library(SCION_PHYSICS
     "src/UserData.cpp"
 	"include/Physics/PhysicsUtilities.h"
 	"src/PhysicsUtilities.cpp"
-)
+	"include/Physics/BoxTraceCallback.h"
+ "src/BoxTraceCallback.cpp" "include/Physics/RayCastCallback.h" "src/RayCastCallback.cpp")
 
 target_include_directories(
     SCION_PHYSICS PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

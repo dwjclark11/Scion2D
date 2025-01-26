@@ -49,6 +49,26 @@ inline LuaSerializer& LuaSerializer::AddKeyValuePair( TKey key, const TValue& va
 }
 
 template <Streamable T>
+inline LuaSerializer& LuaSerializer::AddWords( T words, bool bNewLine, bool bIndent, int indentSize )
+{
+	if ( bNewLine )
+		AddNewLine();
+
+	if (bIndent)
+	{
+		m_NumIndents += indentSize;
+		AddIndents();
+		m_NumIndents -= indentSize;
+	}
+
+	Stream( words );
+	m_bNewLineAdded = false;
+	m_bValueAdded = false;
+
+	return *this;
+}
+
+template <Streamable T>
 inline void LuaSerializer::Stream( const T& val )
 {
 	m_FileStream << val;

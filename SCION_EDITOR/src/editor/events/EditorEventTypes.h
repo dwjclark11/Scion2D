@@ -35,4 +35,19 @@ struct SwitchEntityEvent
 	SCION_CORE::ECS::Entity* pEntity{ nullptr };
 };
 
+enum class EContentCreateAction
+{
+	Folder,
+	LuaClass,
+	LuaTable,
+	
+	NoAction
+};
+
+struct ContentCreateEvent
+{
+	EContentCreateAction eAction{ EContentCreateAction::NoAction };
+	std::string sFilepath{ "" };
+};
+
 } // namespace SCION_EDITOR::Events
