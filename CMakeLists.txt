@@ -40,6 +40,8 @@ if(WIN32)
 	set(APP_ICON_RESOURCE "${CMAKE_CURRENT_SOURCE_DIR}/resources/scion2d.rc")
 endif()
 
+add_compile_definitions(IN_SCION_EDITOR)
+
 find_package(glad CONFIG REQUIRED)
 find_package(soil2 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)

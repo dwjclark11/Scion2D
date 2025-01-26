@@ -13,9 +13,13 @@ namespace SCION_RENDERING
 class SpriteBatchRenderer;
 }
 
+namespace SCION_CORE::Events
+{
+class EventDispatcher;
+}
+
 namespace SCION_EDITOR
 {
-
 struct GizmoAxisParams;
 struct Canvas;
 
@@ -33,7 +37,8 @@ class Gizmo : public AbstractTool
 	void Hide();
 	void Show();
 
-	inline bool OverGizmo() const { return false; }
+	SCION_CORE::Events::EventDispatcher& GetDispatcher();
+	inline bool OverGizmo() const { return !( !m_bHoldingX && !m_bHoldingY && !m_bOverXAxis && !m_bOverYAxis ); }
 
   protected:
 	void Init( const std::string& sXAxisTexture, const std::string& sYAxisTexture );
@@ -49,6 +54,7 @@ class Gizmo : public AbstractTool
 	std::unique_ptr<GizmoAxisParams> m_pXAxisParams;
 	std::unique_ptr<GizmoAxisParams> m_pYAxisParams;
 	std::unique_ptr<SCION_RENDERING::SpriteBatchRenderer> m_pBatchRenderer;
+	std::unique_ptr<SCION_CORE::Events::EventDispatcher> m_pEventDispatcher{ nullptr };
 
 	entt::entity m_SelectedEntity;
 	glm::vec2 m_LastMousePos;

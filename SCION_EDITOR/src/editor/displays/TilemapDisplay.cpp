@@ -5,12 +5,14 @@
 #include "Core/Systems/RenderSystem.h"
 #include "Core/Systems/RenderUISystem.h"
 #include "Core/Systems/RenderShapeSystem.h"
+#include "Core/Systems/RenderPickingSystem.h"
 #include "Core/Systems/AnimationSystem.h"
 
 #include "Core/CoreUtilities/CoreEngineData.h"
 
 #include "Rendering/Core/Camera2D.h"
 #include "Rendering/Core/Renderer.h"
+#include "Rendering/Essentials/PickingTexture.h"
 
 #include "editor/systems/GridSystem.h"
 #include "editor/utilities/EditorFramebuffers.h"
@@ -39,6 +41,8 @@
 #endif
 
 using namespace SCION_CORE::Systems;
+using namespace SCION_RENDERING;
+
 
 namespace SCION_EDITOR
 {
@@ -54,6 +58,52 @@ void TilemapDisplay::RenderTilemap()
 	auto& renderShapeSystem = mainRegistry.GetRenderShapeSystem();
 
 	auto pActiveGizmo = TOOL_MANAGER().GetActiveGizmo();
+	auto& mouse = INPUT_MANAGER().GetMouse();
+
+	if ( pActiveGizmo && pActiveGizmo->IsOverTilemapWindow() && !pActiveGizmo->OverGizmo() &&
+		 !ImGui::GetDragDropPayload() && mouse.IsBtnJustPressed( SCION_MOUSE_LEFT ) )
+	{
+		auto& renderPickingSystem = mainRegistry.GetContext<std::shared_ptr<RenderPickingSystem>>();
+		// Handle the picking texture/system
+		if ( renderPickingSystem && pCurrentScene )
+		{
+			auto& pPickingTexture = mainRegistry.GetContext<std::shared_ptr<PickingTexture>>();
+			if ( pPickingTexture )
+			{
+				renderer->SetCapability( Renderer::GLCapability::BLEND, false );
+				pPickingTexture->Bind();
+				renderer->SetViewport( 0, 0, pPickingTexture->GetWidth(), pPickingTexture->GetHeight() );
+				renderer->SetClearColor( 0.f, 0.f, 0.f, 0.f );
+				renderer->ClearBuffers( true, true );
+
+				renderPickingSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
+
+				const auto& pos = pActiveGizmo->GetMouseScreenCoords();
+				auto id = static_cast<entt::entity>(
+					pPickingTexture->ReadPixel( static_cast<int>( pos.x ), static_cast<int>( pos.y ) ) );
+
+				if ( !pCurrentScene->GetRegistry().IsValid( static_cast<entt::entity>( id ) ) )
+				{
+					id = entt::null;
+				}
+				else
+				{
+					SCION_CORE::ECS::Entity checkedEntity{ pCurrentScene->GetRegistry(),
+														   static_cast<entt::entity>( id ) };
+					if ( checkedEntity.HasComponent<SCION_CORE::ECS::TileComponent>() )
+					{
+						id = entt::null;
+					}
+				}
+
+				SCENE_MANAGER().GetToolManager().SetSelectedEntity( id );
+			}
+
+			pPickingTexture->Unbind();
+			pPickingTexture->CheckResize();
+			renderer->SetCapability( Renderer::GLCapability::BLEND, true );
+		}
+	}
 
 	const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::TILEMAP ];
 
@@ -380,6 +430,13 @@ void TilemapDisplay::Draw()
 		if ( fb->Width() != static_cast<int>( windowSize.x ) || fb->Height() != static_cast<int>( windowSize.y ) )
 		{
 			fb->Resize( static_cast<int>( windowSize.x ), static_cast<int>( windowSize.y ) );
+
+			auto& pPickingTexture = mainRegistry.GetContext<std::shared_ptr<PickingTexture>>();
+			if ( pPickingTexture )
+			{
+				pPickingTexture->Resize( static_cast<int>( windowSize.x ), static_cast<int>( windowSize.y ) );
+			}
+
 			m_pTilemapCam->Resize( static_cast<int>( windowSize.x ), static_cast<int>( windowSize.y ) );
 		}
 

@@ -157,5 +157,50 @@ void main()
 }
 )";
 
+	static const char* pickingShaderVert = R"(
+#version 450 
+
+layout(location = 0) in vec2 vertexPosition;
+layout(location = 1) in vec2 vertexUV;
+layout(location = 2) in int inEntityID;
+
+out vec2 fragmentUV;
+flat out int outEntityID;
+
+uniform mat4 uProjection;
+
+void main()
+{
+	gl_Position = uProjection *  vec4(vertexPosition, 0.0, 1.0);
+	
+	fragmentUV = vertexUV;
+	outEntityID = inEntityID;
+}
+)";
+
+static const char* pickingShaderFrag = R"(
+#version 450
+
+in vec2 fragmentUV;
+flat in int outEntityID;
+
+out int color;
+
+uniform sampler2D uSpriteTexture;
+
+void main()
+{
+	
+	vec4 textureColor = texture(uSpriteTexture, fragmentUV);
+
+	if (textureColor.a < 0.5)
+	{
+		discard;
+	}
+
+	color = outEntityID;
+}
+)";
+
 }
 

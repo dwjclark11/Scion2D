@@ -8,6 +8,8 @@
 #include "editor/scene/SceneObject.h"
 #include "Rendering/Core/Camera2D.h"
 
+#include "Core/Events/EventDispatcher.h"
+
 namespace SCION_EDITOR
 {
 ToolManager::ToolManager()
@@ -165,6 +167,17 @@ void ToolManager::EnableGridSnap( bool bEnable )
 		else
 			tool.second->DisableGridSnap();
 	}
+}
+
+std::vector<SCION_CORE::Events::EventDispatcher*> ToolManager::GetDispatchers()
+{
+	std::vector<SCION_CORE::Events::EventDispatcher*> dispatchers{};
+	for (auto& [eType, pGizmo] : m_mapGizmos)
+	{
+		dispatchers.push_back( &pGizmo->GetDispatcher() );
+	}
+
+	return dispatchers;
 }
 
 } // namespace SCION_EDITOR

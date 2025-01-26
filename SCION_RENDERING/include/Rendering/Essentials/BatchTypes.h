@@ -76,4 +76,14 @@ struct TextGlyph
 	int padding{ 0 };
 };
 
+struct PickingGlyph
+{
+	PickingVertex topLeft{};
+	PickingVertex bottomLeft{};
+	PickingVertex topRight{};
+	PickingVertex bottomRight{};
+	int layer{ 0 };
+	GLuint textureID{ 0 };
+};
+
 } // namespace SCION_RENDERING

@@ -62,4 +62,13 @@ struct CircleVertex
 	Color color;
 	float lineThickness;
 };
+
+struct PickingVertex
+{
+	glm::vec2 position{ 0.f };
+	glm::vec2 uvs{ 0.f };
+	Color color{};
+	uint32_t uid{ 0 };
+};
+
 } // namespace SCION_RENDERING

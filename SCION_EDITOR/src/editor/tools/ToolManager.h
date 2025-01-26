@@ -9,6 +9,11 @@ namespace SCION_RENDERING
 class Camera2D;
 }
 
+namespace SCION_CORE::Events
+{
+class EventDispatcher;
+}
+
 namespace SCION_EDITOR
 {
 
@@ -22,13 +27,6 @@ enum class EGizmoType;
 
 class ToolManager
 {
-  private:
-	std::map<EToolType, std::unique_ptr<TileTool>> m_mapTools;
-	std::map<EGizmoType, std::unique_ptr<Gizmo>> m_mapGizmos;
-
-	EToolType m_eActiveToolType;
-	EGizmoType m_eActiveGizmoType;
-
   public:
 	ToolManager();
 	~ToolManager() = default;
@@ -87,7 +85,16 @@ class ToolManager
 	inline EGizmoType GetActiveGizmoType() const { return m_eActiveGizmoType; }
 
 	void SetSelectedEntity( entt::entity entity );
-
 	void EnableGridSnap( bool bEnable );
+
+	std::vector<SCION_CORE::Events::EventDispatcher*> GetDispatchers();
+
+  private:
+	std::map<EToolType, std::unique_ptr<TileTool>> m_mapTools;
+	std::map<EGizmoType, std::unique_ptr<Gizmo>> m_mapGizmos;
+
+	EToolType m_eActiveToolType;
+	EGizmoType m_eActiveGizmoType;
 };
 } // namespace SCION_EDITOR
+

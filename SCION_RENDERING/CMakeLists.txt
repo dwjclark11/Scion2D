@@ -35,7 +35,12 @@ add_library(SCION_RENDERING
     "src/Texture.cpp"
     "include/Rendering/Essentials/TextureLoader.h"
     "src/TextureLoader.cpp"
-    "include/Rendering/Essentials/Vertex.h")
+    "include/Rendering/Essentials/Vertex.h"
+	"include/Rendering/Essentials/PickingTexture.h"
+	"src/PickingTexture.cpp"
+	"include/Rendering/Core/PickingBatchRenderer.h"
+	"src/PickingBatchRenderer.cpp"
+)
 
 target_include_directories(
     SCION_RENDERING PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

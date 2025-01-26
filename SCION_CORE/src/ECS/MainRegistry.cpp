@@ -13,6 +13,12 @@
 #include <Rendering/Core/Renderer.h>
 #include <ScionUtilities/HelperUtilities.h>
 
+// Systems not needed outside of the editor
+#ifdef IN_SCION_EDITOR
+#include "Core/Systems/RenderPickingSystem.h"
+#endif
+// End Editor only systems
+
 namespace SCION_CORE::ECS
 {
 
@@ -40,6 +46,7 @@ bool MainRegistry::Initialize()
 
 	// Enable Alpha Blending
 	renderer->SetCapability( SCION_RENDERING::Renderer::GLCapability::BLEND, true );
+	renderer->SetCapability( SCION_RENDERING::Renderer::GLCapability::DEPTH_TEST, true );
 	renderer->SetBlendCapability( SCION_RENDERING::Renderer::BlendingFactors::SRC_ALPHA,
 								  SCION_RENDERING::Renderer::BlendingFactors::ONE_MINUS_SRC_ALPHA );
 
@@ -105,6 +112,12 @@ bool MainRegistry::RegisterMainSystems()
 
 	AddToContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>(
 		std::make_shared<SCION_CORE::Events::EventDispatcher>() );
+
+#ifdef IN_SCION_EDITOR
+	AddToContext<std::shared_ptr<SCION_CORE::Systems::RenderPickingSystem>>(
+		std::make_shared<SCION_CORE::Systems::RenderPickingSystem>() );
+	SCION_LOG( "Added Render Picking System to Main Registry." );
+#endif
 
 	return true;
 }

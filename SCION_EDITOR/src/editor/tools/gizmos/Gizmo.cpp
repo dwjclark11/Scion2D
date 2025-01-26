@@ -4,8 +4,10 @@
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
+#include "Core/Events/EventDispatcher.h"
 
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/events/EditorEventTypes.h"
 
 #include "Logger/Logger.h"
 
@@ -72,6 +74,7 @@ void Gizmo::SetSelectedEntity( entt::entity entity )
 	{
 		Entity ent{ *m_pRegistry, entity };
 		SetGizmoPosition( ent );
+		GetDispatcher().EmitEvent( Events::SwitchEntityEvent{ .pEntity = &ent } );
 	}
 }
 
@@ -98,6 +101,16 @@ void Gizmo::Show()
 
 		m_bHidden = false;
 	}
+}
+
+SCION_CORE::Events::EventDispatcher& Gizmo::GetDispatcher()
+{
+	if ( !m_pEventDispatcher )
+		m_pEventDispatcher = std::make_unique<SCION_CORE::Events::EventDispatcher>();
+
+	SCION_ASSERT( m_pEventDispatcher && "Event Dispatcher must be valid" );
+
+	return *m_pEventDispatcher;
 }
 
 void Gizmo::Init( const std::string& sXAxisTexture, const std::string& sYAxisTexture )

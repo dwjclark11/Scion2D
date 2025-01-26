@@ -6,6 +6,7 @@ add_library(SCION_CORE
     "src/CoreUtilities/CoreUtilities.cpp"
     "include/Core/CoreUtilities/FollowCamera.h"
     "src/CoreUtilities/FollowCamera.cpp"
+	"include/Core/CoreUtilities/EngineShaders.h"
 
 	# ECS - Entity, Registry
     "include/Core/ECS/Entity.h"
@@ -85,6 +86,8 @@ add_library(SCION_CORE
     "src/Systems/RenderUISystem.cpp"
     "include/Core/Systems/ScriptingSystem.h"
     "src/Systems/ScriptingSystem.cpp"
+	"include/Core/Systems/RenderPickingSystem.h"
+	"src/Systems/RenderPickingSystem.cpp"
 
 	# Loaders and Serializers
 	"include/Core/ECS/Components/ComponentSerializer.h"
@@ -95,7 +98,9 @@ add_library(SCION_CORE
 
 	# Events
 	"include/Core/Events/EventDispatcher.h"
-  "include/Core/CoreUtilities/EngineShaders.h")
+	
+	
+)
 
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

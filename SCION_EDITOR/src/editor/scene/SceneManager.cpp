@@ -5,7 +5,7 @@
 #include "editor/tools/TileTool.h"
 #include "editor/tools/gizmos/Gizmo.h"
 #include "editor/commands/CommandManager.h"
-
+#include "Core/Events/EventDispatcher.h"
 #include "Logger/Logger.h"
 
 namespace SCION_EDITOR
@@ -74,17 +74,6 @@ std::shared_ptr<SCION_EDITOR::SceneObject> SceneManager::GetCurrentScene()
 	return sceneItr->second;
 }
 
-void SceneManager::AddLayerToCurrentScene( const std::string& sLayerName, bool bVisible )
-{
-	if ( auto pCurrentScene = GetCurrentScene() )
-	{
-		pCurrentScene->AddLayer(sLayerName, bVisible);
-		return;
-	}
-
-	SCION_ERROR( "Failed to add layer. Current scene is nullptr." );
-}
-
 std::vector<std::string> SceneManager::GetSceneNames() const
 {
 	return SCION_UTIL::GetKeys( m_mapScenes );
@@ -110,6 +99,16 @@ CommandManager& SceneManager::GetCommandManager()
 	return *m_pCommandManager;
 }
 
+SCION_CORE::Events::EventDispatcher& SceneManager::GetDispatcher()
+{
+	if ( !m_pSceneDispatcher )
+		m_pSceneDispatcher = std::make_unique<SCION_CORE::Events::EventDispatcher>();
+
+	SCION_ASSERT( m_pSceneDispatcher && "Event Dispatcher must be valid" );
+
+	return *m_pSceneDispatcher;
+}
+
 void SceneManager::SetTileset( const std::string& sTileset )
 {
 	m_sCurrentTileset = sTileset;
@@ -122,7 +121,7 @@ void SceneManager::SetTileset( const std::string& sTileset )
 
 bool SceneManager::LoadCurrentScene()
 {
-	if (auto pCurrentScene = GetCurrentScene())
+	if ( auto pCurrentScene = GetCurrentScene() )
 	{
 		return pCurrentScene->LoadScene();
 	}
@@ -143,9 +142,9 @@ bool SceneManager::UnloadCurrentScene()
 bool SceneManager::SaveAllScenes()
 {
 	bool bSuccess{ true };
-	for (const auto& [sName, pScene] : m_mapScenes)
+	for ( const auto& [ sName, pScene ] : m_mapScenes )
 	{
-		if (!pScene->SaveScene())
+		if ( !pScene->SaveScene() )
 		{
 			SCION_ERROR( "Failed to save scene [{}]", sName );
 			bSuccess = false;
@@ -156,3 +155,4 @@ bool SceneManager::SaveAllScenes()
 }
 
 } // namespace SCION_EDITOR
+

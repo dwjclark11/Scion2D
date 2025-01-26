@@ -12,6 +12,8 @@
 #include "editor/utilities/SaveProject.h"
 #include "Core/Events/EventDispatcher.h"
 
+#include "ScionFilesystem/Process/FileProcessor.h"
+
 #include <imgui.h>
 
 using namespace SCION_EDITOR::Events;
@@ -124,8 +126,11 @@ void ContentDisplay::Draw()
 
 					if ( ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked( 0 ) )
 					{
-						// TODO: Open new process to run the file.
-						// Needs to be a cross platform solution
+						SCION_FILESYSTEM::FileProcessor fp{};
+						if (!fp.OpenApplicationFromFile(path.string(), {}))
+						{
+							SCION_ERROR( "Failed to open file {}", path.string() );
+						}
 					}
 					else if ( ImGui::IsItemHovered() && ImGui::IsMouseClicked( 0 ) )
 					{

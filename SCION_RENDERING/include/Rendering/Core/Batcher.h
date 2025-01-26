@@ -31,6 +31,8 @@ class Batcher
 	void SetVertexAttribute( GLuint layoutPosition, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset,
 							 GLboolean normalized = GL_FALSE );
 
+	void SetVertexIAttribute( GLuint layoutPosition, GLuint numComponents, GLenum type, GLsizei stride, void* offset );
+
 	inline GLuint GetVBO() const { return m_VBO; }
 	inline GLuint GetIBO() const { return m_IBO; }
 	inline void EnableVAO() { glBindVertexArray( m_VAO ); }
@@ -96,6 +98,16 @@ inline void Batcher<TBatch, TGlyph>::SetVertexAttribute( GLuint layoutPosition, 
 {
 	glBindVertexArray( m_VAO );
 	glVertexAttribPointer( layoutPosition, numComponents, type, normalized, stride, offset );
+	glEnableVertexAttribArray( layoutPosition );
+	glBindVertexArray( 0 );
+}
+
+template <typename TBatch, typename TGlyph>
+inline void Batcher<TBatch, TGlyph>::SetVertexIAttribute( GLuint layoutPosition, GLuint numComponents, GLenum type,
+														  GLsizei stride, void* offset )
+{
+	glBindVertexArray( m_VAO );
+	glVertexAttribIPointer( layoutPosition, numComponents, type, stride, offset );
 	glEnableVertexAttribArray( layoutPosition );
 	glBindVertexArray( 0 );
 }

@@ -14,6 +14,14 @@ class Registry
 	~Registry() = default;
 
 	/*
+	 * @brief Checks to see if the entity is valid.
+	 * @param the entity to check.
+	 * @return Returns true if the entity is valid, false otherwise.
+	 */
+	inline bool IsValid( entt::entity entity ) const { return m_pRegistry != nullptr && m_pRegistry->valid( entity ); }
+
+
+	/*
 	 * @brief Get the actual registry
 	 * @return Returns the underlying entt::registry
 	 */

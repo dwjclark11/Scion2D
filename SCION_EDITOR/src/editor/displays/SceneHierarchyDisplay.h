@@ -7,6 +7,11 @@ namespace SCION_CORE::ECS
 class Entity;
 }
 
+namespace SCION_EDITOR::Events
+{
+struct SwitchEntityEvent;
+}
+
 namespace SCION_EDITOR
 {
 class SceneHierarchyDisplay : public IDisplay
@@ -22,6 +27,8 @@ class SceneHierarchyDisplay : public IDisplay
 	void AddComponent( SCION_CORE::ECS::Entity& entity, bool* bAddComponent );
 	void DrawGameObjectDetails();
 	void DrawEntityComponents();
+
+	void OnEntityChanged( SCION_EDITOR::Events::SwitchEntityEvent& swEntEvent );
 
   public:
 	SceneHierarchyDisplay();

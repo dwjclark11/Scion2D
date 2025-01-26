@@ -11,6 +11,9 @@
 #include "Core/ECS/MetaUtilities.h"
 #include "Core/ECS/Components/AllComponents.h"
 
+#include "Core/Events/EventDispatcher.h"
+#include "editor/events/EditorEventTypes.h"
+
 #include <imgui.h>
 
 using namespace SCION_CORE::ECS;
@@ -266,8 +269,36 @@ void SceneHierarchyDisplay::DrawEntityComponents()
 	}
 }
 
+void SceneHierarchyDisplay::OnEntityChanged( SCION_EDITOR::Events::SwitchEntityEvent& swEntEvent )
+{
+	if ( !swEntEvent.pEntity )
+	{
+		SCION_ERROR( "Failed to change entity. Entity was invalid." );
+		return;
+	}
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	if ( !pCurrentScene )
+	{
+		SCION_ERROR( "Failed to change entity. Current scene was invalid." );
+		return;
+	}
+
+	// Ensure that the entity is valid
+	if ( !pCurrentScene->GetRegistry().IsValid( swEntEvent.pEntity->GetEntity() ) )
+	{
+		SCION_ERROR( "Failed to change entity. Entity was invaild." );
+		return;
+	}
+
+	m_pSelectedEntity =
+		std::make_shared<SCION_CORE::ECS::Entity>( pCurrentScene->GetRegistry(), swEntEvent.pEntity->GetEntity() );
+
+	SCION_ASSERT( m_pSelectedEntity && "Entity must be valid here!" );
+}
+
 SceneHierarchyDisplay::SceneHierarchyDisplay()
 {
+	ADD_SWE_HANDLER( Events::SwitchEntityEvent, &SceneHierarchyDisplay::OnEntityChanged, *this );
 }
 
 SceneHierarchyDisplay::~SceneHierarchyDisplay()

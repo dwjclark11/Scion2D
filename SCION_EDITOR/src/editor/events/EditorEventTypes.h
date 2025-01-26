@@ -1,6 +1,11 @@
 #pragma once
 #include <string>
 
+namespace SCION_CORE::ECS
+{
+class Entity;
+}
+
 namespace SCION_EDITOR::Events
 {
 enum class EFileAction
@@ -22,7 +27,12 @@ struct FileEvent
 
 struct CloseEditorEvent
 {
-	// 
+	//
+};
+
+struct SwitchEntityEvent
+{
+	SCION_CORE::ECS::Entity* pEntity{ nullptr };
 };
 
 } // namespace SCION_EDITOR::Events

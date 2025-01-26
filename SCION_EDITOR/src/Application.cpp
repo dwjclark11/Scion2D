@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <Rendering/Utils/OpenGLDebugger.h>
 #include <Rendering/Core/Renderer.h>
+#include <Rendering/Essentials/PickingTexture.h>
 
 #include <Logger/Logger.h>
 #include <Core/ECS/MainRegistry.h>
@@ -223,6 +224,19 @@ bool Application::InitApp()
 		return false;
 	}
 
+	auto pPickingTexture = std::make_shared<SCION_RENDERING::PickingTexture>( 640, 480 );
+	if ( !pPickingTexture )
+	{
+		SCION_ERROR( "Failed to create the picking texture." );
+		return false;
+	}
+
+	if ( !MAIN_REGISTRY().AddToContext<std::shared_ptr<SCION_RENDERING::PickingTexture>>( pPickingTexture ) )
+	{
+		SCION_ERROR( "Failed to add the picking texture to the registry context!" );
+		return false;
+	}
+
 	ADD_EVENT_HANDLER( SCION_EDITOR::Events::CloseEditorEvent, &Application::OnCloseEditor, *this );
 
 	// Register Meta Functions
@@ -260,6 +274,13 @@ bool Application::LoadShaders()
 
 	if ( !assetManager.AddShaderFromMemory(
 			 "font", SCION_CORE::Shaders::fontShaderVert, SCION_CORE::Shaders::fontShaderFrag ) )
+	{
+		SCION_ERROR( "Failed to add the font shader to the asset manager" );
+		return false;
+	}
+
+	if ( !assetManager.AddShaderFromMemory(
+			 "picking", SCION_CORE::Shaders::pickingShaderVert, SCION_CORE::Shaders::pickingShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the font shader to the asset manager" );
 		return false;
@@ -459,8 +480,13 @@ void Application::Update()
 	auto& displayHolder = mainRegistry.GetContext<std::shared_ptr<DisplayHolder>>();
 
 	for ( const auto& pDisplay : displayHolder->displays )
+	{
 		pDisplay->Update();
+	}
+}
 
+void Application::UpdateInputs()
+{
 	// Update inputs
 	auto& inputManager = SCION_CORE::InputManager::GetInstance();
 	auto& keyboard = inputManager.GetKeyboard();
@@ -676,6 +702,7 @@ void Application::Run()
 		ProcessEvents();
 		Update();
 		Render();
+		UpdateInputs();
 	}
 
 	CleanUp();

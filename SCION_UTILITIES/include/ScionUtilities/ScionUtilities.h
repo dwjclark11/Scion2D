@@ -8,6 +8,7 @@
 #include <set>
 #include <map>
 #include <unordered_map>
+#include <string>
 
 namespace SCION_UTIL
 {
@@ -151,6 +152,11 @@ bool IsBitSet( const T& x, const T& y )
 }
 
 std::string_view GetSubstring( const std::string_view& str, const std::string& find );
+
+std::string ConvertWideToANSI( const std::wstring& wstr );
+std::wstring ConvertAnsiToWide( const std::string& str );
+std::string ConvertWideToUtf8( const std::wstring& wstr );
+std::wstring ConvertUtf8ToWide( const std::string& str );
 
 } // namespace SCION_UTIL
 
