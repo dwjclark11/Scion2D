@@ -6,6 +6,8 @@
 
 #include "editor/tools/ToolManager.h"
 
+#include "Core/Scripting/InputManager.h"
+
 #include "Core/ECS/MainRegistry.h"
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/MetaUtilities.h"
@@ -21,11 +23,6 @@ using namespace entt::literals;
 
 namespace SCION_EDITOR
 {
-
-auto create_entity = []( SCION_EDITOR::SceneObject& currentScene ) {
-	Entity newEntity{ currentScene.GetRegistry(), "GameObject", "" };
-	newEntity.AddComponent<TransformComponent>();
-};
 
 bool SceneHierarchyDisplay::OpenTreeNode( SCION_CORE::ECS::Entity& entity )
 {
@@ -269,6 +266,50 @@ void SceneHierarchyDisplay::DrawEntityComponents()
 	}
 }
 
+bool SceneHierarchyDisplay::DeleteSelectedEntity()
+{
+	SCION_ASSERT( m_pSelectedEntity && "Selected Entity must be valid if trying to delete!" );
+
+	if (auto pCurrentScene = SCENE_MANAGER().GetCurrentScene())
+	{
+		if ( !pCurrentScene->DeleteGameObjectById( m_pSelectedEntity->GetEntity() ) )
+		{
+			SCION_ERROR( "Failed to delete selected entity." );
+			return false;
+		}
+
+		m_pSelectedEntity = nullptr;
+	}
+	else
+	{
+		SCION_ERROR( "Trying to delete an entity with no active scene." );
+		return false;
+	}
+
+	return true;
+}
+
+bool SceneHierarchyDisplay::DuplicateSelectedEntity()
+{
+	SCION_ASSERT( m_pSelectedEntity && "Selected Entity must be valid if trying to duplicate!" );
+
+	if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene() )
+	{
+		if ( !pCurrentScene->DuplicateGameObject( m_pSelectedEntity->GetEntity() ) )
+		{
+			SCION_ERROR( "Failed to duplicate selected entity." );
+			return false;
+		}
+	}
+	else
+	{
+		SCION_ERROR( "Trying to duplicate an entity with no active scene." );
+		return false;
+	}
+
+	return true;
+}
+
 void SceneHierarchyDisplay::OnEntityChanged( SCION_EDITOR::Events::SwitchEntityEvent& swEntEvent )
 {
 	if ( !swEntEvent.pEntity )
@@ -296,9 +337,36 @@ void SceneHierarchyDisplay::OnEntityChanged( SCION_EDITOR::Events::SwitchEntityE
 	SCION_ASSERT( m_pSelectedEntity && "Entity must be valid here!" );
 }
 
+void SceneHierarchyDisplay::OnKeyPressed( SCION_EDITOR::Events::KeyPressedEvent& keyPressed )
+{
+	if ( !m_bWindowActive )
+		return;
+
+	if ( m_pSelectedEntity )
+	{
+		auto& keyboard = INPUT_MANAGER().GetKeyboard();
+		if (keyboard.IsKeyPressed(SCION_KEY_RCTRL) || keyboard.IsKeyPressed(SCION_KEY_LCTRL))
+		{
+			if ( keyPressed.key == SCION_KEY_D )
+			{
+				DuplicateSelectedEntity();
+			}
+		}
+		else
+		{
+			if ( keyPressed.key == SCION_KEY_DELETE )
+			{
+				DeleteSelectedEntity();
+			}
+		}
+		
+	}
+}
+
 SceneHierarchyDisplay::SceneHierarchyDisplay()
 {
 	ADD_SWE_HANDLER( Events::SwitchEntityEvent, &SceneHierarchyDisplay::OnEntityChanged, *this );
+	ADD_EVENT_HANDLER( Events::KeyPressedEvent, &SceneHierarchyDisplay::OnKeyPressed, *this );
 }
 
 SceneHierarchyDisplay::~SceneHierarchyDisplay()
@@ -318,10 +386,14 @@ void SceneHierarchyDisplay::Draw()
 		return;
 	}
 
+	m_bWindowActive = ImGui::IsWindowFocused();
+
 	if ( ImGui::BeginPopupContextWindow() )
 	{
 		if ( ImGui::Selectable( "Add New Game Object" ) )
-			create_entity( *pCurrentScene );
+		{
+			pCurrentScene->AddGameObject();
+		}
 
 		ImGui::EndPopup();
 	}
@@ -347,7 +419,9 @@ void SceneHierarchyDisplay::Draw()
 		if ( relations.parent == entt::null )
 		{
 			if ( OpenTreeNode( ent ) )
+			{
 				ImGui::TreePop();
+			}
 		}
 	}
 

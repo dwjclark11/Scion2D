@@ -1,16 +1,20 @@
 #include "SceneObject.h"
-#include "ScionUtilities/ScionUtilities.h"
+
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/ECS/MetaUtilities.h"
-#include <fmt/format.h>
 #include "Core/ECS/MainRegistry.h"
-#include "editor/utilities/SaveProject.h"
-
 #include "Core/Loaders/TilemapLoader.h"
+#include "Core/Events/EventDispatcher.h"
 
+#include "editor/utilities/SaveProject.h"
+#include "editor/events/EditorEventTypes.h"
+
+#include "ScionUtilities/ScionUtilities.h"
 #include "ScionFilesystem/Serializers/JSONSerializer.h"
+
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
+#include <fmt/format.h>
 #include <filesystem>
 #include <fstream>
 
@@ -73,6 +77,8 @@ SceneObject::SceneObject( const std::string& sceneName )
 	sceneData.open( m_sSceneDataPath, std::ios::out | std::ios::trunc );
 	SCION_ASSERT( sceneData.is_open() && "File should have been created and opened." );
 	sceneData.close();
+
+	ADD_EVENT_HANDLER( SCION_EDITOR::Events::NameChangeEvent, &SceneObject::OnEntityNameChanges, *this );
 }
 
 SceneObject::SceneObject( const std::string& sceneName, const std::string& sceneData )
@@ -102,6 +108,8 @@ SceneObject::SceneObject( const std::string& sceneName, const std::string& scene
 	{
 		// Log Some error??
 	}
+
+	ADD_EVENT_HANDLER( SCION_EDITOR::Events::NameChangeEvent, &SceneObject::OnEntityNameChanges, *this );
 }
 
 void SceneObject::CopySceneToRuntime()
@@ -139,7 +147,7 @@ void SceneObject::AddLayer( const std::string& sLayerName, bool bVisible )
 {
 	if ( !CheckLayerName( sLayerName ) )
 	{
-		//SCION_ERROR( "Failed to add layer [{}] - Already exists.", sLayerName );
+		// SCION_ERROR( "Failed to add layer [{}] - Already exists.", sLayerName );
 		return;
 	}
 
@@ -151,6 +159,118 @@ bool SceneObject::CheckLayerName( const std::string& sLayerName )
 	return SCION_UTIL::CheckContainsValue( m_LayerParams, [ & ]( SCION_UTIL::SpriteLayerParams& spriteLayer ) {
 		return spriteLayer.sLayerName == sLayerName;
 	} );
+}
+
+bool SceneObject::AddGameObject()
+{
+	Entity newObject{ m_Registry, "", "" };
+	newObject.AddComponent<TransformComponent>();
+	std::string sTag{ "GameObject" };
+
+	auto objItr = m_mapTagToEntity.find( sTag );
+	if ( objItr != m_mapTagToEntity.end() )
+	{
+		size_t objIndex{ 1 };
+		sTag = "GameObject1";
+		objItr = m_mapTagToEntity.find( sTag );
+		while ( objItr != m_mapTagToEntity.end() )
+		{
+			++objIndex;
+			sTag = fmt::format( "GameObject{}", objIndex );
+			objItr = m_mapTagToEntity.find( sTag );
+		}
+	}
+
+	newObject.ChangeName( sTag );
+	m_mapTagToEntity.emplace( sTag, newObject.GetEntity() );
+
+	return true;
+}
+
+bool SceneObject::DuplicateGameObject( entt::entity entity )
+{
+	auto objItr = m_mapTagToEntity.begin();
+	for ( ; objItr != m_mapTagToEntity.end(); ++objItr )
+	{
+		if ( objItr->second == entity )
+			break;
+	}
+
+	if ( objItr == m_mapTagToEntity.end() )
+	{
+		SCION_ERROR( "Failed to duplicate game object with id [{}]. Does not exist or was not mapped correctly.",
+					 static_cast<uint32_t>( entity ) );
+		return false;
+	}
+
+	// Create the new entity in the registry
+	auto& registry = m_Registry.GetRegistry();
+	auto newEntity = registry.create();
+
+	// Copy the components of the entity to the new entity
+	for ( auto&& [ id, storage ] : registry.storage() )
+	{
+		if ( !storage.contains( entity ) )
+			continue;
+
+		SCION_CORE::Utils::InvokeMetaFunction(
+			id, "copy_component"_hs, Entity{ m_Registry, entity }, Entity{ m_Registry, newEntity } );
+	}
+
+	// Now we need to set the tag for the entity
+	size_t tagNum{ 1 };
+
+	while (CheckTagName(fmt::format("{}_{}", objItr->first, tagNum)))
+	{
+		++tagNum;
+	}
+
+	Entity newEnt{ m_Registry, newEntity };
+	newEnt.ChangeName( fmt::format( "{}_{}", objItr->first, tagNum ) );
+
+	m_mapTagToEntity.emplace( newEnt.GetName(), newEntity );
+
+	return true;
+}
+
+bool SceneObject::DeleteGameObjectByTag( const std::string& sTag )
+{
+	auto objItr = m_mapTagToEntity.find( sTag );
+	if ( objItr == m_mapTagToEntity.end() )
+	{
+		SCION_ERROR( "Failed to delete game object with tag [{}]. Does not exist or was not mapped correctly.", sTag );
+		return false;
+	}
+
+	Entity ent{ m_Registry, objItr->second };
+	ent.Kill();
+
+	m_mapTagToEntity.erase( objItr );
+
+	return true;
+}
+
+bool SceneObject::DeleteGameObjectById( entt::entity entity )
+{
+	auto objItr = m_mapTagToEntity.begin();
+	for ( ; objItr != m_mapTagToEntity.end(); ++objItr )
+	{
+		if ( objItr->second == entity )
+			break;
+	}
+
+	if ( objItr == m_mapTagToEntity.end() )
+	{
+		SCION_ERROR( "Failed to delete game object with id [{}]. Does not exist or was not mapped correctly.",
+					 static_cast<uint32_t>( entity ) );
+		return false;
+	}
+
+	Entity ent{ m_Registry, objItr->second };
+	ent.Kill();
+
+	m_mapTagToEntity.erase( objItr );
+	return true;
 }
 
 bool SceneObject::LoadScene()
@@ -206,6 +326,11 @@ bool SceneObject::UnloadScene()
 bool SceneObject::SaveScene()
 {
 	return SaveSceneData();
+}
+
+bool SceneObject::CheckTagName( const std::string& sTagName )
+{
+	return m_mapTagToEntity.contains( sTagName );
 }
 
 bool SceneObject::LoadSceneData()
@@ -269,7 +394,7 @@ bool SceneObject::LoadSceneData()
 		m_sObjectPath = sScenePath + sceneData[ "objectmapPath" ].GetString();
 	}
 
-	if (sceneData.HasMember("canvas"))
+	if ( sceneData.HasMember( "canvas" ) )
 	{
 		const rapidjson::Value& canvas = sceneData[ "canvas" ];
 
@@ -343,12 +468,12 @@ bool SceneObject::SaveSceneData()
 	pSerializer->EndObject(); // Scene  data
 
 	bool bSuccess{ true };
-	if (!pSerializer->EndDocument())
+	if ( !pSerializer->EndDocument() )
 	{
 		bSuccess = false;
 	}
 
-		// Try to Save the tilemap
+	// Try to Save the tilemap
 	auto pTilemapLoader = std::make_unique<TilemapLoader>();
 	if ( !pTilemapLoader->SaveTilemap( m_Registry, m_sTilemapPath, true ) )
 	{
@@ -362,6 +487,33 @@ bool SceneObject::SaveSceneData()
 	}
 
 	return bSuccess;
+}
+
+void SceneObject::OnEntityNameChanges( SCION_EDITOR::Events::NameChangeEvent& nameChange )
+{
+	if ( nameChange.sNewName.empty() || nameChange.sOldName.empty() || !nameChange.pEntity )
+		return;
+
+	auto objItr = m_mapTagToEntity.find( nameChange.sOldName );
+	if ( objItr == m_mapTagToEntity.end() )
+		return;
+
+	// If the map already contains that name, don't change the name
+	if ( m_mapTagToEntity.contains( nameChange.sNewName ) )
+	{
+		nameChange.pEntity->ChangeName( nameChange.sOldName );
+		SCION_ERROR( "Failed to change entity name. [{}] already exists.", nameChange.sNewName );
+		return;
+	}
+
+	if ( nameChange.pEntity->GetEntity() != objItr->second )
+		return;
+
+	if ( !SCION_UTIL::KeyChange( m_mapTagToEntity, nameChange.sOldName, nameChange.sNewName ) )
+	{
+		SCION_ERROR( "Failed to change entity name." );
+		return;
+	}
 }
 
 } // namespace SCION_EDITOR

@@ -42,6 +42,8 @@ class SceneManager
 
 	bool SaveAllScenes();
 
+	bool CheckTagName( const std::string& sTagName );
+
 	inline const std::map<std::string, std::shared_ptr<SCION_EDITOR::SceneObject>>& GetAllScenes() const
 	{
 		return m_mapScenes;

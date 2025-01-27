@@ -9,6 +9,7 @@ enum class EFileAction;
 enum class EContentCreateAction;
 struct FileEvent;
 struct ContentCreateEvent;
+struct KeyPressedEvent;
 } // namespace SCION_EDITOR::Events
 
 namespace SCION_CORE::Events

@@ -154,5 +154,13 @@ bool SceneManager::SaveAllScenes()
 	return bSuccess;
 }
 
+bool SceneManager::CheckTagName( const std::string& sTagName )
+{
+	if ( auto pScene = GetCurrentScene() )
+		return pScene->CheckTagName( sTagName );
+
+	return false;
+}
+
 } // namespace SCION_EDITOR
 

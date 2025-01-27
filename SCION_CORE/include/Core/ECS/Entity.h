@@ -44,6 +44,8 @@ class Entity
 	 */
 	void UpdateTransform();
 
+	void ChangeName(const std::string& sName);
+
 	inline const std::string& GetName() const { return m_sName; }
 	inline const std::string& GetGroup() const { return m_sGroup; }
 	/*

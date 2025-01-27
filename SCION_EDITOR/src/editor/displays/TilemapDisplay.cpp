@@ -10,6 +10,8 @@
 
 #include "Core/CoreUtilities/CoreEngineData.h"
 
+#include "Core/Events/EventDispatcher.h"
+
 #include "Rendering/Core/Camera2D.h"
 #include "Rendering/Core/Renderer.h"
 #include "Rendering/Essentials/PickingTexture.h"
@@ -29,6 +31,8 @@
 #include "editor/tools/gizmos/Gizmo.h"
 
 #include "editor/commands/CommandManager.h"
+
+#include "editor/events/EditorEventTypes.h"
 
 #include "Core/Scripting/InputManager.h"
 #include "Windowing/Inputs/Mouse.h"
@@ -225,6 +229,33 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 	startPosition = mousePos;
 }
 
+void TilemapDisplay::HandleKeyPressedEvent( const SCION_EDITOR::Events::KeyPressedEvent& keyEvent )
+{
+	if ( !m_bWindowActive )
+		return;
+
+	if (keyEvent.key == SCION_KEY_W)
+	{
+		TOOL_MANAGER().SetGizmoActive( EGizmoType::TRANSLATE );
+	}
+	else if ( keyEvent.key == SCION_KEY_E )
+	{
+		TOOL_MANAGER().SetGizmoActive( EGizmoType::SCALE );
+	}
+	else if ( keyEvent.key == SCION_KEY_R )
+	{
+		TOOL_MANAGER().SetGizmoActive( EGizmoType::ROTATE );
+	}
+	else if ( keyEvent.key == SCION_KEY_T )
+	{
+		TOOL_MANAGER().SetToolActive( EToolType::CREATE_TILE );
+	}
+	else if ( keyEvent.key == SCION_KEY_Y )
+	{
+		TOOL_MANAGER().SetToolActive( EToolType::RECT_FILL_TILE);
+	}
+}
+
 void TilemapDisplay::DrawToolbar()
 {
 	ImGui::Separator();
@@ -361,7 +392,9 @@ void TilemapDisplay::DrawToolbar()
 
 TilemapDisplay::TilemapDisplay()
 	: m_pTilemapCam{ std::make_unique<SCION_RENDERING::Camera2D>() }
+	, m_bWindowActive{ false }
 {
+	ADD_EVENT_HANDLER( Events::KeyPressedEvent, &TilemapDisplay::HandleKeyPressedEvent, *this );
 }
 
 TilemapDisplay::~TilemapDisplay()
@@ -383,6 +416,8 @@ void TilemapDisplay::Draw()
 
 	if ( ImGui::BeginChild( "##tilemap", ImVec2{ 0, 0 }, false, ImGuiWindowFlags_NoScrollWithMouse ) )
 	{
+		m_bWindowActive = ImGui::IsWindowFocused();
+
 		auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
 		const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::TILEMAP ];
 

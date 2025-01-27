@@ -84,10 +84,9 @@ void MenuDisplay::Draw()
 			ImGui::EndMenu();
 		}
 
-		if ( ImGui::BeginMenu( ICON_FA_TOOLS " Tools" ) )
+		if ( ImGui::BeginMenu( ICON_FA_WINDOW_MAXIMIZE " Displays" ) )
 		{
-			/*auto& toolManager = TOOL_MANAGER();
-			ImGui::InlineLabel( ICON_FA_ARROWS_ALT "Translate" );*/
+			// TODO: Open and close specific displays
 
 			ImGui::EndMenu();
 		}

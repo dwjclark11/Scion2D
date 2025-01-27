@@ -187,6 +187,13 @@ void Entity::UpdateTransform()
 	}
 }
 
+void Entity::ChangeName( const std::string& sName )
+{
+	auto& id = GetComponent<Identification>();
+	id.name = sName;
+	m_sName = sName;
+}
+
 void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 {
 	using namespace entt::literals;

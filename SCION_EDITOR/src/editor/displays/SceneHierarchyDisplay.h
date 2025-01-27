@@ -10,6 +10,7 @@ class Entity;
 namespace SCION_EDITOR::Events
 {
 struct SwitchEntityEvent;
+struct KeyPressedEvent;
 }
 
 namespace SCION_EDITOR
@@ -20,6 +21,7 @@ class SceneHierarchyDisplay : public IDisplay
 	std::shared_ptr<SCION_CORE::ECS::Entity> m_pSelectedEntity{ nullptr };
 	ImGuiTextFilter m_TextFilter;
 	bool m_bAddComponent{ false };
+	bool m_bWindowActive{ false };
 
   private:
 	bool OpenTreeNode( SCION_CORE::ECS::Entity& entity );
@@ -27,8 +29,11 @@ class SceneHierarchyDisplay : public IDisplay
 	void AddComponent( SCION_CORE::ECS::Entity& entity, bool* bAddComponent );
 	void DrawGameObjectDetails();
 	void DrawEntityComponents();
+	bool DeleteSelectedEntity();
+	bool DuplicateSelectedEntity();
 
 	void OnEntityChanged( SCION_EDITOR::Events::SwitchEntityEvent& swEntEvent );
+	void OnKeyPressed( SCION_EDITOR::Events::KeyPressedEvent& keyPressed );
 
   public:
 	SceneHierarchyDisplay();

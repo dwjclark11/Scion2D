@@ -437,7 +437,10 @@ void Application::ProcessEvents()
 		switch ( m_Event.type )
 		{
 		case SDL_QUIT: m_bIsRunning = false; break;
-		case SDL_KEYDOWN: keyboard.OnKeyPressed( m_Event.key.keysym.sym ); break;
+		case SDL_KEYDOWN:
+			keyboard.OnKeyPressed( m_Event.key.keysym.sym );
+			EVENT_DISPATCHER().EmitEvent( Events::KeyPressedEvent{ .key = m_Event.key.keysym.sym } );
+			break;
 		case SDL_KEYUP: keyboard.OnKeyReleased( m_Event.key.keysym.sym ); break;
 		case SDL_MOUSEBUTTONDOWN: mouse.OnBtnPressed( m_Event.button.button ); break;
 		case SDL_MOUSEBUTTONUP: mouse.OnBtnReleased( m_Event.button.button ); break;

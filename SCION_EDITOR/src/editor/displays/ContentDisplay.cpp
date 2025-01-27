@@ -29,6 +29,7 @@ ContentDisplay::ContentDisplay()
 	, m_sFilepathToAction{ "" }
 	, m_Selected{ -1 }
 	, m_eFileAction{ Events::EFileAction::NoAction }
+	, m_eCreateAction{ Events::EContentCreateAction::NoAction }
 	, m_bItemCut{ false }
 	, m_bWindowHovered{ false }
 {
@@ -58,7 +59,7 @@ void ContentDisplay::Draw()
 
 	if ( numCols == 0 )
 	{
-		SCION_ERROR( "NumCols is zero!" );
+		//SCION_ERROR( "NumCols is zero!" );
 		ImGui::End();
 		return;
 	}
@@ -245,6 +246,8 @@ void ContentDisplay::DrawToolbar()
 
 	if ( ImGui::Button( ICON_FA_FOLDER_PLUS ) )
 	{
+		m_sFilepathToAction = m_CurrentDir.string();
+		m_eCreateAction = Events::EContentCreateAction::Folder;
 	}
 	ImGui::ItemToolTip( "Create Folder" );
 	ImGui::SameLine( 0.f, 16.f );

@@ -3,8 +3,14 @@
 #include "editor/utilities/EditorUtilities.h"
 #include "ScionUtilities/HelperUtilities.h"
 
+namespace SCION_EDITOR::Events
+{
+struct NameChangeEvent;
+}
+
 namespace SCION_EDITOR
 {
+
 class SceneObject
 {
   public:
@@ -19,8 +25,8 @@ class SceneObject
 	void CopySceneToRuntime();
 
 	/*
-	* @brief Clears the runtime registry.
-	*/
+	 * @brief Clears the runtime registry.
+	 */
 	void ClearRuntimeScene();
 
 	// Scene Tilemap Layer functions
@@ -30,11 +36,11 @@ class SceneObject
 	void AddNewLayer();
 
 	/*
-	* @brief Tries to add a specific layer and set it's visibility.
-	* If the layer already exists, it will do nothing.
-	* @param std::string for the layer name.
-	* @param bool to set the visibility of the layer.
-	*/
+	 * @brief Tries to add a specific layer and set it's visibility.
+	 * If the layer already exists, it will do nothing.
+	 * @param std::string for the layer name.
+	 * @param bool to set the visibility of the layer.
+	 */
 	void AddLayer( const std::string& sLayerName, bool bVisible );
 
 	/*
@@ -45,11 +51,16 @@ class SceneObject
 	 */
 	bool CheckLayerName( const std::string& sLayerName );
 
+	bool AddGameObject();
+	bool DuplicateGameObject( entt::entity entity );
+	bool DeleteGameObjectByTag( const std::string& sTag );
+	bool DeleteGameObjectById( entt::entity entity );
+
 	/*
-	* @brief Tries to load the scene. Loads the tilemap, layers,
-	* game objects, and other scene data.
-	* @return Returns true if successful, false otherwise.
-	*/
+	 * @brief Tries to load the scene. Loads the tilemap, layers,
+	 * game objects, and other scene data.
+	 * @return Returns true if successful, false otherwise.
+	 */
 	bool LoadScene();
 
 	/*
@@ -61,11 +72,13 @@ class SceneObject
 	bool UnloadScene();
 
 	/*
-	* @brief Tries to save the scene. This differs from the unload function
-	* because it does not set the loaded flag or clear the registry.
-	* @return Returns true if successful, false otherwise.
-	*/
+	 * @brief Tries to save the scene. This differs from the unload function
+	 * because it does not set the loaded flag or clear the registry.
+	 * @return Returns true if successful, false otherwise.
+	 */
 	bool SaveScene();
+
+	bool CheckTagName( const std::string& sTagName );
 
 	/*
 	 * @brief Checks to see if there are any layers in the scenes tilemap.
@@ -84,6 +97,7 @@ class SceneObject
   private:
 	bool LoadSceneData();
 	bool SaveSceneData();
+	void OnEntityNameChanges( SCION_EDITOR::Events::NameChangeEvent& nameChange );
 
   private:
 	SCION_CORE::ECS::Registry m_Registry;
@@ -96,6 +110,7 @@ class SceneObject
 
 	Canvas m_Canvas;
 	std::vector<SCION_UTIL::SpriteLayerParams> m_LayerParams;
+	std::map<std::string, entt::entity> m_mapTagToEntity;
 	int m_CurrentLayer;
 	bool m_bSceneLoaded{ false };
 };

@@ -2,10 +2,17 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
+#include "Core/Events/EventDispatcher.h"
 #include "ScionUtilities/ScionUtilities.h"
-#include "Logger/Logger.h"
-#include "editor/utilities/imgui/ImGuiUtils.h"
 #include "Physics/PhysicsUtilities.h"
+#include "Logger/Logger.h"
+
+#include "editor/utilities/imgui/ImGuiUtils.h"
+#include "editor/events/EditorEventTypes.h"
+
+#include "editor/scene/SceneManager.h"
+#include "editor/scene/SceneObject.h"
+
 #include <map>
 
 using namespace SCION_UTIL;
@@ -706,7 +713,60 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 											 SCION_CORE::ECS::Identification& identification )
 {
-	DrawImGuiComponent( identification );
+
+	ImGui::SeparatorText( "Identificaton" );
+	ImGui::PushID( entt::type_hash<Identification>::value() );
+	if ( ImGui::TreeNodeEx( "", ImGuiTreeNodeFlags_DefaultOpen ) )
+	{
+		std::string sError{ "" };
+		std::string sNameBuffer{ identification.name };
+		bool bNameError{ false };
+
+		ImGui::InlineLabel( "name" );
+		if ( ImGui::InputText(
+				 "##_name", sNameBuffer.data(), sizeof( char ) * 255, ImGuiInputTextFlags_EnterReturnsTrue ) )
+		{
+			std::string sBufferStr{ sNameBuffer.data() };
+			if ( !sBufferStr.empty() && !SCENE_MANAGER().CheckTagName( sBufferStr ))
+			{
+				 std::string sOldName{ identification.name };
+				 identification.name = std::string{ sNameBuffer.data() };
+				 EVENT_DISPATCHER().EmitEvent( Events::NameChangeEvent{ .sOldName = sOldName, .sNewName =
+				 identification.name, .pEntity = &entity } );
+			}
+		}
+
+		// We need to display an error if the name is already in the scene or empty.
+		// Entity names need to be unique.
+		if ( ImGui::IsItemActive() )
+		{
+			std::string sBufferStr{ sNameBuffer.data() };
+			if ( sBufferStr.empty() )
+			{
+				sError = "Name cannot be empty.";
+			}
+			else if ( SCENE_MANAGER().CheckTagName( sBufferStr ) )
+			{
+				sError = fmt::format( "{} already exists!", sBufferStr );
+			}
+
+			if ( !sError.empty() )
+			{
+				ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f }, sError.c_str() );
+			}
+		}
+
+		std::string sGroupBuffer{ identification.group };
+		ImGui::InlineLabel( "group" );
+		if ( ImGui::InputText(
+				 "##_group", sGroupBuffer.data(), sizeof( char ) * 255, ImGuiInputTextFlags_EnterReturnsTrue ) )
+		{
+			identification.group = std::string{ sGroupBuffer.data() };
+		}
+
+		ImGui::TreePop();
+	}
+	ImGui::PopID();
 }
 
 } // namespace SCION_EDITOR

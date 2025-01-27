@@ -50,4 +50,16 @@ struct ContentCreateEvent
 	std::string sFilepath{ "" };
 };
 
+struct KeyPressedEvent
+{
+	int key;
+};
+
+struct NameChangeEvent
+{
+	std::string sOldName{ "" };
+	std::string sNewName{ "" };
+	SCION_CORE::ECS::Entity* pEntity{ nullptr };
+};
+
 } // namespace SCION_EDITOR::Events
