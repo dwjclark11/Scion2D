@@ -37,7 +37,7 @@ struct RelationshipUtils
 {
 	static bool IsAParentOf( Entity& entityA, Entity& entityB );
 	static void SetSiblingLinks( Entity& firstChild, Relationship& childRelationship );
-	static void RemoveAndDelete( Entity& entityToRemove );
+	static void RemoveAndDelete( Entity& entityToRemove, std::vector<std::string>& entitiesRemoved );
 };
 
 } // namespace SCION_CORE::ECS

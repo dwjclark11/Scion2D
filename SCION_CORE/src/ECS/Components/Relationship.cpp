@@ -43,7 +43,7 @@ void RelationshipUtils::SetSiblingLinks( Entity& firstChild, Relationship& child
 	childRelationship.prevSibling = prevSibling.self;
 }
 
-void RelationshipUtils::RemoveAndDelete( Entity& entityToRemove )
+void RelationshipUtils::RemoveAndDelete( Entity& entityToRemove, std::vector<std::string>& entitiesRemoved )
 {
 	auto& registry = entityToRemove.GetEnttRegistry();
 	auto& Reg = entityToRemove.GetRegistry();
@@ -63,9 +63,8 @@ void RelationshipUtils::RemoveAndDelete( Entity& entityToRemove )
 
 		for ( auto entity : childrenToDelete )
 		{
-			// registry.destroy( entity );
 			Entity ent{ Reg, entity };
-			RemoveAndDelete( ent );
+			RemoveAndDelete( ent, entitiesRemoved );
 		}
 	}
 
@@ -101,6 +100,7 @@ void RelationshipUtils::RemoveAndDelete( Entity& entityToRemove )
 
 	// Now that the links have been adjusted, we can delete the entity
 	SCION_LOG( "JUST KILLED: {}", static_cast<std::uint32_t>( entityToRemove.GetEntity() ) );
+	entitiesRemoved.emplace_back( entityToRemove.GetName() );
 	entityToRemove.Kill();
 }
 

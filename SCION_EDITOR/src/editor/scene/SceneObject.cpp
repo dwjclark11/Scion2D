@@ -187,6 +187,21 @@ bool SceneObject::AddGameObject()
 	return true;
 }
 
+bool SceneObject::AddGameObjectByTag( const std::string& sTag, entt::entity entity)
+{
+	SCION_ASSERT( entity != entt::null && "The entity passed in must be valid." );
+
+	if (m_mapTagToEntity.contains(sTag))
+	{
+		SCION_ERROR( "Failed to add entity with tag [{}] - Already Exists!", sTag );
+		return false;
+	}
+
+	m_mapTagToEntity.emplace( sTag, entity );
+
+	return true;
+}
+
 bool SceneObject::DuplicateGameObject( entt::entity entity )
 {
 	auto objItr = m_mapTagToEntity.begin();
@@ -242,10 +257,15 @@ bool SceneObject::DeleteGameObjectByTag( const std::string& sTag )
 		return false;
 	}
 
+	std::vector<std::string> removedEntities;
 	Entity ent{ m_Registry, objItr->second };
-	ent.Kill();
 
-	m_mapTagToEntity.erase( objItr );
+	RelationshipUtils::RemoveAndDelete( ent, removedEntities );
+
+	for (const auto& sTag : removedEntities)
+	{
+		m_mapTagToEntity.erase( sTag );
+	}
 
 	return true;
 }
@@ -266,10 +286,16 @@ bool SceneObject::DeleteGameObjectById( entt::entity entity )
 		return false;
 	}
 
+	std::vector<std::string> removedEntities;
 	Entity ent{ m_Registry, objItr->second };
-	ent.Kill();
 
-	m_mapTagToEntity.erase( objItr );
+	RelationshipUtils::RemoveAndDelete( ent, removedEntities );
+
+	for ( const auto& sTag : removedEntities )
+	{
+		m_mapTagToEntity.erase( sTag );	
+	}
+	
 	return true;
 }
 
@@ -298,6 +324,14 @@ bool SceneObject::LoadScene()
 	{
 	}
 
+	// Map the entities
+	auto view = m_Registry.GetRegistry().view<entt::entity>( entt::exclude<TileComponent> );
+	for ( auto entity : view )
+	{
+		Entity ent{ m_Registry, entity };
+		AddGameObjectByTag( ent.GetName(), entity );
+	}
+
 	m_bSceneLoaded = true;
 	return true;
 }
@@ -318,7 +352,7 @@ bool SceneObject::UnloadScene()
 
 	// Remove all objects in registry
 	m_Registry.ClearRegistry();
-
+	m_mapTagToEntity.clear();
 	m_bSceneLoaded = false;
 	return false;
 }

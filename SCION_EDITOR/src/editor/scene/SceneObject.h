@@ -52,6 +52,7 @@ class SceneObject
 	bool CheckLayerName( const std::string& sLayerName );
 
 	bool AddGameObject();
+	bool AddGameObjectByTag( const std::string& sTag, entt::entity entity );
 	bool DuplicateGameObject( entt::entity entity );
 	bool DeleteGameObjectByTag( const std::string& sTag );
 	bool DeleteGameObjectById( entt::entity entity );
