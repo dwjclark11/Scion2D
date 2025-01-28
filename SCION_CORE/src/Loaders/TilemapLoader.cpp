@@ -201,7 +201,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 	pSerializer->StartDocument();
 	pSerializer->StartNewArray( "game_objects" );
 
-	auto gameObjects = registry.GetRegistry().view<entt::entity>(entt::exclude<TileComponent>);
+	auto gameObjects = registry.GetRegistry().view<entt::entity>( entt::exclude<TileComponent> );
 
 	for ( auto object : gameObjects )
 	{
@@ -214,7 +214,6 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			SERIALIZE_COMPONENT( *pSerializer, *id );
 		}
 
-
 		if ( const auto* transform = objectEnt.TryGetComponent<TransformComponent>() )
 		{
 			SERIALIZE_COMPONENT( *pSerializer, *transform );
@@ -225,7 +224,6 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			SERIALIZE_COMPONENT( *pSerializer, *sprite );
 		}
 
-		
 		if ( objectEnt.HasComponent<BoxColliderComponent>() )
 		{
 			const auto& boxCollider = objectEnt.GetComponent<BoxColliderComponent>();
@@ -248,6 +246,51 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 		{
 			const auto& physics = objectEnt.GetComponent<PhysicsComponent>();
 			SERIALIZE_COMPONENT( *pSerializer, physics );
+		}
+
+		if ( auto* relations = objectEnt.TryGetComponent<Relationship>() )
+		{
+			pSerializer->StartNewObject( "relationship" );
+			if ( relations->parent != entt::null )
+			{
+				Entity parent{ registry, relations->parent };
+				pSerializer->AddKeyValuePair( "parent", parent.GetName() );
+			}
+			else
+			{
+				pSerializer->AddKeyValuePair( "parent", std::string{ "" } );
+			}
+
+			if ( relations->nextSibling != entt::null )
+			{
+				Entity nextSibling{ registry, relations->nextSibling };
+				pSerializer->AddKeyValuePair( "nextSibling", nextSibling.GetName() );
+			}
+			else
+			{
+				pSerializer->AddKeyValuePair( "nextSibling", std::string{ "" } );
+			}
+
+			if ( relations->prevSibling != entt::null )
+			{
+				Entity prevSibling{ registry, relations->prevSibling };
+				pSerializer->AddKeyValuePair( "prevSibling", prevSibling.GetName() );
+			}
+			else
+			{
+				pSerializer->AddKeyValuePair( "prevSibling", std::string{ "" } );
+			}
+
+			if ( relations->firstChild != entt::null )
+			{
+				Entity firstChild{ registry, relations->firstChild };
+				pSerializer->AddKeyValuePair( "firstChild", firstChild.GetName() );
+			}
+			else
+			{
+				pSerializer->AddKeyValuePair( "firstChild", std::string{ "" } );
+			}
+			pSerializer->EndObject(); // Relationship Object
 		}
 
 		pSerializer->EndObject(); // Components object
@@ -301,6 +344,9 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 		return false;
 	}
 
+	// Map of entity to relationships
+	std::map<entt::entity, SaveRelationship> mapEntityToRelationship;
+
 	for ( const auto& object : gameObjects.GetArray() )
 	{
 		Entity gameObject{ registry, "", "" };
@@ -347,14 +393,70 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			DESERIALIZE_COMPONENT( jsonPhysics, physics );
 		}
 
-		if (components.HasMember("id"))
+		if ( components.HasMember( "id" ) )
 		{
 			const auto& jsonID = components[ "id" ];
 			auto& id = gameObject.GetComponent<Identification>();
 			DESERIALIZE_COMPONENT( jsonID, id );
 		}
 
-		// TODO: Handle Relationships???
+		if ( components.HasMember( "relationship" ) )
+		{
+			const rapidjson::Value& relations = components[ "relationship" ];
+			SaveRelationship saveRelations{};
+			saveRelations.sParent = relations[ "parent" ].GetString();
+			saveRelations.sNextSibling = relations[ "nextSibling" ].GetString();
+			saveRelations.sPrevSibling = relations[ "prevSibling" ].GetString();
+			saveRelations.sFirstChild = relations[ "firstChild" ].GetString();
+
+			mapEntityToRelationship.emplace( gameObject.GetEntity(), saveRelations );
+		}
+	}
+
+	auto ids = registry.GetRegistry().view<Identification>( entt::exclude<TileComponent> );
+
+	auto findTag = [ & ]( const std::string& sTag ) {
+		auto parItr = std::ranges::find_if( ids, [ & ]( const auto& e ) {
+			Entity en{ registry, e };
+			return en.GetName() == sTag;
+		} );
+
+		if ( parItr != ids.end() )
+		{
+			return *parItr;
+		}
+
+		return entt::entity{ entt::null };
+	};
+
+	for ( auto& [ entity, saveRelations ] : mapEntityToRelationship )
+	{
+		Entity ent{ registry, entity };
+		auto& relations = ent.GetComponent<Relationship>();
+
+		// Find the parent
+		if ( !saveRelations.sParent.empty() )
+		{
+			relations.parent = findTag( saveRelations.sParent );
+		}
+
+		// Find the nextSibling
+		if ( !saveRelations.sNextSibling.empty() )
+		{
+			relations.nextSibling = findTag( saveRelations.sNextSibling );
+		}
+
+		// Find the prevSibling
+		if ( !saveRelations.sPrevSibling.empty() )
+		{
+			relations.prevSibling = findTag( saveRelations.sPrevSibling );
+		}
+
+		// Find the firstChild
+		if ( !saveRelations.sFirstChild.empty() )
+		{
+			relations.firstChild = findTag( saveRelations.sFirstChild);
+		}
 	}
 
 	mapFile.close();
