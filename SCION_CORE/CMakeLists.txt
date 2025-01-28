@@ -19,6 +19,8 @@ add_library(SCION_CORE
     "src/ECS/Registry.cpp"
     "include/Core/ECS/MainRegistry.h" 
     "src/ECS/MainRegistry.cpp"
+	"include/Core/ECS/ECSUtils.h"
+	"src/ECS/ECSUtils.cpp"
 
     # Components
     "include/Core/ECS/Components/Identification.h"
@@ -64,6 +66,8 @@ add_library(SCION_CORE
     "include/Core/Scripting/UserDataBindings.h"
     "include/Core/Scripting/UserDataBindings.inl"
     "src/Scripting/UserDataBindings.cpp"
+	"include/Core/Scripting/LuaFilesystemBindings.h"
+	"src/Scripting/LuaFilesystemBindings.cpp"
 
 	# States and State Machine
     "include/Core/States/State.h"
@@ -98,8 +102,6 @@ add_library(SCION_CORE
 
 	# Events
 	"include/Core/Events/EventDispatcher.h"
-	
-	
 )
 
 target_include_directories(

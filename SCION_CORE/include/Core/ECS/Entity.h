@@ -87,9 +87,20 @@ class Entity
 	template <typename TComponent, typename... Args>
 	TComponent& ReplaceComponent( Args&&... args );
 
+	/*
+	* @brief Attempts to get the desired component.
+	* @tparam Component Type to retrieve.
+	* @return Returns a reference to the desired component. If the entity does not have the
+	* component, this will result in undefined behavior. 
+	*/
 	template <typename TComponent>
 	TComponent& GetComponent();
 
+	/*
+	 * @brief Attempts to get the desired component.
+	 * @tparam Component Type to retrieve.
+	 * @return Returns a pointer to the desired component if the entity has one, or else returns nullptr.
+	 */
 	template <typename TComponent>
 	TComponent* TryGetComponent();
 

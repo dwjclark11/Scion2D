@@ -9,6 +9,7 @@
 #include "Core/Scripting/RendererBindings.h"
 #include "Core/Scripting/UserDataBindings.h"
 #include "Core/Scripting/ContactListenerBind.h"
+#include "Core/Scripting/LuaFilesystemBindings.h"
 
 #include "Core/Resources/AssetManager.h"
 #include <Logger/Logger.h>
@@ -296,6 +297,7 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Reg
 	SCION_CORE::Scripting::RendererBinder::CreateRenderingBind( lua, registry );
 	SCION_CORE::Scripting::UserDataBinder::CreateLuaUserData( lua );
 	SCION_CORE::Scripting::ContactListenerBinder::CreateLuaContactListener( lua, registry.GetRegistry() );
+	SCION_CORE::Scripting::LuaFilesystem::CreateLuaFileSystemBind( lua );
 
 	SCION_CORE::FollowCamera::CreateLuaFollowCamera( lua, registry );
 

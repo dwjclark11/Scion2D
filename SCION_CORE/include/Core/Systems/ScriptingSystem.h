@@ -11,9 +11,6 @@ namespace SCION_CORE::Systems
 {
 class ScriptingSystem
 {
-  private:
-	bool m_bMainLoaded;
-
   public:
 	ScriptingSystem();
 	~ScriptingSystem() = default;
@@ -24,6 +21,9 @@ class ScriptingSystem
 
 	static void RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Registry& registry );
 	static void RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Registry& registry );
+
+  private:
+	bool m_bMainLoaded;
 };
 
 } // namespace SCION_CORE::Systems
