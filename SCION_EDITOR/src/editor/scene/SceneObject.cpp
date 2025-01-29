@@ -453,6 +453,15 @@ bool SceneObject::LoadSceneData()
 
 bool SceneObject::SaveSceneData()
 {
+	/*
+	 * Scenes that have not been loaded do not need to be re-saved. They would have been
+	 * saved when unloading the scene previously. Only save loaded scenes.
+	 */
+	if ( !m_bSceneLoaded )
+	{
+		return true;
+	}
+
 	// Check to see if the scene data exists
 	fs::path tilemapPath{ m_sSceneDataPath };
 	if ( !fs::exists( tilemapPath ) )
