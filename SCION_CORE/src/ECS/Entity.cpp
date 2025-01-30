@@ -24,6 +24,7 @@ Entity::Entity( Registry& registry, const std::string& name, const std::string& 
 	/* Add Relationship component and set self to underlying entt::entity. */
 	AddComponent<Relationship>( Relationship{ .self = m_Entity } );
 }
+
 Entity::Entity( Registry& registry, const entt::entity& entity )
 	: m_Registry( registry )
 	, m_Entity( entity )
@@ -201,12 +202,8 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 		"Entity",
 		sol::call_constructor,
 		sol::factories(
-			[ & ]( const std::string& name, const std::string& group ) {
-				return Entity{ registry, name, group };
-			},
-			[ & ]( std::int32_t id ) {
-				return Entity{ registry, static_cast<entt::entity>( id ) };
-			} ),
+			[ & ]( const std::string& name, const std::string& group ) { return Entity{ registry, name, group }; },
+			[ & ]( std::int32_t id ) { return Entity{ registry, static_cast<entt::entity>( id ) }; } ),
 		"add_component",
 		[]( Entity& entity, const sol::table& comp, sol::this_state s ) -> sol::object {
 			if ( !comp.valid() )

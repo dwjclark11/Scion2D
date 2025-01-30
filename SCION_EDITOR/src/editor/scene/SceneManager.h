@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <sol/sol.hpp>
 
 #define SCENE_MANAGER() SCION_EDITOR::SceneManager::GetInstance()
 #define COMMAND_MANAGER() SCENE_MANAGER().GetCommandManager()
@@ -53,6 +54,8 @@ class SceneManager
 	inline const std::string& GetCurrentSceneName() const { return m_sCurrentScene; }
 	inline const std::string& GetCurrentTileset() const { return m_sCurrentTileset; }
 
+	static void CreateSceneManagerLuaBind( sol::state& lua );
+
   private:
 	std::map<std::string, std::shared_ptr<SCION_EDITOR::SceneObject>> m_mapScenes;
 	std::string m_sCurrentScene{ "" };
@@ -77,6 +80,6 @@ class SceneManager
 		{                                                                                                              \
 			if ( !pDispatcher )                                                                                        \
 				continue;                                                                                              \
-			pDispatcher->AddHandler<Event, Func>( Handler );                                                            \
+			pDispatcher->AddHandler<Event, Func>( Handler );                                                           \
 		}                                                                                                              \
 	}\

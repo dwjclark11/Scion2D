@@ -6,7 +6,11 @@
 #include "editor/tools/gizmos/Gizmo.h"
 #include "editor/commands/CommandManager.h"
 #include "Core/Events/EventDispatcher.h"
+#include "Core/ECS/Components/AllComponents.h"
+
 #include "Logger/Logger.h"
+
+using namespace SCION_CORE::ECS;
 
 namespace SCION_EDITOR
 {
@@ -162,5 +166,43 @@ bool SceneManager::CheckTagName( const std::string& sTagName )
 	return false;
 }
 
-} // namespace SCION_EDITOR
+void SceneManager::CreateSceneManagerLuaBind( sol::state& lua )
+{
+	lua.new_usertype<SceneManager>(
+		"SceneManager", sol::no_constructor, "changeScene", [ & ]( const std::string& sSceneName ) {
+			auto& sceneManager = SCENE_MANAGER();
 
+			auto pCurrentScene = sceneManager.GetCurrentScene();
+			if ( !pCurrentScene )
+			{
+				SCION_ERROR( "Failed to change to scene [{}] - Current scene is invalid.", sSceneName );
+				return false;
+			}
+
+			if ( pCurrentScene->GetRuntimeName() == sSceneName )
+			{
+				SCION_ERROR( "Failed to load scene [{}] - Scene has already been loaded.", sSceneName );
+				return false;
+			}
+
+			auto pScene = sceneManager.GetScene( sSceneName );
+			if ( !pScene )
+			{
+				SCION_ERROR( "Failed to change to scene [{}] - Scene [{}] is invalid.", sSceneName, sSceneName );
+				return false;
+			}
+
+			pCurrentScene->GetRuntimeRegistry().DestroyEntities<ScriptComponent>();
+			if ( !pScene->IsLoaded() )
+			{
+				pScene->LoadScene();
+			}
+
+			pCurrentScene->CopySceneToRuntime( *pScene );
+			pScene->UnloadScene();
+
+			return true;
+		} );
+}
+
+} // namespace SCION_EDITOR

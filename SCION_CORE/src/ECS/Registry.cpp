@@ -1,6 +1,7 @@
 #include "Core/ECS/Registry.h"
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/MetaUtilities.h"
+#include "Core/ECS/ECSUtils.h"
 
 using namespace SCION_CORE::Utils;
 
@@ -60,6 +61,14 @@ void SCION_CORE::ECS::Registry::CreateLuaRegistryBind( sol::state& lua, Registry
 			}
 
 			return view;
+		},
+		"findEntityByTag",
+		[ & ]( const std::string& sTag, sol::this_state s ) {
+			auto entity = SCION_CORE::ECS::FindEntityByTag( registry, sTag );
+
+			return entity == entt::null ? sol::lua_nil_t{}
+										: sol::make_reference( s,  Entity{ registry, entity } );
+			
 		},
 		"clear",
 		[ & ]() { registry.GetRegistry().clear(); } );

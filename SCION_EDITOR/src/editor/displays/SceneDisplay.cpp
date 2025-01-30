@@ -74,6 +74,7 @@ void SceneDisplay::LoadScene()
 
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaBindings( *lua, runtimeRegistry );
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaFunctions( *lua, runtimeRegistry );
+	SceneManager::CreateSceneManagerLuaBind( *lua );
 
 	// We need to initialize all of the physics entities
 	auto physicsEntities = runtimeRegistry.GetRegistry().view<PhysicsComponent>();

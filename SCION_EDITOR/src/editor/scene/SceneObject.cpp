@@ -31,11 +31,13 @@ SceneObject::SceneObject( const std::string& sceneName )
 	: m_Registry{}
 	, m_RuntimeRegistry{}
 	, m_sSceneName{ sceneName }
+	, m_sRuntimeSceneName{ "" }
 	, m_sTilemapPath{ "" }
 	, m_sObjectPath{ "" }
 	, m_sSceneDataPath{ "" }
 	, m_Canvas{}
 	, m_CurrentLayer{ 0 }
+	, m_bSceneLoaded{ false }
 {
 	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>();
 	SCION_ASSERT( pSaveProject && "SaveProject must exists here!" );
@@ -90,6 +92,7 @@ SceneObject::SceneObject( const std::string& sceneName, const std::string& scene
 	, m_sSceneDataPath{ sceneData }
 	, m_Canvas{}
 	, m_CurrentLayer{ 0 }
+	, m_bSceneLoaded{ false }
 {
 	// We need to load the scene data from the json file!
 	if ( !LoadSceneData() )
@@ -114,6 +117,8 @@ SceneObject::SceneObject( const std::string& sceneName, const std::string& scene
 
 void SceneObject::CopySceneToRuntime()
 {
+	m_sRuntimeSceneName = m_sSceneName;
+
 	auto& registryToCopy = m_Registry.GetRegistry();
 
 	for ( auto entityToCopy : registryToCopy.view<entt::entity>( entt::exclude<ScriptComponent> ) )
@@ -132,9 +137,33 @@ void SceneObject::CopySceneToRuntime()
 	}
 }
 
+void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
+{
+	m_sRuntimeSceneName = sceneToCopy.GetName();
+
+	auto& registry = sceneToCopy.GetRegistry();
+	auto& registryToCopy = registry.GetRegistry();
+
+	for ( auto entityToCopy : registryToCopy.view<entt::entity>( entt::exclude<ScriptComponent> ) )
+	{
+		entt::entity newEntity = m_RuntimeRegistry.CreateEntity();
+
+		// Copy the components of the entity to the new entity
+		for ( auto&& [ id, storage ] : registryToCopy.storage() )
+		{
+			if ( !storage.contains( entityToCopy ) )
+				continue;
+
+			SCION_CORE::Utils::InvokeMetaFunction(
+				id, "copy_component"_hs, Entity{ registry, entityToCopy }, Entity{ m_RuntimeRegistry, newEntity } );
+		}
+	}
+}
+
 void SceneObject::ClearRuntimeScene()
 {
 	m_RuntimeRegistry.ClearRegistry();
+	m_sRuntimeSceneName.clear();
 }
 
 void SceneObject::AddNewLayer()
@@ -187,11 +216,11 @@ bool SceneObject::AddGameObject()
 	return true;
 }
 
-bool SceneObject::AddGameObjectByTag( const std::string& sTag, entt::entity entity)
+bool SceneObject::AddGameObjectByTag( const std::string& sTag, entt::entity entity )
 {
 	SCION_ASSERT( entity != entt::null && "The entity passed in must be valid." );
 
-	if (m_mapTagToEntity.contains(sTag))
+	if ( m_mapTagToEntity.contains( sTag ) )
 	{
 		SCION_ERROR( "Failed to add entity with tag [{}] - Already Exists!", sTag );
 		return false;
@@ -235,7 +264,7 @@ bool SceneObject::DuplicateGameObject( entt::entity entity )
 	// Now we need to set the tag for the entity
 	size_t tagNum{ 1 };
 
-	while (CheckTagName(fmt::format("{}_{}", objItr->first, tagNum)))
+	while ( CheckTagName( fmt::format( "{}_{}", objItr->first, tagNum ) ) )
 	{
 		++tagNum;
 	}
@@ -262,7 +291,7 @@ bool SceneObject::DeleteGameObjectByTag( const std::string& sTag )
 
 	RelationshipUtils::RemoveAndDelete( ent, removedEntities );
 
-	for (const auto& sTag : removedEntities)
+	for ( const auto& sTag : removedEntities )
 	{
 		m_mapTagToEntity.erase( sTag );
 	}
@@ -293,9 +322,9 @@ bool SceneObject::DeleteGameObjectById( entt::entity entity )
 
 	for ( const auto& sTag : removedEntities )
 	{
-		m_mapTagToEntity.erase( sTag );	
+		m_mapTagToEntity.erase( sTag );
 	}
-	
+
 	return true;
 }
 
@@ -336,7 +365,7 @@ bool SceneObject::LoadScene()
 	return true;
 }
 
-bool SceneObject::UnloadScene()
+bool SceneObject::UnloadScene( bool bSaveScene )
 {
 	if ( !m_bSceneLoaded )
 	{
@@ -344,7 +373,7 @@ bool SceneObject::UnloadScene()
 		return false;
 	}
 
-	if ( !SaveSceneData() )
+	if ( bSaveScene && !SaveSceneData() )
 	{
 		SCION_ERROR( "Failed to unload scene data" );
 		return false;

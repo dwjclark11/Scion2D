@@ -32,6 +32,16 @@ bool Registry::HasContext()
 	return m_pRegistry->ctx().contains<TContext>();
 }
 
+template <typename... Excludes>
+inline void Registry::DestroyEntities()
+{
+	auto view = m_pRegistry->view<entt::entity>( entt::exclude<Excludes ...> );
+	for ( auto entity : view )
+	{
+		m_pRegistry->destroy( entity );
+	}
+}
+
 template <typename TComponent>
 entt::runtime_view& add_component_to_view( Registry* registry, entt::runtime_view& view )
 {

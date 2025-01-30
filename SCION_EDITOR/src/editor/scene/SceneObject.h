@@ -24,6 +24,8 @@ class SceneObject
 	 */
 	void CopySceneToRuntime();
 
+	void CopySceneToRuntime( SceneObject& sceneToCopy );
+
 	/*
 	 * @brief Clears the runtime registry.
 	 */
@@ -70,7 +72,7 @@ class SceneObject
 	 * The scene's registry will also be cleared.
 	 * @return Returns true if successful, false otherwise.
 	 */
-	bool UnloadScene();
+	bool UnloadScene(bool bSaveScene = true);
 
 	/*
 	 * @brief Tries to save the scene. This differs from the unload function
@@ -90,10 +92,13 @@ class SceneObject
 
 	inline Canvas& GetCanvas() { return m_Canvas; }
 	inline const std::string& GetName() { return m_sSceneName; }
+	inline const std::string& GetRuntimeName() { return m_sRuntimeSceneName; }
 	inline const std::string& GetSceneDataPath() { return m_sSceneDataPath; }
 	inline SCION_CORE::ECS::Registry& GetRegistry() { return m_Registry; }
 	inline SCION_CORE::ECS::Registry* GetRegistryPtr() { return &m_Registry; }
 	inline SCION_CORE::ECS::Registry& GetRuntimeRegistry() { return m_RuntimeRegistry; }
+
+	inline bool IsLoaded() const { return m_bSceneLoaded; }
 
   private:
 	bool LoadSceneData();
@@ -101,19 +106,28 @@ class SceneObject
 	void OnEntityNameChanges( SCION_EDITOR::Events::NameChangeEvent& nameChange );
 
   private:
+	/* The registry that is used in the tilemap editor and the scene hierarchy. */
 	SCION_CORE::ECS::Registry m_Registry;
+	/* The runtime registry. This registry starts with the current scene's data;
+	however, different scenes can be loaded via lua scripts. */
 	SCION_CORE::ECS::Registry m_RuntimeRegistry;
-
+	/* The name of the scene object represents. */
 	std::string m_sSceneName;
+	/* The current scene that the runtime is using. Scene can be changed via lua script. */
+	std::string m_sRuntimeSceneName;
+	/* The filepath which to load and save the tilemap. */
 	std::string m_sTilemapPath;
+	/* The filepath which to load and save the game objects. */
 	std::string m_sObjectPath;
+	/* The filepath which to load and save the scene data. */
 	std::string m_sSceneDataPath;
 
 	Canvas m_Canvas;
 	std::vector<SCION_UTIL::SpriteLayerParams> m_LayerParams;
 	std::map<std::string, entt::entity> m_mapTagToEntity;
 	int m_CurrentLayer;
-	bool m_bSceneLoaded{ false };
+	/* Has this scene been loaded in the editor. */
+	bool m_bSceneLoaded;
 };
 
 } // namespace SCION_EDITOR
