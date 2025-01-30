@@ -58,7 +58,14 @@ void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDE
 		{
 			auto& physics = registry.GetRegistry().get<PhysicsComponent>( entity );
 			if ( physics.IsSensor() )
+			{
 				color = Color{ 0, 255, 0, 135 };
+			}
+			// Tilemap Editor does not create the rigid body
+			else if ( physics.GetAttributes().bIsSensor ) 
+			{
+				color = Color{ 0, 255, 0, 135 };
+			}
 		}
 
 		Rect rect{ .position = glm::vec2{ transform.position.x + boxCollider.offset.x,

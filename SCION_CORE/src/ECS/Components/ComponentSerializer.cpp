@@ -1,6 +1,9 @@
 #include "Core/ECS/Components/ComponentSerializer.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "ScionFilesystem/Serializers/JSONSerializer.h"
+#include "Physics/PhysicsUtilities.h"
+
+using namespace SCION_PHYSICS;
 
 namespace SCION_CORE::ECS
 {
@@ -235,7 +238,36 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 
 void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, PhysicsComponent& physics )
 {
-	// TODO:
+	if ( jsonValue.HasMember( "attributes" ) )
+	{
+		const auto& attr = jsonValue[ "attributes" ];
+		PhysicsAttributes attributes{
+			.eType = GetRigidBodyTypeByString( attr[ "type" ].GetString() ),
+			.density = attr[ "density" ].GetFloat(),
+			.friction = attr[ "friction" ].GetFloat(),
+			.restitution = attr[ "restitution" ].GetFloat(),
+			.restitutionThreshold = attr[ "restitutionThreshold" ].GetFloat(),
+			.radius = attr[ "radius" ].GetFloat(),
+			.gravityScale = attr[ "gravityScale" ].GetFloat(),
+			.position = glm::vec2{ attr[ "position" ][ "x" ].GetFloat(), attr[ "position" ][ "y" ].GetFloat() },
+			.scale = glm::vec2{ attr[ "scale" ][ "x" ].GetFloat(), attr[ "scale" ][ "y" ].GetFloat() },
+			.boxSize = glm::vec2{ attr[ "boxSize" ][ "x" ].GetFloat(), attr[ "boxSize" ][ "y" ].GetFloat() },
+			.offset = glm::vec2{ attr[ "offset" ][ "x" ].GetFloat(), attr[ "offset" ][ "y" ].GetFloat() },
+			.bCircle = attr[ "bCircle" ].GetBool(),
+			.bBoxShape = attr[ "bBoxShape" ].GetBool(),
+			.bFixedRotation = attr[ "bFixedRotation" ].GetBool(),
+			.bIsSensor = attr[ "bIsSensor" ].GetBool(),
+			.filterCategory = static_cast<uint16_t>( attr[ "filterCategory" ].GetUint() ),
+			.filterMask = static_cast<uint16_t>( attr[ "filterMask" ].GetUint() ),
+			.groupIndex = static_cast<int16_t>( attr[ "groupIndex" ].GetInt() ),
+			.objectData = ObjectData{ .tag = attr[ "objectData" ][ "tag" ].GetString(),
+									  .group = attr[ "objectData" ][ "group" ].GetString(),
+									  .bCollider = attr[ "objectData" ][ "bCollider" ].GetBool(),
+									  .bTrigger = attr[ "objectData" ][ "bTrigger" ].GetBool(),
+									  .bIsFriendly = attr[ "objectData" ][ "bIsFriendly" ].GetBool() } };
+
+		physics.GetChangableAttributes() = attributes;
+	}
 }
 
 void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, RigidBodyComponent& rigidBody )
