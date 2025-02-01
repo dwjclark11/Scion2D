@@ -465,7 +465,11 @@ void ContentDisplay::OpenCreateFolderPopup()
 		static std::string newFolderStr{ "" };
 		char temp[ 256 ];
 		memset( temp, 0, sizeof( temp ) );
+#ifdef _WIN32
 		strcpy_s( temp, newFolderStr.c_str() );
+#else
+		strcpy( temp, newFolderStr.c_str() );
+#endif
 		bool bNameEntered{ false }, bExit{ false };
 
 		ImGui::Text( "folder name" );
@@ -479,7 +483,7 @@ void ContentDisplay::OpenCreateFolderPopup()
 			newFolderStr = std::string{ temp };
 			bNameEntered = true;
 		}
-		else if ( ImGui::IsKeyPressed( ImGui::GetKeyIndex( ImGuiKey_Escape ) ) )
+		else if ( ImGui::IsKeyPressed( ImGuiKey_Escape  ) )
 		{
 			bExit = true;
 		}
@@ -534,7 +538,11 @@ void ContentDisplay::OpenCreateLuaClassPopup()
 		char buffer[ 256 ];
 		static std::string className{ "" };
 		memset( buffer, 0, sizeof( buffer ) );
+#ifdef _WIN32
 		strcpy_s( buffer, className.c_str() );
+#else
+		strcpy( buffer, className.c_str() );
+#endif
 		bool bNameEntered{ false }, bExit{ false };
 		ImGui::Text( "Class Name" );
 		ImGui::SameLine();
@@ -547,7 +555,7 @@ void ContentDisplay::OpenCreateLuaClassPopup()
 			className = std::string{ buffer };
 			bNameEntered = true;
 		}
-		else if ( ImGui::IsKeyPressed( ImGui::GetKeyIndex( ImGuiKey_Escape ) ) )
+		else if ( ImGui::IsKeyPressed( ImGuiKey_Escape ) )
 		{
 			bExit = true;
 		}
@@ -613,7 +621,11 @@ void ContentDisplay::OpenCreateLuaTablePopup()
 		char buffer[ 256 ];
 		static std::string tableName{ "" };
 		memset( buffer, 0, sizeof( buffer ) );
+#ifdef _WIN32
 		strcpy_s( buffer, tableName.c_str() );
+#else
+		strcpy( buffer, tableName.c_str() );
+#endif
 		bool bNameEntered{ false }, bExit{ false };
 		ImGui::Text( "Table Name" );
 		ImGui::SameLine();
@@ -626,7 +638,7 @@ void ContentDisplay::OpenCreateLuaTablePopup()
 			tableName = std::string{ buffer };
 			bNameEntered = true;
 		}
-		else if ( ImGui::IsKeyPressed( ImGui::GetKeyIndex( ImGuiKey_Escape ) ) )
+		else if ( ImGui::IsKeyPressed( ImGuiKey_Escape ) )
 		{
 			bExit = true;
 		}
@@ -686,7 +698,11 @@ void ContentDisplay::OpenCreateEmptyLuaFilePopup()
 		char buffer[ 256 ];
 		static std::string tableName{ "" };
 		memset( buffer, 0, sizeof( buffer ) );
+#ifdef _WIN32
 		strcpy_s( buffer, tableName.c_str() );
+#else
+		strcpy( buffer, tableName.c_str() );
+#endif
 		bool bNameEntered{ false }, bExit{ false };
 		ImGui::Text( "FileName" );
 		ImGui::SameLine();
@@ -699,7 +715,7 @@ void ContentDisplay::OpenCreateEmptyLuaFilePopup()
 			tableName = std::string{ buffer };
 			bNameEntered = true;
 		}
-		else if ( ImGui::IsKeyPressed( ImGui::GetKeyIndex( ImGuiKey_Escape ) ) )
+		else if ( ImGui::IsKeyPressed( ImGuiKey_Escape ) )
 		{
 			bExit = true;
 		}
