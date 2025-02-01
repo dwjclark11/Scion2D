@@ -1,11 +1,11 @@
 #include "ScionFilesystem/Serializers/JSONSerializer.h"
 #include "Logger/Logger.h"
 
-constexpr int MAX_DECIMAL_PLACES = 3;
+constexpr int MAX_DECIMAL_PLACES = 5;
 
 namespace SCION_FILESYSTEM
 {
-JSONSerializer::JSONSerializer( const std::string& sFilename )
+JSONSerializer::JSONSerializer( const std::string& sFilename, int maxDecimalPlaces )
 	: m_Filestream{}
 	, m_StringBuffer{}
 	, m_pWriter{ std::make_unique<rapidjson::PrettyWriter<rapidjson::StringBuffer>>( m_StringBuffer ) }
@@ -18,7 +18,7 @@ JSONSerializer::JSONSerializer( const std::string& sFilename )
 	if ( !m_Filestream.is_open() )
 		throw std::runtime_error( fmt::format( "JSONSerializer failed to open file [{}]", sFilename ) );
 
-	m_pWriter->SetMaxDecimalPlaces( MAX_DECIMAL_PLACES );
+	m_pWriter->SetMaxDecimalPlaces( maxDecimalPlaces > 1 ? maxDecimalPlaces : MAX_DECIMAL_PLACES );
 }
 
 JSONSerializer::~JSONSerializer()
