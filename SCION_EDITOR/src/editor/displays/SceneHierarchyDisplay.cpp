@@ -14,10 +14,12 @@
 #include "Core/ECS/Components/AllComponents.h"
 
 #include "Core/Events/EventDispatcher.h"
+#include "Core/Events/EngineEventTypes.h"
 #include "editor/events/EditorEventTypes.h"
 
 #include <imgui.h>
 
+using namespace SCION_CORE::Events;
 using namespace SCION_CORE::ECS;
 using namespace entt::literals;
 
@@ -337,9 +339,9 @@ void SceneHierarchyDisplay::OnEntityChanged( SCION_EDITOR::Events::SwitchEntityE
 	SCION_ASSERT( m_pSelectedEntity && "Entity must be valid here!" );
 }
 
-void SceneHierarchyDisplay::OnKeyPressed( SCION_EDITOR::Events::KeyPressedEvent& keyPressed )
+void SceneHierarchyDisplay::OnKeyPressed( SCION_CORE::Events::KeyEvent& keyEvent )
 {
-	if ( !m_bWindowActive )
+	if ( !m_bWindowActive || keyEvent.eType == EKeyEventType::Released)
 		return;
 
 	if ( m_pSelectedEntity )
@@ -347,14 +349,14 @@ void SceneHierarchyDisplay::OnKeyPressed( SCION_EDITOR::Events::KeyPressedEvent&
 		auto& keyboard = INPUT_MANAGER().GetKeyboard();
 		if (keyboard.IsKeyPressed(SCION_KEY_RCTRL) || keyboard.IsKeyPressed(SCION_KEY_LCTRL))
 		{
-			if ( keyPressed.key == SCION_KEY_D )
+			if ( keyEvent.key == SCION_KEY_D )
 			{
 				DuplicateSelectedEntity();
 			}
 		}
 		else
 		{
-			if ( keyPressed.key == SCION_KEY_DELETE )
+			if ( keyEvent.key == SCION_KEY_DELETE )
 			{
 				DeleteSelectedEntity();
 			}
@@ -366,7 +368,7 @@ void SceneHierarchyDisplay::OnKeyPressed( SCION_EDITOR::Events::KeyPressedEvent&
 SceneHierarchyDisplay::SceneHierarchyDisplay()
 {
 	ADD_SWE_HANDLER( Events::SwitchEntityEvent, &SceneHierarchyDisplay::OnEntityChanged, *this );
-	ADD_EVENT_HANDLER( Events::KeyPressedEvent, &SceneHierarchyDisplay::OnKeyPressed, *this );
+	ADD_EVENT_HANDLER( KeyEvent, &SceneHierarchyDisplay::OnKeyPressed, *this );
 }
 
 SceneHierarchyDisplay::~SceneHierarchyDisplay()

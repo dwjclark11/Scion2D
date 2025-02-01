@@ -21,6 +21,7 @@ class CoreEngineData
 	bool m_bPhysicsEnabled;
 	bool m_bPhysicsPaused;
 	bool m_bRenderColliders;
+	std::string m_sProjectPath;
 
   private:
 	CoreEngineData();
@@ -60,6 +61,9 @@ class CoreEngineData
 	inline void UnPausePhysics() { m_bPhysicsPaused = false; }
 	inline const bool IsPhysicsEnabled() const { return m_bPhysicsEnabled; }
 	inline const bool IsPhysicsPaused() const { return m_bPhysicsPaused; }
+
+	inline const std::string& GetProjectPath() const { return m_sProjectPath; }
+	inline void SetProjectPath(const std::string& sPath ) { m_sProjectPath = sPath; }
 
 	static void RegisterMetaFunctions();
 };

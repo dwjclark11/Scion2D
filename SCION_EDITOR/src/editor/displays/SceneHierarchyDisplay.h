@@ -10,8 +10,13 @@ class Entity;
 namespace SCION_EDITOR::Events
 {
 struct SwitchEntityEvent;
-struct KeyPressedEvent;
 }
+
+namespace SCION_CORE::Events
+{
+struct KeyEvent;
+}
+
 
 namespace SCION_EDITOR
 {
@@ -33,7 +38,7 @@ class SceneHierarchyDisplay : public IDisplay
 	bool DuplicateSelectedEntity();
 
 	void OnEntityChanged( SCION_EDITOR::Events::SwitchEntityEvent& swEntEvent );
-	void OnKeyPressed( SCION_EDITOR::Events::KeyPressedEvent& keyPressed );
+	void OnKeyPressed( SCION_CORE::Events::KeyEvent& keyEvent );
 
   public:
 	SceneHierarchyDisplay();

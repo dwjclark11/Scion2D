@@ -1,6 +1,7 @@
 #include "ProjectLoader.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
+#include "Core/CoreUtilities/CoreEngineData.h"
 #include "editor/utilities/SaveProject.h"
 #include "editor/utilities/EditorUtilities.h"
 #include "editor/scene/SceneManager.h"
@@ -122,6 +123,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 
 	// Get the project path before we adjust it to the content path
 	pSaveProject->sProjectPath = sContentPath + PATH_SEPARATOR;
+	CORE_GLOBALS().SetProjectPath( pSaveProject->sProjectPath );
 
 	sContentPath += PATH_SEPARATOR;
 	sContentPath += "content";
@@ -288,7 +290,7 @@ bool ProjectLoader::SaveLoadedProject( SaveProject& save )
 	auto& assetManager = ASSET_MANAGER();
 	auto& sceneMananger = SCENE_MANAGER();
 
-	if (!sceneMananger.SaveAllScenes())
+	if ( !sceneMananger.SaveAllScenes() )
 	{
 		SCION_ERROR( "Failed to save all scenes." );
 	}
@@ -301,8 +303,7 @@ bool ProjectLoader::SaveLoadedProject( SaveProject& save )
 
 	pSerializer->StartNewObject( "project_data" )
 		.AddKeyValuePair( "project_name", save.sProjectName )
-		.AddKeyValuePair( "main_lua_script",
-						  save.sMainLuaScript.substr( save.sMainLuaScript.find( SCRIPTS ) ) )
+		.AddKeyValuePair( "main_lua_script", save.sMainLuaScript.substr( save.sMainLuaScript.find( SCRIPTS ) ) )
 		.StartNewObject( "assets" );
 
 	pSerializer->StartNewArray( "textures" );
@@ -312,8 +313,7 @@ bool ProjectLoader::SaveLoadedProject( SaveProject& save )
 			continue;
 
 		// Get Relative to assets path
-		std::string sTexturePath =
-			pTexture->GetPath().substr( pTexture->GetPath().find( ASSETS ) );
+		std::string sTexturePath = pTexture->GetPath().substr( pTexture->GetPath().find( ASSETS ) );
 		SCION_ASSERT( !sTexturePath.empty() );
 
 		pSerializer->StartNewObject()
@@ -328,8 +328,7 @@ bool ProjectLoader::SaveLoadedProject( SaveProject& save )
 	pSerializer->StartNewArray( "soundfx" );
 	for ( const auto& [ sName, pSound ] : assetManager.GetAllSoundFx() )
 	{
-		std::string sSoundFxPath =
-			pSound->GetFilename().substr( pSound->GetFilename().find( ASSETS ) );
+		std::string sSoundFxPath = pSound->GetFilename().substr( pSound->GetFilename().find( ASSETS ) );
 		pSerializer->StartNewObject()
 			.AddKeyValuePair( "name", sName )
 			.AddKeyValuePair( "path", sSoundFxPath )
@@ -340,8 +339,7 @@ bool ProjectLoader::SaveLoadedProject( SaveProject& save )
 	pSerializer->StartNewArray( "music" );
 	for ( const auto& [ sName, pMusic ] : assetManager.GetAllMusic() )
 	{
-		std::string sMusicPath =
-			pMusic->GetFilename().substr( pMusic->GetFilename().find( ASSETS ) );
+		std::string sMusicPath = pMusic->GetFilename().substr( pMusic->GetFilename().find( ASSETS ) );
 		pSerializer->StartNewObject()
 			.AddKeyValuePair( "name", sName )
 			.AddKeyValuePair( "path", sMusicPath )
@@ -353,8 +351,7 @@ bool ProjectLoader::SaveLoadedProject( SaveProject& save )
 
 	for ( const auto& [ sName, pScene ] : sceneMananger.GetAllScenes() )
 	{
-		std::string sScenePath =
-			pScene->GetSceneDataPath().substr( pScene->GetSceneDataPath().find( ASSETS ) );
+		std::string sScenePath = pScene->GetSceneDataPath().substr( pScene->GetSceneDataPath().find( ASSETS ) );
 		pSerializer->StartNewObject()
 			.AddKeyValuePair( "name", sName )
 			.AddKeyValuePair( "sceneData", sScenePath )

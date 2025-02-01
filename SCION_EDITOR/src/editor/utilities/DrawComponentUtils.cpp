@@ -240,13 +240,18 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::BoxColliderCompone
 		ImGui::ItemToolTip( "The offset of the box collider from the origin. Origin is the TL corner." );
 		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
-		if ( ImGui::InputFloat( "##offset_x", &boxCollider.offset.x, 4.f, 4.f ) )
-			boxCollider.offset.x = std::clamp( boxCollider.offset.x, 0.f, 128.f );
+		// Should probably add a way to disable clamps
+		if ( ImGui::InputFloat( "##offset_x", &boxCollider.offset.x, 1.f, 4.f ) )
+		{
+			boxCollider.offset.x = std::clamp( boxCollider.offset.x, -256.f, 256.f );
+		}
 		ImGui::SameLine();
 		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_GREEN );
 		ImGui::SameLine();
-		if ( ImGui::InputFloat( "##offset_y", &boxCollider.offset.y, 4.f, 4.f ) )
-			boxCollider.offset.y = std::clamp( boxCollider.offset.y, 0.f, 128.f );
+		if ( ImGui::InputFloat( "##offset_y", &boxCollider.offset.y, 1.f, 4.f ) )
+		{
+			boxCollider.offset.y = std::clamp( boxCollider.offset.y, -256.f, 256.f );
+		}
 		ImGui::TreePop();
 		ImGui::PopItemWidth();
 	}

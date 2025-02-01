@@ -24,11 +24,16 @@
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 
+#include "Core/Events/EventDispatcher.h"
+#include "Core/Events/EngineEventTypes.h"
+#include "Windowing/Inputs/Keys.h"
+
 #include <imgui.h>
 
 using namespace SCION_CORE::Systems;
 using namespace SCION_CORE::ECS;
 using namespace SCION_RENDERING;
+using namespace SCION_PHYSICS;
 
 constexpr float one_over_sixty = 1.f / 60.f;
 
@@ -55,6 +60,10 @@ void SceneDisplay::LoadScene()
 
 	pPhysicsWorld->SetContactListener( pContactListener.get() );
 
+	// Add the temporary event dispatcher
+	runtimeRegistry.AddToContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>(
+		std::make_shared<SCION_CORE::Events::EventDispatcher>() );
+
 	// Add necessary systems
 	auto scriptSystem =
 		runtimeRegistry.AddToContext<std::shared_ptr<ScriptingSystem>>( std::make_shared<ScriptingSystem>() );
@@ -74,6 +83,8 @@ void SceneDisplay::LoadScene()
 
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaBindings( *lua, runtimeRegistry );
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaFunctions( *lua, runtimeRegistry );
+	SCION_CORE::Systems::ScriptingSystem::RegisterLuaEvents( *lua, runtimeRegistry );
+
 	SceneManager::CreateSceneManagerLuaBind( *lua );
 
 	// We need to initialize all of the physics entities
@@ -118,7 +129,7 @@ void SceneDisplay::LoadScene()
 		 * TODO: Set Filters/Masks/Group Index
 		 */
 
-		physics.Init( pPhysicsWorld, 640, 480 );
+		physics.Init( pPhysicsWorld, 640, 480 ); // We should be getting the size from the canvas
 	}
 
 	// Get the main script path
@@ -142,10 +153,11 @@ void SceneDisplay::UnloadScene()
 
 	runtimeRegistry.ClearRegistry();
 	runtimeRegistry.RemoveContext<std::shared_ptr<Camera2D>>();
-	runtimeRegistry.RemoveContext<std::shared_ptr<sol::state>>();
 	runtimeRegistry.RemoveContext<SCION_PHYSICS::PhysicsWorld>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<ScriptingSystem>>();
+	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>();
+	runtimeRegistry.RemoveContext<std::shared_ptr<sol::state>>();
 
 	auto& mainRegistry = MAIN_REGISTRY();
 	mainRegistry.GetMusicPlayer().Stop();
@@ -187,6 +199,36 @@ void SceneDisplay::RenderScene() const
 
 	fb->Unbind();
 	fb->CheckResize();
+}
+
+void SceneDisplay::HandleKeyEvent( const SCION_CORE::Events::KeyEvent keyEvent )
+{
+	if ( m_bSceneLoaded )
+	{
+		if ( keyEvent.eType == SCION_CORE::Events::EKeyEventType::Released )
+		{
+			if ( keyEvent.key == SCION_KEY_ESCAPE )
+			{
+				UnloadScene();
+			}
+		}
+	}
+
+	// Send double dispatch events to the scene dispatcher.
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	if ( !pCurrentScene )
+		return;
+
+	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
+
+	if ( auto* pEventDispatcher =
+			 runtimeRegistry.TryGetContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>() )
+	{
+		if ( !pEventDispatcher->get()->HasHandlers<SCION_CORE::Events::KeyEvent>() )
+			return;
+
+		pEventDispatcher->get()->EmitEvent( keyEvent );
+	}
 }
 
 void SceneDisplay::DrawToolbar()
@@ -242,8 +284,10 @@ void SceneDisplay::DrawToolbar()
 
 SceneDisplay::SceneDisplay()
 	: m_bPlayScene{ false }
+	, m_bWindowActive{ false }
 	, m_bSceneLoaded{ false }
 {
+	ADD_EVENT_HANDLER( SCION_CORE::Events::KeyEvent, &SceneDisplay::HandleKeyEvent, *this );
 }
 
 void SceneDisplay::Draw()
@@ -261,6 +305,8 @@ void SceneDisplay::Draw()
 	if ( ImGui::BeginChild(
 			 "##SceneChild", ImVec2{ 0.f, 0.f }, ImGuiChildFlags_None, ImGuiWindowFlags_NoScrollWithMouse ) )
 	{
+		m_bWindowActive = ImGui::IsWindowFocused();
+
 		auto& editorFramebuffers = MAIN_REGISTRY().GetContext<std::shared_ptr<EditorFramebuffers>>();
 		const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];
 
@@ -312,6 +358,35 @@ void SceneDisplay::Update()
 		auto& pPhysicsWorld = runtimeRegistry.GetContext<SCION_PHYSICS::PhysicsWorld>();
 		pPhysicsWorld->Step( one_over_sixty, coreGlobals.GetVelocityIterations(), coreGlobals.GetPositionIterations() );
 		pPhysicsWorld->ClearForces();
+
+		auto& dispatch = runtimeRegistry.GetContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>();
+
+		// If there are no listeners for contact events, don't emit event
+		if ( dispatch->HasHandlers<SCION_CORE::Events::ContactEvent>() )
+		{
+			if ( auto& pContactListener = runtimeRegistry.GetContext<std::shared_ptr<ContactListener>>() )
+			{
+				auto pUserDataA = pContactListener->GetUserDataA();
+				auto pUserDataB = pContactListener->GetUserDataB();
+
+				// Only emit contact event if both contacts are valid
+				if ( pUserDataA && pUserDataB )
+				{
+					try
+					{
+						auto ObjectA = std::any_cast<ObjectData>( pUserDataA->userData );
+						auto ObjectB = std::any_cast<ObjectData>( pUserDataB->userData );
+
+						dispatch->EmitEvent(
+							SCION_CORE::Events::ContactEvent{ .objectA = ObjectA, .objectB = ObjectB } );
+					}
+					catch ( const std::bad_any_cast& e )
+					{
+						SCION_ERROR( "Failed to cast to object data - {}", e.what() );
+					}
+				}
+			}
+		}
 	}
 
 	auto& pPhysicsSystem = mainRegistry.GetPhysicsSystem();

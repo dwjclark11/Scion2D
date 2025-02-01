@@ -76,14 +76,14 @@ class PhysicsComponent
 	const bool IsSensor() const;
 	SCION_PHYSICS::ObjectData CastRay( const b2Vec2& point1, const b2Vec2& point2 ) const;
 	std::vector<SCION_PHYSICS::ObjectData> BoxTrace( const b2Vec2& lowerBounds, const b2Vec2& upperBounds ) const;
-
+	SCION_PHYSICS::ObjectData GetCurrentObjectData();
 	inline b2Body* GetBody() { return m_pRigidBody.get(); }
 	inline SCION_PHYSICS::UserData* GetUserData() { return m_pUserData.get(); }
 	
 	/* The attributes may have changed. we need to make a function that will refill the attributes */
 	inline const PhysicsAttributes& GetAttributes() const { return m_InitialAttribs; }
 	inline PhysicsAttributes& GetChangableAttributes() { return m_InitialAttribs; }
-
+	
 	static void CreatePhysicsLuaBind( sol::state& lua, entt::registry& registry );
 };
 } // namespace SCION_CORE::ECS

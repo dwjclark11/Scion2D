@@ -37,6 +37,7 @@
 
 #include "editor/events/EditorEventTypes.h"
 #include "Core/Events/EventDispatcher.h"
+#include "Core/Events/EngineEventTypes.h"
 
 #include "editor/hub/Hub.h"
 
@@ -432,16 +433,18 @@ void Application::ProcessEvents()
 	// Process Events
 	while ( SDL_PollEvent( &m_Event ) )
 	{
-		ImGui_ImplSDL2_ProcessEvent( &m_Event );
-
 		switch ( m_Event.type )
 		{
 		case SDL_QUIT: m_bIsRunning = false; break;
 		case SDL_KEYDOWN:
 			keyboard.OnKeyPressed( m_Event.key.keysym.sym );
-			EVENT_DISPATCHER().EmitEvent( Events::KeyPressedEvent{ .key = m_Event.key.keysym.sym } );
+			EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::KeyEvent{
+				.key = m_Event.key.keysym.sym, .eType = SCION_CORE::Events::EKeyEventType::Pressed } );
 			break;
-		case SDL_KEYUP: keyboard.OnKeyReleased( m_Event.key.keysym.sym ); break;
+		case SDL_KEYUP: keyboard.OnKeyReleased( m_Event.key.keysym.sym );
+			EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::KeyEvent{
+				.key = m_Event.key.keysym.sym, .eType = SCION_CORE::Events::EKeyEventType::Released } );
+			break;
 		case SDL_MOUSEBUTTONDOWN: mouse.OnBtnPressed( m_Event.button.button ); break;
 		case SDL_MOUSEBUTTONUP: mouse.OnBtnReleased( m_Event.button.button ); break;
 		case SDL_MOUSEWHEEL:
@@ -471,6 +474,10 @@ void Application::ProcessEvents()
 		}
 		default: break;
 		}
+
+		// Process ImGui events after other events
+		ImGui_ImplSDL2_ProcessEvent( &m_Event );
+
 	}
 }
 

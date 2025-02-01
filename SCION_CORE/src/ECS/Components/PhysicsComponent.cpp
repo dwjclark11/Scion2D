@@ -216,6 +216,32 @@ std::vector<SCION_PHYSICS::ObjectData> PhysicsComponent::BoxTrace( const b2Vec2&
 	return objectDataVec;
 }
 
+SCION_PHYSICS::ObjectData PhysicsComponent::GetCurrentObjectData()
+{
+	SCION_ASSERT( m_pRigidBody );
+
+	if (!m_pRigidBody)
+	{
+		return {};
+	}
+
+	auto& userData = m_pRigidBody->GetFixtureList()->GetUserData();
+
+	UserData* pData = reinterpret_cast<UserData*>( userData.pointer );
+
+	try
+	{
+		auto objectData = std::any_cast<ObjectData>( pData->userData );
+		return objectData;
+	}
+	catch ( const std::bad_any_cast& e )
+	{
+		SCION_ERROR( "Failed to cast to object data - {}", e.what() );
+	}
+
+	return {};
+}
+
 void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& registry )
 {
 	lua.new_usertype<ObjectData>(
@@ -524,7 +550,9 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			auto vecObjectData =
 				pc.BoxTrace( b2Vec2{ lowerBounds.x, lowerBounds.y }, b2Vec2{ upperBounds.x, upperBounds.y } );
 			return vecObjectData.empty() ? sol::lua_nil_t{} : sol::make_object( s, vecObjectData );
-		}
+		},
+		"object_data",
+		[]( PhysicsComponent& pc ) { return pc.GetCurrentObjectData(); }
 
 	);
 }

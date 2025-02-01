@@ -42,6 +42,7 @@ class ContentDisplay : public IDisplay
 
 	void OpenCreateLuaClassPopup();
 	void OpenCreateLuaTablePopup();
+	void OpenCreateEmptyLuaFilePopup();
 
   private:
 	std::unique_ptr<SCION_CORE::Events::EventDispatcher> m_pFileDispatcher;

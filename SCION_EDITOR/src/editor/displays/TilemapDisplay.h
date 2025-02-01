@@ -8,10 +8,10 @@ namespace SCION_RENDERING
 class Camera2D;
 }
 
-namespace SCION_EDITOR::Events
+namespace SCION_CORE::Events
 {
-struct KeyPressedEvent;
-} // namespace SCION_EDITOR::Events
+struct KeyEvent;
+} // namespace SCION_CORE::Events
 
 namespace SCION_EDITOR
 {
@@ -26,7 +26,7 @@ class TilemapDisplay : public IDisplay
 	void LoadNewScene();
 	void PanZoomCamera( const glm::vec2& mousePos );
 
-	void HandleKeyPressedEvent( const SCION_EDITOR::Events::KeyPressedEvent& keyEvent );
+	void HandleKeyPressedEvent( const SCION_CORE::Events::KeyEvent& keyEvent );
 
   protected:
 	virtual void DrawToolbar() override;

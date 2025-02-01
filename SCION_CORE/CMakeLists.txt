@@ -102,6 +102,9 @@ add_library(SCION_CORE
 
 	# Events
 	"include/Core/Events/EventDispatcher.h"
+	"src/Events/EventDispatcher.cpp"
+	"include/Core/Events/EngineEventTypes.h"
+	"src/Events/EngineEventTypes.cpp"
 )
 
 target_include_directories(

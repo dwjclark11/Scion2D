@@ -23,12 +23,16 @@
 #include "Core/States/StateStack.h"
 #include "Core/States/StateMachine.h"
 
+#include "Core/Events/EngineEventTypes.h"
+#include "Core/Events/EventDispatcher.h"
+
 #include <filesystem>
 
 namespace fs = std::filesystem;
 
 using namespace SCION_CORE::ECS;
 using namespace SCION_RESOURCES;
+using namespace SCION_CORE::Events;
 
 namespace SCION_CORE::Systems
 {
@@ -397,6 +401,8 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 	lua.set_function( "S2D_EnableCollisionRendering", [ & ] { engine.EnableColliderRender(); } );
 	lua.set_function( "S2D_CollisionRenderingEnabled", [ & ] { return engine.RenderCollidersEnabled(); } );
 
+	lua.set_function( "S2D_GetProjecPath", [ & ] { return engine.GetProjectPath(); } );
+
 	lua.new_usertype<SCION_UTIL::RandomIntGenerator>(
 		"RandomInt",
 		sol::call_constructor,
@@ -415,6 +421,18 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 		auto& camera = registry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
 		return SCION_CORE::EntityInView( transform, width, height, *camera );
 	} );
+}
+
+void ScriptingSystem::RegisterLuaEvents( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+{
+	auto* pDispatcher = registry.TryGetContext<std::shared_ptr<EventDispatcher>>();
+	SCION_ASSERT( pDispatcher && "There must be at least one registered dispatcher." );
+
+	LuaEventBinder::CreateLuaEventBindings( lua );
+	EventDispatcher::RegisterMetaEventFuncs<ContactEvent>();
+	EventDispatcher::RegisterMetaEventFuncs<KeyEvent>();
+	EventDispatcher::RegisterMetaEventFuncs<LuaEvent>();
+	EventDispatcher::CreateEventDispatcherLuaBind( lua, **pDispatcher );
 }
 
 } // namespace SCION_CORE::Systems

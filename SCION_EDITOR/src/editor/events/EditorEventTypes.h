@@ -40,7 +40,8 @@ enum class EContentCreateAction
 	Folder,
 	LuaClass,
 	LuaTable,
-	
+	EmptyLuaFile,
+
 	NoAction
 };
 
@@ -48,11 +49,6 @@ struct ContentCreateEvent
 {
 	EContentCreateAction eAction{ EContentCreateAction::NoAction };
 	std::string sFilepath{ "" };
-};
-
-struct KeyPressedEvent
-{
-	int key;
 };
 
 struct NameChangeEvent

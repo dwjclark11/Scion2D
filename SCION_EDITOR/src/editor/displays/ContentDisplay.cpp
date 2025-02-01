@@ -59,7 +59,7 @@ void ContentDisplay::Draw()
 
 	if ( numCols == 0 )
 	{
-		//SCION_ERROR( "NumCols is zero!" );
+		// SCION_ERROR( "NumCols is zero!" );
 		ImGui::End();
 		return;
 	}
@@ -222,8 +222,17 @@ void ContentDisplay::Draw()
 
 					if ( ImGui::Selectable( ICON_FA_FILE " Create Lua Table" ) )
 					{
+						m_sFilepathToAction = m_CurrentDir.string();
+						m_eCreateAction = Events::EContentCreateAction::LuaTable;
 					}
 					ImGui::ItemToolTip( "Generates an empty lua table." );
+
+					if ( ImGui::Selectable( ICON_FA_FILE " Create Lua File" ) )
+					{
+						m_sFilepathToAction = m_CurrentDir.string();
+						m_eCreateAction = Events::EContentCreateAction::EmptyLuaFile;
+					}
+					ImGui::ItemToolTip( "Generates an empty lua File." );
 
 					ImGui::TreePop();
 				}
@@ -412,6 +421,8 @@ void ContentDisplay::HandlePopups()
 		{
 		case EContentCreateAction::Folder: OpenCreateFolderPopup(); break;
 		case EContentCreateAction::LuaClass: OpenCreateLuaClassPopup(); break;
+		case EContentCreateAction::LuaTable: OpenCreateLuaTablePopup(); break;
+		case EContentCreateAction::EmptyLuaFile: OpenCreateEmptyLuaFilePopup(); break;
 		}
 	}
 }
@@ -577,6 +588,7 @@ void ContentDisplay::OpenCreateLuaClassPopup()
 			ImGui::CloseCurrentPopup();
 			m_eCreateAction = EContentCreateAction::NoAction;
 			className.clear();
+			errorText.clear();
 			m_sFilepathToAction.clear();
 		}
 
@@ -649,6 +661,79 @@ void ContentDisplay::OpenCreateLuaTablePopup()
 			ImGui::CloseCurrentPopup();
 			m_eCreateAction = EContentCreateAction::NoAction;
 			tableName.clear();
+			errorText.clear();
+			m_sFilepathToAction.clear();
+		}
+
+		if ( !errorText.empty() )
+		{
+			ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f }, errorText.c_str() );
+		}
+
+		ImGui::EndPopup();
+	}
+}
+
+void ContentDisplay::OpenCreateEmptyLuaFilePopup()
+{
+	if ( m_eCreateAction != EContentCreateAction::EmptyLuaFile )
+		return;
+
+	ImGui::OpenPopup( "Create Lua File" );
+
+	if ( ImGui::BeginPopupModal( "Create Lua File" ) )
+	{
+		char buffer[ 256 ];
+		static std::string tableName{ "" };
+		memset( buffer, 0, sizeof( buffer ) );
+		strcpy_s( buffer, tableName.c_str() );
+		bool bNameEntered{ false }, bExit{ false };
+		ImGui::Text( "FileName" );
+		ImGui::SameLine();
+
+		if ( !ImGui::IsAnyItemActive() )
+			ImGui::SetKeyboardFocusHere();
+
+		if ( ImGui::InputText( "##FileName", buffer, sizeof( buffer ), ImGuiInputTextFlags_EnterReturnsTrue ) )
+		{
+			tableName = std::string{ buffer };
+			bNameEntered = true;
+		}
+		else if ( ImGui::IsKeyPressed( ImGui::GetKeyIndex( ImGuiKey_Escape ) ) )
+		{
+			bExit = true;
+		}
+
+		static std::string errorText{ "" };
+
+		if ( bNameEntered && !tableName.empty() )
+		{
+			std::string filename = m_sFilepathToAction + "\\" + tableName + ".lua";
+
+			if ( fs::exists( fs::path{ filename } ) )
+			{
+				SCION_ERROR( "File: [{}] already exists at [{}]", tableName, filename );
+				errorText = "File: [" + tableName + "] already exists at [" + filename + "]";
+			}
+			else
+			{
+				LuaSerializer lw{ filename };
+				lw.FinishStream();
+
+				errorText.clear();
+				tableName.clear();
+				m_eCreateAction = EContentCreateAction::NoAction;
+				m_sFilepathToAction.clear();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		if ( ImGui::Button( "Cancel" ) || bExit )
+		{
+			ImGui::CloseCurrentPopup();
+			m_eCreateAction = EContentCreateAction::NoAction;
+			tableName.clear();
+			errorText.clear();
 			m_sFilepathToAction.clear();
 		}
 

@@ -11,6 +11,7 @@
 #include "Core/CoreUtilities/CoreEngineData.h"
 
 #include "Core/Events/EventDispatcher.h"
+#include "Core/Events/EngineEventTypes.h"
 
 #include "Rendering/Core/Camera2D.h"
 #include "Rendering/Core/Renderer.h"
@@ -229,9 +230,9 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 	startPosition = mousePos;
 }
 
-void TilemapDisplay::HandleKeyPressedEvent( const SCION_EDITOR::Events::KeyPressedEvent& keyEvent )
+void TilemapDisplay::HandleKeyPressedEvent( const SCION_CORE::Events::KeyEvent& keyEvent )
 {
-	if ( !m_bWindowActive )
+	if ( !m_bWindowActive || keyEvent.eType == SCION_CORE::Events::EKeyEventType::Released)
 		return;
 
 	if (keyEvent.key == SCION_KEY_W)
@@ -394,7 +395,7 @@ TilemapDisplay::TilemapDisplay()
 	: m_pTilemapCam{ std::make_unique<SCION_RENDERING::Camera2D>() }
 	, m_bWindowActive{ false }
 {
-	ADD_EVENT_HANDLER( Events::KeyPressedEvent, &TilemapDisplay::HandleKeyPressedEvent, *this );
+	ADD_EVENT_HANDLER( SCION_CORE::Events::KeyEvent, &TilemapDisplay::HandleKeyPressedEvent, *this );
 }
 
 TilemapDisplay::~TilemapDisplay()
