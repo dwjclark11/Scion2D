@@ -52,20 +52,17 @@ void RenderPickingSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_REN
 		if ( !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, camera ) )
 			continue;
 
-		if ( sprite.texture_name.empty() || sprite.bHidden )
+		if ( sprite.sTextureName.empty() || sprite.bHidden )
 			continue;
 
-		auto pTexture = assetManager.GetTexture( sprite.texture_name );
+		auto pTexture = assetManager.GetTexture( sprite.sTextureName );
 		if ( !pTexture )
 		{
-			SCION_ERROR( "Texture [{0}] was not created correctly!", sprite.texture_name );
+			SCION_ERROR( "Texture [{0}] was not created correctly!", sprite.sTextureName );
 			return;
 		}
 
-		glm::vec4 spriteRect{ transform.position.x,
-							  transform.position.y,
-							  sprite.width,
-							  sprite.height };
+		glm::vec4 spriteRect{ transform.position.x, transform.position.y, sprite.width, sprite.height };
 
 		glm::vec4 uvRect{ sprite.uvs.u, sprite.uvs.v, sprite.uvs.uv_width, sprite.uvs.uv_height };
 		glm::mat4 model = SCION_CORE::RSTModel( transform, sprite.width, sprite.height );

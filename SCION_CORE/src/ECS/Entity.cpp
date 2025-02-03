@@ -202,8 +202,11 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 		"Entity",
 		sol::call_constructor,
 		sol::factories(
+			[ & ]( Registry& reg, const std::string& sName, const std::string& sGroup ) {
+				return Entity{ reg, sName, sGroup };
+			},
 			[ & ]( const std::string& name, const std::string& group ) { return Entity{ registry, name, group }; },
-			[ & ]( std::int32_t id ) { return Entity{ registry, static_cast<entt::entity>( id ) }; } ),
+			[ & ]( std::uint32_t id ) { return Entity{ registry, static_cast<entt::entity>( id ) }; } ),
 		"add_component",
 		[]( Entity& entity, const sol::table& comp, sol::this_state s ) -> sol::object {
 			if ( !comp.valid() )

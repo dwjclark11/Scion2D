@@ -57,7 +57,6 @@ Gizmo::Gizmo( const GizmoAxisParams& xAxisParams, const GizmoAxisParams& yAxisPa
 
 Gizmo::~Gizmo()
 {
-
 }
 
 void Gizmo::Update( Canvas& canvas )
@@ -116,7 +115,7 @@ SCION_CORE::Events::EventDispatcher& Gizmo::GetDispatcher()
 void Gizmo::Init( const std::string& sXAxisTexture, const std::string& sYAxisTexture )
 {
 	// Setup x-axis
-	m_pXAxisParams->sprite.texture_name = sXAxisTexture;
+	m_pXAxisParams->sprite.sTextureName = sXAxisTexture;
 	auto pXAxisTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sXAxisTexture );
 	SCION_ASSERT( pXAxisTexture && "Texture must exist!" );
 	m_pXAxisParams->sprite.width = pXAxisTexture->GetWidth();
@@ -128,7 +127,7 @@ void Gizmo::Init( const std::string& sXAxisTexture, const std::string& sYAxisTex
 	if ( !m_bOnlyOneAxis )
 	{
 		// Setup y-axis
-		m_pYAxisParams->sprite.texture_name = sYAxisTexture;
+		m_pYAxisParams->sprite.sTextureName = sYAxisTexture;
 		auto pYAxisTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sYAxisTexture );
 		SCION_ASSERT( pYAxisTexture && "Texture must exist!" );
 		m_pYAxisParams->sprite.width = pYAxisTexture->GetWidth();

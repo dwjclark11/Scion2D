@@ -92,7 +92,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 				SCION_ASSERT( !textureStr.empty() && "Texture Name is Empty!" );
 				if ( !textureStr.empty() )
 				{
-					sprite.texture_name = textureStr;
+					sprite.sTextureName = textureStr;
 				}
 			}
 
@@ -113,7 +113,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 
 		auto& assetManager = MAIN_REGISTRY().GetAssetManager();
 
-		std::string sSelectedTexture{ sprite.texture_name };
+		std::string sSelectedTexture{ sprite.sTextureName };
 		ImGui::InlineLabel( "texture" );
 		ImGui::ItemToolTip( "The current active texture of the sprite to be drawn." );
 		if ( ImGui::BeginCombo( "##texture", sSelectedTexture.c_str() ) )
@@ -123,7 +123,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 				if ( ImGui::Selectable( sTextureName.c_str(), sTextureName == sSelectedTexture ) )
 				{
 					sSelectedTexture = sTextureName;
-					sprite.texture_name = sSelectedTexture;
+					sprite.sTextureName = sSelectedTexture;
 					bChanged = true;
 				}
 			}
@@ -182,7 +182,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 
 	if ( bChanged )
 	{
-		auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.texture_name );
+		auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.sTextureName );
 		if ( !pTexture )
 			return;
 

@@ -12,3 +12,5 @@
 #include "TileComponent.h"
 #include "Identification.h"
 #include "Relationship.h"
+#include "UIComponent.h"
+

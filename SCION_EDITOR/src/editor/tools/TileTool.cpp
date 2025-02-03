@@ -65,7 +65,7 @@ void TileTool::DrawMouseSprite()
 
 	glm::vec4 uvs{ sprite.uvs.u, sprite.uvs.v, sprite.uvs.uv_width, sprite.uvs.uv_height };
 
-	const auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.texture_name );
+	const auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.sTextureName );
 	if ( pTexture )
 		m_pBatchRenderer->AddSprite(
 			position, uvs, pTexture->GetID(), MOUSE_SPRITE_LAYER, glm::mat4{ 1.f }, sprite.color );
@@ -139,7 +139,7 @@ void TileTool::LoadSpriteTextureData( const std::string& textureName )
 											.start_x = 0,
 											.start_y = 0,
 											.layer = currentLayer,
-											.texture_name = textureName };
+											.sTextureName = textureName };
 
 	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( textureName );
 	SCION_ASSERT( pTexture && "Texture must exist" );
@@ -148,7 +148,7 @@ void TileTool::LoadSpriteTextureData( const std::string& textureName )
 
 const std::string& TileTool::GetSpriteTexture() const
 {
-	return m_pMouseTile->sprite.texture_name;
+	return m_pMouseTile->sprite.sTextureName;
 }
 
 void TileTool::SetSpriteUVs( int startX, int startY )
@@ -161,7 +161,7 @@ void TileTool::SetSpriteUVs( int startX, int startY )
 
 void TileTool::SetSpriteRect( const glm::vec2& spriteRect )
 {
-	if ( m_pMouseTile->sprite.texture_name.empty() )
+	if ( m_pMouseTile->sprite.sTextureName.empty() )
 		return;
 
 	m_MouseRect = spriteRect;
@@ -169,14 +169,14 @@ void TileTool::SetSpriteRect( const glm::vec2& spriteRect )
 	sprite.width = m_MouseRect.x;
 	sprite.height = m_MouseRect.y;
 
-	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.texture_name );
+	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.sTextureName );
 	SCION_ASSERT( pTexture && "Texture Must exist." );
 	SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 }
 
 const bool TileTool::SpriteValid() const
 {
-	return !m_pMouseTile->sprite.texture_name.empty();
+	return !m_pMouseTile->sprite.sTextureName.empty();
 }
 
 const bool TileTool::CanDrawOrCreate() const

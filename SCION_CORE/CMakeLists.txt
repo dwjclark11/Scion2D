@@ -105,7 +105,7 @@ add_library(SCION_CORE
 	"src/Events/EventDispatcher.cpp"
 	"include/Core/Events/EngineEventTypes.h"
 	"src/Events/EngineEventTypes.cpp"
-)
+ "include/Core/Character/Character.h" "src/Character/Character.cpp" "include/Core/ECS/Components/UIComponent.h" "src/ECS/Components/UIComponent.cpp")
 
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

@@ -8,7 +8,7 @@ namespace SCION_CORE
 class StateMachine
 {
   private:
-	std::map<std::string, std::unique_ptr<State>> m_mapStates;
+	std::map<std::string, std::shared_ptr<State>> m_mapStates;
 	std::string m_sCurrentState;
 	std::optional<sol::table> m_StateTable;
 

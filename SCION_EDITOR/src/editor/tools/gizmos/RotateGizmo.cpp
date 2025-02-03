@@ -40,7 +40,7 @@ void SCION_EDITOR::RotateGizmo::Update( Canvas& canvas )
 	selectedTransform.rotation += GetDeltaX();
 
 	// Clamp the values between 0 and 360.
-	if (selectedTransform.rotation < 0.f)
+	if ( selectedTransform.rotation < 0.f )
 	{
 		selectedTransform.rotation = 360.f + selectedTransform.rotation;
 	}
@@ -80,7 +80,7 @@ void SCION_EDITOR::RotateGizmo::Draw()
 
 		glm::vec4 xAxisUVs{ xAxisSprite.uvs.u, xAxisSprite.uvs.v, xAxisSprite.uvs.uv_width, xAxisSprite.uvs.uv_height };
 
-		const auto pXAxisTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( xAxisSprite.texture_name );
+		const auto pXAxisTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( xAxisSprite.sTextureName );
 		if ( pXAxisTexture )
 		{
 			m_pBatchRenderer->AddSprite(

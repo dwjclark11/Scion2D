@@ -30,5 +30,7 @@ class RenderSystem
 	 */
 	void Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera,
 				 const std::vector<SCION_UTIL::SpriteLayerParams>& layerFilters = {} );
+
+	static void CreateRenderSystemLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& registry );
 };
 } // namespace SCION_CORE::Systems

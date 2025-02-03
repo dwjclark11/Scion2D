@@ -10,7 +10,7 @@ std::string SCION_CORE::ECS::SpriteComponent::to_string() const
 {
 	std::stringstream ss;
 	ss << "==== Sprite Component ==== \n"
-	   << std::boolalpha << "Texture Name: " << texture_name << "\n"
+	   << std::boolalpha << "Texture Name: " << sTextureName << "\n"
 	   << "Width: " << width << "\n"
 	   << "Height: " << height << "\n"
 	   << "StartX: " << start_x << "\n"
@@ -76,10 +76,10 @@ void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
 										.start_x = start_x,
 										.start_y = start_y,
 										.layer = layer,
-										.texture_name = textureName };
+										.sTextureName = textureName };
 			} ),
-		"texture_name",
-		&SpriteComponent::texture_name,
+		"sTextureName",
+		&SpriteComponent::sTextureName,
 		"width",
 		&SpriteComponent::width,
 		"height",
@@ -98,12 +98,12 @@ void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
 		&SpriteComponent::color,
 		"generate_uvs",
 		[ & ]( SpriteComponent& sprite ) {
-			auto pTexture = assetManager.GetTexture( sprite.texture_name );
+			auto pTexture = assetManager.GetTexture( sprite.sTextureName );
 
 			if ( !pTexture )
 			{
 				SCION_ERROR( "Failed to generate uvs -- Texture [{}] -- Does not exists or invalid",
-							 sprite.texture_name );
+							 sprite.sTextureName );
 				return;
 			}
 

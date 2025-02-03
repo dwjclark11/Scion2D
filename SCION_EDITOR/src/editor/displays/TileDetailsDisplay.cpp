@@ -32,7 +32,7 @@ void TileDetailsDisplay::DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& 
 		ImGui::AddSpaces( 2 );
 
 		ImGui::InlineLabel( "texture: " );
-		ImGui::TextColored( ImVec4{ 0.f, 1.f, 0.f, 1.f }, sprite.texture_name.c_str() );
+		ImGui::TextColored( ImVec4{ 0.f, 1.f, 0.f, 1.f }, sprite.sTextureName.c_str() );
 
 		std::string sLayer{ "" };
 
@@ -93,7 +93,7 @@ void TileDetailsDisplay::DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& 
 		}
 		else // In reality, this should never get here, should probably assert instead.
 		{
-			auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.texture_name );
+			auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.sTextureName );
 			if ( !pTexture )
 				return;
 
@@ -286,7 +286,7 @@ void TileDetailsDisplay::Draw()
 					m_sRenameLayerBuf.clear();
 					m_bRename = false;
 				}
-				else if ( m_bRename && ImGui::IsKeyPressed(  ImGuiKey_Escape ) )
+				else if ( m_bRename && ImGui::IsKeyPressed( ImGuiKey_Escape ) )
 				{
 					m_sRenameLayerBuf.clear();
 					m_bRename = false;

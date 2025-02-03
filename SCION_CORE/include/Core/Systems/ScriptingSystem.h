@@ -22,6 +22,7 @@ class ScriptingSystem
 	static void RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Registry& registry );
 	static void RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Registry& registry );
 	static void RegisterLuaEvents( sol::state& lua, SCION_CORE::ECS::Registry& registry );
+	static void RegisterLuaSystems( sol::state& lua, SCION_CORE::ECS::Registry& registry );
 
   private:
 	bool m_bMainLoaded;

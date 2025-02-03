@@ -5,9 +5,12 @@
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Core/ECS/Registry.h"
 
+#include "Logger/Logger.h"
+
 #include <SDL.h>
 
 using namespace SCION_CORE::ECS;
+using namespace SCION_RENDERING;
 
 namespace SCION_CORE::Systems
 {
@@ -24,7 +27,10 @@ void AnimationSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERI
 		auto& sprite = view.get<SpriteComponent>( entity );
 		auto& animation = view.get<AnimationComponent>( entity );
 
-		if ( !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, camera ) )
+		// We don't want to check if entities with UIComponents are out of the camera.
+		// Since they use a different camera.
+		if ( !registry.GetRegistry().all_of<UIComponent>( entity ) &&
+			 !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, camera ) )
 			continue;
 
 		if ( animation.numFrames <= 0 )
@@ -49,5 +55,19 @@ void AnimationSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERI
 				( animation.currentFrame * sprite.uvs.uv_width ) + ( animation.frameOffset * sprite.uvs.uv_width );
 		}
 	}
+}
+
+void AnimationSystem::CreateAnimationSystemLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+{
+	auto& pCamera = registry.GetContext<std::shared_ptr<Camera2D>>();
+
+	SCION_ASSERT( pCamera && "A camera must exist in the current scene!" );
+
+	lua.new_usertype<AnimationSystem>(
+		"AnimationSystem",
+		sol::call_constructor,
+		sol::constructors<AnimationSystem()>(),
+		"update",
+		[ & ]( AnimationSystem& system, Registry& reg ) { system.Update( reg, *pCamera ); } );
 }
 } // namespace SCION_CORE::Systems

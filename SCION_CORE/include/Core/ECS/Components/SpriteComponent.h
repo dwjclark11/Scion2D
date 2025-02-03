@@ -6,9 +6,9 @@
 namespace SCION_CORE::ECS
 {
 /*
-* UV coordinates tell opengl which part of the image that should be used
-* for each triangle when adding textures to a sprite or mesh.
-*/
+ * UV coordinates tell opengl which part of the image that should be used
+ * for each triangle when adding textures to a sprite or mesh.
+ */
 struct UVs
 {
 	float u{ 0.f };
@@ -36,7 +36,7 @@ struct SpriteComponent
 	/* Should the sprite be drawn or hidden? */
 	bool bHidden{ false };
 	/* The string name of the texture. Used to get the texture from the asset manager. */
-	std::string texture_name{ "" };
+	std::string sTextureName{ "" };
 
 	// void generate_uvs( int textureWidth, int textureHeight );
 	[[nodiscard]] std::string to_string() const;

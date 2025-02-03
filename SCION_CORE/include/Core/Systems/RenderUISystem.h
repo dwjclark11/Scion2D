@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/ECS/Registry.h"
+#include <sol/sol.hpp>
 
 namespace SCION_RENDERING
 {
@@ -22,5 +23,8 @@ class RenderUISystem
 	~RenderUISystem();
 
 	void Update( SCION_CORE::ECS::Registry& registry );
+
+	static void CreateRenderUISystemLuaBind( sol::state& lua );
+
 };
 } // namespace SCION_CORE::Systems

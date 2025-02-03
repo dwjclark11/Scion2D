@@ -73,7 +73,7 @@ void ScaleGizmo::Draw()
 
 		glm::vec4 xAxisUVs{ xAxisSprite.uvs.u, xAxisSprite.uvs.v, xAxisSprite.uvs.uv_width, xAxisSprite.uvs.uv_height };
 
-		const auto pXAxisTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( xAxisSprite.texture_name );
+		const auto pXAxisTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( xAxisSprite.sTextureName );
 		if ( pXAxisTexture )
 		{
 			m_pBatchRenderer->AddSprite(
@@ -93,7 +93,7 @@ void ScaleGizmo::Draw()
 
 		glm::vec4 yAxisUVs{ yAxisSprite.uvs.u, yAxisSprite.uvs.v, yAxisSprite.uvs.uv_width, yAxisSprite.uvs.uv_height };
 
-		const auto pYAxisTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( yAxisSprite.texture_name );
+		const auto pYAxisTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( yAxisSprite.sTextureName );
 		if ( pYAxisTexture )
 		{
 			m_pBatchRenderer->AddSprite(

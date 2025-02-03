@@ -4,10 +4,18 @@
 
 namespace SCION_CORE::ECS
 {
+
+enum ERegistryType
+{
+	LuaRegistry,
+	ScionRegistry
+};
+
 class Registry
 {
   private:
-	std::unique_ptr<entt::registry> m_pRegistry;
+	std::shared_ptr<entt::registry> m_pRegistry;
+	ERegistryType m_eType{ ERegistryType::ScionRegistry };
 
   public:
 	Registry();
@@ -18,8 +26,7 @@ class Registry
 	 * @param the entity to check.
 	 * @return Returns true if the entity is valid, false otherwise.
 	 */
-	inline bool IsValid( entt::entity entity ) const { return m_pRegistry != nullptr && m_pRegistry->valid( entity ); }
-
+	inline bool IsValid( entt::entity entity ) const { return m_pRegistry->valid( entity ); }
 
 	/*
 	 * @brief Get the actual registry
@@ -64,7 +71,7 @@ class Registry
 	template <typename TContext>
 	bool HasContext();
 
-	template <typename ...Excludes>
+	template <typename... Excludes>
 	void DestroyEntities();
 
 	static void CreateLuaRegistryBind( sol::state& lua, Registry& registry );

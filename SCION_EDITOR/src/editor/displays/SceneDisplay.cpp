@@ -84,6 +84,7 @@ void SceneDisplay::LoadScene()
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaBindings( *lua, runtimeRegistry );
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaFunctions( *lua, runtimeRegistry );
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaEvents( *lua, runtimeRegistry );
+	SCION_CORE::Systems::ScriptingSystem::RegisterLuaSystems( *lua, runtimeRegistry );
 
 	SceneManager::CreateSceneManagerLuaBind( *lua );
 
@@ -195,6 +196,10 @@ void SceneDisplay::RenderScene() const
 		}
 
 		renderUISystem.Update( runtimeRegistry );
+
+		// Add Render Script stuff after everything???
+		auto& scriptSystem = runtimeRegistry.GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
+		scriptSystem->Render( runtimeRegistry );
 	}
 
 	fb->Unbind();

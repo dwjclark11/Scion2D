@@ -23,7 +23,7 @@ void RectFillTool::CreateTiles()
 {
 	const auto& sprite = m_pMouseTile->sprite;
 	const auto& transform = m_pMouseTile->transform;
-	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.texture_name );
+	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.sTextureName );
 	if ( !pTexture )
 		return;
 
@@ -166,7 +166,7 @@ void RectFillTool::DrawPreview( int dx, int dy )
 {
 	const auto& sprite = m_pMouseTile->sprite;
 	const auto& transform = m_pMouseTile->transform;
-	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.texture_name );
+	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.sTextureName );
 	if ( !pTexture )
 		return;
 

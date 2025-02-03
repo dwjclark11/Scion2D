@@ -2,6 +2,7 @@
 #include "Core/ECS/Components/ScriptComponent.h"
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/MainRegistry.h"
+#include "Core/ECS/ECSUtils.h"
 
 #include "Core/Scripting/GlmLuaBindings.h"
 #include "Core/Scripting/InputManager.h"
@@ -25,6 +26,13 @@
 
 #include "Core/Events/EngineEventTypes.h"
 #include "Core/Events/EventDispatcher.h"
+
+#include "Core/Systems/RenderSystem.h"
+#include "Core/Systems/RenderUISystem.h"
+#include "Core/Systems/AnimationSystem.h"
+
+#include "Core/Character/Character.h"
+#include "ScionUtilities/HelperUtilities.h"
 
 #include <filesystem>
 
@@ -99,16 +107,18 @@ void ScriptingSystem::Update( SCION_CORE::ECS::Registry& registry )
 		return;
 	}
 
-	auto view = registry.GetRegistry().view<SCION_CORE::ECS::ScriptComponent>();
-
-	for ( const auto& entity : view )
+	auto mainScript = FindEntityByTag( registry, "main_script" );
+	if ( mainScript == entt::null )
 	{
-		SCION_CORE::ECS::Entity ent{ registry, entity };
-		if ( ent.GetName() != "main_script" )
-			continue;
+		SCION_ERROR( "Failed to run main Update script. Entity does not exist." );
+		return;
+	}
 
-		auto& script = ent.GetComponent<SCION_CORE::ECS::ScriptComponent>();
-		auto error = script.update( entity );
+	Entity scriptEnt{ registry, mainScript };
+
+	if ( auto* pScript = scriptEnt.TryGetComponent<ScriptComponent>() )
+	{
+		auto error = pScript->update();
 		if ( !error.valid() )
 		{
 			sol::error err = error;
@@ -116,9 +126,10 @@ void ScriptingSystem::Update( SCION_CORE::ECS::Registry& registry )
 		}
 	}
 
-	auto& lua = registry.GetContext<std::shared_ptr<sol::state>>();
-	if ( lua )
-		lua->collect_garbage();
+	if ( auto* pLua = registry.TryGetContext<std::shared_ptr<sol::state>>() )
+	{
+		( *pLua )->collect_garbage();
+	}
 }
 
 void ScriptingSystem::Render( SCION_CORE::ECS::Registry& registry )
@@ -129,16 +140,18 @@ void ScriptingSystem::Render( SCION_CORE::ECS::Registry& registry )
 		return;
 	}
 
-	auto view = registry.GetRegistry().view<SCION_CORE::ECS::ScriptComponent>();
-
-	for ( const auto& entity : view )
+	auto mainScript = FindEntityByTag( registry, "main_script" );
+	if ( mainScript == entt::null )
 	{
-		SCION_CORE::ECS::Entity ent{ registry, entity };
-		if ( ent.GetName() != "main_script" )
-			continue;
+		SCION_ERROR( "Failed to run main render script. Entity does not exist." );
+		return;
+	}
 
-		auto& script = ent.GetComponent<SCION_CORE::ECS::ScriptComponent>();
-		auto error = script.render( entity );
+	Entity scriptEnt{ registry, mainScript };
+
+	if ( auto* pScript = scriptEnt.TryGetComponent<ScriptComponent>() )
+	{
+		auto error = pScript->render();
 		if ( !error.valid() )
 		{
 			sol::error err = error;
@@ -146,9 +159,10 @@ void ScriptingSystem::Render( SCION_CORE::ECS::Registry& registry )
 		}
 	}
 
-	auto& lua = registry.GetContext<std::shared_ptr<sol::state>>();
-	if ( lua )
-		lua->collect_garbage();
+	if ( auto* pLua = registry.TryGetContext<std::shared_ptr<sol::state>>() )
+	{
+		( *pLua )->collect_garbage();
+	}
 }
 
 auto create_timer = []( sol::state& lua ) {
@@ -304,6 +318,7 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Reg
 	SCION_CORE::Scripting::LuaFilesystem::CreateLuaFileSystemBind( lua );
 
 	SCION_CORE::FollowCamera::CreateLuaFollowCamera( lua, registry );
+	SCION_CORE::Character::CreateCharacterLuaBind( lua, registry );
 
 	create_timer( lua );
 	create_lua_logger( lua );
@@ -322,6 +337,7 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Reg
 	PhysicsComponent::CreatePhysicsLuaBind( lua, registry.GetRegistry() );
 	TextComponent::CreateLuaTextBindings( lua );
 	RigidBodyComponent::CreateRigidBodyBind( lua );
+	UIComponent::CreateLuaBind( lua );
 }
 
 void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Registry& registry )
@@ -433,6 +449,13 @@ void ScriptingSystem::RegisterLuaEvents( sol::state& lua, SCION_CORE::ECS::Regis
 	EventDispatcher::RegisterMetaEventFuncs<KeyEvent>();
 	EventDispatcher::RegisterMetaEventFuncs<LuaEvent>();
 	EventDispatcher::CreateEventDispatcherLuaBind( lua, **pDispatcher );
+}
+
+void ScriptingSystem::RegisterLuaSystems( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+{
+	SCION_CORE::Systems::RenderSystem::CreateRenderSystemLuaBind( lua, registry );
+	SCION_CORE::Systems::RenderUISystem::CreateRenderUISystemLuaBind( lua );
+	SCION_CORE::Systems::AnimationSystem::CreateAnimationSystemLuaBind( lua, registry );
 }
 
 } // namespace SCION_CORE::Systems

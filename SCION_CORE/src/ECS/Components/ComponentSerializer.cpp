@@ -32,7 +32,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.AddKeyValuePair( "startX", sprite.start_x )
 		.AddKeyValuePair( "startY", sprite.start_y )
 		.AddKeyValuePair( "layer", sprite.layer )
-		.AddKeyValuePair( "sTexture", sprite.texture_name )
+		.AddKeyValuePair( "sTexture", sprite.sTextureName )
 		.StartNewObject( "uvs" )
 		.AddKeyValuePair( "u", sprite.uvs.u )
 		.AddKeyValuePair( "v", sprite.uvs.v )
@@ -195,7 +195,7 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 	sprite.start_x = jsonValue[ "startX" ].GetInt();
 	sprite.start_y = jsonValue[ "startY" ].GetInt();
 	sprite.layer = jsonValue[ "layer" ].GetInt(), sprite.bHidden = jsonValue[ "bHidden" ].GetBool();
-	sprite.texture_name = jsonValue[ "sTexture" ].GetString();
+	sprite.sTextureName = jsonValue[ "sTexture" ].GetString();
 }
 
 void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, AnimationComponent& animation )

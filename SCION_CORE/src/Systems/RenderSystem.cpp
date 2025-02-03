@@ -1,7 +1,6 @@
 #include "Core/Systems/RenderSystem.h"
 #include "Core/Resources/AssetManager.h"
-#include "Core/ECS/Components/SpriteComponent.h"
-#include "Core/ECS/Components/TransformComponent.h"
+#include "Core/ECS/Components/AllComponents.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include <Rendering/Core/Camera2D.h>
@@ -31,7 +30,7 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING:
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
 
-	const auto& spriteShader = assetManager.GetShader( "basic" );
+	auto spriteShader = assetManager.GetShader( "basic" );
 	auto cam_mat = camera.GetCameraMatrix();
 
 	if ( spriteShader->ShaderProgramID() == 0 )
@@ -46,7 +45,7 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING:
 
 	m_pBatchRenderer->Begin();
 
-	auto spriteView = registry.GetRegistry().view<SpriteComponent, TransformComponent>();
+	auto spriteView = registry.GetRegistry().view<SpriteComponent, TransformComponent>( entt::exclude<UIComponent> );
 	std::function<bool( entt::entity )> filterFunc;
 
 	// Check to see if the layers are visible, if not, filter them out.
@@ -79,13 +78,13 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING:
 		if ( !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, camera ) )
 			continue;
 
-		if ( sprite.texture_name.empty() || sprite.bHidden )
+		if ( sprite.sTextureName.empty() || sprite.bHidden )
 			continue;
 
-		const auto& pTexture = assetManager.GetTexture( sprite.texture_name );
+		const auto& pTexture = assetManager.GetTexture( sprite.sTextureName );
 		if ( !pTexture )
 		{
-			SCION_ERROR( "Texture [{0}] was not created correctly!", sprite.texture_name );
+			SCION_ERROR( "Texture [{0}] was not created correctly!", sprite.sTextureName );
 			return;
 		}
 
@@ -102,4 +101,18 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING:
 
 	spriteShader->Disable();
 }
+
+void RenderSystem::CreateRenderSystemLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+{
+	auto& pCamera = registry.GetContext<std::shared_ptr<Camera2D>>();
+
+	SCION_ASSERT( pCamera && "A camera must exist in the current scene!" );
+
+	lua.new_usertype<RenderSystem>( "RenderSystem",
+									sol::call_constructor,
+									sol::constructors<RenderSystem()>(),
+									"update",
+									[ & ]( RenderSystem& system, Registry& reg ) { system.Update( reg, *pCamera ); } );
+}
+
 } // namespace SCION_CORE::Systems
