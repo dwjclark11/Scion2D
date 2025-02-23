@@ -33,6 +33,8 @@ class SceneHierarchyDisplay : public IDisplay
 
 	void AddComponent( SCION_CORE::ECS::Entity& entity, bool* bAddComponent );
 	void DrawGameObjectDetails();
+	void DrawUneditableTypes();
+	void DrawPlayerStart();
 	void DrawEntityComponents();
 	bool DeleteSelectedEntity();
 	bool DuplicateSelectedEntity();

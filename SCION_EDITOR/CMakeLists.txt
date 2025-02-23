@@ -15,7 +15,6 @@ add_executable(SCION_EDITOR
 	"src/editor/utilities/fonts/IconsFontAwesome5.h"
 	"src/editor/utilities/imgui/Gui.h"
 	"src/editor/utilities/imgui/Gui.cpp"
-	"src/editor/utilities/SaveProject.h"
 
     # Editor Displays
     "src/editor/displays/IDisplay.h"
@@ -94,7 +93,8 @@ add_executable(SCION_EDITOR
 	"src/editor/loaders/ProjectLoader.cpp"
 
 	${APP_ICON_RESOURCE}
- "src/editor/utilities/fonts/editor_fonts.h")
+	"src/editor/utilities/fonts/editor_fonts.h"
+)
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

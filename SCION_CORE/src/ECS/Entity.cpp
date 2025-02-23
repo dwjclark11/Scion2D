@@ -2,6 +2,9 @@
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/ECS/MetaUtilities.h"
 
+#include "Core/CoreUtilities/CoreUtilities.h"
+#include "Core/Scene/Scene.h"
+
 using namespace SCION_CORE::Utils;
 
 namespace SCION_CORE::ECS
@@ -244,6 +247,21 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 		[]( Entity& entity, Entity& child ) { entity.AddChild( child.GetEntity() ); },
 		"updateTransform",
 		&Entity::UpdateTransform,
+		"updateIsoSorting",
+		[]( Entity& entity, const Canvas& canvas )
+		{
+			if ( auto* pSprite = entity.TryGetComponent<SpriteComponent>(); pSprite->bIsoMetric )
+			{
+				auto& transform = entity.GetComponent<TransformComponent>();
+				auto [cellX, cellY] = SCION_CORE::ConvertWorldPosToIsoCoords( transform.position, canvas );
+				pSprite->isoCellX = cellX;
+				pSprite->isoCellY = cellY;
+			}
+			else
+			{
+				SCION_ERROR( "Entity does not have a sprite component or is not using iso sorting." );
+			}
+		},
 		"id",
 		[]( Entity& entity ) { return static_cast<uint32_t>( entity.GetEntity() ); } );
 }

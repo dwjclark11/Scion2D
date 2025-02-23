@@ -14,7 +14,7 @@ uniform mat4 uProjection;
 
 void main()
 {
-	gl_Position = uProjection * vec4(aPosition, 0.0, 1.0);
+	gl_Position = uProjection * vec4(aPosition.x, aPosition.y, 0.0, 1.0);
 	fragUVs = aTexCoords;
 	fragColor = aColor;
 }

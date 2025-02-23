@@ -41,6 +41,7 @@ if(WIN32)
 endif()
 
 add_compile_definitions(IN_SCION_EDITOR)
+add_compile_definitions(SOL_ALL_SAFETIES_ON)
 
 find_package(glad CONFIG REQUIRED)
 find_package(soil2 CONFIG REQUIRED)

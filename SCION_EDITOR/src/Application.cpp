@@ -32,7 +32,7 @@
 #include "editor/utilities/editor_textures.h"
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/DrawComponentUtils.h"
-#include "editor/utilities/SaveProject.h"
+#include "Core/CoreUtilities/SaveProject.h"
 #include "editor/systems/GridSystem.h"
 
 #include "editor/events/EditorEventTypes.h"
@@ -173,7 +173,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	mainRegistry.AddToContext<std::shared_ptr<SaveProject>>( std::make_shared<SaveProject>() );
+	mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::SaveProject>>( std::make_shared<SCION_CORE::SaveProject>() );
 	m_pHub = std::make_unique<Hub>( *m_pWindow );
 
 	return true;
@@ -421,6 +421,15 @@ bool Application::LoadEditorTextures()
 
 	assetManager.GetTexture( "S2D_scion_logo" )->SetIsEditorTexture( true );
 
+	
+	if ( !assetManager.AddTextureFromMemory( "ZZ_S2D_PlayerStart", ZZ_S2D_PlayerStart, ZZ_S2D_PlayerStart_size) )
+	{
+		SCION_ERROR( "Failed to load texture [ZZ_S2D_PlayerStart] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "ZZ_S2D_PlayerStart" )->SetIsEditorTexture( true );
+
 	return true;
 }
 
@@ -657,6 +666,8 @@ void Application::RenderDisplays()
 	{
 		pDisplay->Draw();
 	}
+
+	//Gui::ShowImGuiDemo();
 }
 
 void Application::RegisterEditorMetaFunctions()

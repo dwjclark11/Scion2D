@@ -10,6 +10,10 @@
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/scene/SceneManager.h"
+#include "editor/loaders/ProjectLoader.h"
+
+#include "Core/CoreUtilities/Prefab.h"
+#include "Core/CoreUtilities/SaveProject.h"
 
 #include <imgui.h>
 
@@ -47,6 +51,11 @@ void AssetDisplay::SetAssetType()
 	{
 		m_eSelectedType = SCION_UTIL::AssetType::SCENE;
 		m_sDragSource = std::string{ DROP_SCENE_SRC };
+	}
+	else if ( m_sSelectedType == "PREFABS" )
+	{
+		m_eSelectedType = SCION_UTIL::AssetType::PREFAB;
+		m_sDragSource = std::string{ DROP_PREFAB_SRC };
 	}
 	else
 	{
@@ -91,6 +100,20 @@ unsigned int AssetDisplay::GetTextureID( const std::string& sAssetName ) const
 
 		break;
 	}
+	case SCION_UTIL::AssetType::PREFAB: {
+		if ( auto pPrefab = assetManager.GetPrefab( sAssetName ) )
+		{
+			if ( auto& sprite = pPrefab->GetPrefabbedEntity().sprite )
+			{
+				if ( auto pTexture = assetManager.GetTexture( sprite->sTextureName ) )
+				{
+					return pTexture->GetID();
+				}
+			}
+		}
+
+		break;
+	}
 	}
 
 	return 0;
@@ -103,12 +126,11 @@ bool AssetDisplay::DoRenameAsset( const std::string& sOldName, const std::string
 
 	if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
 	{
-		// TODO: Change the scene name
+		return SCENE_MANAGER().ChangeSceneName( sOldName, sNewName );
 	}
 	else
 	{
-		auto& assetManager = MAIN_REGISTRY().GetAssetManager();
-		return assetManager.ChangeAssetName( sOldName, sNewName, m_eSelectedType );
+		return ASSET_MANAGER().ChangeAssetName( sOldName, sNewName, m_eSelectedType );
 	}
 
 	SCION_ASSERT( false && "How did it get here??" );
@@ -127,7 +149,8 @@ void AssetDisplay::CheckRename( const std::string& sCheckName ) const
 
 	if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
 	{
-		// TODO: Check is scene name already exists
+		if ( SCENE_MANAGER().CheckHasScene( sCheckName ) )
+			bHasAsset = true;
 	}
 	else
 	{
@@ -150,16 +173,40 @@ void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 
 	if ( ImGui::Selectable( "delete" ) )
 	{
+		bool bSuccess{ false };
 		if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
 		{
-			// TODO: Check is scene name already exists
+			if ( !SCENE_MANAGER().DeleteScene( sAssetName ) )
+			{
+				SCION_ERROR( "Failed to delete scene [{}]", sAssetName );
+			}
+
+			bSuccess = true;
 		}
 		else
 		{
-			auto& assetManager = MAIN_REGISTRY().GetAssetManager();
-			if ( !assetManager.DeleteAsset( sAssetName, m_eSelectedType ) )
+			if ( !ASSET_MANAGER().DeleteAsset( sAssetName, m_eSelectedType ) )
 			{
-				SCION_ERROR( "Failed to delete asset {}.", sAssetName );
+				SCION_ERROR( "Failed to delete asset [{}].", sAssetName );
+			}
+
+			bSuccess = true;
+		}
+
+		// Whenever an asset is deleted, we want to save the project.
+		// There should be some sort of message to the user before deleting??
+		if ( bSuccess )
+		{
+			auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
+			SCION_ASSERT( pSaveProject && "Save Project must exist!" );
+			// Save entire project
+			ProjectLoader pl{};
+			if ( !pl.SaveLoadedProject( *pSaveProject ) )
+			{
+				SCION_ERROR( "Failed to save project [{}] at file [{}] after deleting asset [{}].",
+							 pSaveProject->sProjectName,
+							 pSaveProject->sProjectFilePath,
+							 sAssetName );
 			}
 		}
 	}
@@ -177,7 +224,9 @@ void AssetDisplay::DrawSelectedAssets()
 		assetNames = SCENE_MANAGER().GetSceneNames();
 	}
 	else
+	{
 		assetNames = assetManager.GetAssetKeyNames( m_eSelectedType );
+	}
 
 	if ( assetNames.empty() )
 		return;
@@ -224,8 +273,29 @@ void AssetDisplay::DrawSelectedAssets()
 
 				std::string assetBtn = "##asset" + std::to_string( id );
 
-				ImGui::ImageButton(
-					assetBtn.c_str(), (ImTextureID)(intptr_t)textureID, ImVec2{ m_AssetSize, m_AssetSize } );
+				if ( m_eSelectedType == SCION_UTIL::AssetType::PREFAB )
+				{
+					// TODO: We are currently assuming that all prefabs will have a sprite component.
+					// We need to create an engine/editor texture that will be used in case of the prefab
+					// not having a sprite.
+					if ( auto pPrefab = assetManager.GetPrefab( *assetItr ) )
+					{
+						auto& sprite = pPrefab->GetPrefabbedEntity().sprite;
+						if ( textureID && sprite )
+						{
+							ImGui::ImageButton( assetBtn.c_str(),
+												(ImTextureID)(intptr_t)textureID,
+												ImVec2{ m_AssetSize, m_AssetSize },
+												ImVec2{ sprite->uvs.u, sprite->uvs.v },
+												ImVec2{ sprite->uvs.uv_width, sprite->uvs.uv_height } );
+						}
+					}
+				}
+				else
+				{
+					ImGui::ImageButton(
+						assetBtn.c_str(), (ImTextureID)(intptr_t)textureID, ImVec2{ m_AssetSize, m_AssetSize } );
+				}
 
 				if ( ImGui::IsItemHovered() && ImGui::IsMouseClicked( 0 ) && !m_bRename )
 					m_SelectedID = id;

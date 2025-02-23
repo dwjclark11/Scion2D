@@ -17,6 +17,11 @@ namespace SCION_UTIL
 enum class AssetType;
 }
 
+namespace SCION_CORE
+{
+class Prefab;
+}
+
 namespace SCION_RESOURCES
 {
 
@@ -29,6 +34,7 @@ class AssetManager
 
 	std::map<std::string, std::shared_ptr<SCION_SOUNDS::Music>> m_mapMusic{};
 	std::map<std::string, std::shared_ptr<SCION_SOUNDS::SoundFX>> m_mapSoundFx{};
+	std::map<std::string, std::shared_ptr<SCION_CORE::Prefab>> m_mapPrefabs{};
 
   public:
 	AssetManager() = default;
@@ -159,6 +165,11 @@ class AssetManager
 	 */
 	std::shared_ptr<SCION_SOUNDS::SoundFX> GetSoundFx( const std::string& soundFxName );
 
+
+	bool AddPrefab( const std::string& sPrefabName, std::shared_ptr<SCION_CORE::Prefab> pPrefab );
+
+	std::shared_ptr<SCION_CORE::Prefab> GetPrefab( const std::string& sPrefabName );
+
 	inline const std::map<std::string, std::shared_ptr<SCION_RENDERING::Texture>>& GetAllTextures() const
 	{
 		return m_mapTextures;
@@ -182,6 +193,11 @@ class AssetManager
 	inline const std::map<std::string, std::shared_ptr<SCION_SOUNDS::Music>>& GetAllMusic() const
 	{
 		return m_mapMusic;
+	}
+
+	inline const std::map<std::string, std::shared_ptr<SCION_CORE::Prefab>>& GetAllPrefabs() const
+	{
+		return m_mapPrefabs;
 	}
 
 	/*

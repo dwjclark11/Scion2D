@@ -1,6 +1,8 @@
 #include "Core/Resources/AssetManager.h"
 #include "Core/Resources/fonts/default_fonts.h"
 #include "Core/ECS/MainRegistry.h"
+#include "Core/CoreUtilities/Prefab.h"
+
 #include <Rendering/Essentials/TextureLoader.h>
 #include <Rendering/Essentials/ShaderLoader.h>
 #include <Rendering/Essentials/FontLoader.h>
@@ -281,6 +283,30 @@ std::shared_ptr<SCION_SOUNDS::SoundFX> AssetManager::GetSoundFx( const std::stri
 	return soundItr->second;
 }
 
+bool AssetManager::AddPrefab( const std::string& sPrefabName, std::shared_ptr<SCION_CORE::Prefab> pPrefab )
+{
+	if (m_mapPrefabs.contains(sPrefabName))
+	{
+		SCION_ERROR( "Failed to add prefab [{}] -- Already exists in AssetManager.", sPrefabName );
+		return false;
+	}
+
+	auto [ itr, bSuccess ] = m_mapPrefabs.emplace( sPrefabName, std::move( pPrefab ) );
+	return bSuccess;
+}
+
+std::shared_ptr<SCION_CORE::Prefab> AssetManager::GetPrefab( const std::string& sPrefabName )
+{
+	auto prefabItr = m_mapPrefabs.find( sPrefabName );
+	if ( prefabItr == m_mapPrefabs.end() )
+	{
+		SCION_ERROR( "Failed to get Prefab [{}] -- Does Not exist!", sPrefabName );
+		return nullptr;
+	}
+
+	return prefabItr->second;
+}
+
 std::vector<std::string> AssetManager::GetAssetKeyNames( SCION_UTIL::AssetType eAssetType ) const
 {
 	switch ( eAssetType )
@@ -290,6 +316,7 @@ std::vector<std::string> AssetManager::GetAssetKeyNames( SCION_UTIL::AssetType e
 	case SCION_UTIL::AssetType::FONT: return SCION_UTIL::GetKeys( m_mapFonts );
 	case SCION_UTIL::AssetType::SOUNDFX: return SCION_UTIL::GetKeys( m_mapSoundFx );
 	case SCION_UTIL::AssetType::MUSIC: return SCION_UTIL::GetKeys( m_mapMusic );
+	case SCION_UTIL::AssetType::PREFAB: return SCION_UTIL::GetKeys( m_mapPrefabs );
 	default: SCION_ASSERT( false && "Cannot get this type!" );
 	}
 
@@ -319,6 +346,7 @@ bool AssetManager::CheckHasAsset( const std::string& sNameCheck, SCION_UTIL::Ass
 	case SCION_UTIL::AssetType::FONT: return m_mapFonts.contains( sNameCheck );
 	case SCION_UTIL::AssetType::SOUNDFX: return m_mapSoundFx.contains( sNameCheck );
 	case SCION_UTIL::AssetType::MUSIC: return m_mapMusic.contains( sNameCheck );
+	case SCION_UTIL::AssetType::PREFAB: return m_mapPrefabs.contains( sNameCheck );
 	default: SCION_ASSERT( false && "Cannot get this type!" );
 	}
 
@@ -337,6 +365,21 @@ bool AssetManager::DeleteAsset( const std::string& sAssetName, SCION_UTIL::Asset
 		return std::erase_if( m_mapSoundFx, [ & ]( const auto& pair ) { return pair.first == sAssetName; } ) > 0;
 	case SCION_UTIL::AssetType::MUSIC:
 		return std::erase_if( m_mapMusic, [ & ]( const auto& pair ) { return pair.first == sAssetName; } ) > 0;
+	case SCION_UTIL::AssetType::PREFAB: { // Prefabs contain files that must be cleaned up
+		if (auto pPrefab = GetPrefab( sAssetName ))
+		{
+			if (!SCION_CORE::PrefabCreator::DeletePrefab(*pPrefab))
+			{
+				SCION_ERROR( "Failed to delete prefab [{}]", sAssetName );
+				return false;
+			}
+
+			return m_mapPrefabs.erase( sAssetName ) > 0;
+		}
+
+		SCION_ERROR( "Failed to delete prefab [{}] - Does not exist in asset manager.", sAssetName );
+		return false;
+	}
 	default: SCION_ASSERT( false && "Cannot get this type!" );
 	}
 

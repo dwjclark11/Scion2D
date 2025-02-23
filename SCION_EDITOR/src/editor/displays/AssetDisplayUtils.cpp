@@ -4,6 +4,8 @@
 #include "Core/Resources/AssetManager.h"
 #include "ScionFilesystem/Dialogs/FileDialog.h"
 #include "editor/scene/SceneManager.h"
+#include "editor/scene/SceneObject.h"
+#include "editor/utilities/imgui/ImGuiUtils.h"
 #include "Logger/Logger.h"
 #include <imgui.h>
 #include <filesystem>
@@ -33,6 +35,10 @@ namespace fs = std::filesystem;
 	}
 
 using namespace SCION_FILESYSTEM;
+using namespace SCION_EDITOR;
+
+static const std::map<std::string, SCION_CORE::EMapType> g_mapStringToMapTypes{
+	{ "Grid", SCION_CORE::EMapType::Grid }, { "IsoGrid", SCION_CORE::EMapType::IsoGrid } };
 
 namespace
 {
@@ -86,8 +92,33 @@ class AssetModalCreator
 
 		if ( ImGui::BeginPopupModal( "Add New Scene" ) )
 		{
+			ImGui::InlineLabel( "Name" );
 			static std::string sAssetName{ "" };
 			ImGui::InputText( "##assetName", sAssetName.data(), 255 );
+
+			static std::vector<std::string> mapTypes{ "Grid", "IsoGrid" };
+			static std::string sMapType{ "Grid" };
+			static SCION_CORE::EMapType eSelectedType{ SCION_CORE::EMapType::Grid };
+
+			ImGui::InlineLabel( "Map Type" );
+			if ( ImGui::BeginCombo( "##Map Type", sMapType.c_str() ) )
+			{
+				for ( const auto& [ sMapStr, eMapType ] : g_mapStringToMapTypes )
+				{
+					if ( ImGui::Selectable( sMapStr.c_str(), sMapStr == sMapType ) )
+					{
+						sMapType = sMapStr;
+						eSelectedType = eMapType;
+					}
+
+					ImGui::ItemToolTip( "{}",
+										eMapType == SCION_CORE::EMapType::IsoGrid
+											? "Warning! IsoGrid maps are not fully supported."
+																	  : "2D Grid tile map." );
+				}
+
+				ImGui::EndCombo();
+			}
 
 			std::string sCheckName{ sAssetName.data() };
 			std::string sNameError{ CheckForAsset( sCheckName, SCION_UTIL::AssetType::SCENE ) };
@@ -96,7 +127,7 @@ class AssetModalCreator
 			{
 				if ( ImGui::Button( "Ok" ) )
 				{
-					if ( !SCENE_MANAGER().AddScene( sCheckName ) )
+					if ( !SCENE_MANAGER().AddScene( sCheckName, eSelectedType ) )
 					{
 						SCION_ERROR( "Failed to add new scene [{}]", sCheckName );
 					}
@@ -111,6 +142,11 @@ class AssetModalCreator
 			else
 			{
 				ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f }, sNameError.c_str() );
+			}
+
+			if ( eSelectedType == SCION_CORE::EMapType::IsoGrid )
+			{
+				ImGui::TextColored( ImVec4{ 1.f, 1.f, 0.f, 1.f }, "IsoGrid maps are not fully supported yet!" );
 			}
 
 			// We always want to be able to cancel
@@ -152,7 +188,7 @@ class AssetModalCreator
 				sFilepath =
 					fd.OpenFileDialog( "Open", "", SCION_EDITOR::AssetDisplayUtils::GetAssetFileFilters( eAssetType ) );
 
-				if (!sFilepath.empty())
+				if ( !sFilepath.empty() )
 				{
 					fs::path path{ sFilepath };
 					sAssetName = path.stem().string();

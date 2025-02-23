@@ -24,7 +24,7 @@ ScaleGizmo::ScaleGizmo()
 	Init( "S2D_x_axis_scale", "S2D_y_axis_scale" );
 }
 
-void ScaleGizmo::Update( Canvas& canvas )
+void ScaleGizmo::Update( SCION_CORE::Canvas& canvas )
 {
 	Gizmo::Update( canvas );
 

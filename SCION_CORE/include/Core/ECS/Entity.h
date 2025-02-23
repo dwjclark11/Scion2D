@@ -30,7 +30,7 @@ class Entity
 		return *this;
 	}
 	
-	~Entity() = default;
+	virtual ~Entity() = default;
 
 	/*
 	 * @brief Adds a new child to the entity.

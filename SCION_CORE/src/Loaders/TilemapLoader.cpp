@@ -201,7 +201,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 	pSerializer->StartDocument();
 	pSerializer->StartNewArray( "game_objects" );
 
-	auto gameObjects = registry.GetRegistry().view<entt::entity>( entt::exclude<TileComponent> );
+	auto gameObjects = registry.GetRegistry().view<entt::entity>( entt::exclude<TileComponent, UneditableComponent> );
 
 	for ( auto object : gameObjects )
 	{

@@ -4,6 +4,7 @@
 #include "Core/ECS/MainRegistry.h"
 
 #include "editor/scene/SceneManager.h"
+#include "editor/scene/SceneObject.h"
 #include "editor/tools/ToolManager.h"
 #include "editor/tools/TileTool.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
@@ -77,14 +78,28 @@ void TilesetDisplay::Draw()
 		return;
 	}
 
+	
+
+	
+	int tileWidth = 16;
+	int tileHeight = 16;
+
+	// Try to base the tile width/height based on the current tile tool settings
+	if (auto pActiveTool = TOOL_MANAGER().GetActiveTool())
+	{
+		const auto& tileData = pActiveTool->GetTileData();
+		tileWidth = tileData.sprite.width <= 0 ? 16 : tileData.sprite.width;
+		tileHeight = tileData.sprite.height <= 0 ? 16 : tileData.sprite.height;
+	}
+
 	int textureWidth = pTexture->GetWidth();
 	int textureHeight = pTexture->GetHeight();
 
-	int cols = textureWidth / 16;
-	int rows = textureHeight / 16;
+	int cols = textureWidth / tileWidth;
+	int rows = textureHeight / tileHeight;
 
-	float uv_w = 16 / static_cast<float>( textureWidth );
-	float uv_h = 16 / static_cast<float>( textureHeight );
+	float uv_w = tileWidth / static_cast<float>( textureWidth );
+	float uv_h = tileHeight / static_cast<float>( textureHeight );
 
 	float ux{ 0.f }, uy{ 0.f }, vx{ uv_w }, vy{ uv_h };
 
@@ -114,8 +129,8 @@ void TilesetDisplay::Draw()
 				if ( ImGui::ImageButton( buttonStr.c_str(),
 										 (ImTextureID)(intptr_t)pTexture->GetID(),
 										 ImVec2{
-											 16.f * 1.5f,
-											 16.f * 1.5f,
+											 tileWidth * 1.5f,
+											 tileHeight * 1.5f,
 										 },
 										 ImVec2{ ux, uy },
 										 ImVec2{ vx, vy } ) )

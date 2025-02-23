@@ -3,10 +3,15 @@
 #include <memory>
 #include <entt/entt.hpp>
 
-namespace SCION_CORE::ECS
+namespace SCION_CORE
+{
+
+namespace ECS
 {
 class Entity;
 }
+
+} // namespace SCION_CORE
 
 namespace SCION_RENDERING
 {
@@ -21,7 +26,6 @@ class EventDispatcher;
 namespace SCION_EDITOR
 {
 struct GizmoAxisParams;
-struct Canvas;
 
 class Gizmo : public AbstractTool
 {
@@ -30,7 +34,7 @@ class Gizmo : public AbstractTool
 	Gizmo( const GizmoAxisParams& xAxisParams, const GizmoAxisParams& yAxisParams, bool bOneAxis );
 	virtual ~Gizmo();
 
-	virtual void Update( Canvas& canvas ) override;
+	virtual void Update( SCION_CORE::Canvas& canvas ) override;
 	virtual void Draw() = 0;
 
 	void SetSelectedEntity( entt::entity entity );
@@ -65,6 +69,5 @@ class Gizmo : public AbstractTool
 	bool m_bHoldingY;
 	bool m_bHidden;
 	bool m_bOnlyOneAxis;
-
 };
 } // namespace SCION_EDITOR

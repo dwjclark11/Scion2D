@@ -20,6 +20,7 @@ enum class AssetType
 	SOUNDFX,
 	MUSIC,
 	SCENE,
+	PREFAB,
 
 	NO_TYPE
 };

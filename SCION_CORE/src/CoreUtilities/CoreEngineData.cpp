@@ -66,6 +66,18 @@ const float CoreEngineData::PixelsToMeters() const
 	return PIXELS_TO_METERS;
 }
 
+void CoreEngineData::SetScaledWidth( float newWidth )
+{
+	// TODO: Add some clamps
+	m_ScaledWidth = newWidth / METERS_TO_PIXELS;
+}
+
+void CoreEngineData::SetScaledHeight( float newHeight )
+{
+	// TODO: Add some clamps
+	m_ScaledHeight = newHeight / METERS_TO_PIXELS;
+}
+
 void CoreEngineData::RegisterMetaFunctions()
 {
 	Entity::RegisterMetaComponent<Identification>();

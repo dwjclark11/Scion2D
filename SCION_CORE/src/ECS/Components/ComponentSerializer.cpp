@@ -46,6 +46,9 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.AddKeyValuePair( "a", sprite.color.a )
 		.EndObject()
 		.AddKeyValuePair( "bHidden", sprite.bHidden )
+		.AddKeyValuePair( "bIsoMetric", sprite.bIsoMetric )
+		.AddKeyValuePair( "isoCellX", sprite.isoCellX )
+		.AddKeyValuePair( "isoCellY", sprite.isoCellY )
 		.EndObject();
 }
 
@@ -196,6 +199,20 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 	sprite.start_y = jsonValue[ "startY" ].GetInt();
 	sprite.layer = jsonValue[ "layer" ].GetInt(), sprite.bHidden = jsonValue[ "bHidden" ].GetBool();
 	sprite.sTextureName = jsonValue[ "sTexture" ].GetString();
+
+	// Check if sprite should be isometic
+	if (jsonValue.HasMember("bIsoMetric"))
+	{
+		sprite.bIsoMetric = jsonValue[ "bIsoMetric" ].GetBool();
+		if (jsonValue.HasMember("isoCellX"))
+		{
+			sprite.isoCellX = jsonValue[ "isoCellX" ].GetInt();
+		}
+		if ( jsonValue.HasMember( "isoCellY" ) )
+		{
+			sprite.isoCellY = jsonValue[ "isoCellY" ].GetInt();
+		}
+	}
 }
 
 void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, AnimationComponent& animation )

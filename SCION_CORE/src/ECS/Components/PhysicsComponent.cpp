@@ -69,7 +69,21 @@ void PhysicsComponent::Init( SCION_PHYSICS::PhysicsWorld pPhysicsWorld, int wind
 	}
 	else
 	{
-		// TODO: Create your polygon shape
+		// TODO: Add the ability to create various convex polygon shapes based on the number
+		// of vertices and their position.
+		// Currently hardcoded to a 4 vertice shape, square, rect, diamond, etc.
+		auto halfWidth = PIXELS_TO_METERS * m_InitialAttribs.boxSize.x * m_InitialAttribs.scale.x * 0.5f;
+		auto halfHeight = PIXELS_TO_METERS * m_InitialAttribs.boxSize.y * m_InitialAttribs.scale.y * 0.5f;
+
+		b2Vec2 vertices[ 4 ];
+		
+		vertices[ 0 ].Set( 0.f, 0.f );
+		vertices[ 1 ].Set( halfWidth, -halfHeight );
+		vertices[ 2 ].Set( -halfWidth, -halfHeight );
+		vertices[ 3 ].Set( 0.f, -halfHeight * 2.f );
+
+
+		polyShape.Set( vertices, 4 );
 	}
 
 	// Create the user data
@@ -240,6 +254,81 @@ SCION_PHYSICS::ObjectData PhysicsComponent::GetCurrentObjectData()
 	}
 
 	return {};
+}
+
+void PhysicsComponent::SetFilterCategory( uint16_t category )
+{
+	if ( !m_pRigidBody )
+	{
+		m_InitialAttribs.filterCategory = category;
+		return;
+	}
+
+	auto pFixtureList = m_pRigidBody->GetFixtureList();
+	if ( !pFixtureList )
+	{
+		return;
+	}
+
+	auto copyFilter = pFixtureList->GetFilterData();
+	copyFilter.categoryBits = category;
+	pFixtureList->SetFilterData( copyFilter );
+	m_InitialAttribs.filterCategory = category;
+}
+
+void PhysicsComponent::SetFilterCategory()
+{
+	SetFilterCategory( m_InitialAttribs.filterCategory );
+}
+
+void PhysicsComponent::SetFilterMask( uint16_t mask )
+{
+	if ( !m_pRigidBody )
+	{
+		m_InitialAttribs.filterMask = mask;
+		return;
+	}
+
+	auto pFixtureList = m_pRigidBody->GetFixtureList();
+	if ( !pFixtureList )
+	{
+		return;
+	}
+
+	auto copyFilter = pFixtureList->GetFilterData();
+	copyFilter.maskBits = mask;
+	pFixtureList->SetFilterData( copyFilter );
+	m_InitialAttribs.filterMask = mask;
+}
+
+void PhysicsComponent::SetFilterMask()
+{
+	SetFilterMask( m_InitialAttribs.filterMask );
+}
+
+void PhysicsComponent::SetGroupIndex( int index )
+{
+	if ( !m_pRigidBody )
+	{
+		m_InitialAttribs.groupIndex = index;
+		return;
+	}
+
+	auto pFixtureList = m_pRigidBody->GetFixtureList();
+	if ( !pFixtureList )
+	{
+		return;
+	}
+
+	auto copyFilter = pFixtureList->GetFilterData();
+	copyFilter.groupIndex = index;
+	pFixtureList->SetFilterData( copyFilter );
+	m_InitialAttribs.groupIndex = index;
+}
+
+void PhysicsComponent::SetGroupIndex()
+{
+	SetGroupIndex( m_InitialAttribs.groupIndex );
 }
 
 void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& registry )

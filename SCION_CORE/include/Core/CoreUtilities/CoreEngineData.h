@@ -38,6 +38,9 @@ class CoreEngineData
 	const float MetersToPixels() const;
 	const float PixelsToMeters() const;
 
+	void SetScaledWidth( float newWidth );
+	void SetScaledHeight( float newHeight );
+
 	inline float GetDeltaTime() const { return m_DeltaTime; }
 	inline int WindowWidth() const { return m_WindowWidth; }
 	inline int WindowHeight() const { return m_WindowHeight; }

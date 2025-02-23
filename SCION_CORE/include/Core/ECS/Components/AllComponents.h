@@ -10,7 +10,24 @@
 #include "Identification.h"
 #include "TextComponent.h"
 #include "TileComponent.h"
-#include "Identification.h"
 #include "Relationship.h"
 #include "UIComponent.h"
 
+namespace SCION_CORE::ECS
+{
+enum class EUneditableType
+{
+	PlayerStart,
+	/* TODO: add more uneditable types as needed. */
+	NoType
+};
+/*
+ * UneditableComponent
+ */
+
+struct UneditableComponent
+{
+	EUneditableType eType{ EUneditableType::PlayerStart };
+};
+
+} // namespace SCION_CORE::ECS

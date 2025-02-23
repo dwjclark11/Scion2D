@@ -2,6 +2,7 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "ScionUtilities/ScionUtilities.h"
+#include "ScionUtilities/HelperUtilities.h"
 #include "ScionFilesystem/Dialogs/FileDialog.h"
 #include "editor/utilities/EditorUtilities.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
@@ -9,7 +10,7 @@
 #include "Logger/Logger.h"
 
 #include "editor/events/EditorEventTypes.h"
-#include "editor/utilities/SaveProject.h"
+#include "Core/CoreUtilities/SaveProject.h"
 #include "Core/Events/EventDispatcher.h"
 
 #include "ScionFilesystem/Process/FileProcessor.h"
@@ -25,7 +26,7 @@ namespace SCION_EDITOR
 {
 ContentDisplay::ContentDisplay()
 	: m_pFileDispatcher{ std::make_unique<SCION_CORE::Events::EventDispatcher>() }
-	, m_CurrentDir{ MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>()->sProjectPath + "content" }
+	, m_CurrentDir{ MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>()->sProjectPath + "content" }
 	, m_sFilepathToAction{ "" }
 	, m_Selected{ -1 }
 	, m_eFileAction{ Events::EFileAction::NoAction }
@@ -261,7 +262,7 @@ void ContentDisplay::DrawToolbar()
 	ImGui::ItemToolTip( "Create Folder" );
 	ImGui::SameLine( 0.f, 16.f );
 
-	const auto& savedPath = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>()->sProjectPath;
+	const auto& savedPath = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>()->sProjectPath;
 	std::string pathStr{ m_CurrentDir.string() };
 	std::string pathToSplit = pathStr.substr( pathStr.find( savedPath ) + savedPath.size() );
 	auto dir = SplitStr( pathToSplit, PATH_SEPARATOR );
@@ -491,7 +492,7 @@ void ContentDisplay::OpenCreateFolderPopup()
 		static std::string errorText{ "" };
 		if ( bNameEntered && !newFolderStr.empty() )
 		{
-			std::string folderPathStr = m_CurrentDir.string() + "\\" + newFolderStr;
+			std::string folderPathStr = m_CurrentDir.string() + PATH_SEPARATOR + newFolderStr;
 			std::error_code error{};
 			if ( !fs::create_directory( fs::path{ folderPathStr }, error ) )
 			{
@@ -564,7 +565,7 @@ void ContentDisplay::OpenCreateLuaClassPopup()
 
 		if ( bNameEntered && !className.empty() )
 		{
-			std::string filename = m_sFilepathToAction + +"\\" + className + ".lua";
+			std::string filename = m_sFilepathToAction + PATH_SEPARATOR + className + ".lua";
 
 			if ( fs::exists( fs::path{ filename } ) )
 			{
@@ -647,7 +648,7 @@ void ContentDisplay::OpenCreateLuaTablePopup()
 
 		if ( bNameEntered && !tableName.empty() )
 		{
-			std::string filename = m_sFilepathToAction + +"\\" + tableName + ".lua";
+			std::string filename = m_sFilepathToAction + PATH_SEPARATOR + tableName + ".lua";
 
 			if ( fs::exists( fs::path{ filename } ) )
 			{
@@ -724,7 +725,7 @@ void ContentDisplay::OpenCreateEmptyLuaFilePopup()
 
 		if ( bNameEntered && !tableName.empty() )
 		{
-			std::string filename = m_sFilepathToAction + "\\" + tableName + ".lua";
+			std::string filename = m_sFilepathToAction + PATH_SEPARATOR + tableName + ".lua";
 
 			if ( fs::exists( fs::path{ filename } ) )
 			{

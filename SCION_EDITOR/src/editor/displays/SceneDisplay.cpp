@@ -20,7 +20,7 @@
 
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
-#include "editor/utilities/SaveProject.h"
+#include "Core/CoreUtilities/SaveProject.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 
@@ -41,7 +41,7 @@ namespace SCION_EDITOR
 {
 void SceneDisplay::LoadScene()
 {
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 	if ( !pCurrentScene )
 		return;
 
@@ -86,10 +86,14 @@ void SceneDisplay::LoadScene()
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaEvents( *lua, runtimeRegistry );
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaSystems( *lua, runtimeRegistry );
 
-	SceneManager::CreateSceneManagerLuaBind( *lua );
+	EditorSceneManager::CreateSceneManagerLuaBind( *lua );
 
 	// We need to initialize all of the physics entities
 	auto physicsEntities = runtimeRegistry.GetRegistry().view<PhysicsComponent>();
+	auto& editorFramebuffers = MAIN_REGISTRY().GetContext<std::shared_ptr<EditorFramebuffers>>();
+	const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];
+	CORE_GLOBALS().SetScaledWidth( fb->Width() );
+	CORE_GLOBALS().SetScaledHeight( fb->Height() );
 
 	for ( auto entity : physicsEntities )
 	{
@@ -126,15 +130,24 @@ void SceneDisplay::LoadScene()
 		physicsAttributes.scale = transform.scale;
 		physicsAttributes.objectData.entityID = static_cast<std::int32_t>( entity );
 
-		/*
-		 * TODO: Set Filters/Masks/Group Index
-		 */
+		physics.Init( pPhysicsWorld, fb->Width(), fb->Height() );
 
-		physics.Init( pPhysicsWorld, 640, 480 ); // We should be getting the size from the canvas
+		/*
+		 * Set Filters/Masks/Group Index
+		 */
+		if ( physics.UseFilters() ) // Right now filters are disabled, since there is no way to set this from the editor
+		{
+
+			physics.SetFilterCategory();
+			physics.SetFilterMask();
+
+			// Should the group index be set based on the sprite layer?
+			physics.SetGroupIndex();
+		}
 	}
 
 	// Get the main script path
-	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>();
+	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
 	if ( !scriptSystem->LoadMainScript( pSaveProject->sMainLuaScript, runtimeRegistry, *lua ) )
 	{
 		SCION_ERROR( "Failed to load the main lua script!" );
@@ -149,7 +162,10 @@ void SceneDisplay::UnloadScene()
 {
 	m_bPlayScene = false;
 	m_bSceneLoaded = false;
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
+
+	SCION_ASSERT( pCurrentScene && "Current Scene must be Valid." );
+
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 
 	runtimeRegistry.ClearRegistry();
@@ -182,7 +198,7 @@ void SceneDisplay::RenderScene() const
 	renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );
 	renderer->ClearBuffers( true, true, false );
 
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 
 	if ( pCurrentScene && m_bPlayScene )
 	{
@@ -220,7 +236,7 @@ void SceneDisplay::HandleKeyEvent( const SCION_CORE::Events::KeyEvent keyEvent )
 	}
 
 	// Send double dispatch events to the scene dispatcher.
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 	if ( !pCurrentScene )
 		return;
 
@@ -337,7 +353,7 @@ void SceneDisplay::Update()
 	if ( !m_bPlayScene )
 		return;
 
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 	if ( !pCurrentScene )
 		return;
 

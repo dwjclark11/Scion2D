@@ -34,6 +34,9 @@
 #include "Core/Character/Character.h"
 #include "ScionUtilities/HelperUtilities.h"
 
+
+#include "Core/Scene/Scene.h"
+
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -437,6 +440,8 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 		auto& camera = registry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
 		return SCION_CORE::EntityInView( transform, width, height, *camera );
 	} );
+
+	Scene::CreateLuaBind( lua );
 }
 
 void ScriptingSystem::RegisterLuaEvents( sol::state& lua, SCION_CORE::ECS::Registry& registry )

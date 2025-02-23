@@ -8,6 +8,8 @@
 #include "Rendering/Core/Camera2D.h"
 #include "editor/scene/SceneObject.h"
 
+#include "ScionUtilities/MathUtilities.h"
+
 constexpr int MOUSE_SPRITE_LAYER = 10;
 
 using namespace SCION_CORE::ECS;
@@ -27,13 +29,32 @@ uint32_t TileTool::CheckForTile( const glm::vec2& position )
 		const auto& transform = tile.GetComponent<TransformComponent>();
 		const auto& sprite = tile.GetComponent<SpriteComponent>();
 
-		if ( position.x >= transform.position.x &&
-			 position.x < transform.position.x + sprite.width * transform.scale.x &&
-			 position.y >= transform.position.y &&
-			 position.y < transform.position.y + sprite.height * transform.scale.y &&
-			 m_pMouseTile->sprite.layer == sprite.layer )
+		if ( m_pCurrentScene && m_pCurrentScene->GetMapType() == SCION_CORE::EMapType::Grid )
 		{
-			return static_cast<uint32_t>( entity );
+			if ( position.x >= transform.position.x &&
+				 position.x < transform.position.x + sprite.width * transform.scale.x &&
+				 position.y >= transform.position.y &&
+				 position.y < transform.position.y + sprite.height * transform.scale.y &&
+				 m_pMouseTile->sprite.layer == sprite.layer )
+			{
+				return static_cast<uint32_t>( entity );
+			}
+		}
+		else // Iso Grids, we check at the center of the tile if there is an entity.
+		{
+			// Get the center pos of the sprite
+			int spriteCenterX = transform.position.x + ( ( sprite.width * transform.scale.x ) / 2.f );
+			int spriteCenterY = transform.position.y + ( ( sprite.height * transform.scale.y ) / 2.f );
+
+			// Get the offset of the position + sprite center
+			int positionOffsetX = position.x + ( ( sprite.width * transform.scale.x ) / 2.f );
+			int positionOffsetY = position.y + ( ( sprite.height * transform.scale.y ) / 2.f );
+
+			if ( positionOffsetX == spriteCenterX && positionOffsetY == spriteCenterY &&
+				 m_pMouseTile->sprite.layer == sprite.layer )
+			{
+				return static_cast<uint32_t>( entity );
+			}
 		}
 	}
 
@@ -87,18 +108,38 @@ void TileTool::ExamineMousePosition()
 
 	if ( m_bGridSnap )
 	{
-		glm::vec2 mouseGrid{ mouseWorldPos.x / ( m_MouseRect.x * transform.scale.x ) * cameraScale,
-							 mouseWorldPos.y / ( m_MouseRect.y * transform.scale.y ) * cameraScale };
+		if ( m_pCurrentScene->GetMapType() == SCION_CORE::EMapType::Grid )
+		{
+			glm::vec2 mouseGrid{ mouseWorldPos.x / ( m_MouseRect.x * transform.scale.x ) * cameraScale,
+								 mouseWorldPos.y / ( m_MouseRect.y * transform.scale.y ) * cameraScale };
 
-		auto scaledGridToCamX = std::floor( mouseGrid.x / cameraScale );
-		auto scaledGridToCamY = std::floor( mouseGrid.y / cameraScale );
-		transform.position.x = scaledGridToCamX * m_MouseRect.x * transform.scale.x;
-		transform.position.y = scaledGridToCamY * m_MouseRect.y * transform.scale.y;
+			auto scaledGridToCamX = std::floor( mouseGrid.x / cameraScale );
+			auto scaledGridToCamY = std::floor( mouseGrid.y / cameraScale );
+			transform.position.x = scaledGridToCamX * m_MouseRect.x * transform.scale.x;
+			transform.position.y = scaledGridToCamY * m_MouseRect.y * transform.scale.y;
 
-		m_GridCoords.x = scaledGridToCamX;
-		m_GridCoords.y = scaledGridToCamY;
+			m_GridCoords.x = scaledGridToCamX;
+			m_GridCoords.y = scaledGridToCamY;
 
-		SetMouseWorldCoords( transform.position );
+			SetMouseWorldCoords( transform.position );
+		}
+		else
+		{
+			const auto& canvas = m_pCurrentScene->GetCanvas();
+
+			float doubleWidth = canvas.tileWidth * 2.f;
+			float doubleWidthOver4 = doubleWidth / 4.f;
+			float tileHeightOver4 = canvas.tileHeight / 4.f;
+
+			auto [ cellX, cellY ] = SCION_CORE::ConvertWorldPosToIsoCoords( mouseWorldPos, canvas );
+
+			transform.position.x =
+				( ( doubleWidthOver4 * cellX ) - ( doubleWidthOver4 * cellY ) ) * 2.f /* + canvas.offset.x*/;
+			transform.position.y = ( ( tileHeightOver4 * cellX ) + ( tileHeightOver4 * cellY ) ) * 2.f;
+
+			m_GridCoords = glm::vec2{ cellX, cellY };
+			SetMouseWorldCoords( transform.position );
+		}
 	}
 	else
 	{
@@ -109,14 +150,14 @@ void TileTool::ExamineMousePosition()
 TileTool::TileTool()
 	: AbstractTool()
 	, m_MouseRect{ 16.f }
-	, m_GridCoords{ 0.f }
 	, m_bGridSnap{ true }
 	, m_pBatchRenderer{ std::make_shared<SCION_RENDERING::SpriteBatchRenderer>() }
 	, m_pMouseTile{ std::make_shared<Tile>() }
 {
+	m_GridCoords = glm::vec2{ 0.f };
 }
 
-void TileTool::Update( Canvas& canvas )
+void TileTool::Update( SCION_CORE::Canvas& canvas )
 {
 	AbstractTool::Update( canvas );
 	ExamineMousePosition();
@@ -133,13 +174,13 @@ void TileTool::LoadSpriteTextureData( const std::string& textureName )
 	// the layer we are drawing on does not reset.
 	int currentLayer = m_pMouseTile->sprite.layer;
 
-	m_pMouseTile->sprite = SpriteComponent{ .width = m_MouseRect.x,
+	m_pMouseTile->sprite = SpriteComponent{ .sTextureName = textureName,
+											.width = m_MouseRect.x,
 											.height = m_MouseRect.y,
 											.color = SCION_RENDERING::Color{ 255, 255, 255, 255 },
 											.start_x = 0,
 											.start_y = 0,
-											.layer = currentLayer,
-											.sTextureName = textureName };
+											.layer = currentLayer };
 
 	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( textureName );
 	SCION_ASSERT( pTexture && "Texture must exist" );
