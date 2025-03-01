@@ -59,5 +59,6 @@ SCION_ERROR("This is some Error: {}", sError);
 		  render = function() end
 	  }, 
     }
-   ```
+    ```
+
 * From there the application should crash and it should show you were it crash in C++ and also the latest lua call stack.
