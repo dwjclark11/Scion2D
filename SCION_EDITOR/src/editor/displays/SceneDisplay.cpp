@@ -11,7 +11,12 @@
 #include "Core/Systems/PhysicsSystem.h"
 #include "Core/Systems/ScriptingSystem.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
+
 #include "Logger/Logger.h"
+#include "Logger/CrashLogger.h"
+
+#include "Core/Scripting/CrashLoggerTestBindings.h"
+
 #include "Sounds/MusicPlayer/MusicPlayer.h"
 #include "Sounds/SoundPlayer/SoundFxPlayer.h"
 #include "Physics/Box2DWrappers.h"
@@ -153,6 +158,13 @@ void SceneDisplay::LoadScene()
 		SCION_ERROR( "Failed to load the main lua script!" );
 		return;
 	}
+
+	// Setup Crash Tests
+	SCION_CORE::Scripting::CrashLoggerTests::CreateLuaBind( *lua );
+
+	// Set the lua state for the crash logger.
+	// This is used to log the lua stack trace in case of a crash
+	SCION_CRASH_LOGGER().SetLuaState( lua->lua_state() );
 
 	m_bSceneLoaded = true;
 	m_bPlayScene = true;

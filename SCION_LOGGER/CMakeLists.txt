@@ -1,7 +1,10 @@
 add_library(SCION_LOGGER
     "include/Logger/Logger.h"
     "include/Logger/Logger.inl"
-    "src/Logger.cpp")
+    "src/Logger.cpp"
+	"include/Logger/CrashLogger.h"
+	"src/CrashLogger.cpp"
+)
 
 target_include_directories(
     SCION_LOGGER PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

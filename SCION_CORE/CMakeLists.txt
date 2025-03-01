@@ -124,7 +124,7 @@ add_library(SCION_CORE
 	"src/Scene/SceneManager.cpp"
 	
 	"src/Character/PlayerStart.cpp"
-)
+ "include/Core/Scripting/CrashLoggerTestBindings.h" "src/Scripting/CrashLoggerTestBindings.cpp")
 
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

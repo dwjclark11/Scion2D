@@ -5,6 +5,7 @@
 #include <Rendering/Essentials/PickingTexture.h>
 
 #include <Logger/Logger.h>
+#include <Logger/CrashLogger.h>
 #include <Core/ECS/MainRegistry.h>
 
 #include <Core/Resources/AssetManager.h>
@@ -55,6 +56,8 @@ namespace SCION_EDITOR
 bool Application::Initialize()
 {
 	SCION_INIT_LOGS( false, true );
+	SCION_INIT_CRASH_LOGS();
+
 	// Init SDL
 	if ( SDL_Init( SDL_INIT_EVERYTHING ) != 0 )
 	{
@@ -243,6 +246,10 @@ bool Application::InitApp()
 	// Register Meta Functions
 	RegisterEditorMetaFunctions();
 	SCION_CORE::CoreEngineData::RegisterMetaFunctions();
+
+	// We can now set the Crash Logger path to the running project
+	const auto& sProjectPath = CORE_GLOBALS().GetProjectPath();
+	SCION_CRASH_LOGGER().SetProjectPath( sProjectPath );
 
 	return true;
 }
