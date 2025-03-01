@@ -64,7 +64,7 @@ Prefab::Prefab( EPrefabType eType, const PrefabbedEntity& prefabbed )
 	if ( fs::exists( m_sPrefabPath ) )
 	{
 		SCION_ERROR( "Failed to create prefab. [{}] Already exists!", m_sName );
-		throw std::exception( fmt::format( "Failed to create prefab. [{}] Already exists!", m_sName ).c_str() );
+		throw std::runtime_error( fmt::format( "Failed to create prefab. [{}] Already exists!", m_sName ).c_str() );
 	}
 
 	Save();
@@ -80,7 +80,7 @@ Prefab::Prefab( const std::string& sPrefabPath )
 	if ( !Load( sPrefabPath ) )
 	{
 		SCION_ERROR( "Failed to load prefab from path [{}]", sPrefabPath );
-		throw std::exception( fmt::format( "Failed to load prefab from path [{}]", sPrefabPath ).c_str() );
+		throw std::runtime_error( fmt::format( "Failed to load prefab from path [{}]", sPrefabPath ).c_str() );
 	}
 }
 
