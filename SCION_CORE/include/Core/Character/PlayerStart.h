@@ -27,15 +27,19 @@ class PlayerStart
 	 * player start.
 	 */
 	void Load( const std::string& sPrefabName );
+	void Unload();
+	void LoadVisualEntity();
 
 	inline bool IsCharacterSet() const { return m_pCharacterPrefab != nullptr; }
-
+	inline bool IsPlayerStartCreated() const { return m_bVisualEntityCreated; }
+	
   private:
 	Scene& m_SceneRef;
 	SCION_CORE::ECS::Entity m_VisualEntity;
 	std::shared_ptr<Prefab> m_pCharacterPrefab;
 	std::string m_sCharacterName;
 	bool m_bCharacterLoaded;
+	bool m_bVisualEntityCreated;
 
 	// TODO: Determine if this is needed.
 	std::shared_ptr<Character> m_pCharacter;

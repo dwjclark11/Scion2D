@@ -10,26 +10,21 @@
 
 using namespace SCION_CORE::ECS;
 
+constexpr const char* PlayerStartTag = "S2D_PlayerStart";
+
 namespace SCION_CORE
 {
 
 PlayerStart::PlayerStart( SCION_CORE::ECS::Registry& registry, Scene& sceneRef )
 	: m_SceneRef{ sceneRef }
-	, m_VisualEntity{ registry, "S2D_PlayerStart", "" }
+	, m_VisualEntity{ registry, PlayerStartTag, "" }
 	, m_pCharacterPrefab{ nullptr }
 	, m_pCharacter{ nullptr }
 	, m_sCharacterName{ "default" }
 	, m_bCharacterLoaded{ false }
+	, m_bVisualEntityCreated{ false }
 {
-	m_VisualEntity.AddComponent<TransformComponent>( TransformComponent{} );
-	m_VisualEntity.AddComponent<UneditableComponent>( UneditableComponent{ .eType = EUneditableType::PlayerStart } );
-	auto& sprite = m_VisualEntity.AddComponent<SpriteComponent>(
-		SpriteComponent{ .sTextureName = "ZZ_S2D_PlayerStart", .width = 64, .height = 64, .layer = 999999 } );
-
-	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.sTextureName );
-	SCION_ASSERT( pTexture && "ZZ_S2D_PlayerStart texture must be loaded into the asset manager!" );
-
-	GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+	LoadVisualEntity();
 }
 
 void PlayerStart::CreatePlayer( SCION_CORE::ECS::Registry& registry )
@@ -132,14 +127,53 @@ glm::vec2 PlayerStart::GetPosition()
 
 void PlayerStart::SetPosition( const glm::vec2& position )
 {
-	auto& transform = m_VisualEntity.GetComponent<TransformComponent>();
-	transform.position = position;
+	auto* transform = m_VisualEntity.TryGetComponent<TransformComponent>();
+	SCION_ASSERT( transform && "Visual entity was not setup correctly" );
+	transform->position = position;
 }
 
 void PlayerStart::Load( const std::string& sPrefabName )
 {
 	m_sCharacterName = sPrefabName;
 	m_bCharacterLoaded = true;
+}
+
+void PlayerStart::Unload()
+{
+	// We want to reset the entity to entt::null
+	m_VisualEntity.GetEntity() = entt::null;
+	m_bVisualEntityCreated = false;
+
+	//m_pCharacter.reset( );
+	//m_pCharacterPrefab.reset( );
+	//m_bCharacterLoaded = false;
+	//m_sCharacterName.clear();
+}
+
+void PlayerStart::LoadVisualEntity()
+{
+	if (m_bVisualEntityCreated)
+	{
+		SCION_ERROR( "Failed to load visual entity. Already created." );
+		return;
+	}
+
+	if (m_VisualEntity.GetEntity() == entt::null)
+	{
+		m_VisualEntity = Entity{ m_SceneRef.GetRegistry(), PlayerStartTag, "" };
+	}
+
+	m_VisualEntity.AddComponent<TransformComponent>( TransformComponent{} );
+	m_VisualEntity.AddComponent<UneditableComponent>( UneditableComponent{ .eType = EUneditableType::PlayerStart } );
+	auto& sprite = m_VisualEntity.AddComponent<SpriteComponent>(
+		SpriteComponent{ .sTextureName = "ZZ_S2D_PlayerStart", .width = 64, .height = 64, .layer = 999999 } );
+
+	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.sTextureName );
+	SCION_ASSERT( pTexture && "ZZ_S2D_PlayerStart texture must be loaded into the asset manager!" );
+
+	GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+
+	m_bVisualEntityCreated = true;
 }
 
 } // namespace SCION_CORE

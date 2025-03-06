@@ -90,10 +90,13 @@ Scene::Scene( const std::string& sceneName, EMapType eType )
 	sceneData.open( m_sSceneDataPath, std::ios::out | std::ios::trunc );
 	SCION_ASSERT( sceneData.is_open() && "File should have been created and opened." );
 	sceneData.close();
+
+	SaveSceneData();
 }
 
 bool Scene::LoadScene()
 {
+	SCION_LOG( "LOADED SCENE" );
 	if ( m_bSceneLoaded )
 	{
 		SCION_ERROR( "Scene [{}] has already been loaded", m_sSceneName );
@@ -136,8 +139,10 @@ bool Scene::UnloadScene( bool bSaveScene )
 	}
 
 	// Remove all objects in registry
+	m_PlayerStart.Unload();
 	m_Registry.ClearRegistry();
 	m_bSceneLoaded = false;
+	
 	return false;
 }
 
@@ -251,6 +256,10 @@ bool Scene::LoadSceneData()
 		if (sPlayerStartPrefab != "default")
 		{
 			m_PlayerStart.Load( sPlayerStartPrefab );
+		}
+		else if ( !m_PlayerStart.IsPlayerStartCreated())
+		{
+			m_PlayerStart.LoadVisualEntity();
 		}
 
 		m_PlayerStart.SetPosition( glm::vec2{ sceneData[ "playerStart" ][ "position" ][ "x" ].GetFloat(),
