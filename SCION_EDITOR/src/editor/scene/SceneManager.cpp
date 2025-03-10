@@ -232,12 +232,17 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 
 			// TODO: Check to see if this is valid
 			auto pSceneObject = dynamic_cast<SceneObject*>( pScene );
-			SCION_ASSERT( pSceneObject );
+			SCION_ASSERT( pSceneObject && "Scene Must be a valid Scene Object If run in the editor!" );
+			if (!pSceneObject)
+			{
+				SCION_ERROR( "Failed to load scene [{}] - Scene is not a valid SceneObject.", sSceneName );
+				
+				return pScene->UnloadScene();
+			}
 
 			pCurrentScene->CopySceneToRuntime( *pSceneObject );
-			pScene->UnloadScene();
-
-			return true;
+			
+			return pScene->UnloadScene();
 		}, "getCanvas", // Returns the canvas of the current scene or an empty canvas object.
 		[ & ] {
 			if ( auto pCurrentScene = sceneManager.GetCurrentScene() )

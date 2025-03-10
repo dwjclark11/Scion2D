@@ -10,20 +10,26 @@ namespace SCION_CORE
 {
 
 bool EntityInView( const TransformComponent& transform, float width, float height,
-							   const SCION_RENDERING::Camera2D& camera )
+				   const SCION_RENDERING::Camera2D& camera )
 {
-	const auto& cameraPos = camera.GetPosition() - camera.GetScreenOffset();
-	const auto& cameraWidth = camera.GetWidth();
-	const auto& cameraHeight = camera.GetHeight();
-	const auto& cameraScale = camera.GetScale();
+	const glm::vec2 cameraPos = camera.GetPosition() - camera.GetScreenOffset();
+	const int cameraWidth = camera.GetWidth();
+	const int cameraHeight = camera.GetHeight();
+	const float cameraScale = camera.GetScale();
+	const float invCameraScale = 1.f / cameraScale;
 
-	if ( ( transform.position.x <= ( ( cameraPos.x - ( width * transform.scale.x * cameraScale ) ) / cameraScale ) ||
-		   transform.position.x >= ( ( cameraPos.x + cameraWidth ) / cameraScale ) ) ||
-		 ( transform.position.y <= ( ( cameraPos.y - ( height * transform.scale.y * cameraScale ) ) / cameraScale ) ||
-		   transform.position.y >= ( ( cameraPos.y + cameraHeight ) / cameraScale ) ) )
+	const float cameraLeft = ( cameraPos.x - ( width * transform.scale.x * cameraScale ) ) * invCameraScale;
+	const float cameraRight = ( cameraPos.x + cameraWidth ) * invCameraScale;
+	const float cameraTop = ( cameraPos.y - ( height * transform.scale.y * cameraScale ) ) * invCameraScale;
+	const float cameraBottom = ( cameraPos.y + cameraHeight ) * invCameraScale;
+
+	if ( ( transform.position.x <= cameraLeft || transform.position.x >= cameraRight ) ||
+		 ( transform.position.y <= cameraTop || transform.position.y >= cameraBottom ) )
+	{
 		return false;
+	}
 
-	// Sprite is in view
+	// Entity is at least partially in view
 	return true;
 }
 
@@ -55,9 +61,18 @@ void GenerateUVs( SCION_CORE::ECS::SpriteComponent& sprite, int textureWidth, in
 	sprite.uvs.v = sprite.start_y * sprite.uvs.uv_height;
 }
 
+void GenerateUVsExt( SCION_CORE::ECS::SpriteComponent& sprite, int textureWidth, int textureHeight, float u, float v )
+{
+	sprite.uvs.uv_width = sprite.width / textureWidth;
+	sprite.uvs.uv_height = sprite.height / textureHeight;
+
+	sprite.uvs.u = u;
+	sprite.uvs.v = v;
+}
+
 std::tuple<int, int> ConvertWorldPosToIsoCoords( const glm::vec2& position, const Canvas& canvas )
 {
-	// TODO: Enforce width being double height. Double width hack for now. 
+	// TODO: Enforce width being double height. Double width hack for now.
 	float doubleWidth = canvas.tileWidth * 2.f;
 
 	// Move the x position back the halfWidth of one tile.
@@ -68,7 +83,7 @@ std::tuple<int, int> ConvertWorldPosToIsoCoords( const glm::vec2& position, cons
 
 	// Rotate both the x and the y positions by 45 degrees
 	/*
-	*	px = x * cs - y * sn; 
+	*	px = x * cs - y * sn;
 		py = x * sn + y * cs;
 	*/
 	float px = xPos * cos( SCION_MATH::PIOver4 ) - yPos * sin( SCION_MATH::PIOver4 );
@@ -82,4 +97,4 @@ std::tuple<int, int> ConvertWorldPosToIsoCoords( const glm::vec2& position, cons
 	return std::make_tuple( cellX, cellY );
 }
 
-}
+} // namespace SCION_CORE
