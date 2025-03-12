@@ -97,7 +97,7 @@ void TilesetDisplay::Draw()
 	tableFlags |= ImGuiTableFlags_SizingFixedFit;
 	tableFlags |= ImGuiTableFlags_ScrollX;
 
-	int k{ 0 }, id{ 0 };
+	int id{ 0 };
 
 	if ( ImGui::BeginTable( "Tileset", COLS, tableFlags ) )
 	{
