@@ -9,6 +9,7 @@
 #include "editor/tools/TileTool.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
+#include <algorithm>
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -109,9 +110,9 @@ void TilesetDisplay::Draw()
 				ImGui::TableSetColumnIndex( col );
 
 				// Create unique id for the buttons
-				k = row * COLS + col;
-				ImGui::PushID( k );
-				std::string buttonStr = "##tile_" + std::to_string( k );
+				id = row * COLS + col;
+				ImGui::PushID( id );
+				std::string buttonStr = "##tile_" + std::to_string( id );
 
 				// UV Coordinates for this cell
 				float u0 = col * tileWidth / textureWidth;
@@ -164,7 +165,7 @@ void TilesetDisplay::Draw()
 				ImVec4 tintColor = bSelected ? ImVec4{ 0.3f, 0.6f, 1.f, 1.f } : ImVec4{ 1.f, 1.f, 1.f, 1.f };
 				ImVec4 borderColor = bSelected ? ImVec4{ 1.f, 1.f, 1.f, 1.f } : ImVec4{ 0.f, 0.f, 0.f, 0.f };
 
-				if ( ImGui::ImageButtonEx( ImGui::GetID( fmt::format( "##ImageBtn_{}", k ).c_str() ),
+				if ( ImGui::ImageButtonEx( ImGui::GetID( fmt::format( "##ImageBtn_{}", id ).c_str() ),
 										   (ImTextureID)(intptr_t)pTexture->GetID(),
 										   ImVec2{ static_cast<float>( tileWidth ), static_cast<float>( tileHeight ) },
 										   ImVec2{ u0, v0 },
