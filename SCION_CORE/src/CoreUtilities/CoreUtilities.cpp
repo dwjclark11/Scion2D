@@ -52,4 +52,13 @@ void GenerateUVs( SCION_CORE::ECS::SpriteComponent& sprite, int textureWidth, in
 	sprite.uvs.v = sprite.start_y * sprite.uvs.uv_height;
 }
 
+void GenerateUVsExt( SCION_CORE::ECS::SpriteComponent& sprite, int textureWidth, int textureHeight, float u, float v )
+{
+	sprite.uvs.uv_width = sprite.width / textureWidth;
+	sprite.uvs.uv_height = sprite.height / textureHeight;
+
+	sprite.uvs.u = u;
+	sprite.uvs.v = v;
+}
+
 }

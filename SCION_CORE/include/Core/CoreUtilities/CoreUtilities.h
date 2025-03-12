@@ -10,4 +10,6 @@ glm::mat4 RSTModel( const SCION_CORE::ECS::TransformComponent& transform, float 
 
 void GenerateUVs( SCION_CORE::ECS::SpriteComponent& sprite, int textureWidth, int textureHeight );
 
+void GenerateUVsExt( SCION_CORE::ECS::SpriteComponent& sprite, int textureWidth, int textureHeight, float u, float v );
+
 } // namespace SCION_CORE
