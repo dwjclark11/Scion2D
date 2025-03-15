@@ -55,18 +55,18 @@ bool AssetManager::AddTexture( const std::string& textureName, const std::string
 		return false;
 	}
 
-	auto texture = SCION_RENDERING::TextureLoader::Create( pixelArt ? SCION_RENDERING::Texture::TextureType::PIXEL
-																	: SCION_RENDERING::Texture::TextureType::BLENDED,
-														   texturePath,
-														   bTileset );
+	auto pTexture = SCION_RENDERING::TextureLoader::Create( pixelArt ? SCION_RENDERING::Texture::TextureType::PIXEL
+																	 : SCION_RENDERING::Texture::TextureType::BLENDED,
+															texturePath,
+															bTileset );
 
-	if ( !texture )
+	if ( !pTexture )
 	{
 		SCION_ERROR( "Failed to load texture [{0}] at path [{1}]", textureName, texturePath );
 		return false;
 	}
 
-	auto [ itr, bSuccess ] = m_mapTextures.emplace( textureName, std::move( texture ) );
+	auto [ itr, bSuccess ] = m_mapTextures.emplace( textureName, std::move( pTexture ) );
 
 	if ( m_bFileWatcherRunning && bSuccess )
 	{
@@ -97,18 +97,17 @@ bool AssetManager::AddTextureFromMemory( const std::string& textureName, const u
 		return false;
 	}
 
-	auto texture =
-		std::move( SCION_RENDERING::TextureLoader::CreateFromMemory( imageData, length, pixelArt, bTileset ) );
+	auto pTexture = SCION_RENDERING::TextureLoader::CreateFromMemory( imageData, length, pixelArt, bTileset );
 
 	// Load the texture
-	if ( !texture )
+	if ( !pTexture )
 	{
 		SCION_ERROR( "Unable to load texture [{}] from memory!", textureName );
 		return false;
 	}
 
 	// Insert the texture into the map
-	auto [ itr, bSuccess ] = m_mapTextures.emplace( textureName, std::move( texture ) );
+	auto [ itr, bSuccess ] = m_mapTextures.emplace( textureName, std::move( pTexture ) );
 
 	return bSuccess;
 }
@@ -212,9 +211,9 @@ bool AssetManager::AddShader( const std::string& shaderName, const std::string& 
 	}
 
 	// Create and load the shader
-	auto shader = std::move( SCION_RENDERING::ShaderLoader::Create( vertexPath, fragmentPath ) );
+	auto pShader = SCION_RENDERING::ShaderLoader::Create( vertexPath, fragmentPath );
 
-	if ( !shader )
+	if ( !pShader )
 	{
 		SCION_ERROR( "Failed to load Shader [{0}] at vert path [{1}] and frag path [{2}]",
 					 shaderName,
@@ -223,9 +222,9 @@ bool AssetManager::AddShader( const std::string& shaderName, const std::string& 
 		return false;
 	}
 
-	auto [ itr, bSuccess ] = m_mapShader.emplace( shaderName, std::move( shader ) );
+	auto [ itr, bSuccess ] = m_mapShader.emplace( shaderName, std::move( pShader ) );
 
-	if (m_bFileWatcherRunning && bSuccess )
+	if ( m_bFileWatcherRunning && bSuccess )
 	{
 		std::lock_guard lock{ m_AssetMutex };
 
@@ -263,8 +262,8 @@ bool AssetManager::AddShaderFromMemory( const std::string& shaderName, const cha
 		return false;
 	}
 
-	auto shader = std::move( SCION_RENDERING::ShaderLoader::CreateFromMemory( vertexShader, fragShader ) );
-	auto [ itr, bSuccess ] = m_mapShader.insert( std::make_pair( shaderName, std::move( shader ) ) );
+	auto pShader = SCION_RENDERING::ShaderLoader::CreateFromMemory( vertexShader, fragShader );
+	auto [ itr, bSuccess ] = m_mapShader.insert( std::make_pair( shaderName, std::move( pShader ) ) );
 
 	return bSuccess;
 }
@@ -289,9 +288,9 @@ bool AssetManager::AddMusic( const std::string& musicName, const std::string& fi
 		return false;
 	}
 
-	Mix_Music* music = Mix_LoadMUS( filepath.c_str() );
+	Mix_Music* pMusic = Mix_LoadMUS( filepath.c_str() );
 
-	if ( !music )
+	if ( !pMusic )
 	{
 		std::string error{ Mix_GetError() };
 		SCION_ERROR( "Failed to load [{}] at path [{}] -- Mixer Error: {}", musicName, filepath, error );
@@ -299,17 +298,18 @@ bool AssetManager::AddMusic( const std::string& musicName, const std::string& fi
 	}
 
 	// Create the sound parameters
-	SCION_SOUNDS::SoundParams params{ .name = musicName, .filename = filepath, .duration = Mix_MusicDuration( music ) };
+	SCION_SOUNDS::SoundParams params{
+		.name = musicName, .filename = filepath, .duration = Mix_MusicDuration( pMusic ) };
 
 	// Create the music Pointer
-	auto musicPtr = std::make_shared<SCION_SOUNDS::Music>( params, MusicPtr{ music } );
-	if ( !musicPtr )
+	auto pMusicPtr = std::make_shared<SCION_SOUNDS::Music>( params, MusicPtr{ pMusic } );
+	if ( !pMusicPtr )
 	{
 		SCION_ERROR( "Failed to create the music ptr for [{}]", musicName );
 		return false;
 	}
 
-	auto [ itr, bSuccess ] = m_mapMusic.emplace( musicName, std::move( musicPtr ) );
+	auto [ itr, bSuccess ] = m_mapMusic.emplace( musicName, std::move( pMusicPtr ) );
 
 	if ( m_bFileWatcherRunning && bSuccess )
 	{
@@ -350,18 +350,18 @@ bool AssetManager::AddSoundFx( const std::string& soundFxName, const std::string
 		return false;
 	}
 
-	Mix_Chunk* chunk = Mix_LoadWAV( filepath.c_str() );
+	Mix_Chunk* pChunk = Mix_LoadWAV( filepath.c_str() );
 
-	if ( !chunk )
+	if ( !pChunk )
 	{
 		std::string error{ Mix_GetError() };
 		SCION_ERROR( "Failed to load [{}] at path [{}] -- Error: {}", soundFxName, filepath, error );
 		return false;
 	}
 
-	SCION_SOUNDS::SoundParams params{ .name = soundFxName, .filename = filepath, .duration = chunk->alen / 179.4 };
+	SCION_SOUNDS::SoundParams params{ .name = soundFxName, .filename = filepath, .duration = pChunk->alen / 179.4 };
 
-	auto pSoundFx = std::make_shared<SCION_SOUNDS::SoundFX>( params, SoundFxPtr{ chunk } );
+	auto pSoundFx = std::make_shared<SCION_SOUNDS::SoundFX>( params, SoundFxPtr{ pChunk } );
 	auto [ itr, bSuccess ] = m_mapSoundFx.emplace( soundFxName, std::move( pSoundFx ) );
 
 	if ( bSuccess )
@@ -652,18 +652,18 @@ void AssetManager::ReloadSoundFx( const std::string& sSoundFxName )
 
 	fileParamItr->lastWrite = fs::last_write_time( fs::path{ fileParamItr->sFilepath } );
 
-	if (!DeleteAsset(sSoundFxName, SCION_UTIL::AssetType::SOUNDFX))
+	if ( !DeleteAsset( sSoundFxName, SCION_UTIL::AssetType::SOUNDFX ) )
 	{
 		SCION_ERROR( "Failed to Reload SoundFx: {}", sSoundFxName );
 		return;
 	}
 
-	if (!AddSoundFx(sSoundFxName, fileParamItr->sFilepath))
+	if ( !AddSoundFx( sSoundFxName, fileParamItr->sFilepath ) )
 	{
 		SCION_ERROR( "Failed to Reload SoundFx: {}", sSoundFxName );
 		return;
 	}
-	
+
 	SCION_LOG( "Reloaded SoundFx: {}", sSoundFxName );
 }
 
@@ -680,7 +680,7 @@ void AssetManager::ReloadMusic( const std::string& sMusicName )
 
 	fileParamItr->lastWrite = fs::last_write_time( fs::path{ fileParamItr->sFilepath } );
 
-	if ( !DeleteAsset( sMusicName, SCION_UTIL::AssetType::MUSIC) )
+	if ( !DeleteAsset( sMusicName, SCION_UTIL::AssetType::MUSIC ) )
 	{
 		SCION_ERROR( "Failed to Reload SoundFx: {}", sMusicName );
 		return;
@@ -697,8 +697,8 @@ void AssetManager::ReloadMusic( const std::string& sMusicName )
 
 void AssetManager::ReloadFont( const std::string& sFontName )
 {
-	auto fileParamItr = std::ranges::find_if( m_FilewatchParams,
-											  [ & ]( const auto& param ) { return param.sAssetName == sFontName; } );
+	auto fileParamItr =
+		std::ranges::find_if( m_FilewatchParams, [ & ]( const auto& param ) { return param.sAssetName == sFontName; } );
 
 	if ( fileParamItr == m_FilewatchParams.end() )
 	{
