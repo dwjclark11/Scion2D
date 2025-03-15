@@ -48,7 +48,7 @@ class MainRegistry
 
   public:
 	static MainRegistry& GetInstance();
-	bool Initialize();
+	bool Initialize(bool bEnableFilewatcher = false);
 
 	SCION_CORE::Events::EventDispatcher& GetEventDispatcher();
 	SCION_RESOURCES::AssetManager& GetAssetManager();

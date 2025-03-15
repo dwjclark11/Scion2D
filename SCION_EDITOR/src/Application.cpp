@@ -158,7 +158,7 @@ bool Application::Initialize()
 #endif
 
 	auto& mainRegistry = MAIN_REGISTRY();
-	if ( !mainRegistry.Initialize() )
+	if ( !mainRegistry.Initialize(true) )
 	{
 		SCION_ERROR( "Failed to initialize the Main Registry!" );
 		return false;
@@ -509,6 +509,8 @@ void Application::Update()
 	{
 		pDisplay->Update();
 	}
+
+	mainRegistry.GetAssetManager().Update();
 }
 
 void Application::UpdateInputs()

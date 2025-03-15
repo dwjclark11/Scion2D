@@ -28,12 +28,12 @@ MainRegistry& MainRegistry::GetInstance()
 	return instance;
 }
 
-bool MainRegistry::Initialize()
+bool MainRegistry::Initialize( bool bEnableFilewatcher )
 {
 	m_pMainRegistry = std::make_unique<Registry>();
 	SCION_ASSERT( m_pMainRegistry && "Failed to initialize main registry." );
 
-	auto pAssetManager = std::make_shared<SCION_RESOURCES::AssetManager>();
+	auto pAssetManager = std::make_shared<SCION_RESOURCES::AssetManager>( bEnableFilewatcher );
 	m_pMainRegistry->AddToContext<std::shared_ptr<SCION_RESOURCES::AssetManager>>( std::move( pAssetManager ) );
 
 	auto pMusicPlayer = std::make_shared<SCION_SOUNDS::MusicPlayer>();
