@@ -6,7 +6,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 	lua.new_usertype<State>(
 		"State",
 		sol::call_constructor,
-		sol::factories( []( const std::string& name ) { return State{ .name = name }; },
+		sol::factories( []( const std::string& name ) { return State{ .sName = name }; },
 						[]( const std::string& name,
 							sol::protected_function on_enter,
 							sol::protected_function on_exit,
@@ -14,7 +14,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 							sol::protected_function on_render,
 							sol::protected_function handle_inputs,
 							sol::object variables ) {
-							return State{ .name = name,
+							return State{ .sName = name,
 										  .on_render = on_render,
 										  .on_update = on_update,
 										  .on_enter = on_enter,
@@ -79,7 +79,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 		"variables",
 		&State::variables,
 		"name",
-		&State::name,
+		&State::sName,
 		"bKillState",
 		&State::bKillState );
 }

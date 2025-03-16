@@ -6,8 +6,7 @@ namespace SCION_CORE
 
 void StateStack::Push( State& state )
 {
-	auto hasState =
-		std::find_if( m_States.begin(), m_States.end(), [ & ]( const auto& s ) { return s.name == state.name; } );
+	auto hasState = std::ranges::find_if( m_States, [ & ]( const auto& s ) { return s.sName == state.sName; } );
 
 	if ( hasState == m_States.end() )
 	{
@@ -37,6 +36,18 @@ void StateStack::ChangeState( State& state )
 		Pop();
 
 	Push( state );
+}
+
+void StateStack::RemoveState( const std::string& sState )
+{
+	auto stateItr = std::ranges::find_if( m_States, [ & ]( State& state ) { return state.sName == sState; } );
+	if ( stateItr == m_States.end() )
+	{
+		SCION_ERROR( "Failed to remove state [{}] - Does not exist or is invalid.", sState );
+		return;
+	}
+
+	stateItr->bKillState = true;
 }
 
 void StateStack::Update( const float dt )
@@ -156,7 +167,7 @@ void StateStack::Render()
 			}
 			catch ( const sol::error& error )
 			{
-				SCION_ERROR( "Failed to render state [{}]: {}", state.name, error.what() );
+				SCION_ERROR( "Failed to render state [{}]: {}", state.sName, error.what() );
 			}
 		}
 	}
