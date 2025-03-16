@@ -8,7 +8,10 @@ add_library(SCION_UTILITIES
     "include/ScionUtilities/ScionUtilities.h"
 	"src/ScionUtilities.cpp"
 	"include/ScionUtilities/HelperUtilities.h"
- "include/ScionUtilities/MathUtilities.h")
+	"include/ScionUtilities/MathUtilities.h"
+	"include/ScionUtilities/Tween.h"
+	"src/Tween.cpp"
+)
 
 target_include_directories(
     SCION_UTILITIES PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

@@ -33,7 +33,7 @@
 
 #include "Core/Character/Character.h"
 #include "ScionUtilities/HelperUtilities.h"
-
+#include "ScionUtilities/Tween.h"
 
 #include "Core/Scene/Scene.h"
 
@@ -198,6 +198,43 @@ auto create_timer = []( sol::state& lua ) {
 							 } );
 };
 
+auto createTweenLuaBind = []( sol::state& lua ) {
+	using namespace SCION_UTIL;
+
+	// We only need to expose the easing function type to the user not how it was implemented.
+	lua.new_enum<EEasingFunc>( "EasingFuncType",
+							   { { "Linear", EEasingFunc::LINEAR },
+								 { "EaseInQuad", EEasingFunc::EASE_IN_QUAD },
+								 { "EaseOutQuad", EEasingFunc::EASE_OUT_QUAD },
+								 { "EaseInSine", EEasingFunc::EASE_IN_SINE },
+								 { "EaseOutSine", EEasingFunc::EASE_OUT_SINE },
+								 { "EaseInOutSine", EEasingFunc::EASE_IN_OUT_SINE },
+								 { "EaseOutElastic", EEasingFunc::EASE_OUT_ELASTIC },
+								 { "EaseInElastic", EEasingFunc::EASE_IN_ELASTIC },
+								 { "EaseInOutElastic", EEasingFunc::EASE_IN_OUT_ELASTIC },
+								 { "EaseInExponential", EEasingFunc::EASE_IN_EXPONENTIAL },
+								 { "EaseOutExponential", EEasingFunc::EASE_OUT_EXPONENTIAL },
+								 { "EaseInOutExponential", EEasingFunc::EASE_IN_OUT_EXPONENTIAL },
+								 { "EaseInBound", EEasingFunc::EASE_IN_BOUNCE },
+								 { "EaseOutBound", EEasingFunc::EASE_OUT_BOUNCE },
+								 { "EaseInOutBound", EEasingFunc::EASE_IN_OUT_BOUNCE },
+								 { "EaseInCirc", EEasingFunc::EASE_IN_CIRC },
+								 { "EaseOutCirc", EEasingFunc::EASE_OUT_CIRC },
+								 { "EaseInOutCirc", EEasingFunc::EASE_IN_OUT_CIRC } } );
+
+	lua.new_usertype<Tween>( "Tween",
+							 sol::call_constructor,
+							 sol::constructors<Tween(), Tween( float, float, float, EEasingFunc )>(),
+							 "update",
+							 &Tween::Update,
+							 "totalDistance",
+							 &Tween::TotalDistance,
+							 "currentValue",
+							 &Tween::CurrentValue,
+							 "isFinished",
+							 &Tween::IsFinished );
+};
+
 auto create_lua_logger = []( sol::state& lua ) {
 	auto& logger = SCION_LOGGER::Logger::GetInstance();
 
@@ -325,6 +362,7 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Reg
 
 	create_timer( lua );
 	create_lua_logger( lua );
+	createTweenLuaBind( lua );
 
 	SCION_CORE::State::CreateLuaStateBind( lua );
 	SCION_CORE::StateStack::CreateLuaStateStackBind( lua );
