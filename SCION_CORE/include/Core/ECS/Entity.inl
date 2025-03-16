@@ -74,8 +74,8 @@ bool has_component( Entity& entity )
 template <typename TComponent>
 auto get_component( Entity& entity, sol::this_state s )
 {
-	auto& comp = entity.GetComponent<TComponent>();
-	return sol::make_reference( s, std::ref( comp ) );
+	auto* comp = entity.TryGetComponent<TComponent>();
+	return comp ? sol::make_reference( s, std::ref( *comp ) ) : sol::lua_nil_t{};
 }
 
 template <typename TComponent>

@@ -13,6 +13,29 @@ namespace SCION_CORE
 constexpr float METERS_TO_PIXELS = 12.f;
 constexpr float PIXELS_TO_METERS = 1.f / METERS_TO_PIXELS;
 
+// clang-format off
+static std::unordered_map<EGameType, std::string> g_mapGameTypeToStr
+{
+	{ EGameType::TopDown,		"Top Down" },
+	{ EGameType::Platformer,	"Platformer" },
+	{ EGameType::Fighting,		"Fighting" },
+	{ EGameType::Puzzle,		"Puzzle" },
+	{ EGameType::Rougelike,		"Rougelike" },
+	{ EGameType::NoType,		"No Type" }
+};
+
+static std::unordered_map< std::string, EGameType > g_mapStrToGameType
+{
+	{ "Top Down",				EGameType::TopDown },
+	{ "Platformer" ,			EGameType::Platformer},
+	{"Fighting",				EGameType::Fighting },
+	{ "Puzzle",					EGameType::Puzzle},
+	{ "Rougelike",				EGameType::Rougelike },
+	{ "No Type",				EGameType::NoType }
+};
+
+// clang-format on
+
 CoreEngineData::CoreEngineData()
 	: m_DeltaTime{ 0.f }
 	, m_ScaledWidth{ 0.f }
@@ -76,6 +99,31 @@ void CoreEngineData::SetScaledHeight( float newHeight )
 {
 	// TODO: Add some clamps
 	m_ScaledHeight = newHeight / METERS_TO_PIXELS;
+}
+
+std::string CoreEngineData::GetGameTypeStr( EGameType eType )
+{
+	if (auto itr = g_mapGameTypeToStr.find(eType); itr != g_mapGameTypeToStr.end())
+	{
+		return itr->second;
+	}
+
+	return {};
+}
+
+EGameType CoreEngineData::GetGameTypeFromStr( const std::string& sType )
+{
+	if ( auto itr = g_mapStrToGameType.find( sType ); itr != g_mapStrToGameType.end() )
+	{
+		return itr->second;
+	}
+
+	return EGameType::NoType;
+}
+
+const std::unordered_map<EGameType, std::string>& CoreEngineData::GetGameTypesMap()
+{
+	return g_mapGameTypeToStr;
 }
 
 void CoreEngineData::RegisterMetaFunctions()

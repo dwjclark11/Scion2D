@@ -249,6 +249,14 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 				return pCurrentScene->GetCanvas();
 
 			return SCION_CORE::Canvas{};
+		},
+		"getDefaultMusic",
+		[&]
+		{
+			if ( auto pCurrentScene = sceneManager.GetCurrentScene() )
+				return pCurrentScene->GetDefaultMusicName();
+
+			return std::string{ "" };
 		}
 	);
 }

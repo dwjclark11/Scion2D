@@ -5,8 +5,8 @@
 
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
-
 #include "Core/CoreUtilities/CoreUtilities.h"
+#include "Core/CoreUtilities/CoreEngineData.h"
 
 using namespace SCION_CORE::ECS;
 
@@ -55,44 +55,46 @@ void PlayerStart::CreatePlayer( SCION_CORE::ECS::Registry& registry )
 	}
 	else
 	{
-		/* DEFAULT PLAYER START IS NOT SET UP - PLEASE ENSURE THAT THE USER HAS SET A PREFAB TO USE! */
-		// Create a default character.
-		// TODO: Determine how we check the physics component.
-		//	- If Iso metric, we always set the gravity to zero
-		//	- If a platformer - Set gravity to 1,
-		//	- If the game is a top down game - Set gravity to zero
-		//  - If Physics is not enabled, do not add a physics component
+		Entity characterEnt{ registry, "Player", "" };
+		auto& transform =
+			characterEnt.AddComponent<TransformComponent>( m_VisualEntity.GetComponent<TransformComponent>() );
+		transform.scale = glm::vec2{ 1.f }; // Should the scale be changed here?
 
-		// Entity characterEnt{ registry, "Player", "" };
-		// auto& transform =
-		//	characterEnt.AddComponent<TransformComponent>( m_VisualEntity.GetComponent<TransformComponent>() );
-		// transform.scale = glm::vec2{ 2.f };
-		//// This needs to be a default texture in the engine.
-		//// We should have a couple of different ones based on the type of game we want to make
-		// auto& sprite = characterEnt.AddComponent<SpriteComponent>(
-		//	SpriteComponent{ .sTextureName = "player_sprite", .width = 32, .height = 32, .layer = 6 } );
+		// This needs to be a default texture in the engine.
+		// We should have a couple of different ones based on the type of game we want to make
+		// Right now we just have a default player. Will add more later.
+		auto& sprite = characterEnt.AddComponent<SpriteComponent>(
+			SpriteComponent{ .sTextureName = "ZZ_S2D_default_player", .width = 16, .height = 16, .layer = 6 } );
 
-		// sprite.bIsoMetric = m_SceneRef.GetMapType() == EMapType::IsoGrid;
+		sprite.bIsoMetric = m_SceneRef.GetMapType() == EMapType::IsoGrid;
 
-		// auto pTexture = ASSET_MANAGER().GetTexture( "player_sprite" );
-		// SCION_ASSERT( pTexture && "The default player texture must exist." );
+		auto pTexture = ASSET_MANAGER().GetTexture( "ZZ_S2D_default_player" );
+		SCION_ASSERT( pTexture && "The default player texture must exist." );
 
-		// GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+		GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 
-		// characterEnt.AddComponent<CircleColliderComponent>(
-		//	CircleColliderComponent{ .radius = 10, .offset = glm::vec2{ 10.f, 12.f } } );
+		float radius{ 6.f };
+		characterEnt.AddComponent<CircleColliderComponent>(
+			CircleColliderComponent{ .radius = radius, .offset = glm::vec2{ 2.f, 2.f } } );
 
-		// characterEnt.AddComponent<PhysicsComponent>(
-		//	PhysicsComponent{ PhysicsAttributes{ .eType = SCION_PHYSICS::RigidBodyType::DYNAMIC,
-		//										 .density = 100.f,
-		//										 .friction = 0.f,
-		//										 .restitution = 0.f,
-		//										 .radius = 10,
-		//										 .gravityScale = 0.f,
-		//										 .bCircle = true } } );
+		auto& coreGlobals = CORE_GLOBALS();
+		if ( coreGlobals.IsPhysicsEnabled() )
+		{
+			// If the game type is not a platformer, set to zero
+			float gravityScale = coreGlobals.GetGameType() == EGameType::Platformer ? 1.f : 0.f;
 
-		// characterEnt.AddComponent<AnimationComponent>(
-		//	AnimationComponent{ .numFrames = 6, .frameRate = 10, .bLooped = true } );
+			characterEnt.AddComponent<PhysicsComponent>(
+				PhysicsComponent{ PhysicsAttributes{ .eType = SCION_PHYSICS::RigidBodyType::DYNAMIC,
+													 .density = 100.f,
+													 .friction = 0.f,
+													 .restitution = 0.f,
+													 .radius = radius,
+													 .gravityScale = gravityScale,
+													 .bCircle = true } } );
+		}
+
+		characterEnt.AddComponent<AnimationComponent>(
+			AnimationComponent{ .numFrames = 4, .frameRate = 10, .bLooped = true } );
 	}
 }
 
@@ -144,21 +146,21 @@ void PlayerStart::Unload()
 	m_VisualEntity.GetEntity() = entt::null;
 	m_bVisualEntityCreated = false;
 
-	//m_pCharacter.reset( );
-	//m_pCharacterPrefab.reset( );
-	//m_bCharacterLoaded = false;
-	//m_sCharacterName.clear();
+	// m_pCharacter.reset( );
+	// m_pCharacterPrefab.reset( );
+	// m_bCharacterLoaded = false;
+	// m_sCharacterName.clear();
 }
 
 void PlayerStart::LoadVisualEntity()
 {
-	if (m_bVisualEntityCreated)
+	if ( m_bVisualEntityCreated )
 	{
 		SCION_ERROR( "Failed to load visual entity. Already created." );
 		return;
 	}
 
-	if (m_VisualEntity.GetEntity() == entt::null)
+	if ( m_VisualEntity.GetEntity() == entt::null )
 	{
 		m_VisualEntity = Entity{ m_SceneRef.GetRegistry(), PlayerStartTag, "" };
 	}

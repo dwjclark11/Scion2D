@@ -31,12 +31,13 @@ Scene::Scene()
 	, m_sTilemapPath{ "" }
 	, m_sObjectPath{ "" }
 	, m_sSceneDataPath{ "" }
+	, m_sDefaultMusic{ "" }
 	, m_bSceneLoaded{ false }
 	, m_Canvas{}
 	, m_eMapType{ EMapType::Grid }
 	, m_PlayerStart{ m_Registry, *this }
 {
-	// Empty Scene 
+	// Empty Scene
 }
 
 Scene::Scene( const std::string& sceneName, EMapType eType )
@@ -45,6 +46,7 @@ Scene::Scene( const std::string& sceneName, EMapType eType )
 	, m_sTilemapPath{ "" }
 	, m_sObjectPath{ "" }
 	, m_sSceneDataPath{ "" }
+	, m_sDefaultMusic{ "" }
 	, m_bSceneLoaded{ false }
 	, m_Canvas{}
 	, m_eMapType{ eType }
@@ -142,7 +144,7 @@ bool Scene::UnloadScene( bool bSaveScene )
 	m_PlayerStart.Unload();
 	m_Registry.ClearRegistry();
 	m_bSceneLoaded = false;
-	
+
 	return false;
 }
 
@@ -250,20 +252,25 @@ bool Scene::LoadSceneData()
 		}
 	}
 
-	if (sceneData.HasMember("playerStart"))
+	if ( sceneData.HasMember( "playerStart" ) )
 	{
 		std::string sPlayerStartPrefab = sceneData[ "playerStart" ][ "character" ].GetString();
-		if (sPlayerStartPrefab != "default")
+		if ( sPlayerStartPrefab != "default" )
 		{
 			m_PlayerStart.Load( sPlayerStartPrefab );
 		}
-		else if ( !m_PlayerStart.IsPlayerStartCreated())
+		else if ( !m_PlayerStart.IsPlayerStartCreated() )
 		{
 			m_PlayerStart.LoadVisualEntity();
 		}
 
 		m_PlayerStart.SetPosition( glm::vec2{ sceneData[ "playerStart" ][ "position" ][ "x" ].GetFloat(),
 											  sceneData[ "playerStart" ][ "position" ][ "y" ].GetFloat() } );
+	}
+
+	if ( sceneData.HasMember( "defaultMusic" ) )
+	{
+		m_sDefaultMusic = sceneData[ "defaultMusic" ].GetString();
 	}
 
 	SCION_ASSERT( sceneData.HasMember( "sprite_layers" ) && "Sprite layers must be a part of scene data" );
@@ -321,6 +328,7 @@ bool Scene::SaveSceneData()
 	pSerializer->AddKeyValuePair( "name", m_sSceneName )
 		.AddKeyValuePair( "tilemapPath", sTilemapPath )
 		.AddKeyValuePair( "objectmapPath", sObjectPath )
+		.AddKeyValuePair( "defaultMusic", m_sDefaultMusic )
 		.StartNewObject( "canvas" )
 		.AddKeyValuePair( "width", m_Canvas.width )
 		.AddKeyValuePair( "height", m_Canvas.height )
@@ -404,12 +412,6 @@ void Scene::SetCanvasOffset()
 	m_Canvas.offset.x = floor( offsetX );
 	// We are assuming that there is no offset in Y currently
 	m_Canvas.offset.y = 0.f;
-
-	// TESTING LOGS
-	SCION_LOG( "c1: {}", c1 );
-	SCION_LOG( "c2: {}", c2 );
-	SCION_LOG( "theta1: {}", theta1 );
-	SCION_LOG( "offsetX: {}", offsetX );
 }
 
 void Scene::CreateLuaBind( sol::state& lua )
@@ -431,6 +433,7 @@ void Scene::CreateLuaBind( sol::state& lua )
 							  &Canvas::tileWidth,
 							  "tileHeight",
 							  &Canvas::tileHeight );
+
 }
 
 } // namespace SCION_CORE

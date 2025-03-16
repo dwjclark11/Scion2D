@@ -67,6 +67,9 @@ class Scene
 	 */
 	bool SaveScene() { return SaveSceneData(); }
 
+	inline const std::string& GetDefaultMusicName() const { return m_sDefaultMusic; }
+	inline void SetDefaultMusic( const std::string& sDefaultMusic ) { m_sDefaultMusic = sDefaultMusic; }
+
 	inline Canvas& GetCanvas() { return m_Canvas; }
 	inline SCION_CORE::ECS::Registry& GetRegistry() { return m_Registry; }
 	inline SCION_CORE::ECS::Registry* GetRegistryPtr() { return &m_Registry; }
@@ -99,6 +102,8 @@ class Scene
 	std::string m_sObjectPath;
 	/* The filepath which to load and save the scene data. */
 	std::string m_sSceneDataPath;
+	/* The default music to play for the scene. */
+	std::string m_sDefaultMusic;
 	/* Has this scene been loaded in the editor. */
 	bool m_bSceneLoaded;
 

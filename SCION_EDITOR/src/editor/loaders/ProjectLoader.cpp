@@ -138,6 +138,13 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		pSaveProject->sMainLuaScript = sContentPath + projectData[ "main_lua_script" ].GetString();
 	}
 
+	auto& coreGlobals = CORE_GLOBALS();
+
+	if ( projectData.HasMember( "game_type" ) )
+	{
+		coreGlobals.SetGameType( coreGlobals.GetGameTypeFromStr( projectData[ "game_type" ].GetString() ) );
+	}
+
 	const rapidjson::Value& assets = projectData[ "assets" ];
 	auto& assetManager = ASSET_MANAGER();
 
@@ -297,6 +304,24 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		}
 	}
 
+	if ( projectData.HasMember( "physics" ) )
+	{
+		const rapidjson::Value& physics = projectData[ "physics" ];
+		bool bEnabled = physics[ "enabled" ].GetBool();
+		if ( bEnabled )
+		{
+			coreGlobals.EnablePhysics();
+		}
+		else
+		{
+			coreGlobals.DisablePhysics();
+		}
+
+		coreGlobals.SetGravity( physics[ "gravity" ].GetFloat() );
+		coreGlobals.SetVelocityIterations( physics[ "velocityIterations" ].GetInt() );
+		coreGlobals.SetPositionIterations( physics[ "positionIterations" ].GetInt() );
+	}
+
 	return true;
 }
 
@@ -327,7 +352,7 @@ bool ProjectLoader::SaveLoadedProject( SCION_CORE::SaveProject& save )
 	{
 		SCION_ERROR( "Failed to save all scenes." );
 	}
-
+	auto& coreGlobals = CORE_GLOBALS();
 	pSerializer->StartDocument();
 	pSerializer->StartNewObject( "warnings" );
 	pSerializer->AddKeyValuePair( "warning", std::string{ "THIS FILE IS ENGINE GENERATED." } )
@@ -337,6 +362,7 @@ bool ProjectLoader::SaveLoadedProject( SCION_CORE::SaveProject& save )
 	pSerializer->StartNewObject( "project_data" )
 		.AddKeyValuePair( "project_name", save.sProjectName )
 		.AddKeyValuePair( "main_lua_script", save.sMainLuaScript.substr( save.sMainLuaScript.find( SCRIPTS ) ) )
+		.AddKeyValuePair( "game_type", coreGlobals.GetGameTypeStr( coreGlobals.GetGameType() ) )
 		.StartNewObject( "assets" );
 
 	pSerializer->StartNewArray( "textures" );
@@ -403,6 +429,12 @@ bool ProjectLoader::SaveLoadedProject( SCION_CORE::SaveProject& save )
 	pSerializer->EndArray(); // Prefabs
 
 	pSerializer->EndObject(); // Assets
+	pSerializer->StartNewObject( "physics" )
+		.AddKeyValuePair( "enabled", coreGlobals.IsPhysicsEnabled() )
+		.AddKeyValuePair( "gravity", coreGlobals.GetGravity() )
+		.AddKeyValuePair( "velocityIterations", coreGlobals.GetVelocityIterations() )
+		.AddKeyValuePair( "positionIterations", coreGlobals.GetPositionIterations() )
+		.EndObject();		  // Physics
 	pSerializer->EndObject(); // Project Data
 
 	return pSerializer->EndDocument();
@@ -450,6 +482,7 @@ bool ProjectLoader::CreateProjectFile( const std::string& sProjectName, const st
 		.AddKeyValuePair( "project_name", sProjectName )
 		.AddKeyValuePair( "main_lua_file",
 						  pSaveFile->sMainLuaScript.substr( pSaveFile->sMainLuaScript.find( SCRIPTS ) ) )
+		.AddKeyValuePair( "game_type", "No Type" )
 		.StartNewObject( "assets" )
 		.StartNewArray( "textures" )
 		.EndArray() // Textures
@@ -458,8 +491,14 @@ bool ProjectLoader::CreateProjectFile( const std::string& sProjectName, const st
 		.StartNewArray( "music" )
 		.EndArray() // Music
 		.StartNewArray( "scenes" )
-		.EndArray()			  // Scenes
-		.EndObject();		  // Assets
+		.EndArray()	 // Scenes
+		.EndObject() // Assets
+		.StartNewObject( "physics" )
+		.AddKeyValuePair( "enabled", true )
+		.AddKeyValuePair( "gravity", 9.8f )
+		.AddKeyValuePair( "velocityIterations", 8 )
+		.AddKeyValuePair( "positionIterations", 10 )
+		.EndObject();		  // Physics
 	pSerializer->EndObject(); // Project Data
 
 	return pSerializer->EndDocument();

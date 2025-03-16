@@ -437,6 +437,15 @@ bool Application::LoadEditorTextures()
 
 	assetManager.GetTexture( "ZZ_S2D_PlayerStart" )->SetIsEditorTexture( true );
 
+	if ( !assetManager.AddTextureFromMemory(
+			 "ZZ_S2D_default_player", ZZ_S2D_default_player, ZZ_S2D_default_player_size ) )
+	{
+		SCION_ERROR( "Failed to load texture [ZZ_S2D_default_player] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "ZZ_S2D_default_player" )->SetIsEditorTexture( true );
+
 	return true;
 }
 
