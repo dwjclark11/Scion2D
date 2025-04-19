@@ -74,7 +74,7 @@ glm::vec2 Camera2D::ScreenCoordsToWorld( const glm::vec2& screenCoords ) const
 	worldCoords /= m_Scale;
 
 	// Translate the camera
-	worldCoords += m_Position;
+	worldCoords += (m_Position / m_Scale);
 
 	return worldCoords;
 }

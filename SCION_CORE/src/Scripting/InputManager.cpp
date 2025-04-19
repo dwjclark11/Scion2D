@@ -221,6 +221,12 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 			return keys;
 		} );
 
+/*
+* In order for this to work in the editor, we need to take into account
+* the imgui window position, to get the world position.
+* There is new bindings inside the editor that handles this.
+*/
+#ifndef IN_SCION_EDITOR
 	auto& mouse = inputManager.GetMouse();
 
 	lua.new_usertype<Mouse>(
@@ -246,6 +252,7 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 		[ & ]() { return mouse.GetMouseWheelX(); },
 		"wheel_y",
 		[ & ]() { return mouse.GetMouseWheelY(); } );
+#endif // IN_SCION_EDITOR
 
 	lua.new_usertype<Gamepad>(
 		"Gamepad",

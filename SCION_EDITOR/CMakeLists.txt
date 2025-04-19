@@ -94,7 +94,10 @@ add_executable(SCION_EDITOR
 	"src/editor/loaders/ProjectLoader.cpp"
 
 	${APP_ICON_RESOURCE}
- "src/editor/utilities/fonts/editor_fonts.h")
+	"src/editor/utilities/fonts/editor_fonts.h"
+	"src/editor/scripting/EditorCoreLuaWrappers.h"
+	"src/editor/scripting/EditorCoreLuaWrappers.cpp"
+)
 
 target_include_directories(
     SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

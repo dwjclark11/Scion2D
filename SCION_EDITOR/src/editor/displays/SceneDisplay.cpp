@@ -19,10 +19,13 @@
 #include "Core/Resources/AssetManager.h"
 
 #include "editor/utilities/EditorFramebuffers.h"
+#include "editor/utilities/EditorUtilities.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/SaveProject.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
+
+#include "editor/scripting/EditorCoreLuaWrappers.h"
 
 #include "Core/Events/EventDispatcher.h"
 #include "Core/Events/EngineEventTypes.h"
@@ -67,11 +70,14 @@ void SceneDisplay::LoadScene()
 	// Add necessary systems
 	auto scriptSystem =
 		runtimeRegistry.AddToContext<std::shared_ptr<ScriptingSystem>>( std::make_shared<ScriptingSystem>() );
+	runtimeRegistry.AddToContext<std::shared_ptr<MouseGuiInfo>>( std::make_shared<MouseGuiInfo>() );
 
 	auto lua = runtimeRegistry.AddToContext<std::shared_ptr<sol::state>>( std::make_shared<sol::state>() );
 
 	if ( !lua )
+	{
 		lua = std::make_shared<sol::state>();
+	}
 
 	lua->open_libraries( sol::lib::base,
 						 sol::lib::math,
@@ -85,6 +91,7 @@ void SceneDisplay::LoadScene()
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaFunctions( *lua, runtimeRegistry );
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaEvents( *lua, runtimeRegistry );
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaSystems( *lua, runtimeRegistry );
+	LuaCoreBinder::CreateLuaBind( *lua, runtimeRegistry );
 
 	SceneManager::CreateSceneManagerLuaBind( *lua );
 
@@ -315,12 +322,28 @@ void SceneDisplay::Draw()
 		auto& editorFramebuffers = MAIN_REGISTRY().GetContext<std::shared_ptr<EditorFramebuffers>>();
 		const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];
 
-		ImGui::SetCursorPos( ImVec2{ 0.f, 0.f } );
+		if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene() )
+		{
+			auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
+			// We need to set the relative mouse window so that any scripts scripts will
+			// take into account the position of the imgui window relative to the actual window
+			// position, size, etc.
+			if ( auto* pMouseInfo = runtimeRegistry.TryGetContext<std::shared_ptr<MouseGuiInfo>>() )
+			{
+				ImGuiIO io = ImGui::GetIO();
+				auto relativePos = ImGui::GetCursorScreenPos();
+				ImVec2 windowSize{ ImGui::GetWindowSize() };
+
+				( *pMouseInfo )->position = glm::vec2{ io.MousePos.x - relativePos.x, io.MousePos.y - relativePos.y };
+				( *pMouseInfo )->windowSize = glm::vec2{ fb->Width(), fb->Height() };
+			}
+		}
 
 		ImGui::Image( (ImTextureID)(intptr_t)fb->GetTextureID(),
 					  ImVec2{ static_cast<float>( fb->Width() ), static_cast<float>( fb->Height() ) },
 					  ImVec2{ 0.f, 1.f },
 					  ImVec2{ 1.f, 0.f } );
+
 		ImGui::EndChild();
 
 		// Check for resize based on the window size

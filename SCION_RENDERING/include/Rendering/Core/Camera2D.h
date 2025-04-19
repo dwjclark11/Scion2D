@@ -68,6 +68,12 @@ class Camera2D
 
 	inline void SetScale( float scale )
 	{
+		// Prevent scale from being zero.
+		if ( scale <= 0.f )
+		{
+			scale = 0.1f;
+		}
+
 		m_Scale = scale;
 		m_bNeedsUpdate = true;
 	}
