@@ -8,7 +8,7 @@ namespace SCION_CORE
 class CoreEngineData
 {
   private:
-	float m_DeltaTime;
+	double m_DeltaTime;
 	float m_ScaledWidth;
 	float m_ScaledHeight;
 	float m_Gravity;
@@ -38,7 +38,7 @@ class CoreEngineData
 	const float MetersToPixels() const;
 	const float PixelsToMeters() const;
 
-	inline float GetDeltaTime() const { return m_DeltaTime; }
+	inline double GetDeltaTime() const { return m_DeltaTime; }
 	inline int WindowWidth() const { return m_WindowWidth; }
 	inline int WindowHeight() const { return m_WindowHeight; }
 

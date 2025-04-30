@@ -32,13 +32,15 @@
 #include "Windowing/Inputs/Keys.h"
 
 #include <imgui.h>
+#include <thread>
 
 using namespace SCION_CORE::Systems;
 using namespace SCION_CORE::ECS;
 using namespace SCION_RENDERING;
 using namespace SCION_PHYSICS;
 
-constexpr float one_over_sixty = 1.f / 60.f;
+constexpr float TARGET_FRAME_TIME_F = 1.f / 60.f;
+constexpr double TARGET_FRAME_TIME = 1.0 / 60.0;
 
 namespace SCION_EDITOR
 {
@@ -369,6 +371,14 @@ void SceneDisplay::Update()
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& coreGlobals = CORE_GLOBALS();
 
+	double dt = coreGlobals.GetDeltaTime();
+	coreGlobals.UpdateDeltaTime();
+
+	if ( dt < TARGET_FRAME_TIME )
+	{
+		std::this_thread::sleep_for( std::chrono::duration<double>( TARGET_FRAME_TIME - dt ) );
+	}
+
 	auto& camera = runtimeRegistry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
 	if ( !camera )
 	{
@@ -384,7 +394,8 @@ void SceneDisplay::Update()
 	if ( coreGlobals.IsPhysicsEnabled() )
 	{
 		auto& pPhysicsWorld = runtimeRegistry.GetContext<SCION_PHYSICS::PhysicsWorld>();
-		pPhysicsWorld->Step( one_over_sixty, coreGlobals.GetVelocityIterations(), coreGlobals.GetPositionIterations() );
+		pPhysicsWorld->Step(
+			TARGET_FRAME_TIME_F, coreGlobals.GetVelocityIterations(), coreGlobals.GetPositionIterations() );
 		pPhysicsWorld->ClearForces();
 
 		auto& dispatch = runtimeRegistry.GetContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>();

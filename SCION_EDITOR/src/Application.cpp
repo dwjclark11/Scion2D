@@ -483,9 +483,6 @@ void Application::ProcessEvents()
 
 void Application::Update()
 {
-	auto& engineData = SCION_CORE::CoreEngineData::GetInstance();
-	engineData.UpdateDeltaTime();
-
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& displayHolder = mainRegistry.GetContext<std::shared_ptr<DisplayHolder>>();
 
@@ -706,7 +703,7 @@ void Application::Run()
 	}
 
 	InitApp();
-
+	
 	while ( m_bIsRunning )
 	{
 		ProcessEvents();
