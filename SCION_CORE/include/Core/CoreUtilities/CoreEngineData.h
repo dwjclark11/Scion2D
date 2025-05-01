@@ -32,7 +32,7 @@ class CoreEngineData
 	void SetScaledWidth( float newWidth );
 	void SetScaledHeight( float newHeight );
 
-	inline float GetDeltaTime() const { return m_DeltaTime; }
+	inline double GetDeltaTime() const { return m_DeltaTime; }
 	inline int WindowWidth() const { return m_WindowWidth; }
 	inline int WindowHeight() const { return m_WindowHeight; }
 
@@ -75,7 +75,7 @@ class CoreEngineData
 	CoreEngineData& operator=( const CoreEngineData& ) = delete;
 
   private:
-	float m_DeltaTime;
+	double m_DeltaTime;
 	float m_ScaledWidth;
 	float m_ScaledHeight;
 	float m_Gravity;
