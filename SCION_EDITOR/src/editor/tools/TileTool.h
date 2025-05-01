@@ -13,8 +13,6 @@ class TileTool : public AbstractTool
 {
   private:
 	glm::vec2 m_MouseRect;
-	glm::vec2 m_GridCoords;
-
 	bool m_bGridSnap;
 
   protected:
@@ -37,7 +35,7 @@ class TileTool : public AbstractTool
 	virtual void Create() = 0;
 	virtual void Draw() = 0;
 
-	virtual void Update( Canvas& canvas ) override;
+	virtual void Update( SCION_CORE::Canvas& canvas ) override;
 
 	/*
 	 * @brief Clears the Mouse Tile's sprite component values back to default.

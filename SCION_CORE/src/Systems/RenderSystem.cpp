@@ -93,7 +93,21 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING:
 
 		glm::mat4 model = SCION_CORE::RSTModel( transform, sprite.width, sprite.height );
 
-		m_pBatchRenderer->AddSprite( spriteRect, uvRect, pTexture->GetID(), sprite.layer, model, sprite.color );
+		if ( sprite.bIsoMetric )
+		{
+			m_pBatchRenderer->AddSpriteIso( spriteRect,
+											uvRect,
+											pTexture->GetID(),
+											sprite.isoCellX,
+											sprite.isoCellY,
+											sprite.layer,
+											model,
+											sprite.color );
+		}
+		else
+		{
+			m_pBatchRenderer->AddSprite( spriteRect, uvRect, pTexture->GetID(), sprite.layer, model, sprite.color );
+		}
 	}
 
 	m_pBatchRenderer->End();

@@ -6,15 +6,18 @@ namespace SCION_RENDERING
 class Camera2D;
 }
 
-namespace SCION_CORE::ECS
+namespace SCION_CORE
+{
+struct Canvas;
+namespace ECS
 {
 class Registry;
 }
+} // namespace SCION_CORE
 
 namespace SCION_EDITOR
 {
 
-struct Canvas;
 class SceneObject;
 
 class AbstractTool
@@ -30,7 +33,7 @@ class AbstractTool
 
   private:
 	void UpdateMouseWorldCoords();
-	void CheckOutOfBounds( const Canvas& canvas );
+	void CheckOutOfBounds( const SCION_CORE::Canvas& canvas );
 
   protected:
 	enum class EMouseButton
@@ -46,6 +49,7 @@ class AbstractTool
 	SCION_CORE::ECS::Registry* m_pRegistry{ nullptr };
 	SCION_RENDERING::Camera2D* m_pCamera{ nullptr };
 	SceneObject* m_pCurrentScene{ nullptr };
+	glm::vec2 m_GridCoords;
 
   protected:
 	bool MouseBtnJustPressed( EMouseButton eButton );
@@ -68,7 +72,7 @@ class AbstractTool
 	 * @brief Update the tool. If overrided, ensure to call the parent update. This will make sure the
 	 * mouse world coords are updated accordingly.
 	 */
-	virtual void Update( Canvas& canvas );
+	virtual void Update( SCION_CORE::Canvas& canvas );
 
 	/*
 	 * @brief Sets the current registry to the registry of the current scene and the camera.
@@ -82,6 +86,7 @@ class AbstractTool
 
 	inline const glm::vec2& GetMouseScreenCoords() const { return m_MouseScreenCoords; }
 	inline const glm::vec2& GetMouseWorldCoords() const { return m_MouseWorldCoords; }
+	inline const glm::vec2& GetGridCoords() const { return m_GridCoords; }
 
 	inline void Activate() { m_bActivated = true; }
 	inline void Deactivate() { m_bActivated = false; }

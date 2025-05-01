@@ -18,7 +18,6 @@ class TilesetDisplay : public IDisplay
 		bool bSelecting{ false };
 
 		bool IsValid() const { return startRow != -1 && startCol != -1; }
-
 		void Reset()
 		{
 			startRow = startCol = endRow = endCol = -1;
@@ -26,7 +25,7 @@ class TilesetDisplay : public IDisplay
 		}
 	};
 
-	TableSelection m_Selection;
+	TableSelection m_TableSelection;
 
   protected:
 	virtual void DrawToolbar() override;

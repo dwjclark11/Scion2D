@@ -21,7 +21,7 @@ using namespace SCION_CORE::ECS;
 
 namespace SCION_EDITOR
 {
-void TileDetailsDisplay::DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& sprite, SceneObject* pScene )
+void TileDetailsDisplay::DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& sprite, SCION_CORE::Scene* pScene )
 {
 	bool bChanged{ false };
 
@@ -115,7 +115,7 @@ TileDetailsDisplay::~TileDetailsDisplay()
 
 void TileDetailsDisplay::Draw()
 {
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 	auto& toolManager = SCENE_MANAGER().GetToolManager();
 
 	auto pActiveTool = toolManager.GetActiveTool();
@@ -135,7 +135,7 @@ void TileDetailsDisplay::Draw()
 
 	ImGui::AddSpaces( 2 );
 	// Sprite
-	DrawSpriteComponent( tileData.sprite, pCurrentScene.get() );
+	DrawSpriteComponent( tileData.sprite, pCurrentScene );
 
 	ImGui::AddSpaces( 2 );
 	ImGui::Separator();

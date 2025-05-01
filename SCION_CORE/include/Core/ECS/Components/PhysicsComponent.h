@@ -44,7 +44,8 @@ struct PhysicsAttributes
 	/* Treat this body as high speed object that performs continuous collision detection against dynamic and kinematic bodies,
 	but not other bullet bodies.*/
 	bool bIsBullet{ false };
-
+	/* Do we want to actually use filters with this body? */
+	bool bUseFilters{ false };
 	/*
 	 * Filters - This is used to filter collisions on shapes.
 	 * It affects shape-vs-shape collision and shape-versus-query collision (such as b2World_CastRay).
@@ -77,6 +78,16 @@ class PhysicsComponent
 	SCION_PHYSICS::ObjectData CastRay( const b2Vec2& point1, const b2Vec2& point2 ) const;
 	std::vector<SCION_PHYSICS::ObjectData> BoxTrace( const b2Vec2& lowerBounds, const b2Vec2& upperBounds ) const;
 	SCION_PHYSICS::ObjectData GetCurrentObjectData();
+
+	void SetFilterCategory( uint16_t category );
+	void SetFilterCategory();
+	void SetFilterMask( uint16_t mask );
+	void SetFilterMask();
+	void SetGroupIndex( int index );
+	void SetGroupIndex();
+
+	bool UseFilters() const { return m_InitialAttribs.bUseFilters;  }
+
 	inline b2Body* GetBody() { return m_pRigidBody.get(); }
 	inline SCION_PHYSICS::UserData* GetUserData() { return m_pUserData.get(); }
 	

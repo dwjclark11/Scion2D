@@ -3,6 +3,8 @@
 #include "ScionFilesystem/Dialogs/FileDialog.h"
 #include "Core/Loaders/TilemapLoader.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
+#include "Core/CoreUtilities/Prefab.h"
+#include "Core/Resources/AssetManager.h"
 #include "Core/ECS/MainRegistry.h"
 
 #include "editor/scene/SceneManager.h"
@@ -10,11 +12,14 @@
 #include "editor/tools/ToolManager.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
-#include "editor/utilities/SaveProject.h"
+#include "Core/CoreUtilities/SaveProject.h"
 #include "editor/loaders/ProjectLoader.h"
 
 #include "Core/Events/EventDispatcher.h"
 #include "editor/events/EditorEventTypes.h"
+
+#include "ScionUtilities/ScionUtilities.h"
+
 #include <imgui.h>
 #include <SDL.h>
 
@@ -29,27 +34,26 @@ void MenuDisplay::Draw()
 			ImGui::InlineLabel( ICON_FA_FILE_ALT, 32.f );
 			if ( ImGui::MenuItem( "New", "Ctrl + N" ) )
 			{
-				SCION_LOG( "NEW PRESSED" );
+				SCION_ERROR( "New -- Not Implemented" );
 			}
 
 			ImGui::InlineLabel( ICON_FA_FOLDER_OPEN, 32.f );
 			if ( ImGui::MenuItem( "Open", "Ctrl + O" ) )
 			{
-				SCION_LOG( "OPEN PRESSED" );
+				SCION_ERROR( "Open -- Not Implemented" );
 			}
 			ImGui::InlineLabel( ICON_FA_SAVE, 32.f );
 			if ( ImGui::MenuItem( "Save", "Ctrl + S" ) )
 			{
-				auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>();
+				auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
 				SCION_ASSERT( pSaveProject && "Save Project must exist!" );
 				// Save entire project
 				ProjectLoader pl{};
-				if (!pl.SaveLoadedProject(*pSaveProject))
+				if ( !pl.SaveLoadedProject( *pSaveProject ) )
 				{
 					SCION_ERROR( "Failed to save project [{}] at file [{}]",
 								 pSaveProject->sProjectName,
 								 pSaveProject->sProjectFilePath );
-
 				}
 			}
 
@@ -81,6 +85,19 @@ void MenuDisplay::Draw()
 					coreGlobals.DisableColliderRender();
 			}
 
+			if (ImGui::TreeNode("Project Settings"))
+			{
+				// TODO: Add specific Project settings
+				/*
+				* Desired Settings
+				* - Window Size
+				* - Window Position
+				* - Window flags
+				* 
+				*/
+				ImGui::TreePop();
+			}
+
 			ImGui::EndMenu();
 		}
 
@@ -96,6 +113,7 @@ void MenuDisplay::Draw()
 			if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene() )
 			{
 				ImGui::Text( "Current Scene" );
+				ImGui::Separator();
 				if ( ImGui::TreeNode( "Canvas" ) )
 				{
 					auto& canvas = pCurrentScene->GetCanvas();
@@ -129,6 +147,73 @@ void MenuDisplay::Draw()
 						canvas.tileHeight = std::clamp( canvas.tileHeight, 8, 128 );
 					}
 					ImGui::ItemToolTip( "Tile Height - Range [8 : 128]" );
+
+					ImGui::TreePop();
+				}
+				ImGui::Separator();
+				if ( ImGui::TreeNode( "Settings" ) )
+				{
+					bool bChanged{ false };
+					std::string sPlayerStartCharacter{ pCurrentScene->GetPlayerStart().GetCharacterName() };
+					auto prefabs = SCION_UTIL::GetKeys( ASSET_MANAGER().GetAllPrefabs()/*, []( auto& prefab ) {
+						return prefab.second->GetType() == SCION_CORE::EPrefabType::Character;
+					} */);
+
+					ImGui::InlineLabel( ICON_FA_FLAG ICON_FA_GAMEPAD " Player Start Character:" );
+					ImGui::SetCursorPosX( 250.f );
+					ImGui::ItemToolTip( "The default player to spawn when starting the scene." );
+					if ( ImGui::BeginCombo( "##DefaultPlayerStart", sPlayerStartCharacter.c_str() ) )
+					{
+						for ( const auto& sPrefabName : prefabs )
+						{
+							if ( ImGui::Selectable( sPrefabName.c_str(), sPrefabName == sPlayerStartCharacter ) )
+							{
+								sPlayerStartCharacter = sPrefabName;
+								
+								bChanged = true;
+							}
+						}
+
+						ImGui::EndCombo();
+					}
+
+					if (bChanged)
+					{
+						if (auto pPrefab = ASSET_MANAGER().GetPrefab(sPlayerStartCharacter))
+						{
+							pCurrentScene->GetPlayerStart().SetCharacter( *pPrefab );
+						}
+					}
+
+					bChanged = true;
+
+					auto musicNames = SCION_UTIL::GetKeys( ASSET_MANAGER().GetAllMusic() );
+					musicNames.push_back( "None" );
+
+					std::string sDefaultSceneMusic{ pCurrentScene->GetDefaultMusicName() };
+					if ( sDefaultSceneMusic.empty() ) sDefaultSceneMusic = "None";
+
+					ImGui::InlineLabel( ICON_FA_MUSIC " Default Music:" );
+					ImGui::SetCursorPosX( 250.f );
+					ImGui::ItemToolTip( "Music to play when the scene starts." );
+					if ( ImGui::BeginCombo( "##DefaultMusic", sDefaultSceneMusic.c_str() ) )
+					{
+						for ( const auto& sMusicName : musicNames )
+						{
+							if ( ImGui::Selectable( sMusicName.c_str(), sMusicName == sDefaultSceneMusic ) )
+							{
+								sDefaultSceneMusic = sMusicName;
+								bChanged = true;
+							}
+						}
+
+						ImGui::EndCombo();
+					}
+
+					if (bChanged)
+					{
+						pCurrentScene->SetDefaultMusic( sDefaultSceneMusic );
+					}
 
 					ImGui::TreePop();
 				}
@@ -175,6 +260,36 @@ void MenuDisplay::Draw()
 				}
 				ImGui::TreePop();
 			}
+
+			auto& coreGlobals = CORE_GLOBALS();
+			bool bChanged{ false };
+			std::string sGameType{ coreGlobals.GetGameTypeStr(coreGlobals.GetGameType()) };
+			SCION_CORE::EGameType eGameType{ coreGlobals.GetGameType() };
+
+			ImGui::InlineLabel( ICON_FA_GAMEPAD " Game Type:" );
+			ImGui::SetCursorPosX( 250.f );
+			ImGui::ItemToolTip( "The type of game this is going to be." );
+
+			if ( ImGui::BeginCombo( "##DefaultMusic", sGameType.c_str() ) )
+			{
+				for ( const auto& [eType, sTypeStr] : coreGlobals.GetGameTypesMap() )
+				{
+					if ( ImGui::Selectable( sTypeStr.c_str(), sTypeStr == sGameType ) )
+					{
+						sGameType = sTypeStr;
+						eGameType = eType;
+						bChanged = true;
+					}
+				}
+
+				ImGui::EndCombo();
+			}
+
+			if ( bChanged )
+			{
+				coreGlobals.SetGameType( eGameType );
+			}
+
 			ImGui::EndMenu();
 		}
 

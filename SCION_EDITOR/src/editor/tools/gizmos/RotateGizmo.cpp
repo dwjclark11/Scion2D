@@ -22,7 +22,7 @@ SCION_EDITOR::RotateGizmo::RotateGizmo()
 	Init( "S2D_rotate_tool", "" );
 }
 
-void SCION_EDITOR::RotateGizmo::Update( Canvas& canvas )
+void SCION_EDITOR::RotateGizmo::Update( SCION_CORE::Canvas& canvas )
 {
 	Gizmo::Update( canvas );
 

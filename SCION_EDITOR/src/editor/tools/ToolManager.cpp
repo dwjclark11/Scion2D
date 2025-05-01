@@ -26,7 +26,7 @@ ToolManager::ToolManager()
 	SetToolActive( EToolType::RECT_FILL_TILE );
 }
 
-void ToolManager::Update( Canvas& canvas )
+void ToolManager::Update( SCION_CORE::Canvas& canvas )
 {
 	auto activeTool = std::ranges::find_if( m_mapTools, []( const auto& tool ) { return tool.second->IsActivated(); } );
 	if ( activeTool != m_mapTools.end() )

@@ -45,7 +45,7 @@ void StateMachine::ChangeState( const std::string& stateName, bool bRemoveState,
 		{
 			try
 			{
-				auto result = oldState->on_exit();
+				auto result = oldState->on_exit( oldState->variables );
 				if ( !result.valid() )
 				{
 					sol::error error = result;
@@ -69,7 +69,7 @@ void StateMachine::ChangeState( const std::string& stateName, bool bRemoveState,
 	{
 		try
 		{
-			auto result = newState->on_enter( enterParams );
+			auto result = newState->on_enter( newState->variables, enterParams );
 			if ( !result.valid() )
 			{
 				sol::error error = result;
@@ -92,9 +92,21 @@ void StateMachine::Update( const float dt )
 		if ( stateItr == m_mapStates.end() )
 			return;
 
-		if ( stateItr->second->on_update.valid() )
+		auto& stateRef = stateItr->second;
+
+		if ( stateRef->handle_inputs.valid() )
 		{
-			auto result = stateItr->second->on_update( dt );
+			auto result = stateRef->handle_inputs( stateRef->variables );
+			if ( !result.valid() )
+			{
+				sol::error error = result;
+				throw error;
+			}
+		}
+
+		if ( stateRef->on_update.valid() )
+		{
+			auto result = stateRef->on_update( stateRef->variables, dt );
 			if ( !result.valid() )
 			{
 				sol::error error = result;
@@ -123,9 +135,11 @@ void StateMachine::Render()
 		if ( stateItr == m_mapStates.end() )
 			return;
 
-		if ( stateItr->second->on_render.valid() )
+		auto& stateRef = stateItr->second;
+
+		if ( stateRef->on_render.valid() )
 		{
-			auto result = stateItr->second->on_render();
+			auto result = stateRef->on_render( stateRef->variables );
 			if ( !result.valid() )
 			{
 				sol::error error = result;
@@ -145,13 +159,13 @@ void StateMachine::Render()
 
 void StateMachine::AddState( const State& state )
 {
-	if ( m_mapStates.contains( state.name ) )
+	if ( m_mapStates.contains( state.sName ) )
 	{
-		SCION_ERROR( "Failed to add state: {} -- Already exists.", state.name );
+		SCION_ERROR( "Failed to add state: {} -- Already exists.", state.sName );
 		return;
 	}
 
-	m_mapStates.emplace( state.name, std::make_shared<State>( state ) );
+	m_mapStates.emplace( state.sName, std::make_shared<State>( state ) );
 }
 
 void StateMachine::ExitState()
@@ -162,9 +176,9 @@ void StateMachine::ExitState()
 		SCION_ERROR( "Failed to exit state: {} -- State does not exist.", m_sCurrentState );
 		return;
 	}
-
-	stateItr->second->on_exit();
-	stateItr->second->bKillState = true;
+	auto& stateRef = stateItr->second;
+	stateRef->on_exit( stateRef->variables );
+	stateRef->bKillState = true;
 	m_sCurrentState.clear();
 }
 
@@ -172,7 +186,7 @@ void StateMachine::DestroyStates()
 {
 	for ( auto& [ name, state ] : m_mapStates )
 	{
-		state->on_exit();
+		state->on_exit( state->variables );
 	}
 
 	m_mapStates.clear();

@@ -5,6 +5,7 @@
 #include <Rendering/Essentials/PickingTexture.h>
 
 #include <Logger/Logger.h>
+#include <Logger/CrashLogger.h>
 #include <Core/ECS/MainRegistry.h>
 
 #include <Core/Resources/AssetManager.h>
@@ -32,7 +33,7 @@
 #include "editor/utilities/editor_textures.h"
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/DrawComponentUtils.h"
-#include "editor/utilities/SaveProject.h"
+#include "Core/CoreUtilities/SaveProject.h"
 #include "editor/systems/GridSystem.h"
 
 #include "editor/events/EditorEventTypes.h"
@@ -55,6 +56,8 @@ namespace SCION_EDITOR
 bool Application::Initialize()
 {
 	SCION_INIT_LOGS( false, true );
+	SCION_INIT_CRASH_LOGS();
+
 	// Init SDL
 	if ( SDL_Init( SDL_INIT_EVERYTHING ) != 0 )
 	{
@@ -155,7 +158,7 @@ bool Application::Initialize()
 #endif
 
 	auto& mainRegistry = MAIN_REGISTRY();
-	if ( !mainRegistry.Initialize() )
+	if ( !mainRegistry.Initialize(true) )
 	{
 		SCION_ERROR( "Failed to initialize the Main Registry!" );
 		return false;
@@ -173,7 +176,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	mainRegistry.AddToContext<std::shared_ptr<SaveProject>>( std::make_shared<SaveProject>() );
+	mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::SaveProject>>( std::make_shared<SCION_CORE::SaveProject>() );
 	m_pHub = std::make_unique<Hub>( *m_pWindow );
 
 	return true;
@@ -243,6 +246,10 @@ bool Application::InitApp()
 	// Register Meta Functions
 	RegisterEditorMetaFunctions();
 	SCION_CORE::CoreEngineData::RegisterMetaFunctions();
+
+	// We can now set the Crash Logger path to the running project
+	const auto& sProjectPath = CORE_GLOBALS().GetProjectPath();
+	SCION_CRASH_LOGGER().SetProjectPath( sProjectPath );
 
 	return true;
 }
@@ -421,6 +428,24 @@ bool Application::LoadEditorTextures()
 
 	assetManager.GetTexture( "S2D_scion_logo" )->SetIsEditorTexture( true );
 
+	
+	if ( !assetManager.AddTextureFromMemory( "ZZ_S2D_PlayerStart", ZZ_S2D_PlayerStart, ZZ_S2D_PlayerStart_size) )
+	{
+		SCION_ERROR( "Failed to load texture [ZZ_S2D_PlayerStart] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "ZZ_S2D_PlayerStart" )->SetIsEditorTexture( true );
+
+	if ( !assetManager.AddTextureFromMemory(
+			 "ZZ_S2D_default_player", ZZ_S2D_default_player, ZZ_S2D_default_player_size ) )
+	{
+		SCION_ERROR( "Failed to load texture [ZZ_S2D_default_player] from memory." );
+		return false;
+	}
+
+	assetManager.GetTexture( "ZZ_S2D_default_player" )->SetIsEditorTexture( true );
+
 	return true;
 }
 
@@ -490,6 +515,8 @@ void Application::Update()
 	{
 		pDisplay->Update();
 	}
+
+	mainRegistry.GetAssetManager().Update();
 }
 
 void Application::UpdateInputs()
@@ -654,6 +681,8 @@ void Application::RenderDisplays()
 	{
 		pDisplay->Draw();
 	}
+
+	//Gui::ShowImGuiDemo();
 }
 
 void Application::RegisterEditorMetaFunctions()

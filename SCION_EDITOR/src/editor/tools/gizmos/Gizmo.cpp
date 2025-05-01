@@ -59,7 +59,7 @@ Gizmo::~Gizmo()
 {
 }
 
-void Gizmo::Update( Canvas& canvas )
+void Gizmo::Update( SCION_CORE::Canvas& canvas )
 {
 	m_LastMousePos = GetMouseScreenCoords();
 	AbstractTool::Update( canvas );

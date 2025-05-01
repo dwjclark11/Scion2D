@@ -69,14 +69,14 @@ void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
 		sol::call_constructor,
 		sol::factories(
 			[]( const std::string& textureName, float width, float height, int start_x, int start_y, int layer ) {
-				return SpriteComponent{ .width = width,
+				return SpriteComponent{ .sTextureName = textureName,
+										.width = width,
 										.height = height,
 										.uvs = UVs{},
 										.color = SCION_RENDERING::Color{ 255, 255, 255, 255 },
 										.start_x = start_x,
 										.start_y = start_y,
-										.layer = layer,
-										.sTextureName = textureName };
+										.layer = layer };
 			} ),
 		"sTextureName",
 		&SpriteComponent::sTextureName,

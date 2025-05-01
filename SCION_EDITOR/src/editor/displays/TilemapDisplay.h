@@ -8,10 +8,20 @@ namespace SCION_RENDERING
 class Camera2D;
 }
 
-namespace SCION_CORE::Events
+namespace SCION_CORE
+{
+
+struct PrefabbedEntity;
+
+namespace ECS
+{
+class Entity;
+}
+namespace Events
 {
 struct KeyEvent;
-} // namespace SCION_CORE::Events
+}
+} // namespace SCION_CORE
 
 namespace SCION_EDITOR
 {
@@ -27,6 +37,8 @@ class TilemapDisplay : public IDisplay
 	void PanZoomCamera( const glm::vec2& mousePos );
 
 	void HandleKeyPressedEvent( const SCION_CORE::Events::KeyEvent& keyEvent );
+
+	void AddPrefabbedEntityToScene( const SCION_CORE::PrefabbedEntity& prefabbed );
 
   protected:
 	virtual void DrawToolbar() override;

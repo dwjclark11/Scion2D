@@ -1,7 +1,13 @@
 #pragma once
 #include <map>
+#include <unordered_map>
+#include <filesystem>
 #include <memory>
 #include <string>
+#include <mutex>
+#include <shared_mutex>
+#include <atomic>
+#include <thread>
 
 #include <Rendering/Essentials/Shader.h>
 #include <Rendering/Essentials/Texture.h>
@@ -17,22 +23,19 @@ namespace SCION_UTIL
 enum class AssetType;
 }
 
+namespace SCION_CORE
+{
+class Prefab;
+}
+
 namespace SCION_RESOURCES
 {
 
 class AssetManager
 {
-  private:
-	std::map<std::string, std::shared_ptr<SCION_RENDERING::Texture>> m_mapTextures{};
-	std::map<std::string, std::shared_ptr<SCION_RENDERING::Shader>> m_mapShader{};
-	std::map<std::string, std::shared_ptr<SCION_RENDERING::Font>> m_mapFonts{};
-
-	std::map<std::string, std::shared_ptr<SCION_SOUNDS::Music>> m_mapMusic{};
-	std::map<std::string, std::shared_ptr<SCION_SOUNDS::SoundFX>> m_mapSoundFx{};
-
   public:
-	AssetManager() = default;
-	~AssetManager() = default;
+	AssetManager( bool bEnableFilewatcher = false );
+	~AssetManager();
 
 	bool CreateDefaultFonts();
 
@@ -159,6 +162,10 @@ class AssetManager
 	 */
 	std::shared_ptr<SCION_SOUNDS::SoundFX> GetSoundFx( const std::string& soundFxName );
 
+	bool AddPrefab( const std::string& sPrefabName, std::shared_ptr<SCION_CORE::Prefab> pPrefab );
+
+	std::shared_ptr<SCION_CORE::Prefab> GetPrefab( const std::string& sPrefabName );
+
 	inline const std::map<std::string, std::shared_ptr<SCION_RENDERING::Texture>>& GetAllTextures() const
 	{
 		return m_mapTextures;
@@ -179,9 +186,11 @@ class AssetManager
 		return m_mapFonts;
 	}
 
-	inline const std::map<std::string, std::shared_ptr<SCION_SOUNDS::Music>>& GetAllMusic() const
+	inline const std::map<std::string, std::shared_ptr<SCION_SOUNDS::Music>>& GetAllMusic() const { return m_mapMusic; }
+
+	inline const std::map<std::string, std::shared_ptr<SCION_CORE::Prefab>>& GetAllPrefabs() const
 	{
-		return m_mapMusic;
+		return m_mapPrefabs;
 	}
 
 	/*
@@ -223,5 +232,45 @@ class AssetManager
 	 * main registry.
 	 */
 	static void CreateLuaAssetManager( sol::state& lua );
+
+	void Update();
+
+  private:
+	void FileWatcher();
+
+	struct AssetWatchParams
+	{
+		std::string sAssetName{ "" };
+		std::string sFilepath{ "" };
+		std::filesystem::file_time_type lastWrite;
+		SCION_UTIL::AssetType eType{};
+		bool bDirty{ false };
+	};
+
+	void ReloadAsset( const AssetWatchParams& assetParams );
+
+	void ReloadTexture( const std::string& sTextureName );
+	void ReloadSoundFx( const std::string& sSoundName );
+	void ReloadMusic( const std::string& sMusicName );
+	void ReloadFont( const std::string& sFontName );
+	void ReloadShader( const std::string& sShaderName );
+
+  private:
+
+
+	std::map<std::string, std::shared_ptr<SCION_RENDERING::Texture>> m_mapTextures{};
+	std::map<std::string, std::shared_ptr<SCION_RENDERING::Shader>> m_mapShader{};
+	std::map<std::string, std::shared_ptr<SCION_RENDERING::Font>> m_mapFonts{};
+
+	std::map<std::string, std::shared_ptr<SCION_SOUNDS::Music>> m_mapMusic{};
+	std::map<std::string, std::shared_ptr<SCION_SOUNDS::SoundFX>> m_mapSoundFx{};
+	std::map<std::string, std::shared_ptr<SCION_CORE::Prefab>> m_mapPrefabs{};
+
+	std::vector<AssetWatchParams> m_FilewatchParams;
+
+	std::atomic<bool> m_bFileWatcherRunning;
+	std::jthread m_WatchThread;
+	std::mutex m_CallbackMutex;
+	std::shared_mutex m_AssetMutex;
 };
 } // namespace SCION_RESOURCES

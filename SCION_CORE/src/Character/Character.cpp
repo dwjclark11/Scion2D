@@ -84,6 +84,11 @@ Character::Character( const SCION_CORE::ECS::Entity& entity )
 {
 }
 
+Character::~Character()
+{
+
+}
+
 StateMachine& Character::GetStateMachine()
 {
 	if ( !m_pStateMachine )

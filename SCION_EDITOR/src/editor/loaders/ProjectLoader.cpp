@@ -2,7 +2,9 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
-#include "editor/utilities/SaveProject.h"
+#include "Core/CoreUtilities/SaveProject.h"
+#include "Core/CoreUtilities/Prefab.h"
+
 #include "editor/utilities/EditorUtilities.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
@@ -24,7 +26,7 @@ namespace SCION_EDITOR
 
 bool ProjectLoader::CreateNewProject( const std::string& sProjectName, const std::string& sFilepath )
 {
-	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>();
+	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
 	SCION_ASSERT( pSaveProject && "Save project must exist." );
 
 	// Create the game filepath
@@ -48,6 +50,7 @@ bool ProjectLoader::CreateNewProject( const std::string& sProjectName, const std
 		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "textures", ec ) ||
 		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "shaders", ec ) ||
 		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "fonts", ec ) ||
+		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "prefabs", ec ) ||
 		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "scenes", ec ) )
 	{
 		SCION_ERROR( "Failed to create directories - {}", ec.message() );
@@ -98,7 +101,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 	}
 
 	auto& mainRegistry = MAIN_REGISTRY();
-	auto& pSaveProject = mainRegistry.GetContext<std::shared_ptr<SaveProject>>();
+	auto& pSaveProject = mainRegistry.GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
 
 	SCION_ASSERT( pSaveProject && "Save Project must be valid!" );
 
@@ -133,6 +136,13 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 	if ( projectData.HasMember( "main_lua_script" ) )
 	{
 		pSaveProject->sMainLuaScript = sContentPath + projectData[ "main_lua_script" ].GetString();
+	}
+
+	auto& coreGlobals = CORE_GLOBALS();
+
+	if ( projectData.HasMember( "game_type" ) )
+	{
+		coreGlobals.SetGameType( coreGlobals.GetGameTypeFromStr( projectData[ "game_type" ].GetString() ) );
 	}
 
 	const rapidjson::Value& assets = projectData[ "assets" ];
@@ -257,17 +267,65 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 			std::string sSceneName{ jsonScenes[ "name" ].GetString() };
 			std::string sSceneDataPath{ sContentPath + jsonScenes[ "sceneData" ].GetString() };
 
-			if ( !sceneManager.AddScene( sSceneName, sSceneDataPath ) )
+			if ( !sceneManager.AddSceneObject( sSceneName, sSceneDataPath ) )
 			{
 				SCION_ERROR( "Failed to load scene: {}", sSceneName );
 			}
 		}
 	}
 
+	// Load all prefabs to the scene manager
+	if ( assets.HasMember( "prefabs" ) )
+	{
+		const rapidjson::Value& prefabs = assets[ "prefabs" ];
+
+		if ( !prefabs.IsArray() )
+		{
+			SCION_ERROR( "Failed to load project: File [{}] - Expecting \"prefabs\" must be an array.", sFilepath );
+			return false;
+		}
+
+		for ( const auto& jsonPrefab : prefabs.GetArray() )
+		{
+			std::string sName{ jsonPrefab[ "name" ].GetString() };
+			std::string sFilepath{ sContentPath + jsonPrefab[ "path" ].GetString() };
+
+			if ( auto pPrefab = SCION_CORE::PrefabCreator::CreatePrefab( sFilepath ) )
+			{
+				if ( !assetManager.AddPrefab( sName, std::move( pPrefab ) ) )
+				{
+					SCION_ERROR( "Failed to load scene: {}", sName );
+				}
+			}
+			else
+			{
+				SCION_ERROR( "Failed to load prefab [{}] from path [{}].", sName, sFilepath );
+			}
+		}
+	}
+
+	if ( projectData.HasMember( "physics" ) )
+	{
+		const rapidjson::Value& physics = projectData[ "physics" ];
+		bool bEnabled = physics[ "enabled" ].GetBool();
+		if ( bEnabled )
+		{
+			coreGlobals.EnablePhysics();
+		}
+		else
+		{
+			coreGlobals.DisablePhysics();
+		}
+
+		coreGlobals.SetGravity( physics[ "gravity" ].GetFloat() );
+		coreGlobals.SetVelocityIterations( physics[ "velocityIterations" ].GetInt() );
+		coreGlobals.SetPositionIterations( physics[ "positionIterations" ].GetInt() );
+	}
+
 	return true;
 }
 
-bool ProjectLoader::SaveLoadedProject( SaveProject& save )
+bool ProjectLoader::SaveLoadedProject( SCION_CORE::SaveProject& save )
 {
 	if ( !fs::exists( save.sProjectFilePath ) )
 	{
@@ -294,7 +352,7 @@ bool ProjectLoader::SaveLoadedProject( SaveProject& save )
 	{
 		SCION_ERROR( "Failed to save all scenes." );
 	}
-
+	auto& coreGlobals = CORE_GLOBALS();
 	pSerializer->StartDocument();
 	pSerializer->StartNewObject( "warnings" );
 	pSerializer->AddKeyValuePair( "warning", std::string{ "THIS FILE IS ENGINE GENERATED." } )
@@ -304,6 +362,7 @@ bool ProjectLoader::SaveLoadedProject( SaveProject& save )
 	pSerializer->StartNewObject( "project_data" )
 		.AddKeyValuePair( "project_name", save.sProjectName )
 		.AddKeyValuePair( "main_lua_script", save.sMainLuaScript.substr( save.sMainLuaScript.find( SCRIPTS ) ) )
+		.AddKeyValuePair( "game_type", coreGlobals.GetGameTypeStr( coreGlobals.GetGameType() ) )
 		.StartNewObject( "assets" );
 
 	pSerializer->StartNewArray( "textures" );
@@ -357,8 +416,25 @@ bool ProjectLoader::SaveLoadedProject( SaveProject& save )
 			.AddKeyValuePair( "sceneData", sScenePath )
 			.EndObject();
 	}
-	pSerializer->EndArray();  // Scenes
+	pSerializer->EndArray(); // Scenes
+
+	pSerializer->StartNewArray( "prefabs" );
+
+	for ( const auto& [ sName, pPrefab ] : assetManager.GetAllPrefabs() )
+	{
+		std::string sFilepath = pPrefab->GetFilepath().substr( pPrefab->GetFilepath().find( ASSETS ) );
+		pSerializer->StartNewObject().AddKeyValuePair( "name", sName ).AddKeyValuePair( "path", sFilepath ).EndObject();
+	}
+
+	pSerializer->EndArray(); // Prefabs
+
 	pSerializer->EndObject(); // Assets
+	pSerializer->StartNewObject( "physics" )
+		.AddKeyValuePair( "enabled", coreGlobals.IsPhysicsEnabled() )
+		.AddKeyValuePair( "gravity", coreGlobals.GetGravity() )
+		.AddKeyValuePair( "velocityIterations", coreGlobals.GetVelocityIterations() )
+		.AddKeyValuePair( "positionIterations", coreGlobals.GetPositionIterations() )
+		.EndObject();		  // Physics
 	pSerializer->EndObject(); // Project Data
 
 	return pSerializer->EndDocument();
@@ -393,7 +469,7 @@ bool ProjectLoader::CreateProjectFile( const std::string& sProjectName, const st
 	}
 
 	// We want to grab the project file path
-	auto& pSaveFile = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>();
+	auto& pSaveFile = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
 	pSaveFile->sProjectFilePath = sProjectFile;
 
 	pSerializer->StartDocument();
@@ -406,6 +482,7 @@ bool ProjectLoader::CreateProjectFile( const std::string& sProjectName, const st
 		.AddKeyValuePair( "project_name", sProjectName )
 		.AddKeyValuePair( "main_lua_file",
 						  pSaveFile->sMainLuaScript.substr( pSaveFile->sMainLuaScript.find( SCRIPTS ) ) )
+		.AddKeyValuePair( "game_type", "No Type" )
 		.StartNewObject( "assets" )
 		.StartNewArray( "textures" )
 		.EndArray() // Textures
@@ -414,8 +491,14 @@ bool ProjectLoader::CreateProjectFile( const std::string& sProjectName, const st
 		.StartNewArray( "music" )
 		.EndArray() // Music
 		.StartNewArray( "scenes" )
-		.EndArray()			  // Scenes
-		.EndObject();		  // Assets
+		.EndArray()	 // Scenes
+		.EndObject() // Assets
+		.StartNewObject( "physics" )
+		.AddKeyValuePair( "enabled", true )
+		.AddKeyValuePair( "gravity", 9.8f )
+		.AddKeyValuePair( "velocityIterations", 8 )
+		.AddKeyValuePair( "positionIterations", 10 )
+		.EndObject();		  // Physics
 	pSerializer->EndObject(); // Project Data
 
 	return pSerializer->EndDocument();
@@ -430,7 +513,7 @@ bool ProjectLoader::CreateMainLuaScript( const std::string& sProjectName, const 
 	SCION_ASSERT( pLuaSerializer );
 
 	// Save the main lua file path
-	MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>()->sMainLuaScript = sMainLuaFile;
+	MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>()->sMainLuaScript = sMainLuaFile;
 
 	pLuaSerializer->AddBlockComment( "\tMain Lua script. This is needed to run all scripts in the editor"
 									 "\n\tGENERATED BY THE ENGINE ON PROJECT CREATION. DON'T CHANGE UNLESS "

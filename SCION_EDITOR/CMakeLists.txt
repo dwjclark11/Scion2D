@@ -15,7 +15,6 @@ add_executable(SCION_EDITOR
 	"src/editor/utilities/fonts/IconsFontAwesome5.h"
 	"src/editor/utilities/imgui/Gui.h"
 	"src/editor/utilities/imgui/Gui.cpp"
-	"src/editor/utilities/SaveProject.h"
 
     # Editor Displays
     "src/editor/displays/IDisplay.h"

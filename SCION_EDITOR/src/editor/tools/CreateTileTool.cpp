@@ -25,6 +25,14 @@ void CreateTileTool::CreateNewTile()
 	Entity tile{ CreateEntity() };
 
 	tile.AddComponent<TransformComponent>( m_pMouseTile->transform );
+
+	if (m_pCurrentScene->GetMapType() == SCION_CORE::EMapType::IsoGrid)
+	{
+		m_pMouseTile->sprite.bIsoMetric = true;
+		m_pMouseTile->sprite.isoCellX = m_GridCoords.x;
+		m_pMouseTile->sprite.isoCellY = m_GridCoords.y;
+	}
+
 	tile.AddComponent<SpriteComponent>( m_pMouseTile->sprite );
 
 	if ( m_pMouseTile->bCollider )

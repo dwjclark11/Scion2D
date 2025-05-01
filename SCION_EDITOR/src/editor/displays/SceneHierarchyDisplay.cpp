@@ -17,6 +17,9 @@
 #include "Core/Events/EngineEventTypes.h"
 #include "editor/events/EditorEventTypes.h"
 
+#include "Core/CoreUtilities/Prefab.h"
+#include "Core/Resources/AssetManager.h"
+
 #include <imgui.h>
 
 using namespace SCION_CORE::Events;
@@ -229,16 +232,48 @@ void SceneHierarchyDisplay::DrawGameObjectDetails()
 		AddComponent( *m_pSelectedEntity, &m_bAddComponent );
 
 	if ( m_pSelectedEntity )
-		DrawEntityComponents();
+	{
+		if ( !m_pSelectedEntity->HasComponent<UneditableComponent>() )
+		{
+			DrawEntityComponents();
+		}
+		else
+		{
+			DrawUneditableTypes();
+		}
+	}
 
 	ImGui::End();
 }
 
-void SceneHierarchyDisplay::DrawEntityComponents()
+void SceneHierarchyDisplay::DrawUneditableTypes()
 {
 	if ( !m_pSelectedEntity )
 		return;
 
+	if ( auto* pUnedit = m_pSelectedEntity->TryGetComponent<UneditableComponent>() )
+	{
+		if ( pUnedit->eType == EUneditableType::PlayerStart )
+		{
+			DrawPlayerStart();
+		}
+	}
+}
+
+void SceneHierarchyDisplay::DrawPlayerStart()
+{
+	ImGui::SeparatorText( "Player Start" );
+	ImGui::InlineLabel( ICON_FA_FLAG ICON_FA_GAMEPAD " Player Start Character: " );
+	if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene() )
+	{
+		std::string sPlayerStartCharacter{ pCurrentScene->GetPlayerStart().GetCharacterName() };
+		ImGui::SetCursorPosX( 225.f );
+		ImGui::TextColored( ImVec4{ 0.7f, 0.7f, 0.7f, 1.f }, sPlayerStartCharacter.c_str() );
+	}
+}
+
+void SceneHierarchyDisplay::DrawEntityComponents()
+{
 	auto& registry = m_pSelectedEntity->GetEnttRegistry();
 
 	for ( const auto&& [ id, storage ] : registry.storage() )
@@ -246,6 +281,7 @@ void SceneHierarchyDisplay::DrawEntityComponents()
 		if ( !storage.contains( m_pSelectedEntity->GetEntity() ) )
 			continue;
 
+		// Do not draw tile or relationship components
 		if ( id == entt::type_hash<TileComponent>::value() || id == entt::type_hash<Relationship>::value() )
 			continue;
 
@@ -272,8 +308,14 @@ bool SceneHierarchyDisplay::DeleteSelectedEntity()
 {
 	SCION_ASSERT( m_pSelectedEntity && "Selected Entity must be valid if trying to delete!" );
 
-	if (auto pCurrentScene = SCENE_MANAGER().GetCurrentScene())
+	if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject() )
 	{
+		if ( m_pSelectedEntity->HasComponent<UneditableComponent>() )
+		{
+			SCION_ERROR( "Failed to delete selected entity. - Selected entity is uneditable." );
+			return false;
+		}
+
 		if ( !pCurrentScene->DeleteGameObjectById( m_pSelectedEntity->GetEntity() ) )
 		{
 			SCION_ERROR( "Failed to delete selected entity." );
@@ -281,6 +323,7 @@ bool SceneHierarchyDisplay::DeleteSelectedEntity()
 		}
 
 		m_pSelectedEntity = nullptr;
+		SCENE_MANAGER().GetToolManager().SetSelectedEntity( entt::null );
 	}
 	else
 	{
@@ -295,7 +338,7 @@ bool SceneHierarchyDisplay::DuplicateSelectedEntity()
 {
 	SCION_ASSERT( m_pSelectedEntity && "Selected Entity must be valid if trying to duplicate!" );
 
-	if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene() )
+	if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject() )
 	{
 		if ( !pCurrentScene->DuplicateGameObject( m_pSelectedEntity->GetEntity() ) )
 		{
@@ -341,13 +384,13 @@ void SceneHierarchyDisplay::OnEntityChanged( SCION_EDITOR::Events::SwitchEntityE
 
 void SceneHierarchyDisplay::OnKeyPressed( SCION_CORE::Events::KeyEvent& keyEvent )
 {
-	if ( !m_bWindowActive || keyEvent.eType == EKeyEventType::Released)
+	if ( !m_bWindowActive || keyEvent.eType == EKeyEventType::Released )
 		return;
 
 	if ( m_pSelectedEntity )
 	{
 		auto& keyboard = INPUT_MANAGER().GetKeyboard();
-		if (keyboard.IsKeyPressed(SCION_KEY_RCTRL) || keyboard.IsKeyPressed(SCION_KEY_LCTRL))
+		if ( keyboard.IsKeyPressed( SCION_KEY_RCTRL ) || keyboard.IsKeyPressed( SCION_KEY_LCTRL ) )
 		{
 			if ( keyEvent.key == SCION_KEY_D )
 			{
@@ -361,7 +404,6 @@ void SceneHierarchyDisplay::OnKeyPressed( SCION_CORE::Events::KeyEvent& keyEvent
 				DeleteSelectedEntity();
 			}
 		}
-		
 	}
 }
 
@@ -381,7 +423,7 @@ void SceneHierarchyDisplay::Update()
 
 void SceneHierarchyDisplay::Draw()
 {
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 	if ( !ImGui::Begin( "Scene Hierarchy" ) || !pCurrentScene )
 	{
 		ImGui::End();
@@ -394,7 +436,22 @@ void SceneHierarchyDisplay::Draw()
 	{
 		if ( ImGui::Selectable( "Add New Game Object" ) )
 		{
-			pCurrentScene->AddGameObject();
+			if ( !pCurrentScene->AddGameObject() )
+			{
+				SCION_ERROR( "Failed to add new game object to scene [{}]", pCurrentScene->GetName() );	
+			}
+		}
+
+		// Uneditable entities cannot be made into prefabs
+		if ( m_pSelectedEntity && !m_pSelectedEntity->HasComponent<UneditableComponent>() )
+		{
+			if ( ImGui::Selectable( "Create Prefab" ) )
+			{
+				auto newPrefab =
+					SCION_CORE::PrefabCreator::CreatePrefab( SCION_CORE::EPrefabType::Character, *m_pSelectedEntity );
+
+				ASSET_MANAGER().AddPrefab( m_pSelectedEntity->GetName() + "_pfab", std::move( newPrefab ) );
+			}
 		}
 
 		ImGui::EndPopup();

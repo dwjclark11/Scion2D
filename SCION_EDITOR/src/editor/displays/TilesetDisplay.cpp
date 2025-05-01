@@ -3,13 +3,13 @@
 #include "Core/Resources/AssetManager.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
-
 #include "editor/scene/SceneManager.h"
+#include "editor/scene/SceneObject.h"
 #include "editor/tools/ToolManager.h"
 #include "editor/tools/TileTool.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
-#include "editor/utilities/EditorUtilities.h"
+#include <algorithm>
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -84,12 +84,12 @@ void TilesetDisplay::Draw()
 	bool bMouseHeld{ ImGui::IsMouseDown( ImGuiMouseButton_Left ) };
 	bool bMouseReleased{ ImGui::IsMouseReleased( ImGuiMouseButton_Left ) };
 
-	// TODO: Get the tile sizes from the Scene's Canvas
-	int tileWidth{ 16 };
-	int tileHeight{ 16 };
+	// TODO: Get the tile width from the canvas
+	const int tileWidth{ 16 };
+	const int tileHeight{ 16 };
 
-	float textureWidth = static_cast<float>( pTexture->GetWidth() );
-	float textureHeight = static_cast<float>( pTexture->GetHeight() );
+	const float textureWidth = static_cast<float>( pTexture->GetWidth() );
+	const float textureHeight = static_cast<float>( pTexture->GetHeight() );
 
 	const int COLS = textureWidth / tileWidth;
 	const int ROWS = textureHeight / tileHeight;
@@ -114,43 +114,45 @@ void TilesetDisplay::Draw()
 				ImGui::PushID( id );
 				std::string buttonStr = "##tile_" + std::to_string( id );
 
-				// Get UV coordinates for this cell
+				// UV Coordinates for this cell
 				float u0 = col * tileWidth / textureWidth;
 				float v0 = row * tileHeight / textureHeight;
 				float u1 = ( col + 1 ) * tileWidth / textureWidth;
 				float v1 = ( row + 1 ) * tileHeight / textureHeight;
 
+				// Get the cursor position for the selection
 				ImVec2 cellMin = ImGui::GetCursorScreenPos();
 				ImVec2 cellMax = { cellMin.x + tileWidth, cellMin.y + tileHeight };
 
-				if ( bMouseHeld && ImGui::IsMouseHoveringRect( cellMin, cellMax ) && m_Selection.IsValid() &&
-					 m_Selection.bSelecting )
+				// Detect Hove and Selection
+				if ( ImGui::IsMouseHoveringRect( cellMin, cellMax ) && bMouseHeld && m_TableSelection.IsValid() )
 				{
-					m_Selection.endRow = row;
-					m_Selection.endCol = col;
+					m_TableSelection.endRow = row;
+					m_TableSelection.endCol = col;
 				}
 				else if ( bMouseReleased )
 				{
-					m_Selection.bSelecting = false;
+					m_TableSelection.bSelecting = false;
 				}
 
+				// Ensure selection remains rectangular
 				bool bSelected{ false };
-				if ( m_Selection.IsValid() )
+				if ( m_TableSelection.IsValid() )
 				{
-					int minRow = std::min( m_Selection.startRow, m_Selection.endRow );
-					int maxRow = std::max( m_Selection.startRow, m_Selection.endRow );
-					int minCol = std::min( m_Selection.startCol, m_Selection.endCol );
-					int maxCol = std::max( m_Selection.startCol, m_Selection.endCol );
+					int minRow = std::min( m_TableSelection.startRow, m_TableSelection.endRow );
+					int maxRow = std::max( m_TableSelection.startRow, m_TableSelection.endRow );
+					int minCol = std::min( m_TableSelection.startCol, m_TableSelection.endCol );
+					int maxCol = std::max( m_TableSelection.startCol, m_TableSelection.endCol );
 
 					bSelected = ( row >= minRow && row <= maxRow && col >= minCol && col <= maxCol );
 
-					if ( auto pActiveTool = TOOL_MANAGER().GetActiveTool(); bMouseHeld )
+					if ( auto pActiveTool = TOOL_MANAGER().GetActiveTool() )
 					{
 						auto& tileData = pActiveTool->GetTileData();
-
 						tileData.sprite.width = ( std::abs( maxCol - minCol ) + 1 ) * tileWidth;
 						tileData.sprite.height = ( std::abs( maxRow - minRow ) + 1 ) * tileHeight;
 
+						// We only want to do this when the selection changes!!
 						SCION_CORE::GenerateUVsExt( tileData.sprite,
 													textureWidth,
 													textureHeight,
@@ -159,14 +161,9 @@ void TilesetDisplay::Draw()
 					}
 				}
 
+				// Visual Effects for the selection
 				ImVec4 tintColor = bSelected ? ImVec4{ 0.3f, 0.6f, 1.f, 1.f } : ImVec4{ 1.f, 1.f, 1.f, 1.f };
 				ImVec4 borderColor = bSelected ? ImVec4{ 1.f, 1.f, 1.f, 1.f } : ImVec4{ 0.f, 0.f, 0.f, 0.f };
-
-				if ( bSelected )
-				{
-					ImGui::TableSetBgColor( ImGuiTableBgTarget_CellBg,
-											ImGui::GetColorU32( ImVec4{ 0.f, 0.9f, 0.f, 0.2f } ) );
-				}
 
 				if ( ImGui::ImageButtonEx( ImGui::GetID( fmt::format( "##ImageBtn_{}", id ).c_str() ),
 										   (ImTextureID)(intptr_t)pTexture->GetID(),
@@ -177,10 +174,10 @@ void TilesetDisplay::Draw()
 										   tintColor,
 										   ImGuiButtonFlags_PressedOnClick ) )
 				{
-					m_Selection.Reset();
-					m_Selection.startRow = m_Selection.endRow = row;
-					m_Selection.startCol = m_Selection.endCol = col;
-					m_Selection.bSelecting = true;
+					m_TableSelection.Reset();
+					m_TableSelection.startRow = m_TableSelection.endRow = row;
+					m_TableSelection.startCol = m_TableSelection.endCol = col;
+					m_TableSelection.bSelecting = true;
 				}
 
 				ImGui::PopID();

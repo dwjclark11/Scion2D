@@ -14,30 +14,7 @@ constexpr const char* DROP_FONT_SRC = "DropFontSource";
 constexpr const char* DROP_SOUNDFX_SRC = "DropSoundFxSource";
 constexpr const char* DROP_MUSIC_SRC = "DropMusicSource";
 constexpr const char* DROP_SCENE_SRC = "DropSceneSource";
-
-#define BASE_PATH                                                                                                      \
-	std::string                                                                                                        \
-	{                                                                                                                  \
-		SDL_GetBasePath()                                                                                              \
-	}
-
-#ifdef _WIN32
-constexpr char PATH_SEPARATOR = '\\';
-#define DEFAULT_PROJECT_PATH BASE_PATH + "ScionProjects"
-#else
-constexpr char PATH_SEPARATOR = '/';
-#define DEFAULT_PROJECT_PATH BASE_PATH + PATH_SEPARATOR + "ScionProjects"
-#endif
-
-#define SCRIPTS "scripts"
-#define ASSETS "assets" 
-
-constexpr const char* S2D_PRJ_FILE_EXT = ".s2dprj";
-
-struct Canvas
-{
-	int width{ 640 }, height{ 480 }, tileWidth{ 16 }, tileHeight{ 16 };
-};
+constexpr const char* DROP_PREFAB_SRC = "DropPrefabSource";
 
 struct Tile
 {

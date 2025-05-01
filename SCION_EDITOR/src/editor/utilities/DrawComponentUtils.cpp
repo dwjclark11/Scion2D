@@ -153,7 +153,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 		ImGui::ItemToolTip( "Z-Index in which to draw the sprite." );
 		if ( ImGui::InputInt( "##layer", &sprite.layer, 1, 1 ) )
 		{
-			sprite.layer = std::clamp( sprite.layer, 0, 10 );
+			sprite.layer = std::clamp( sprite.layer, 0, 255 );
 		}
 
 		ImGui::InlineLabel( "start pos" );
@@ -173,6 +173,10 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 			sprite.start_y = std::clamp( sprite.start_y, 0, 32 );
 			bChanged = true;
 		}
+
+		ImGui::InlineLabel( "Iso Sorting" );
+		ImGui::Checkbox( "##isoSorting", &sprite.bIsoMetric );
+		ImGui::ItemToolTip( "If the scene is Isometric, the sprite should use iso sorting." );
 
 		ImGui::TreePop();
 		ImGui::PopItemWidth();
@@ -648,6 +652,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 		if ( bPositionChanged )
 		{
 			entity.UpdateTransform();
+			// TODO: Post an event!
 		}
 
 		ImGui::InlineLabel( "scale" );

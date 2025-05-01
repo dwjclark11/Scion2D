@@ -34,6 +34,7 @@ class Character : public SCION_CORE::ECS::Entity
 	Character( SCION_CORE::ECS::Registry& registry, const CharacterParams& params );
 	Character( SCION_CORE::ECS::Registry& registry, entt::entity entity );
 	Character( const SCION_CORE::ECS::Entity& entity );
+	~Character();
 
 	StateMachine& GetStateMachine();
 

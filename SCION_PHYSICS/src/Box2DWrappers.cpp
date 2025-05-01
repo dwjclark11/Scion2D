@@ -1,6 +1,9 @@
 #include "Physics/Box2DWrappers.h"
 
-void SCION_PHYSICS::BodyDestroyer::operator()( b2Body* body ) const
+namespace SCION_PHYSICS
+{
+void BodyDestroyer::operator()( b2Body* body ) const
 {
 	body->GetWorld()->DestroyBody( body );
 }
+} // namespace SCION_PHYSICS

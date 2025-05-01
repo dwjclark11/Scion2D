@@ -10,6 +10,8 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 
+#include "ScionUtilities/HelperUtilities.h"
+
 // IMGUI
 // ===================================
 #include <imgui.h>

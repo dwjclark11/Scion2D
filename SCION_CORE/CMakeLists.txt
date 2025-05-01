@@ -7,6 +7,9 @@ add_library(SCION_CORE
     "include/Core/CoreUtilities/FollowCamera.h"
     "src/CoreUtilities/FollowCamera.cpp"
 	"include/Core/CoreUtilities/EngineShaders.h"
+	"include/Core/CoreUtilities/SaveProject.h"
+	"include/Core/CoreUtilities/Prefab.h"
+	"src/CoreUtilities/Prefab.cpp"
 
 	# ECS - Entity, Registry
     "include/Core/ECS/Entity.h"
@@ -45,7 +48,15 @@ add_library(SCION_CORE
     "include/Core/ECS/Components/TileComponent.h"
 	"include/Core/ECS/Components/Relationship.h"
 	"src/ECS/Components/Relationship.cpp"
+	"include/Core/ECS/Components/UIComponent.h"
+	"src/ECS/Components/UIComponent.cpp"
+
 	"include/Core/ECS/Components/AllComponents.h"
+
+	# Character
+	"include/Core/Character/Character.h"
+	"src/Character/Character.cpp"
+	"include/Core/Character/PlayerStart.h"
 
 	# Resources
     "include/Core/Resources/AssetManager.h"
@@ -105,7 +116,15 @@ add_library(SCION_CORE
 	"src/Events/EventDispatcher.cpp"
 	"include/Core/Events/EngineEventTypes.h"
 	"src/Events/EngineEventTypes.cpp"
- "include/Core/Character/Character.h" "src/Character/Character.cpp" "include/Core/ECS/Components/UIComponent.h" "src/ECS/Components/UIComponent.cpp")
+	
+	# Scenes
+	"include/Core/Scene/Scene.h"
+	"src/Scene/Scene.cpp"
+	"include/Core/Scene/SceneManager.h"
+	"src/Scene/SceneManager.cpp"
+	
+	"src/Character/PlayerStart.cpp"
+ "include/Core/Scripting/CrashLoggerTestBindings.h" "src/Scripting/CrashLoggerTestBindings.cpp")
 
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

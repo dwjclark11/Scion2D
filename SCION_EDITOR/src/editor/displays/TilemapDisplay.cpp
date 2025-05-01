@@ -1,5 +1,6 @@
 #include "TilemapDisplay.h"
 #include "Core/ECS/MainRegistry.h"
+#include "Core/ECS/Components/AllComponents.h"
 #include "Core/Resources/AssetManager.h"
 
 #include "Core/Systems/RenderSystem.h"
@@ -9,6 +10,7 @@
 #include "Core/Systems/AnimationSystem.h"
 
 #include "Core/CoreUtilities/CoreEngineData.h"
+#include "Core/CoreUtilities/Prefab.h"
 
 #include "Core/Events/EventDispatcher.h"
 #include "Core/Events/EngineEventTypes.h"
@@ -45,9 +47,9 @@
 #include <signal.h>
 #endif
 
+using namespace SCION_CORE::ECS;
 using namespace SCION_CORE::Systems;
 using namespace SCION_RENDERING;
-
 
 namespace SCION_EDITOR
 {
@@ -151,13 +153,13 @@ void TilemapDisplay::RenderTilemap()
 
 void TilemapDisplay::LoadNewScene()
 {
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 	if ( !pCurrentScene )
 		return;
 
 	auto& toolManager = TOOL_MANAGER();
 
-	if ( !toolManager.SetupTools( pCurrentScene.get(), m_pTilemapCam.get() ) )
+	if ( !toolManager.SetupTools( pCurrentScene, m_pTilemapCam.get() ) )
 	{
 		SCION_ASSERT( false && "This should work!!" );
 #ifdef _WIN32
@@ -232,10 +234,15 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 
 void TilemapDisplay::HandleKeyPressedEvent( const SCION_CORE::Events::KeyEvent& keyEvent )
 {
-	if ( !m_bWindowActive || keyEvent.eType == SCION_CORE::Events::EKeyEventType::Released)
+	if ( !m_bWindowActive || keyEvent.eType == SCION_CORE::Events::EKeyEventType::Released )
 		return;
 
-	if (keyEvent.key == SCION_KEY_W)
+	// No need to change the tools if there is no scene loaded.
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	if ( !pCurrentScene )
+		return;
+
+	if ( keyEvent.key == SCION_KEY_W )
 	{
 		TOOL_MANAGER().SetGizmoActive( EGizmoType::TRANSLATE );
 	}
@@ -253,8 +260,62 @@ void TilemapDisplay::HandleKeyPressedEvent( const SCION_CORE::Events::KeyEvent& 
 	}
 	else if ( keyEvent.key == SCION_KEY_Y )
 	{
-		TOOL_MANAGER().SetToolActive( EToolType::RECT_FILL_TILE);
+		// IsoGrid scenes are not currently supported for rect tool.
+		if ( pCurrentScene->GetMapType() == SCION_CORE::EMapType::Grid )
+		{
+			TOOL_MANAGER().SetToolActive( EToolType::RECT_FILL_TILE );
+		}
 	}
+}
+
+void TilemapDisplay::AddPrefabbedEntityToScene( const SCION_CORE::PrefabbedEntity& prefabbed )
+{
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
+	if ( !pCurrentScene )
+		return;
+
+	int count{ 1 };
+	std::string sTag{ prefabbed.id->name };
+	while ( pCurrentScene->CheckTagName( sTag ) )
+	{
+		sTag = prefabbed.id->name + std::to_string( count );
+		++count;
+	}
+
+	SCION_CORE::ECS::Entity newEnt{ pCurrentScene->GetRegistry(), sTag, prefabbed.id->group };
+
+	newEnt.AddComponent<TransformComponent>( prefabbed.transform );
+	if ( prefabbed.sprite )
+	{
+		newEnt.AddComponent<SpriteComponent>( prefabbed.sprite.value() );
+	}
+
+	if ( prefabbed.animation )
+	{
+		newEnt.AddComponent<AnimationComponent>( prefabbed.animation.value() );
+	}
+
+	if ( prefabbed.boxCollider )
+	{
+		newEnt.AddComponent<BoxColliderComponent>( prefabbed.boxCollider.value() );
+	}
+
+	if ( prefabbed.circleCollider )
+	{
+		newEnt.AddComponent<CircleColliderComponent>( prefabbed.circleCollider.value() );
+	}
+
+	if ( prefabbed.textComp )
+	{
+		newEnt.AddComponent<TextComponent>( prefabbed.textComp.value() );
+	}
+
+	if ( prefabbed.physics )
+	{
+		newEnt.AddComponent<PhysicsComponent>( prefabbed.physics.value() );
+	}
+
+	pCurrentScene->AddGameObjectByTag( sTag, newEnt.GetEntity() );
 }
 
 void TilemapDisplay::DrawToolbar()
@@ -338,13 +399,12 @@ void TilemapDisplay::DrawToolbar()
 	if ( eActiveGizmoType == EGizmoType::ROTATE )
 	{
 		ImGui::ActiveButton( ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE );
-		
 	}
 	else
 	{
 		if ( ImGui::Button( ICON_FA_CIRCLE_NOTCH, TOOL_BUTTON_SIZE ) )
 		{
-			toolManager.SetGizmoActive( EGizmoType::ROTATE);
+			toolManager.SetGizmoActive( EGizmoType::ROTATE );
 		}
 	}
 
@@ -368,25 +428,54 @@ void TilemapDisplay::DrawToolbar()
 
 	ImGui::SameLine();
 
-	if ( eActiveToolType == EToolType::RECT_FILL_TILE )
+	bool bIsoScene{ false };
+	if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene() )
 	{
-		ImGui::ActiveButton( ICON_FA_CHESS_BOARD, TOOL_BUTTON_SIZE );
+		bIsoScene = pCurrentScene->GetMapType() == SCION_CORE::EMapType::IsoGrid;
+	}
+
+	if ( bIsoScene )
+	{
+		ImGui::DisabledButton(
+			ICON_FA_CHESS_BOARD, TOOL_BUTTON_SIZE, "Rect Tile Tool [Y] - IsoMetric grids not currently supported." );
 	}
 	else
 	{
-		if ( ImGui::Button( ICON_FA_CHESS_BOARD, TOOL_BUTTON_SIZE ) )
+		if ( eActiveToolType == EToolType::RECT_FILL_TILE )
 		{
-			toolManager.SetToolActive( EToolType::RECT_FILL_TILE );
+			ImGui::ActiveButton( ICON_FA_CHESS_BOARD, TOOL_BUTTON_SIZE );
 		}
-	}
+		else
+		{
+			if ( ImGui::Button( ICON_FA_CHESS_BOARD, TOOL_BUTTON_SIZE ) )
+			{
+				toolManager.SetToolActive( EToolType::RECT_FILL_TILE );
+			}
+		}
 
-	ImGui::ItemToolTip( "Rect Tile Tool [Y] - Creates tiles inside of created rectangle." );
+		ImGui::ItemToolTip( "Rect Tile Tool [Y] - Creates tiles inside of created rectangle." );
+	}
 
 	ImGui::SameLine();
 
 	ImGui::DisabledButton( ICON_FA_TOOLS, TOOL_BUTTON_SIZE );
 
 	ImGui::PopStyleVar( 2 );
+
+	ImGui::SameLine( 0.f, 16.f );
+
+	if ( auto pActiveTool = TOOL_MANAGER().GetActiveTool() )
+	{
+		const auto& gridCoords = pActiveTool->GetGridCoords();
+		ImGui::TextColored( ImVec4{ 0.7f, 1.f, 7.f, 1.f },
+							fmt::format( "Grid Coords [ x = {}, y = {} ]", gridCoords.x, gridCoords.y ).c_str() );
+		ImGui::SameLine( 0.f, 16.f );
+
+		const auto& worldCoords = pActiveTool->GetMouseWorldCoords();
+		ImGui::TextColored( ImVec4{ 0.7f, 0.7f, 1.f, 1.f },
+							fmt::format( "World Coords [ x = {}, y = {} ]", worldCoords.x, worldCoords.y ).c_str() );
+	}
+
 	ImGui::Separator();
 	ImGui::AddSpaces( 1 );
 }
@@ -449,14 +538,22 @@ void TilemapDisplay::Draw()
 		// Accept Scene Drop Target
 		if ( ImGui::BeginDragDropTarget() )
 		{
-			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( DROP_SCENE_SRC );
-			if ( payload )
+
+			if ( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( DROP_SCENE_SRC ) )
 			{
 				SCENE_MANAGER().UnloadCurrentScene();
 				SCENE_MANAGER().SetCurrentScene( std::string{ (const char*)payload->Data } );
 				SCENE_MANAGER().LoadCurrentScene();
 				LoadNewScene();
 				m_pTilemapCam->Reset();
+			}
+			else if ( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( DROP_PREFAB_SRC ) )
+			{
+				if ( auto pPrefab = ASSET_MANAGER().GetPrefab( std::string{ (const char*)payload->Data } ) )
+				{
+					const auto& prefabbed = pPrefab->GetPrefabbedEntity();
+					AddPrefabbedEntityToScene( prefabbed );
+				}
 			}
 
 			ImGui::EndDragDropTarget();
