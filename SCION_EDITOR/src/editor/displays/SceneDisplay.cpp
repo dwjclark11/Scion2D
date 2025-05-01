@@ -59,7 +59,7 @@ void SceneDisplay::LoadScene()
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 
 	const auto& canvas = pCurrentScene->GetCanvas();
-	runtimeRegistry.AddToContext<std::shared_ptr<Camera2D>>(
+	auto pCamera = runtimeRegistry.AddToContext<std::shared_ptr<Camera2D>>(
 		std::make_shared<Camera2D>( canvas.width, canvas.height ) );
 
 	auto pPhysicsWorld = runtimeRegistry.AddToContext<SCION_PHYSICS::PhysicsWorld>(
@@ -104,11 +104,6 @@ void SceneDisplay::LoadScene()
 
 	// We need to initialize all of the physics entities
 	auto physicsEntities = runtimeRegistry.GetRegistry().view<PhysicsComponent>();
-	auto& editorFramebuffers = MAIN_REGISTRY().GetContext<std::shared_ptr<EditorFramebuffers>>();
-	const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];
-	CORE_GLOBALS().SetScaledWidth( fb->Width() );
-	CORE_GLOBALS().SetScaledHeight( fb->Height() );
-
 	for ( auto entity : physicsEntities )
 	{
 		Entity ent{ runtimeRegistry, entity };
@@ -144,14 +139,13 @@ void SceneDisplay::LoadScene()
 		physicsAttributes.scale = transform.scale;
 		physicsAttributes.objectData.entityID = static_cast<std::int32_t>( entity );
 
-		physics.Init( pPhysicsWorld, fb->Width(), fb->Height() );
+		physics.Init( pPhysicsWorld, pCamera->GetWidth(), pCamera->GetHeight() );
 
 		/*
 		 * Set Filters/Masks/Group Index
 		 */
 		if ( physics.UseFilters() ) // Right now filters are disabled, since there is no way to set this from the editor
 		{
-
 			physics.SetFilterCategory();
 			physics.SetFilterMask();
 
@@ -352,7 +346,7 @@ void SceneDisplay::Draw()
 		auto& editorFramebuffers = MAIN_REGISTRY().GetContext<std::shared_ptr<EditorFramebuffers>>();
 		const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];
 
-		if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene() )
+		if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject() )
 		{
 			auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 			// We need to set the relative mouse window so that any scripts scripts will
@@ -402,6 +396,7 @@ void SceneDisplay::Update()
 	double dt = coreGlobals.GetDeltaTime();
 	coreGlobals.UpdateDeltaTime();
 
+	// Clamp delta time to the target frame rate
 	if ( dt < TARGET_FRAME_TIME )
 	{
 		std::this_thread::sleep_for( std::chrono::duration<double>( TARGET_FRAME_TIME - dt ) );

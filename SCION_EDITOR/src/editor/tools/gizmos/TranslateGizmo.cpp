@@ -58,12 +58,15 @@ void TranslateGizmo::Update( SCION_CORE::Canvas& canvas )
 		selectedEntity.UpdateTransform();
 
 		// Update sprite cells
-		if ( auto* pSprite = selectedEntity.TryGetComponent<SpriteComponent>(); pSprite->bIsoMetric )
+		if ( auto* pSprite = selectedEntity.TryGetComponent<SpriteComponent>())
 		{
-			auto [ cellX, cellY ] = SCION_CORE::ConvertWorldPosToIsoCoords(
-				selectedTransform.position + glm::vec2{ pSprite->width / 2.f, pSprite->height }, canvas );
-			pSprite->isoCellX = cellX;
-			pSprite->isoCellX = cellY;
+			if ( pSprite->bIsoMetric )
+			{
+				auto [ cellX, cellY ] = SCION_CORE::ConvertWorldPosToIsoCoords(
+					selectedTransform.position + glm::vec2{ pSprite->width / 2.f, pSprite->height }, canvas );
+				pSprite->isoCellX = cellX;
+				pSprite->isoCellX = cellY;
+			}
 		}
 	}
 
