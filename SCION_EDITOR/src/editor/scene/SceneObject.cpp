@@ -85,7 +85,10 @@ void SceneObject::CopySceneToRuntime()
 		}
 	}
 
-	m_PlayerStart.CreatePlayer( m_RuntimeRegistry );
+	if ( m_bUsePlayerStart )
+	{
+		m_PlayerStart.CreatePlayer( m_RuntimeRegistry );
+	}
 }
 
 void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
@@ -110,7 +113,10 @@ void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
 		}
 	}
 
-	m_PlayerStart.CreatePlayer( m_RuntimeRegistry );
+	if ( m_bUsePlayerStart )
+	{
+		m_PlayerStart.CreatePlayer( m_RuntimeRegistry );
+	}
 }
 
 void SceneObject::ClearRuntimeScene()

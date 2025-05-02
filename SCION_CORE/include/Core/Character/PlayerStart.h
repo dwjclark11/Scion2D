@@ -35,7 +35,7 @@ class PlayerStart
 	
   private:
 	Scene& m_SceneRef;
-	SCION_CORE::ECS::Entity m_VisualEntity;
+	std::shared_ptr<SCION_CORE::ECS::Entity> m_pVisualEntity;
 	std::shared_ptr<Prefab> m_pCharacterPrefab;
 	std::string m_sCharacterName;
 	bool m_bCharacterLoaded;

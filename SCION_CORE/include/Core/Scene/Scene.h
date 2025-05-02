@@ -82,7 +82,10 @@ class Scene
 	 */
 	inline bool HasTileLayers() const { return !m_LayerParams.empty(); }
 	inline std::vector<SCION_UTIL::SpriteLayerParams>& GetLayerParams() { return m_LayerParams; }
+
 	inline PlayerStart& GetPlayerStart() { return m_PlayerStart; }
+	inline bool IsPlayerStartEnabled() const { return m_bUsePlayerStart; }
+	inline void SetPlayerStartEnabled( bool bEnable ) { m_bUsePlayerStart = bEnable; }
 
 	static void CreateLuaBind( sol::state& lua );
 
@@ -106,6 +109,8 @@ class Scene
 	std::string m_sDefaultMusic;
 	/* Has this scene been loaded in the editor. */
 	bool m_bSceneLoaded;
+	/* All scenes will have a default player start. This flag will control it's use. */
+	bool m_bUsePlayerStart;
 
 	SCION_CORE::Canvas m_Canvas;
 

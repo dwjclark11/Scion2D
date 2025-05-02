@@ -17,14 +17,14 @@ namespace SCION_CORE
 
 PlayerStart::PlayerStart( SCION_CORE::ECS::Registry& registry, Scene& sceneRef )
 	: m_SceneRef{ sceneRef }
-	, m_VisualEntity{ registry, PlayerStartTag, "" }
+	, m_pVisualEntity{ nullptr }
 	, m_pCharacterPrefab{ nullptr }
 	, m_pCharacter{ nullptr }
 	, m_sCharacterName{ "default" }
 	, m_bCharacterLoaded{ false }
 	, m_bVisualEntityCreated{ false }
 {
-	LoadVisualEntity();
+	
 }
 
 void PlayerStart::CreatePlayer( SCION_CORE::ECS::Registry& registry )
@@ -36,7 +36,7 @@ void PlayerStart::CreatePlayer( SCION_CORE::ECS::Registry& registry )
 			SetCharacter( *pPrefab );
 			auto pNewEntity = PrefabCreator::AddPrefabToScene( *m_pCharacterPrefab, registry );
 			auto& transform = pNewEntity->GetComponent<TransformComponent>();
-			const auto& playerStartTransform = m_VisualEntity.GetComponent<TransformComponent>();
+			const auto& playerStartTransform = m_pVisualEntity->GetComponent<TransformComponent>();
 			transform.position = playerStartTransform.position;
 		}
 		else
@@ -50,14 +50,14 @@ void PlayerStart::CreatePlayer( SCION_CORE::ECS::Registry& registry )
 	{
 		auto pNewEntity = PrefabCreator::AddPrefabToScene( *m_pCharacterPrefab, registry );
 		auto& transform = pNewEntity->GetComponent<TransformComponent>();
-		const auto& playerStartTransform = m_VisualEntity.GetComponent<TransformComponent>();
+		const auto& playerStartTransform = m_pVisualEntity->GetComponent<TransformComponent>();
 		transform.position = playerStartTransform.position;
 	}
 	else
 	{
 		Entity characterEnt{ registry, "Player", "" };
 		auto& transform =
-			characterEnt.AddComponent<TransformComponent>( m_VisualEntity.GetComponent<TransformComponent>() );
+			characterEnt.AddComponent<TransformComponent>( m_pVisualEntity->GetComponent<TransformComponent>() );
 		transform.scale = glm::vec2{ 1.f }; // Should the scale be changed here?
 
 		// This needs to be a default texture in the engine.
@@ -123,13 +123,13 @@ void PlayerStart::SetCharacter( const Prefab& prefab )
 
 glm::vec2 PlayerStart::GetPosition()
 {
-	const auto& transform = m_VisualEntity.GetComponent<TransformComponent>();
+	const auto& transform = m_pVisualEntity->GetComponent<TransformComponent>();
 	return transform.position;
 }
 
 void PlayerStart::SetPosition( const glm::vec2& position )
 {
-	auto* transform = m_VisualEntity.TryGetComponent<TransformComponent>();
+	auto* transform = m_pVisualEntity->TryGetComponent<TransformComponent>();
 	SCION_ASSERT( transform && "Visual entity was not setup correctly" );
 	transform->position = position;
 }
@@ -142,8 +142,12 @@ void PlayerStart::Load( const std::string& sPrefabName )
 
 void PlayerStart::Unload()
 {
+	if ( !m_bVisualEntityCreated )
+		return;
+
 	// We want to reset the entity to entt::null
-	m_VisualEntity.GetEntity() = entt::null;
+	m_pVisualEntity->Kill();
+	m_pVisualEntity.reset();
 	m_bVisualEntityCreated = false;
 
 	// m_pCharacter.reset( );
@@ -160,14 +164,14 @@ void PlayerStart::LoadVisualEntity()
 		return;
 	}
 
-	if ( m_VisualEntity.GetEntity() == entt::null )
+	if ( !m_pVisualEntity)
 	{
-		m_VisualEntity = Entity{ m_SceneRef.GetRegistry(), PlayerStartTag, "" };
+		m_pVisualEntity = std::make_shared<Entity>(Entity{ m_SceneRef.GetRegistry(), PlayerStartTag, "" });
 	}
 
-	m_VisualEntity.AddComponent<TransformComponent>( TransformComponent{} );
-	m_VisualEntity.AddComponent<UneditableComponent>( UneditableComponent{ .eType = EUneditableType::PlayerStart } );
-	auto& sprite = m_VisualEntity.AddComponent<SpriteComponent>(
+	m_pVisualEntity->AddComponent<TransformComponent>( TransformComponent{} );
+	m_pVisualEntity->AddComponent<UneditableComponent>( UneditableComponent{ .eType = EUneditableType::PlayerStart } );
+	auto& sprite = m_pVisualEntity->AddComponent<SpriteComponent>(
 		SpriteComponent{ .sTextureName = "ZZ_S2D_PlayerStart", .width = 64, .height = 64, .layer = 999999 } );
 
 	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.sTextureName );

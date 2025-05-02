@@ -33,6 +33,7 @@ Scene::Scene()
 	, m_sSceneDataPath{ "" }
 	, m_sDefaultMusic{ "" }
 	, m_bSceneLoaded{ false }
+	, m_bUsePlayerStart{ false }
 	, m_Canvas{}
 	, m_eMapType{ EMapType::Grid }
 	, m_PlayerStart{ m_Registry, *this }
@@ -48,6 +49,7 @@ Scene::Scene( const std::string& sceneName, EMapType eType )
 	, m_sSceneDataPath{ "" }
 	, m_sDefaultMusic{ "" }
 	, m_bSceneLoaded{ false }
+	, m_bUsePlayerStart{ false }
 	, m_Canvas{}
 	, m_eMapType{ eType }
 	, m_PlayerStart{ m_Registry, *this }
@@ -254,18 +256,32 @@ bool Scene::LoadSceneData()
 
 	if ( sceneData.HasMember( "playerStart" ) )
 	{
+		const rapidjson::Value& playerStart = sceneData[ "playerStart" ];
+		if ( playerStart.HasMember( "enabled" ) )
+		{
+			m_bUsePlayerStart = playerStart[ "enabled" ].GetBool();
+		}
+		else
+		{
+			m_bUsePlayerStart = false;
+		}
+
 		std::string sPlayerStartPrefab = sceneData[ "playerStart" ][ "character" ].GetString();
 		if ( sPlayerStartPrefab != "default" )
 		{
 			m_PlayerStart.Load( sPlayerStartPrefab );
 		}
-		else if ( !m_PlayerStart.IsPlayerStartCreated() )
+		else if ( m_bUsePlayerStart && !m_PlayerStart.IsPlayerStartCreated() )
 		{
 			m_PlayerStart.LoadVisualEntity();
 		}
 
-		m_PlayerStart.SetPosition( glm::vec2{ sceneData[ "playerStart" ][ "position" ][ "x" ].GetFloat(),
-											  sceneData[ "playerStart" ][ "position" ][ "y" ].GetFloat() } );
+		// Do not set the position if we are not using the player start.
+		if ( m_bUsePlayerStart )
+		{
+			m_PlayerStart.SetPosition( glm::vec2{ sceneData[ "playerStart" ][ "position" ][ "x" ].GetFloat(),
+												  sceneData[ "playerStart" ][ "position" ][ "y" ].GetFloat() } );
+		}
 	}
 
 	if ( sceneData.HasMember( "defaultMusic" ) )
@@ -323,7 +339,7 @@ bool Scene::SaveSceneData()
 	std::string sTilemapPath = m_sTilemapPath.substr( m_sTilemapPath.find( ASSETS ) );
 	std::string sObjectPath = m_sObjectPath.substr( m_sObjectPath.find( ASSETS ) );
 
-	glm::vec2 playerStartPosition = m_PlayerStart.GetPosition();
+	glm::vec2 playerStartPosition = m_bUsePlayerStart ? m_PlayerStart.GetPosition() : glm::vec2{ 0.f };
 
 	pSerializer->AddKeyValuePair( "name", m_sSceneName )
 		.AddKeyValuePair( "tilemapPath", sTilemapPath )
@@ -338,7 +354,8 @@ bool Scene::SaveSceneData()
 		.AddKeyValuePair( "mapType",
 						  ( m_eMapType == SCION_CORE::EMapType::Grid ? std::string{ "grid" } : std::string{ "iso" } ) )
 		.StartNewObject( "playerStart" )
-		.AddKeyValuePair( "character", m_PlayerStart.GetCharacterName() )
+		.AddKeyValuePair( "enabled", m_bUsePlayerStart )
+		.AddKeyValuePair( "character", m_bUsePlayerStart ? m_PlayerStart.GetCharacterName() : std::string{ "default" } )
 		.StartNewObject( "position" )
 		.AddKeyValuePair( "x", playerStartPosition.x )
 		.AddKeyValuePair( "y", playerStartPosition.y )

@@ -85,16 +85,16 @@ void MenuDisplay::Draw()
 					coreGlobals.DisableColliderRender();
 			}
 
-			if (ImGui::TreeNode("Project Settings"))
+			if ( ImGui::TreeNode( "Project Settings" ) )
 			{
 				// TODO: Add specific Project settings
 				/*
-				* Desired Settings
-				* - Window Size
-				* - Window Position
-				* - Window flags
-				* 
-				*/
+				 * Desired Settings
+				 * - Window Size
+				 * - Window Position
+				 * - Window flags
+				 *
+				 */
 				ImGui::TreePop();
 			}
 
@@ -154,10 +154,32 @@ void MenuDisplay::Draw()
 				if ( ImGui::TreeNode( "Settings" ) )
 				{
 					bool bChanged{ false };
+					bool bPlayerStartEnabled{ pCurrentScene->IsPlayerStartEnabled() };
+					ImGui::InlineLabel( "Enable Player Start:" );
+					ImGui::SetCursorPosX( 250.f );
+
+					ImGui::ItemToolTip(
+						"Enable or Disable the player start.\n"
+						"The player start is the character that we want to use when the scene is played." );
+
+					if ( ImGui::Checkbox( "##_enablePlayerStart", &bPlayerStartEnabled ) )
+					{
+						pCurrentScene->SetPlayerStartEnabled( bPlayerStartEnabled );
+						if ( bPlayerStartEnabled )
+						{
+							pCurrentScene->GetPlayerStart().LoadVisualEntity();
+						}
+						else
+						{
+							pCurrentScene->GetPlayerStart().Unload();
+						}
+					}
+
 					std::string sPlayerStartCharacter{ pCurrentScene->GetPlayerStart().GetCharacterName() };
-					auto prefabs = SCION_UTIL::GetKeys( ASSET_MANAGER().GetAllPrefabs()/*, []( auto& prefab ) {
-						return prefab.second->GetType() == SCION_CORE::EPrefabType::Character;
-					} */);
+					auto prefabs =
+						SCION_UTIL::GetKeys( ASSET_MANAGER().GetAllPrefabs() /*, []( auto& prefab ) {
+			  return prefab.second->GetType() == SCION_CORE::EPrefabType::Character;
+		  } */ );
 
 					ImGui::InlineLabel( ICON_FA_FLAG ICON_FA_GAMEPAD " Player Start Character:" );
 					ImGui::SetCursorPosX( 250.f );
@@ -169,7 +191,7 @@ void MenuDisplay::Draw()
 							if ( ImGui::Selectable( sPrefabName.c_str(), sPrefabName == sPlayerStartCharacter ) )
 							{
 								sPlayerStartCharacter = sPrefabName;
-								
+
 								bChanged = true;
 							}
 						}
@@ -177,9 +199,9 @@ void MenuDisplay::Draw()
 						ImGui::EndCombo();
 					}
 
-					if (bChanged)
+					if ( bChanged )
 					{
-						if (auto pPrefab = ASSET_MANAGER().GetPrefab(sPlayerStartCharacter))
+						if ( auto pPrefab = ASSET_MANAGER().GetPrefab( sPlayerStartCharacter ) )
 						{
 							pCurrentScene->GetPlayerStart().SetCharacter( *pPrefab );
 						}
@@ -191,7 +213,8 @@ void MenuDisplay::Draw()
 					musicNames.push_back( "None" );
 
 					std::string sDefaultSceneMusic{ pCurrentScene->GetDefaultMusicName() };
-					if ( sDefaultSceneMusic.empty() ) sDefaultSceneMusic = "None";
+					if ( sDefaultSceneMusic.empty() )
+						sDefaultSceneMusic = "None";
 
 					ImGui::InlineLabel( ICON_FA_MUSIC " Default Music:" );
 					ImGui::SetCursorPosX( 250.f );
@@ -210,7 +233,7 @@ void MenuDisplay::Draw()
 						ImGui::EndCombo();
 					}
 
-					if (bChanged)
+					if ( bChanged )
 					{
 						pCurrentScene->SetDefaultMusic( sDefaultSceneMusic );
 					}
@@ -263,7 +286,7 @@ void MenuDisplay::Draw()
 
 			auto& coreGlobals = CORE_GLOBALS();
 			bool bChanged{ false };
-			std::string sGameType{ coreGlobals.GetGameTypeStr(coreGlobals.GetGameType()) };
+			std::string sGameType{ coreGlobals.GetGameTypeStr( coreGlobals.GetGameType() ) };
 			SCION_CORE::EGameType eGameType{ coreGlobals.GetGameType() };
 
 			ImGui::InlineLabel( ICON_FA_GAMEPAD " Game Type:" );
@@ -272,7 +295,7 @@ void MenuDisplay::Draw()
 
 			if ( ImGui::BeginCombo( "##DefaultMusic", sGameType.c_str() ) )
 			{
-				for ( const auto& [eType, sTypeStr] : coreGlobals.GetGameTypesMap() )
+				for ( const auto& [ eType, sTypeStr ] : coreGlobals.GetGameTypesMap() )
 				{
 					if ( ImGui::Selectable( sTypeStr.c_str(), sTypeStr == sGameType ) )
 					{
