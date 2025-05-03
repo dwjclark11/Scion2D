@@ -36,14 +36,11 @@ void ContactListener::BeginContact( b2Contact* contact )
 
 	try
 	{
-		auto a_any = std::any_cast<ObjectData>( a_data->userData );
-		auto b_any = std::any_cast<ObjectData>( b_data->userData );
+		auto* a_any = std::any_cast<ObjectData>( &a_data->userData );
+		auto* b_any = std::any_cast<ObjectData>( &b_data->userData );
 
-		a_any.AddContact( b_any );
-		b_any.AddContact( a_any );
-
-		a_data->userData = a_any;
-		b_data->userData = b_any;
+		a_any->AddContact( b_any );
+		b_any->AddContact( a_any );
 
 		SetUserContacts( a_data, b_data );
 	}
@@ -79,18 +76,11 @@ void ContactListener::EndContact( b2Contact* contact )
 
 	try
 	{
-		auto a_any = std::any_cast<ObjectData>( a_data->userData );
-		auto b_any = std::any_cast<ObjectData>( b_data->userData );
+		auto* a_any = std::any_cast<ObjectData>( &a_data->userData );
+		auto* b_any = std::any_cast<ObjectData>( &b_data->userData );
 
-		if ( a_any.RemoveContact( b_any ) )
-		{
-			a_data->userData = a_any;
-		}
-
-		if ( b_any.RemoveContact( a_any ) )
-		{
-			b_data->userData = b_any;
-		}
+		a_any->RemoveContact( *b_any );
+		b_any->RemoveContact( *a_any );		
 	}
 	catch ( const std::bad_any_cast& ex )
 	{
