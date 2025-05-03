@@ -49,9 +49,12 @@ struct ObjectData
 	std::vector<const ObjectData*> contactEntities;
 
 	friend bool operator==( const ObjectData& a, const ObjectData& b );
-	bool AddContact( const ObjectData* objectData );
-	bool RemoveContact( const ObjectData& objectData );
-
 	[[nodiscard]] std::string to_string() const;
+
+  private:
+	bool AddContact( const ObjectData* objectData );
+	bool RemoveContact( const ObjectData* objectData );
+
+	friend class ContactListener;
 };
 } // namespace SCION_PHYSICS
