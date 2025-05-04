@@ -13,13 +13,6 @@ struct FontGlyph
 
 class Font
 {
-  private:
-	GLuint m_FontAtlasID;
-	int m_Width;
-	int m_Height;
-	float m_FontSize;
-	void* m_pData;
-
   public:
 	Font( GLuint fontAtlasID, int width, int height, float fontSize, void* data );
 	~Font();
@@ -28,5 +21,12 @@ class Font
 	void GetNextCharPos( char c, glm::vec2& pos );
 	inline const GLuint GetFontAtlasID() const { return m_FontAtlasID; }
 	inline const float GetFontSize() const { return m_FontSize; }
+
+  private:
+	GLuint m_FontAtlasID;
+	int m_Width;
+	int m_Height;
+	float m_FontSize;
+	void* m_pData;
 };
 } // namespace SCION_RENDERING

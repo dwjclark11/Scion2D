@@ -7,10 +7,6 @@ namespace SCION_RENDERING
 {
 class LineBatchRenderer : public Batcher<LineBatch, LineGlyph>
 {
-  private:
-	virtual void GenerateBatches() override;
-	void Initialize();
-
   public:
 	LineBatchRenderer();
 	virtual ~LineBatchRenderer() = default;
@@ -19,5 +15,9 @@ class LineBatchRenderer : public Batcher<LineBatch, LineGlyph>
 	virtual void Render() override;
 
 	void AddLine( const Line& line );
+
+  private:
+	virtual void GenerateBatches() override;
+	void Initialize();
 };
 } // namespace SCION_RENDERING

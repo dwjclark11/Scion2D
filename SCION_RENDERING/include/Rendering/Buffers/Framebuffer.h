@@ -9,19 +9,6 @@ namespace SCION_RENDERING
 
 class Framebuffer
 {
-  private:
-	GLuint m_FboID;
-	GLuint m_RboID;
-	std::shared_ptr<Texture> m_pTexture;
-	int m_Width;
-	int m_Height;
-	bool m_bShouldResize;
-	bool m_bUseRbo;
-
-  private:
-	bool Initialize();
-	void CleanUp();
-
   public:
 	Framebuffer();
 	Framebuffer( int width, int height, bool bUseRbo );
@@ -38,6 +25,19 @@ class Framebuffer
 	inline const GLuint GetTextureID() const { return m_pTexture ? m_pTexture->GetID() : 0; }
 	inline const int Width() const { return m_Width; }
 	inline const int Height() const { return m_Height; }
+
+  private:
+	bool Initialize();
+	void CleanUp();
+
+  private:
+	GLuint m_FboID;
+	GLuint m_RboID;
+	std::shared_ptr<Texture> m_pTexture;
+	int m_Width;
+	int m_Height;
+	bool m_bShouldResize;
+	bool m_bUseRbo;
 };
 
 } // namespace SCION_RENDERING

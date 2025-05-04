@@ -6,13 +6,6 @@ namespace SCION_FILESYSTEM
 {
 class JSONSerializer
 {
-  private:
-	std::fstream m_Filestream;
-	rapidjson::StringBuffer m_StringBuffer;
-	std::unique_ptr<rapidjson::PrettyWriter<rapidjson::StringBuffer>> m_pWriter;
-	int m_NumObjectsStarted;
-	int m_NumArraysStarted;
-
   public:
 	JSONSerializer( const std::string& sFilename, int maxDecimalPlaces = -1 );
 	~JSONSerializer();
@@ -31,6 +24,13 @@ class JSONSerializer
 
 	template <typename TValue>
 	JSONSerializer& AddKeyValuePair( const std::string& key, const TValue& value );
+
+  private:
+	std::fstream m_Filestream;
+	rapidjson::StringBuffer m_StringBuffer;
+	std::unique_ptr<rapidjson::PrettyWriter<rapidjson::StringBuffer>> m_pWriter;
+	int m_NumObjectsStarted;
+	int m_NumArraysStarted;
 };
 
 } // namespace SCION_FILESYSTEM

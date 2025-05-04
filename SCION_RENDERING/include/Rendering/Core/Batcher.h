@@ -14,14 +14,15 @@ constexpr size_t MAX_VERTICES = MAX_SPRITES * NUM_SPRITE_VERTICES;
 template <typename TBatch, typename TGlyph>
 class Batcher
 {
-  private:
-	GLuint m_VAO;
-	GLuint m_VBO;
-	GLuint m_IBO;
-	bool m_bUseIBO;
+  public:
+	Batcher();
+	Batcher( bool bUseIBO );
+	virtual ~Batcher();
 
-  private:
-	void Initialize();
+	void Begin();
+
+	virtual void End() = 0;
+	virtual void Render() = 0;
 
   protected:
 	std::vector<std::shared_ptr<TGlyph>> m_Glyphs;
@@ -40,15 +41,14 @@ class Batcher
 
 	virtual void GenerateBatches() = 0;
 
-  public:
-	Batcher();
-	Batcher( bool bUseIBO );
-	virtual ~Batcher();
+  private:
+	void Initialize();
 
-	void Begin();
-
-	virtual void End() = 0;
-	virtual void Render() = 0;
+  private:
+	GLuint m_VAO;
+	GLuint m_VBO;
+	GLuint m_IBO;
+	bool m_bUseIBO;
 };
 
 template <typename TBatch, typename TGlyph>

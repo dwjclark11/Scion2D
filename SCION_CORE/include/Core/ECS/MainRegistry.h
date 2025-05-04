@@ -35,20 +35,9 @@ namespace SCION_CORE::ECS
 {
 class MainRegistry
 {
-  private:
-	std::unique_ptr<Registry> m_pMainRegistry{ nullptr };
-	bool m_bInitialized{ false };
-
-	MainRegistry() = default;
-	~MainRegistry() = default;
-	MainRegistry( const MainRegistry& ) = delete;
-	MainRegistry& operator=( const MainRegistry& ) = delete;
-
-	bool RegisterMainSystems();
-
   public:
 	static MainRegistry& GetInstance();
-	bool Initialize(bool bEnableFilewatcher = false);
+	bool Initialize( bool bEnableFilewatcher = false );
 
 	SCION_CORE::Events::EventDispatcher& GetEventDispatcher();
 	SCION_RESOURCES::AssetManager& GetAssetManager();
@@ -72,5 +61,17 @@ class MainRegistry
 	SCION_CORE::Systems::RenderShapeSystem& GetRenderShapeSystem();
 	SCION_CORE::Systems::AnimationSystem& GetAnimationSystem();
 	SCION_CORE::Systems::PhysicsSystem& GetPhysicsSystem();
+
+  private:
+	MainRegistry() = default;
+	~MainRegistry() = default;
+	MainRegistry( const MainRegistry& ) = delete;
+	MainRegistry& operator=( const MainRegistry& ) = delete;
+
+	bool RegisterMainSystems();
+
+  private:
+	std::unique_ptr<Registry> m_pMainRegistry{ nullptr };
+	bool m_bInitialized{ false };
 };
 } // namespace SCION_CORE::ECS

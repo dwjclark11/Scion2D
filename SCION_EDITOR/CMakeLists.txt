@@ -98,8 +98,16 @@ add_executable(SCION_EDITOR
 	"src/editor/scripting/EditorCoreLuaWrappers.cpp"
 )
 
+target_sources(
+	SCION_EDITOR PRIVATE
+	../thirdparty/imgui_backends/imgui_impl_sdl2.cpp
+)
+
 target_include_directories(
-    SCION_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    SCION_EDITOR PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}/src
+	PRIVATE ../thirdparty/imgui_backends
+)
 target_link_libraries(SCION_EDITOR PRIVATE SCION_CORE imgui::imgui)
 
 add_resources(TARGET Assets IN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets OUT_DIR assets)

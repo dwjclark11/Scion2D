@@ -27,7 +27,6 @@ add_library(SCION_CORE
 
     # Components
     "include/Core/ECS/Components/Identification.h"
-
     "include/Core/ECS/Components/AnimationComponent.h"
     "src/ECS/Components/AnimationComponent.cpp"
     "include/Core/ECS/Components/BoxColliderComponent.h"
@@ -57,6 +56,7 @@ add_library(SCION_CORE
 	"include/Core/Character/Character.h"
 	"src/Character/Character.cpp"
 	"include/Core/Character/PlayerStart.h"
+	"src/Character/PlayerStart.cpp"
 
 	# Resources
     "include/Core/Resources/AssetManager.h"
@@ -123,14 +123,17 @@ add_library(SCION_CORE
 	"include/Core/Scene/SceneManager.h"
 	"src/Scene/SceneManager.cpp"
 	
-	"src/Character/PlayerStart.cpp"
- "include/Core/Scripting/CrashLoggerTestBindings.h" "src/Scripting/CrashLoggerTestBindings.cpp")
+	"include/Core/Scripting/CrashLoggerTestBindings.h"
+	"src/Scripting/CrashLoggerTestBindings.cpp"
+)
 
 target_include_directories(
-    SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+	PRIVATE ${SOL2_INCLUDE_DIRS}
+)
 
 target_link_libraries(SCION_CORE PUBLIC
-    glm::glm EnTT::EnTT sol2
+    glm::glm EnTT::EnTT sol2::sol2 ${LUA_LIBRARIES}
     $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
     SCION_LOGGER SCION_UTILITIES SCION_PHYSICS

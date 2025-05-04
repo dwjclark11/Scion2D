@@ -6,16 +6,6 @@ namespace SCION_CORE::ECS
 {
 class Entity
 {
-  private:
-	/* Reference to the registry this entity belongs to. */
-	Registry& m_Registry;
-	/* Underlying entity. */
-	entt::entity m_Entity;
-	/* Entities specific name. Eventually they will be unique names. */
-	std::string m_sName;
-	/* The group this entity belongs to. We could add multiple groups if needed later. */
-	std::string m_sGroup;
-
   public:
 	Entity( Registry& registry );
 	Entity( Registry& registry, const std::string& name = "", const std::string& group = "" );
@@ -29,7 +19,7 @@ class Entity
 
 		return *this;
 	}
-	
+
 	virtual ~Entity() = default;
 
 	/*
@@ -44,7 +34,7 @@ class Entity
 	 */
 	void UpdateTransform();
 
-	void ChangeName(const std::string& sName);
+	void ChangeName( const std::string& sName );
 
 	inline const std::string& GetName() const { return m_sName; }
 	inline const std::string& GetGroup() const { return m_sGroup; }
@@ -88,11 +78,11 @@ class Entity
 	TComponent& ReplaceComponent( Args&&... args );
 
 	/*
-	* @brief Attempts to get the desired component.
-	* @tparam Component Type to retrieve.
-	* @return Returns a reference to the desired component. If the entity does not have the
-	* component, this will result in undefined behavior. 
-	*/
+	 * @brief Attempts to get the desired component.
+	 * @tparam Component Type to retrieve.
+	 * @return Returns a reference to the desired component. If the entity does not have the
+	 * component, this will result in undefined behavior.
+	 */
 	template <typename TComponent>
 	TComponent& GetComponent();
 
@@ -114,6 +104,16 @@ class Entity
 
 	template <typename TComponent>
 	auto RemoveComponent();
+
+  private:
+	/* Reference to the registry this entity belongs to. */
+	Registry& m_Registry;
+	/* Underlying entity. */
+	entt::entity m_Entity;
+	/* Entities specific name. Eventually they will be unique names. */
+	std::string m_sName;
+	/* The group this entity belongs to. We could add multiple groups if needed later. */
+	std::string m_sGroup;
 };
 
 template <typename TComponent>

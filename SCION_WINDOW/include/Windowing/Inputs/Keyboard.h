@@ -7,9 +7,6 @@ namespace SCION_WINDOWING::Inputs
 {
 class Keyboard
 {
-  private:
-	std::map<int, Button> m_mapButtons;
-
   public:
 	Keyboard();
 	~Keyboard() = default;
@@ -23,5 +20,8 @@ class Keyboard
 	const bool IsKeyJustReleased( int key ) const;
 
 	const std::map<int, Button>& GetButtonMap() const { return m_mapButtons; }
+
+  private:
+	std::map<int, Button> m_mapButtons;
 };
 } // namespace SCION_WINDOWING::Inputs

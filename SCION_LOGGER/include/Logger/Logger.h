@@ -54,20 +54,6 @@ struct LogEntry
 
 class Logger
 {
-  private:
-	std::vector<LogEntry> m_LogEntries;
-	bool m_bLogAdded{ false }, m_bInitialized{ false }, m_bConsoleLog{ true }, m_bRetainLogs{ true };
-
-	Logger() = default;
-
-	struct LogTime
-	{
-		std::string day, dayNumber, month, year, time;
-		LogTime( const std::string& date );
-	};
-
-	std::string CurrentDateTime();
-
   public:
 	static Logger& GetInstance();
 
@@ -98,6 +84,20 @@ class Logger
 	inline const std::vector<LogEntry>& GetLogs() { return m_LogEntries; }
 	inline void ResetLogAdded() { m_bLogAdded = false; }
 	inline bool LogAdded() const { return m_bLogAdded; }
+
+  private:
+	std::vector<LogEntry> m_LogEntries;
+	bool m_bLogAdded{ false }, m_bInitialized{ false }, m_bConsoleLog{ true }, m_bRetainLogs{ true };
+
+	Logger() = default;
+
+	struct LogTime
+	{
+		std::string day, dayNumber, month, year, time;
+		LogTime( const std::string& date );
+	};
+
+	std::string CurrentDateTime();
 };
 } // namespace SCION_LOGGER
 

@@ -6,21 +6,6 @@ namespace SCION_RENDERING
 {
 class Camera2D
 {
-  private:
-	int m_Width;
-	int m_Height;
-	float m_Scale;
-
-	glm::vec2 m_Position;
-	glm::vec2 m_ScreenOffset;
-	glm::mat4 m_CameraMatrix;
-	glm::mat4 m_OrthoProjection;
-
-	bool m_bNeedsUpdate;
-
-  private:
-	void Initialize();
-
   public:
 	Camera2D();
 	Camera2D( int width, int height );
@@ -90,5 +75,20 @@ class Camera2D
 	 * @return Returns the camera matrix glm::mat4
 	 */
 	inline glm::mat4 GetCameraMatrix() const { return m_CameraMatrix; }
+
+  private:
+	void Initialize();
+
+  private:
+	int m_Width;
+	int m_Height;
+	float m_Scale;
+
+	glm::vec2 m_Position;
+	glm::vec2 m_ScreenOffset;
+	glm::mat4 m_CameraMatrix;
+	glm::mat4 m_OrthoProjection;
+
+	bool m_bNeedsUpdate;
 };
 } // namespace SCION_RENDERING
