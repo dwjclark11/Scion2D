@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <entt/entt.hpp>
 
 namespace SCION_PHYSICS
 {
@@ -46,7 +47,12 @@ struct ObjectData
 	bool bTrigger{ false };
 	bool bIsFriendly{ false };
 	std::uint32_t entityID{};
-	std::vector<const ObjectData*> contactEntities;
+
+	ObjectData() = default;
+	ObjectData( const std::string& tag, const std::string& group, bool collider, bool trigger, bool friendly,
+				std::uint32_t entityId = entt::null );
+
+	inline const std::vector<const ObjectData*>& GetContactEntities() const { return contactEntities; }
 
 	friend bool operator==( const ObjectData& a, const ObjectData& b );
 	[[nodiscard]] std::string to_string() const;
@@ -54,7 +60,11 @@ struct ObjectData
   private:
 	bool AddContact( const ObjectData* objectData );
 	bool RemoveContact( const ObjectData* objectData );
+	void ClearContacts() { contactEntities.clear(); }
 
 	friend class ContactListener;
+
+  private:
+	std::vector<const ObjectData*> contactEntities;
 };
 } // namespace SCION_PHYSICS

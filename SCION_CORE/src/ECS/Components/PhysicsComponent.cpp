@@ -76,12 +76,11 @@ void PhysicsComponent::Init( SCION_PHYSICS::PhysicsWorld pPhysicsWorld, int wind
 		auto halfHeight = PIXELS_TO_METERS * m_InitialAttribs.boxSize.y * m_InitialAttribs.scale.y * 0.5f;
 
 		b2Vec2 vertices[ 4 ];
-		
+
 		vertices[ 0 ].Set( 0.f, 0.f );
 		vertices[ 1 ].Set( halfWidth, -halfHeight );
 		vertices[ 2 ].Set( -halfWidth, -halfHeight );
 		vertices[ 3 ].Set( 0.f, -halfHeight * 2.f );
-
 
 		polyShape.Set( vertices, 4 );
 	}
@@ -234,7 +233,7 @@ SCION_PHYSICS::ObjectData PhysicsComponent::GetCurrentObjectData()
 {
 	SCION_ASSERT( m_pRigidBody );
 
-	if (!m_pRigidBody)
+	if ( !m_pRigidBody )
 	{
 		return {};
 	}
@@ -344,21 +343,14 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 				bool bCollider,
 				bool bTrigger,
 				bool bFriendly,
-				std::uint32_t entityID ) {
-				return ObjectData{ .tag = tag,
-								   .group = group,
-								   .bCollider = bCollider,
-								   .bTrigger = bTrigger,
-								   .bIsFriendly = bFriendly,
-								   .entityID = entityID };
-			},
+				std::uint32_t entityID ) { return ObjectData{ tag, group, bCollider, bTrigger, bFriendly, entityID }; },
 			[]( const sol::table& objectData ) {
-				return ObjectData{ .tag = objectData[ "tag" ].get_or( std::string{ "" } ),
-								   .group = objectData[ "group" ].get_or( std::string{ "" } ),
-								   .bCollider = objectData[ "bCollider" ].get_or( false ),
-								   .bTrigger = objectData[ "bTrigger" ].get_or( false ),
-								   .bIsFriendly = objectData[ "bIsFriendly" ].get_or( false ),
-								   .entityID = objectData[ "entityID" ].get_or( (std::uint32_t)entt::null ) };
+				return ObjectData{ objectData[ "tag" ].get_or( std::string{ "" } ),
+								   objectData[ "group" ].get_or( std::string{ "" } ),
+								   objectData[ "bCollider" ].get_or( false ),
+								   objectData[ "bTrigger" ].get_or( false ),
+								   objectData[ "bIsFriendly" ].get_or( false ),
+								   objectData[ "entityID" ].get_or( (std::uint32_t)entt::null ) };
 			} ),
 		"tag",
 		&ObjectData::tag,
@@ -372,8 +364,8 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 		&ObjectData::bTrigger,
 		"entityID",
 		&ObjectData::entityID,
-		"contactEntities",
-		&ObjectData::contactEntities,
+		"contactEntities", // This returns the vector directly. Use physics.contactEntites
+		sol::readonly_property([]( ObjectData & objData ) { return objData.GetContactEntities(); }),
 		"to_string",
 		&ObjectData::to_string );
 
@@ -409,12 +401,13 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 								.bIsSensor = physAttr[ "bIsSensor" ].get_or( false ),
 								.filterCategory = physAttr[ "filterCategory" ].get_or( (uint16_t)0 ),
 								.filterMask = physAttr[ "filterMask" ].get_or( (uint16_t)0 ),
-								.objectData = ObjectData{
-									.tag = physAttr[ "objectData" ][ "tag" ].get_or( std::string{ "" } ),
-									.group = physAttr[ "objectData" ][ "group" ].get_or( std::string{ "" } ),
-									.bCollider = physAttr[ "objectData" ][ "bCollider" ].get_or( false ),
-									.bTrigger = physAttr[ "objectData" ][ "bTrigger" ].get_or( false ),
-									.entityID = physAttr[ "objectData" ][ "entityID" ].get_or( (std::uint32_t)0 ) } };
+								.objectData =
+									ObjectData{ physAttr[ "objectData" ][ "tag" ].get_or( std::string{ "" } ),
+												physAttr[ "objectData" ][ "group" ].get_or( std::string{ "" } ),
+												physAttr[ "objectData" ][ "bCollider" ].get_or( false ),
+												physAttr[ "objectData" ][ "bTrigger" ].get_or( false ),
+												physAttr[ "objectData" ][ "bIsFriendly" ].get_or( false ),
+												physAttr[ "objectData" ][ "entityID" ].get_or( (std::uint32_t)0 ) } };
 						} ),
 		"eType",
 		&PhysicsAttributes::eType,

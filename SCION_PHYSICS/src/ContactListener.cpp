@@ -78,6 +78,19 @@ void ContactListener::EndContact( b2Contact* contact )
 	{
 		auto* a_any = std::any_cast<ObjectData>( &a_data->userData );
 		auto* b_any = std::any_cast<ObjectData>( &b_data->userData );
+		if (!a_any && b_any)
+		{
+			b_any->ClearContacts();
+			SetUserContacts( nullptr, nullptr );
+			return;
+		}
+
+		if (a_any && !b_any)
+		{
+			a_any->ClearContacts();
+			SetUserContacts( nullptr, nullptr );
+			return;
+		}
 
 		a_any->RemoveContact( b_any );
 		b_any->RemoveContact( a_any );		

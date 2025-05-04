@@ -277,11 +277,12 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 			.filterCategory = static_cast<uint16_t>( attr[ "filterCategory" ].GetUint() ),
 			.filterMask = static_cast<uint16_t>( attr[ "filterMask" ].GetUint() ),
 			.groupIndex = static_cast<int16_t>( attr[ "groupIndex" ].GetInt() ),
-			.objectData = ObjectData{ .tag = attr[ "objectData" ][ "tag" ].GetString(),
-									  .group = attr[ "objectData" ][ "group" ].GetString(),
-									  .bCollider = attr[ "objectData" ][ "bCollider" ].GetBool(),
-									  .bTrigger = attr[ "objectData" ][ "bTrigger" ].GetBool(),
-									  .bIsFriendly = attr[ "objectData" ][ "bIsFriendly" ].GetBool() } };
+			.objectData = ObjectData{ attr[ "objectData" ][ "tag" ].GetString(),
+									  attr[ "objectData" ][ "group" ].GetString(),
+									  attr[ "objectData" ][ "bCollider" ].GetBool(),
+									  attr[ "objectData" ][ "bTrigger" ].GetBool(),
+									  attr[ "objectData" ][ "bIsFriendly" ].GetBool() }
+		};
 
 		physics.GetChangableAttributes() = attributes;
 	}
