@@ -180,7 +180,7 @@ void Character::CreateCharacterLuaBind( sol::state& lua, SCION_CORE::ECS::Regist
 		sol::call_constructor,
 		sol::factories( [ & ]( const CharacterParams& params ) { return Character{ registry, params }; },
 						[ & ]( std::uint32_t id ) { return Character{ registry, static_cast<entt::entity>( id ) }; } ),
-		"add_component",
+		"addComponent",
 		[]( Character& character, const sol::table& comp, sol::this_state s ) -> sol::object {
 			if ( !comp.valid() )
 				return sol::lua_nil_t{};
@@ -189,19 +189,19 @@ void Character::CreateCharacterLuaBind( sol::state& lua, SCION_CORE::ECS::Regist
 
 			return component ? component.cast<sol::reference>() : sol::lua_nil_t{};
 		},
-		"has_component",
+		"hasComponent",
 		[]( Character& character, const sol::table& comp ) {
 			const auto has_comp = InvokeMetaFunction( GetIdType( comp ), "has_component"_hs, static_cast<Entity&>(character) );
 
 			return has_comp ? has_comp.cast<bool>() : false;
 		},
-		"get_component",
+		"getComponent",
 		[]( Character& character, const sol::table& comp, sol::this_state s ) {
 			const auto component = InvokeMetaFunction( GetIdType( comp ), "get_component"_hs, static_cast<Entity&>(character), s );
 
 			return component ? component.cast<sol::reference>() : sol::lua_nil_t{};
 		},
-		"remove_component",
+		"removeComponent",
 		[]( Character& character, const sol::table& comp ) {
 			const auto component = InvokeMetaFunction( GetIdType( comp ), "remove_component"_hs, static_cast<Entity&>(character) );
 

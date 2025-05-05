@@ -188,7 +188,7 @@ void StateStack::CreateLuaStateStackBind( sol::state& lua )
 	lua.new_usertype<StateStack>( "StateStack",
 								  sol::call_constructor,
 								  sol::constructors<StateStack()>(),
-								  "change_state",
+								  "changeState",
 								  &StateStack::ChangeState,
 								  "push",
 								  &StateStack::Push,

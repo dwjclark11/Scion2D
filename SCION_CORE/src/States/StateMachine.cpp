@@ -17,14 +17,6 @@ StateMachine::StateMachine( const sol::table& stateFuncs )
 
 void StateMachine::ChangeState( const std::string& stateName, bool bRemoveState, const sol::object& enterParams )
 {
-	/*
-	if (m_StateTable)
-	{
-		ChangeStateTable( stateName, bRemoveState, enterParams );
-		return;
-	}
-	*/
-
 	auto stateItr = m_mapStates.find( stateName );
 	if ( stateItr == m_mapStates.end() )
 	{
@@ -198,7 +190,7 @@ void StateMachine::CreateLuaStateMachine( sol::state& lua )
 		"StateMachine",
 		sol::call_constructor,
 		sol::constructors<StateMachine(), StateMachine( const sol::table& )>(),
-		"change_state",
+		"changeState",
 		sol::overload(
 			[]( StateMachine& sm, const std::string& state, bool bRemove, const sol::object& enterParams ) {
 				sm.ChangeState( state, bRemove, enterParams );
@@ -209,11 +201,11 @@ void StateMachine::CreateLuaStateMachine( sol::state& lua )
 		&StateMachine::Update,
 		"render",
 		&StateMachine::Render,
-		"current_state",
+		"currentState",
 		&StateMachine::CurrentState,
-		"add_state",
+		"addState",
 		&StateMachine::AddState,
-		"exit_state",
+		"exitState",
 		&StateMachine::ExitState,
 		"destroy",
 		&StateMachine::DestroyStates );

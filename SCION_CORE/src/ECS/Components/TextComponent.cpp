@@ -50,6 +50,6 @@ void SCION_CORE::ECS::TextComponent::CreateLuaTextBindings( sol::state& lua )
 		&TextComponent::wrap,
 		"color",
 		&TextComponent::color,
-		"to_string",
+		"toString",
 		&TextComponent::to_string );
 }

@@ -125,7 +125,7 @@ add_library(SCION_CORE
 	
 	"include/Core/Scripting/CrashLoggerTestBindings.h"
 	"src/Scripting/CrashLoggerTestBindings.cpp"
-)
+ "include/Core/Scripting/ScriptingUtilities.h")
 
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include

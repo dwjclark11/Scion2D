@@ -37,6 +37,6 @@ void SCION_CORE::ECS::TransformComponent::CreateLuaTransformBind( sol::state& lu
 		&TransformComponent::scale,
 		"rotation",
 		&TransformComponent::rotation,
-		"to_string",
+		"toString",
 		&TransformComponent::to_string );
 }

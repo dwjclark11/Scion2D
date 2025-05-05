@@ -269,7 +269,7 @@ void PhysicsComponent::SetFilterCategory( uint16_t category )
 		return;
 	}
 
-	auto copyFilter = pFixtureList->GetFilterData();
+	b2Filter copyFilter{ pFixtureList->GetFilterData() };
 	copyFilter.categoryBits = category;
 	pFixtureList->SetFilterData( copyFilter );
 	m_InitialAttribs.filterCategory = category;
@@ -294,7 +294,7 @@ void PhysicsComponent::SetFilterMask( uint16_t mask )
 		return;
 	}
 
-	auto copyFilter = pFixtureList->GetFilterData();
+	b2Filter copyFilter{ pFixtureList->GetFilterData() };
 	copyFilter.maskBits = mask;
 	pFixtureList->SetFilterData( copyFilter );
 	m_InitialAttribs.filterMask = mask;
@@ -319,7 +319,7 @@ void PhysicsComponent::SetGroupIndex( int index )
 		return;
 	}
 
-	auto copyFilter = pFixtureList->GetFilterData();
+	b2Filter copyFilter{ pFixtureList->GetFilterData() };
 	copyFilter.groupIndex = index;
 	pFixtureList->SetFilterData( copyFilter );
 	m_InitialAttribs.groupIndex = index;
@@ -365,7 +365,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 		"entityID",
 		&ObjectData::entityID,
 		"contactEntities", // This returns the vector directly. Use physics.contactEntites
-		sol::readonly_property([]( ObjectData & objData ) { return objData.GetContactEntities(); }),
+		sol::readonly_property( []( ObjectData& objData ) { return objData.GetContactEntities(); } ),
 		"to_string",
 		&ObjectData::to_string );
 
@@ -461,7 +461,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			pc.Init( pPhysicsWorld, 640, 480 ); // TODO: Change based on window values
 			return pc;
 		} ),
-		"linear_impulse",
+		"linearImpulse",
 		[]( PhysicsComponent& pc, const glm::vec2& impulse ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -472,7 +472,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->ApplyLinearImpulse( b2Vec2{ impulse.x, impulse.y }, body->GetPosition(), true );
 		},
-		"angular_impulse",
+		"angularImpulse",
 		[]( PhysicsComponent& pc, float impulse ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -483,7 +483,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->ApplyAngularImpulse( impulse, true );
 		},
-		"set_linear_velocity",
+		"setLinearVelocity",
 		[]( PhysicsComponent& pc, const glm::vec2& velocity ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -494,7 +494,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->SetLinearVelocity( b2Vec2{ velocity.x, velocity.y } );
 		},
-		"get_linear_velocity",
+		"getLinearVelocity",
 		[]( PhysicsComponent& pc ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -505,7 +505,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			const auto& linearVelocity = body->GetLinearVelocity();
 			return glm::vec2{ linearVelocity.x, linearVelocity.y };
 		},
-		"set_angular_velocity",
+		"setAngularVelocity",
 		[]( PhysicsComponent& pc, float angularVelocity ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -516,7 +516,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->SetAngularVelocity( angularVelocity );
 		},
-		"get_angular_velocity",
+		"getAngularVelocity",
 		[]( PhysicsComponent& pc ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -527,7 +527,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			return body->GetAngularVelocity();
 		},
-		"set_gravity_scale",
+		"setGravityScale",
 		[]( PhysicsComponent& pc, float gravityScale ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -538,7 +538,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->SetGravityScale( gravityScale );
 		},
-		"get_gravity_scale",
+		"getGravityScale",
 		[]( PhysicsComponent& pc ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -549,7 +549,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			return body->GetGravityScale();
 		},
-		"set_transform",
+		"setTransform",
 		[]( PhysicsComponent& pc, const glm::vec2& position ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -569,11 +569,11 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->SetTransform( b2Vec2{ bx, by }, 0.f );
 		},
-		"get_transform",
+		"getTransform",
 		[]( const PhysicsComponent& pc ) {
 
 		},
-		"set_body_type",
+		"setBodyType",
 		[ & ]( PhysicsComponent& pc, RigidBodyType type ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -594,7 +594,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->SetType( bodyType );
 		},
-		"set_bullet",
+		"setAsBullet",
 		[ & ]( PhysicsComponent& pc, bool bullet ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -604,7 +604,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			}
 			body->SetBullet( bullet );
 		},
-		"is_bullet",
+		"isBullet",
 		[ & ]( PhysicsComponent& pc ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -614,7 +614,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			}
 			return body->IsBullet();
 		},
-		"set_filter_category",
+		"setFilterCategory",
 		[]( PhysicsComponent& pc ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -622,18 +622,18 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 				return;
 			}
 		},
-		"cast_ray",
+		"castRay",
 		[]( PhysicsComponent& pc, const glm::vec2& p1, const glm::vec2& p2, sol::this_state s ) {
 			auto objectData = pc.CastRay( b2Vec2{ p1.x, p1.y }, b2Vec2{ p2.x, p2.y } );
 			return objectData.entityID == entt::null ? sol::lua_nil_t{} : sol::make_object( s, objectData );
 		},
-		"box_trace",
+		"boxTrace",
 		[]( PhysicsComponent& pc, const glm::vec2& lowerBounds, const glm::vec2& upperBounds, sol::this_state s ) {
 			auto vecObjectData =
 				pc.BoxTrace( b2Vec2{ lowerBounds.x, lowerBounds.y }, b2Vec2{ upperBounds.x, upperBounds.y } );
 			return vecObjectData.empty() ? sol::lua_nil_t{} : sol::make_object( s, vecObjectData );
 		},
-		"object_data",
+		"objectData",
 		[]( PhysicsComponent& pc ) { return pc.GetCurrentObjectData(); }
 
 	);

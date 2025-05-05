@@ -57,9 +57,9 @@ void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
 						   &UVs::u,
 						   "v",
 						   &UVs::v,
-						   "uv_width",
+						   "uvWidth",
 						   &UVs::uv_width,
-						   "uv_height",
+						   "uvHeight",
 						   &UVs::uv_height );
 
 	lua.new_usertype<SpriteComponent>(
@@ -84,9 +84,9 @@ void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
 		&SpriteComponent::width,
 		"height",
 		&SpriteComponent::height,
-		"start_x",
+		"startX",
 		&SpriteComponent::start_x,
-		"start_y",
+		"startY",
 		&SpriteComponent::start_y,
 		"layer",
 		&SpriteComponent::layer,
@@ -96,7 +96,7 @@ void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
 		&SpriteComponent::uvs,
 		"color",
 		&SpriteComponent::color,
-		"generate_uvs",
+		"generateUVs",
 		[ & ]( SpriteComponent& sprite ) {
 			auto pTexture = assetManager.GetTexture( sprite.sTextureName );
 
@@ -109,13 +109,13 @@ void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
 
 			SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 		},
-		"inspect_uvs",
+		"inspectUVs",
 		[]( SpriteComponent& sprite ) {
 			sprite.uvs.u = sprite.start_x * sprite.uvs.uv_width;
 			sprite.uvs.v = sprite.start_y * sprite.uvs.uv_height;
 		},
-		"inspect_x",
+		"inspectX",
 		[]( SpriteComponent& sprite ) { sprite.uvs.u = sprite.start_x * sprite.uvs.uv_width; },
-		"inspect_y",
+		"inspectY",
 		[]( SpriteComponent& sprite ) { sprite.uvs.v = sprite.start_y * sprite.uvs.uv_height; } );
 }
