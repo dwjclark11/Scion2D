@@ -482,7 +482,7 @@ bool ProjectLoader::CreateProjectFile( const std::string& sProjectName, const st
 		.AddKeyValuePair( "project_name", sProjectName )
 		.AddKeyValuePair( "main_lua_file",
 						  pSaveFile->sMainLuaScript.substr( pSaveFile->sMainLuaScript.find( SCRIPTS ) ) )
-		.AddKeyValuePair( "game_type", "No Type" )
+		.AddKeyValuePair( "game_type", std::string{ "No Type" } )
 		.StartNewObject( "assets" )
 		.StartNewArray( "textures" )
 		.EndArray() // Textures

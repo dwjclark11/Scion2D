@@ -79,6 +79,10 @@ add_library(SCION_CORE
     "src/Scripting/UserDataBindings.cpp"
 	"include/Core/Scripting/LuaFilesystemBindings.h"
 	"src/Scripting/LuaFilesystemBindings.cpp"
+	"include/Core/Scripting/CrashLoggerTestBindings.h"
+	"src/Scripting/CrashLoggerTestBindings.cpp"
+	"include/Core/Scripting/ScriptingUtilities.h"
+	"src/Scripting/ScriptingUtilities.cpp"
 
 	# States and State Machine
     "include/Core/States/State.h"
@@ -121,11 +125,8 @@ add_library(SCION_CORE
 	"include/Core/Scene/Scene.h"
 	"src/Scene/Scene.cpp"
 	"include/Core/Scene/SceneManager.h"
-	"src/Scene/SceneManager.cpp"
-	
-	"include/Core/Scripting/CrashLoggerTestBindings.h"
-	"src/Scripting/CrashLoggerTestBindings.cpp"
- "include/Core/Scripting/ScriptingUtilities.h")
+	"src/Scene/SceneManager.cpp"	
+)
 
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include

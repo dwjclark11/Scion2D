@@ -77,4 +77,9 @@ sol::table MakeReadOnlyTable( sol::state_view lua, std::initializer_list<std::pa
 	return tbl;
 }
 
+struct ScriptingHelpers
+{
+	static void CreateLuaHelpers( sol::state& lua );
+};
+
 } // namespace SCION_CORE::Scripting

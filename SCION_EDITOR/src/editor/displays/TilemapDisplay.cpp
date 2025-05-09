@@ -360,7 +360,7 @@ void TilemapDisplay::DrawToolbar()
 	const EToolType eActiveToolType = toolManager.GetActiveToolType();
 	const EGizmoType eActiveGizmoType = toolManager.GetActiveGizmoType();
 
-	ImGui::DisabledButton( ICON_FA_TOOLS, TOOL_BUTTON_SIZE );
+	ImGui::DisabledButton( ICON_FA_TOOLS "##1", TOOL_BUTTON_SIZE );
 
 	ImGui::SameLine();
 
@@ -458,7 +458,7 @@ void TilemapDisplay::DrawToolbar()
 
 	ImGui::SameLine();
 
-	ImGui::DisabledButton( ICON_FA_TOOLS, TOOL_BUTTON_SIZE );
+	ImGui::DisabledButton( ICON_FA_TOOLS "##2", TOOL_BUTTON_SIZE );
 
 	ImGui::PopStyleVar( 2 );
 

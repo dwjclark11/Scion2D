@@ -40,15 +40,22 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TransformComponent
 	{
 		ImGui::PushItemWidth( 120.f );
 		ImGui::InlineLabel( "position" );
-		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
+		ImGui::ColoredLabel( "x"
+							 "##pos_x",
+							 LABEL_SINGLE_SIZE,
+							 LABEL_RED );
 		ImGui::SameLine();
 		ImGui::InputFloat( "##position_x", &transform.position.x, 1.f, 10.f, "%.1f" );
 		ImGui::SameLine();
-		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_GREEN );
+		ImGui::ColoredLabel( "y"
+							 "##pos_y",
+							 LABEL_SINGLE_SIZE,
+							 LABEL_GREEN );
 		ImGui::SameLine();
 		ImGui::InputFloat( "##position_y", &transform.position.y, 1.f, 10.f, "%.1f" );
 
-		ImGui::InlineLabel( "scale" );
+		ImGui::InlineLabel( "scale"
+							"##scl_x" );
 		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##scale_x", &transform.scale.x, 1.f, 1.f, "%.1f" ) )
@@ -56,7 +63,10 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TransformComponent
 			transform.scale.x = std::clamp( transform.scale.x, 0.1f, 150.f );
 		}
 		ImGui::SameLine();
-		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_GREEN );
+		ImGui::ColoredLabel( "y"
+							 "##scl_x",
+							 LABEL_SINGLE_SIZE,
+							 LABEL_GREEN );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##scale_y", &transform.scale.y, 1.f, 1.f, "%.1f" ) )
 		{
@@ -737,12 +747,12 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 				 "##_name", sNameBuffer.data(), sizeof( char ) * 255, ImGuiInputTextFlags_EnterReturnsTrue ) )
 		{
 			std::string sBufferStr{ sNameBuffer.data() };
-			if ( !sBufferStr.empty() && !SCENE_MANAGER().CheckTagName( sBufferStr ))
+			if ( !sBufferStr.empty() && !SCENE_MANAGER().CheckTagName( sBufferStr ) )
 			{
-				 std::string sOldName{ identification.name };
-				 identification.name = std::string{ sNameBuffer.data() };
-				 EVENT_DISPATCHER().EmitEvent( Events::NameChangeEvent{ .sOldName = sOldName, .sNewName =
-				 identification.name, .pEntity = &entity } );
+				std::string sOldName{ identification.name };
+				identification.name = std::string{ sNameBuffer.data() };
+				EVENT_DISPATCHER().EmitEvent( Events::NameChangeEvent{
+					.sOldName = sOldName, .sNewName = identification.name, .pEntity = &entity } );
 			}
 		}
 
