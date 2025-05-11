@@ -104,8 +104,7 @@ void RenderUISystem::Update( SCION_CORE::ECS::Registry& registry )
 
 	for ( auto entity : textView )
 	{
-		const auto& text = textView.get<TextComponent>( entity );
-
+		auto& text = textView.get<TextComponent>( entity );
 		if ( text.sFontName.empty() || text.bHidden )
 			continue;
 
@@ -117,9 +116,16 @@ void RenderUISystem::Update( SCION_CORE::ECS::Registry& registry )
 		}
 
 		const auto& transform = textView.get<TransformComponent>( entity );
-		const auto fontSize = pFont->GetFontSize();
 
-		glm::mat4 model = SCION_CORE::RSTModel( transform, fontSize, fontSize );
+		if ( transform.bDirty || text.bDirty )
+		{
+			const auto [ textWidth, textHeight ] = SCION_CORE::GetTextBlockSize( text, transform, assetManager );
+			text.textBoxWidth = textWidth;
+			text.textBoxHeight = textHeight;
+		}
+
+		glm::mat4 model = SCION_CORE::RSTModel( transform, text.textBoxWidth, text.textBoxHeight );
+
 		m_pTextRenderer->AddText(
 			text.sTextStr, pFont, transform.position, text.padding, text.wrap, text.color, model );
 	}

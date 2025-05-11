@@ -11,7 +11,7 @@
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/CoreUtilities/SaveProject.h"
-
+#include "Core/CoreUtilities/CoreUtilities.h"
 
 #include "Logger/Logger.h"
 
@@ -52,20 +52,20 @@ bool EditorSceneManager::AddSceneObject( const std::string& sSceneName, const st
 
 	auto [ itr, bSuccess ] =
 		m_mapScenes.emplace( sSceneName, std::move( std::make_shared<SceneObject>( sSceneName, sSceneData ) ) );
-	return bSuccess;		
+	return bSuccess;
 }
 
 bool EditorSceneManager::DeleteScene( const std::string& sSceneName )
 {
 	auto sceneItr = m_mapScenes.find( sSceneName );
-	if (sceneItr == m_mapScenes.end())
+	if ( sceneItr == m_mapScenes.end() )
 	{
 		SCION_ERROR( "Failed to delete scene [{}] - Does not exist in the scene manager.", sSceneName );
 		return false;
 	}
 
 	// Check to see if the scene is loaded. We do not want to delete a loaded scene.
-	if (sceneItr->second->IsLoaded())
+	if ( sceneItr->second->IsLoaded() )
 	{
 		SCION_ERROR( "Failed to delete scene [{}] - Loaded scenes cannot be delete. Please unload the scene if you "
 					 "want to delete it.",
@@ -76,12 +76,12 @@ bool EditorSceneManager::DeleteScene( const std::string& sSceneName )
 	const std::string& sDataPath{ sceneItr->second->GetSceneDataPath() };
 	fs::path dataPath{ sDataPath };
 
-	if ( fs::exists(dataPath.parent_path()) && fs::is_directory( dataPath.parent_path() ) )
+	if ( fs::exists( dataPath.parent_path() ) && fs::is_directory( dataPath.parent_path() ) )
 	{
 		if ( dataPath.parent_path().stem().string() == sSceneName )
 		{
 			std::error_code ec;
-			if (!fs::remove_all(dataPath.parent_path(), ec))
+			if ( !fs::remove_all( dataPath.parent_path(), ec ) )
 			{
 				SCION_ERROR( "Failed to delete scene [{}] and remove files.", sSceneName, ec.message() );
 				return false;
@@ -90,13 +90,13 @@ bool EditorSceneManager::DeleteScene( const std::string& sSceneName )
 	}
 
 	// Recheck if the path exists
-	if (fs::exists(dataPath.parent_path()))
+	if ( fs::exists( dataPath.parent_path() ) )
 	{
 		SCION_ERROR( "Failed to delete scene [{}] and remove files.", sSceneName );
 		return false;
 	}
 
-	if (m_mapScenes.erase(sSceneName) > 0)
+	if ( m_mapScenes.erase( sSceneName ) > 0 )
 	{
 		auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
 		SCION_ASSERT( pSaveProject && "Save Project must exist!" );
@@ -104,7 +104,8 @@ bool EditorSceneManager::DeleteScene( const std::string& sSceneName )
 		ProjectLoader pl{};
 		if ( !pl.SaveLoadedProject( *pSaveProject ) )
 		{
-			SCION_ERROR( "Failed to save project [{}] at file [{}] after deleting scene. Please ensure the scene files have been removed.",
+			SCION_ERROR( "Failed to save project [{}] at file [{}] after deleting scene. Please ensure the scene files "
+						 "have been removed.",
 						 pSaveProject->sProjectName,
 						 pSaveProject->sProjectFilePath );
 
@@ -155,7 +156,6 @@ void EditorSceneManager::SetTileset( const std::string& sTileset )
 	m_pToolManager->SetToolsCurrentTileset( sTileset );
 }
 
-
 SceneObject* EditorSceneManager::GetCurrentSceneObject()
 {
 	if ( auto pCurrentScene = dynamic_cast<SceneObject*>( GetCurrentScene() ) )
@@ -190,10 +190,18 @@ bool EditorSceneManager::CheckTagName( const std::string& sTagName )
 	return false;
 }
 
+void EditorSceneManager::UpdateScenes()
+{
+	if ( auto pCurrentScene = GetCurrentSceneObject() )
+	{
+		SCION_CORE::UpdateDirtyEntities( pCurrentScene->GetRegistry() );
+		SCION_CORE::UpdateDirtyEntities( pCurrentScene->GetRuntimeRegistry() );
+	}
+}
+
 EditorSceneManager::EditorSceneManager()
 	: SCION_CORE::SceneManager()
 {
-
 }
 
 void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
@@ -201,9 +209,10 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 	auto& sceneManager = SCENE_MANAGER();
 
 	lua.new_usertype<EditorSceneManager>(
-		"SceneManager", sol::no_constructor, "changeScene", [ & ]( const std::string& sSceneName ) {
-			
-
+		"SceneManager",
+		sol::no_constructor,
+		"changeScene",
+		[ & ]( const std::string& sSceneName ) {
 			auto pCurrentScene = sceneManager.GetCurrentSceneObject();
 			if ( !pCurrentScene )
 			{
@@ -233,17 +242,18 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 			// TODO: Check to see if this is valid
 			auto pSceneObject = dynamic_cast<SceneObject*>( pScene );
 			SCION_ASSERT( pSceneObject && "Scene Must be a valid Scene Object If run in the editor!" );
-			if (!pSceneObject)
+			if ( !pSceneObject )
 			{
 				SCION_ERROR( "Failed to load scene [{}] - Scene is not a valid SceneObject.", sSceneName );
-				
+
 				return pScene->UnloadScene();
 			}
 
 			pCurrentScene->CopySceneToRuntime( *pSceneObject );
-			
+
 			return pScene->UnloadScene();
-		}, "getCanvas", // Returns the canvas of the current scene or an empty canvas object.
+		},
+		"getCanvas", // Returns the canvas of the current scene or an empty canvas object.
 		[ & ] {
 			if ( auto pCurrentScene = sceneManager.GetCurrentScene() )
 				return pCurrentScene->GetCanvas();
@@ -251,14 +261,12 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 			return SCION_CORE::Canvas{};
 		},
 		"getDefaultMusic",
-		[&]
-		{
+		[ & ] {
 			if ( auto pCurrentScene = sceneManager.GetCurrentScene() )
 				return pCurrentScene->GetDefaultMusicName();
 
 			return std::string{ "" };
-		}
-	);
+		} );
 }
 
 } // namespace SCION_EDITOR

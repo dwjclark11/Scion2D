@@ -1,5 +1,9 @@
 #include "Rendering/Core/TextBatchRenderer.h"
 #include <Logger/Logger.h>
+
+/* If the loop is more that 100, fail and let the user know. */
+constexpr int MAX_LOOP_FAIL_CHECK = 100;
+
 namespace SCION_RENDERING
 {
 
@@ -30,12 +34,20 @@ void TextBatchRenderer::GenerateBatches()
 		std::string text_holder{ "" };
 		glm::vec2 temp_pos = textGlyph->position;
 		auto fontSize = textGlyph->font->GetFontSize();
+		int infiniteLoopCheck{ 0 };
 
 		if ( textGlyph->wrap > 100.f )
 		{
 			// Create the text chunks for each line.
 			for ( int i = 0; i < textGlyph->textStr.size(); i++ )
 			{
+				if ( infiniteLoopCheck >= MAX_LOOP_FAIL_CHECK )
+				{
+					SCION_ERROR(
+						"Failed to draw text batch correctly. Please check your text wrap, padding, textStr, etc." );
+					return;
+				}
+
 				auto character = textGlyph->textStr[ i ];
 				text_holder += character;
 				bool bNewLine = character == '\n';
@@ -53,6 +65,8 @@ void TextBatchRenderer::GenerateBatches()
 								textGlyph->textStr[ i ] != '!' && textGlyph->textStr[ i ] != '?' && text_size > 0 )
 						{
 							i--;
+							infiniteLoopCheck++;
+
 							if ( i < 0 )
 							{
 								SCION_ERROR( "Failed to draw text [{}] - Wrap [{}] is too small for the text to wrap "
@@ -82,6 +96,7 @@ void TextBatchRenderer::GenerateBatches()
 							textChunks.push_back( text_holder );
 							temp_pos = textGlyph->position;
 							text_holder.clear();
+							infiniteLoopCheck = 0;
 						}
 						else
 						{
@@ -120,13 +135,13 @@ void TextBatchRenderer::GenerateBatches()
 					.color = textGlyph->color };
 
 				vertices[ currentVertex++ ] = Vertex{
-					.position = textGlyph->model * glm::vec4{ glyph.max.position.x, glyph.min.position.y, 0.f, 1.f },
-					.uvs = glm::vec2{ glyph.max.uvs.x, glyph.min.uvs.y },
+					.position = textGlyph->model * glm::vec4{ glyph.max.position.x, glyph.max.position.y, 0.f, 1.f },
+					.uvs = glm::vec2{ glyph.max.uvs.x, glyph.max.uvs.y },
 					.color = textGlyph->color };
 
 				vertices[ currentVertex++ ] = Vertex{
-					.position = textGlyph->model * glm::vec4{ glyph.max.position.x, glyph.max.position.y, 0.f, 1.f },
-					.uvs = glm::vec2{ glyph.max.uvs.x, glyph.max.uvs.y },
+					.position = textGlyph->model * glm::vec4{ glyph.max.position.x, glyph.min.position.y, 0.f, 1.f },
+					.uvs = glm::vec2{ glyph.max.uvs.x, glyph.min.uvs.y },
 					.color = textGlyph->color };
 
 				// Second Triangle
@@ -136,13 +151,13 @@ void TextBatchRenderer::GenerateBatches()
 					.color = textGlyph->color };
 
 				vertices[ currentVertex++ ] = Vertex{
-					.position = textGlyph->model * glm::vec4{ glyph.max.position.x, glyph.max.position.y, 0.f, 1.f },
-					.uvs = glm::vec2{ glyph.max.uvs.x, glyph.max.uvs.y },
+					.position = textGlyph->model * glm::vec4{ glyph.min.position.x, glyph.max.position.y, 0.f, 1.f },
+					.uvs = glm::vec2{ glyph.min.uvs.x, glyph.max.uvs.y },
 					.color = textGlyph->color };
 
 				vertices[ currentVertex++ ] = Vertex{
-					.position = textGlyph->model * glm::vec4{ glyph.min.position.x, glyph.max.position.y, 0.f, 1.f },
-					.uvs = glm::vec2{ glyph.min.uvs.x, glyph.max.uvs.y },
+					.position = textGlyph->model * glm::vec4{ glyph.max.position.x, glyph.max.position.y, 0.f, 1.f },
+					.uvs = glm::vec2{ glyph.max.uvs.x, glyph.max.uvs.y },
 					.color = textGlyph->color };
 
 				if ( currentFont == 0 )

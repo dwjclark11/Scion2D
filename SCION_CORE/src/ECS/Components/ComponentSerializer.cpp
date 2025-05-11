@@ -244,7 +244,7 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 	text.sTextStr = jsonValue[ "text" ].GetString();
 	text.sFontName = jsonValue[ "fontName" ].GetString();
 	text.padding = jsonValue[ "padding" ].GetInt();
-	text.wrap = jsonValue[ "wrap" ].GetInt();
+	text.wrap = jsonValue[ "wrap" ].GetFloat();
 	text.bHidden = jsonValue[ "bHidden" ].GetBool();
 
 	text.color = SCION_RENDERING::Color{ .r = static_cast<GLubyte>( jsonValue[ "color" ][ "r" ].GetInt() ),

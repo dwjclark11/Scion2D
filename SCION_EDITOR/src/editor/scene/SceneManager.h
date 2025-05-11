@@ -47,10 +47,9 @@ class EditorSceneManager : public SCION_CORE::SceneManager
 
 	bool CheckTagName( const std::string& sTagName );
 
-	inline const std::map<std::string, std::shared_ptr<SCION_CORE::Scene>>& GetAllScenes() const
-	{
-		return m_mapScenes;
-	}
+	void UpdateScenes();
+
+	inline const std::map<std::string, std::shared_ptr<SCION_CORE::Scene>>& GetAllScenes() const { return m_mapScenes; }
 
 	inline const std::string& GetCurrentTileset() const { return m_sCurrentTileset; }
 
