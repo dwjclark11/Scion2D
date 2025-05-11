@@ -430,20 +430,33 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 	lua.set_function( "S2D_GetTicks", [] { return SDL_GetTicks(); } );
 
 	auto& assetManager = mainRegistry.GetAssetManager();
-	lua.set_function( "S2D_MeasureText", [ & ]( const std::string& text, const std::string& fontName ) {
-		const auto& pFont = assetManager.GetFont( fontName );
-		if ( !pFont )
-		{
-			SCION_ERROR( "Failed to get font [{}] - Does not exist in asset manager!", fontName );
-			return -1.f;
-		}
 
-		glm::vec2 position{ 0.f }, temp_pos{ position };
-		for ( const auto& character : text )
-			pFont->GetNextCharPos( character, temp_pos );
+	// clang-format off
+	lua.set_function( "S2D_MeasureText",
+		sol::overload(
+			[ & ]( const std::string& text, const std::string& fontName )
+			{
+				const auto& pFont = assetManager.GetFont( fontName );
+				if ( !pFont )
+				{
+					SCION_ERROR( "Failed to get font [{}] - Does not exist in asset manager!", fontName );
+					return -1.f;
+				}
 
-		return std::abs( ( position - temp_pos ).x );
-	} );
+				glm::vec2 position{ 0.f }, temp_pos{ position };
+				for ( const auto& character : text )
+					pFont->GetNextCharPos( character, temp_pos );
+
+				return std::abs( ( position - temp_pos ).x );
+			},
+			[&](const TextComponent& text, const TransformComponent& transform)
+			{
+				return SCION_CORE::GetTextBlockSize(text, transform, assetManager);
+			}
+		)
+	);
+
+	// clang-format on
 
 	auto& engine = CoreEngineData::GetInstance();
 	lua.set_function( "S2D_DeltaTime", [ & ] { return engine.GetDeltaTime(); } );

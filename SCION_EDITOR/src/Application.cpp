@@ -30,6 +30,8 @@
 #include "editor/displays/EditorStyleToolDisplay.h"
 #include "editor/displays/ContentDisplay.h"
 
+#include "editor/scene/SceneManager.h"
+
 #include "editor/utilities/editor_textures.h"
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/DrawComponentUtils.h"
@@ -158,7 +160,7 @@ bool Application::Initialize()
 #endif
 
 	auto& mainRegistry = MAIN_REGISTRY();
-	if ( !mainRegistry.Initialize(true) )
+	if ( !mainRegistry.Initialize( true ) )
 	{
 		SCION_ERROR( "Failed to initialize the Main Registry!" );
 		return false;
@@ -428,8 +430,7 @@ bool Application::LoadEditorTextures()
 
 	assetManager.GetTexture( "S2D_scion_logo" )->SetIsEditorTexture( true );
 
-	
-	if ( !assetManager.AddTextureFromMemory( "ZZ_S2D_PlayerStart", ZZ_S2D_PlayerStart, ZZ_S2D_PlayerStart_size) )
+	if ( !assetManager.AddTextureFromMemory( "ZZ_S2D_PlayerStart", ZZ_S2D_PlayerStart, ZZ_S2D_PlayerStart_size ) )
 	{
 		SCION_ERROR( "Failed to load texture [ZZ_S2D_PlayerStart] from memory." );
 		return false;
@@ -466,7 +467,8 @@ void Application::ProcessEvents()
 			EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::KeyEvent{
 				.key = m_Event.key.keysym.sym, .eType = SCION_CORE::Events::EKeyEventType::Pressed } );
 			break;
-		case SDL_KEYUP: keyboard.OnKeyReleased( m_Event.key.keysym.sym );
+		case SDL_KEYUP:
+			keyboard.OnKeyReleased( m_Event.key.keysym.sym );
 			EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::KeyEvent{
 				.key = m_Event.key.keysym.sym, .eType = SCION_CORE::Events::EKeyEventType::Released } );
 			break;
@@ -502,7 +504,6 @@ void Application::ProcessEvents()
 
 		// Process ImGui events after other events
 		ImGui_ImplSDL2_ProcessEvent( &m_Event );
-
 	}
 }
 
@@ -682,7 +683,7 @@ void Application::RenderDisplays()
 		pDisplay->Draw();
 	}
 
-	//Gui::ShowImGuiDemo();
+	// Gui::ShowImGuiDemo();
 }
 
 void Application::RegisterEditorMetaFunctions()
@@ -732,13 +733,14 @@ void Application::Run()
 	}
 
 	InitApp();
-	
+
 	while ( m_bIsRunning )
 	{
 		ProcessEvents();
 		Update();
 		Render();
 		UpdateInputs();
+		SCENE_MANAGER().UpdateScenes();
 	}
 
 	CleanUp();

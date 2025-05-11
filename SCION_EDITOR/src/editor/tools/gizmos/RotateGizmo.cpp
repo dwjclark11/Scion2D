@@ -37,16 +37,22 @@ void SCION_EDITOR::RotateGizmo::Update( SCION_CORE::Canvas& canvas )
 	Entity selectedEntity{ *m_pRegistry, m_SelectedEntity };
 	auto& selectedTransform = selectedEntity.GetComponent<TransformComponent>();
 
-	selectedTransform.rotation += GetDeltaX();
+	float deltaX{ GetDeltaX() };
+	if ( deltaX > 0.f )
+	{
+		selectedTransform.rotation += deltaX;
 
-	// Clamp the values between 0 and 360.
-	if ( selectedTransform.rotation < 0.f )
-	{
-		selectedTransform.rotation = 360.f + selectedTransform.rotation;
-	}
-	else if ( selectedTransform.rotation > 360.f )
-	{
-		selectedTransform.rotation = selectedTransform.rotation - 360.f;
+		// Clamp the values between 0 and 360.
+		if ( selectedTransform.rotation < 0.f )
+		{
+			selectedTransform.rotation = 360.f + selectedTransform.rotation;
+		}
+		else if ( selectedTransform.rotation > 360.f )
+		{
+			selectedTransform.rotation = selectedTransform.rotation - 360.f;
+		}
+
+		selectedTransform.bDirty = true;
 	}
 
 	SetGizmoPosition( selectedEntity );

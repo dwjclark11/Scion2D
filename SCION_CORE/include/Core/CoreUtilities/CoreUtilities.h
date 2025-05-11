@@ -2,8 +2,18 @@
 #include "Core/ECS/Components/AllComponents.h"
 #include <Rendering/Core/Camera2D.h>
 
+namespace SCION_RESOURCES
+{
+class AssetManager;
+}
+
 namespace SCION_CORE
 {
+
+namespace ECS
+{
+class Registry;
+}
 
 /**
  * @brief Checks if an entity is fully within the camera's view before culling.
@@ -59,5 +69,33 @@ void GenerateUVsExt( SCION_CORE::ECS::SpriteComponent& sprite, int textureWidth,
  * @return A tuple containing the isometric grid coordinates (x, y).
  */
 std::tuple<int, int> ConvertWorldPosToIsoCoords( const glm::vec2& position, const struct Canvas& canvas );
+
+/**
+ * @brief Returns the pixel size of a text block based on font metrics and wrapping settings.
+ *
+ * Calculates the width and height required to render the text from a TextComponent,
+ * using font data from the AssetManager and optional word wrapping.
+ *
+ * @param textComp Text data including string, font, and wrap width.
+ * @param transform Starting position for text rendering.
+ * @param assetManager Asset manager used to retrieve the font.
+ * @return A tuple (width, height) representing the text block size in pixels.
+ */
+std::tuple<float, float> GetTextBlockSize( const SCION_CORE::ECS::TextComponent& textComp,
+										   const SCION_CORE::ECS::TransformComponent& transform,
+										   SCION_RESOURCES::AssetManager& assetManager );
+
+/**
+ * @brief Resets the dirty flags on all necessary components in the registry.
+ * Marks updated entities as clean by clearing their `bDirty` flags.
+ */
+void UpdateDirtyEntities( SCION_CORE::ECS::Registry& registry );
+
+/* Target time per frame. Used to help clamp delta time. */
+constexpr double TARGET_FRAME_TIME = 1.0 / 60.0;
+/* Target time per frame. Used for Box2D step. */
+constexpr float TARGET_FRAME_TIME_F = 1.0f / 60.0f;
+/* Used to prevent specific loops from looping forever. */
+constexpr int SANITY_LOOP_CHECK = 100;
 
 } // namespace SCION_CORE

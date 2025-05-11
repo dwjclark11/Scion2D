@@ -14,10 +14,16 @@ struct TextComponent
 	int padding{ 0 };
 	/* The length of the text line before it will wrap to the next line. */
 	float wrap{ -1.f };
+	/* The width of the containing text box. */
+	float textBoxWidth{ -1.f };
+	/* The height of the containing text box. */
+	float textBoxHeight{ -1.f };
 	/* Color of the text. Defaults to white. */
 	SCION_RENDERING::Color color{ 255, 255, 255, 255 };
 	/* Should the text be drawn or hidden? */
 	bool bHidden{ false };
+	/* Text Component has been changed, sizes need to be updated. */
+	bool bDirty{ false };
 
 	[[nodiscard]] std::string to_string();
 
