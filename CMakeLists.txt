@@ -42,6 +42,9 @@ endif()
 
 add_compile_definitions(IN_SCION_EDITOR)
 
+add_compile_definitions(SOL_ALL_SAFETIES_ON=1)
+add_compile_definitions(SOL_EXCEPTIONS_ALWAYS_UNSAFE=1)
+
 find_package(glad CONFIG REQUIRED)
 find_package(soil2 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
@@ -55,7 +58,6 @@ find_package(Lua REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
 find_package(tinyfiledialogs CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
-target_link_libraries(sol2 INTERFACE ${LUA_LIBRARIES})
 
 add_subdirectory(SCION_LOGGER)
 add_subdirectory(SCION_UTILITIES)
@@ -66,8 +68,14 @@ add_subdirectory(SCION_SOUNDS)
 add_subdirectory(SCION_WINDOW)
 add_subdirectory(SCION_CORE)
 set_target_properties(
-    SCION_LOGGER SCION_UTILITIES SCION_PHYSICS
-    SCION_RENDERING SCION_FILESYSTEM SCION_SOUNDS SCION_WINDOW SCION_CORE
+    SCION_LOGGER
+	SCION_UTILITIES
+	SCION_PHYSICS
+    SCION_RENDERING
+	SCION_FILESYSTEM
+	SCION_SOUNDS
+	SCION_WINDOW
+	SCION_CORE
     PROPERTIES FOLDER "Engine")
 
 include(cmake/AddResources.cmake)

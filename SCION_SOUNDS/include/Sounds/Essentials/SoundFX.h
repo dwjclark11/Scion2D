@@ -6,10 +6,6 @@ namespace SCION_SOUNDS
 {
 class SoundFX
 {
-  private:
-	SoundParams m_Params;
-	SoundFxPtr m_pSoundFx;
-
   public:
 	SoundFX( const SoundParams& params, SoundFxPtr pSoundFx );
 	~SoundFX() = default;
@@ -24,5 +20,9 @@ class SoundFX
 			return nullptr;
 		return m_pSoundFx.get();
 	}
+
+  private:
+	SoundParams m_Params;
+	SoundFxPtr m_pSoundFx;
 };
 } // namespace SCION_SOUNDS

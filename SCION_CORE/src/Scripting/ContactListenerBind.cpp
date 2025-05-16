@@ -43,7 +43,7 @@ void ContactListenerBinder::CreateLuaContactListener( sol::state& lua, entt::reg
 	}
 
 	lua.new_usertype<SCION_PHYSICS::ContactListener>(
-		"ContactListener", sol::no_constructor, "get_user_data", [ & ]( sol::this_state s ) {
+		"ContactListener", sol::no_constructor, "getUserData", [ & ]( sol::this_state s ) {
 			return GetUserData( *contactListener, s );
 		} );
 }

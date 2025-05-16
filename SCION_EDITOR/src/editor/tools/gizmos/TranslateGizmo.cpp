@@ -2,7 +2,6 @@
 #include "editor/utilities/EditorUtilities.h"
 #include "Rendering/Core/BatchRenderer.h"
 #include "Rendering/Core/Camera2D.h"
-
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
@@ -22,7 +21,7 @@ TranslateGizmo::TranslateGizmo()
 	Init( "S2D_x_axis_translate", "S2D_y_axis_translate" );
 }
 
-void TranslateGizmo::Update( Canvas& canvas )
+void TranslateGizmo::Update( SCION_CORE::Canvas& canvas )
 {
 	Gizmo::Update( canvas );
 
@@ -56,6 +55,18 @@ void TranslateGizmo::Update( Canvas& canvas )
 	if ( bTransformChanged )
 	{
 		selectedEntity.UpdateTransform();
+
+		// Update sprite cells
+		if ( auto* pSprite = selectedEntity.TryGetComponent<SpriteComponent>())
+		{
+			if ( pSprite->bIsoMetric )
+			{
+				auto [ cellX, cellY ] = SCION_CORE::ConvertWorldPosToIsoCoords(
+					selectedTransform.position + glm::vec2{ pSprite->width / 2.f, pSprite->height }, canvas );
+				pSprite->isoCellX = cellX;
+				pSprite->isoCellX = cellY;
+			}
+		}
 	}
 
 	SetGizmoPosition( selectedEntity );

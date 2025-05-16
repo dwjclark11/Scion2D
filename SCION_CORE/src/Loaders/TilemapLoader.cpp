@@ -201,7 +201,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 	pSerializer->StartDocument();
 	pSerializer->StartNewArray( "game_objects" );
 
-	auto gameObjects = registry.GetRegistry().view<entt::entity>( entt::exclude<TileComponent> );
+	auto gameObjects = registry.GetRegistry().view<entt::entity>( entt::exclude<TileComponent, UneditableComponent> );
 
 	for ( auto object : gameObjects )
 	{
@@ -246,6 +246,12 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 		{
 			const auto& physics = objectEnt.GetComponent<PhysicsComponent>();
 			SERIALIZE_COMPONENT( *pSerializer, physics );
+		}
+
+		if ( objectEnt.HasComponent<TextComponent>() )
+		{
+			const auto& text = objectEnt.GetComponent<TextComponent>();
+			SERIALIZE_COMPONENT( *pSerializer, text );
 		}
 
 		if ( auto* relations = objectEnt.TryGetComponent<Relationship>() )
@@ -398,6 +404,13 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			const auto& jsonID = components[ "id" ];
 			auto& id = gameObject.GetComponent<Identification>();
 			DESERIALIZE_COMPONENT( jsonID, id );
+		}
+
+		if ( components.HasMember( "text" ) )
+		{
+			const auto& jsonText = components[ "text" ];
+			auto& text = gameObject.AddComponent<TextComponent>();
+			DESERIALIZE_COMPONENT( jsonText, text );
 		}
 
 		if ( components.HasMember( "relationship" ) )

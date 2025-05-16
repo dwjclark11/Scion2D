@@ -14,6 +14,8 @@
 #include <Rendering/Core/RectBatchRenderer.h>
 #include <Rendering/Core/CircleBatchRenderer.h>
 
+#include "ScionUtilities/MathUtilities.h"
+
 using namespace SCION_CORE::ECS;
 using namespace SCION_RENDERING;
 using namespace SCION_RESOURCES;
@@ -53,18 +55,25 @@ void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDE
 		glm::mat4 model = SCION_CORE::RSTModel( transform, boxCollider.width, boxCollider.height );
 
 		auto color = Color{ 255, 0, 0, 135 };
-
+		bool bUseIso{ false }; // We need another way to determine if we are using iso coords. The user might want to use their own physics
 		if ( registry.GetRegistry().all_of<PhysicsComponent>( entity ) )
 		{
 			auto& physics = registry.GetRegistry().get<PhysicsComponent>( entity );
+			const auto& attrs = physics.GetAttributes();
 			if ( physics.IsSensor() )
 			{
 				color = Color{ 0, 255, 0, 135 };
 			}
 			// Tilemap Editor does not create the rigid body
-			else if ( physics.GetAttributes().bIsSensor ) 
+			else if ( attrs.bIsSensor )
 			{
 				color = Color{ 0, 255, 0, 135 };
+			}
+
+			// If not a box or circle, consider this an iso shape
+			if ( !attrs.bBoxShape && !attrs.bCircle )
+			{
+				bUseIso = true;
 			}
 		}
 
@@ -74,7 +83,16 @@ void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDE
 				   .height = static_cast<float>( boxCollider.height ),
 				   .color = color };
 
-		m_pRectRenderer->AddRect( rect, model );
+		if ( bUseIso )
+		{
+			rect.position += glm::vec2{ boxCollider.width * 0.5f, boxCollider.height * 0.5f };
+			rect.height *= -1.f;
+			m_pRectRenderer->AddIsoRect( rect, model );
+		}
+		else
+		{
+			m_pRectRenderer->AddRect( rect, model );
+		}
 	}
 
 	m_pRectRenderer->End();

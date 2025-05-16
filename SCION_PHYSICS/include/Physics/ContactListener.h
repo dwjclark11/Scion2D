@@ -6,12 +6,6 @@ namespace SCION_PHYSICS
 {
 class ContactListener : public b2ContactListener
 {
-  private:
-	UserData* m_pUserDataA{ nullptr };
-	UserData* m_pUserDataB{ nullptr };
-
-	void SetUserContacts( UserData* a, UserData* b );
-
   public:
 	/*
 	 * @brief Called when two fixtures begin to touch.
@@ -46,5 +40,12 @@ class ContactListener : public b2ContactListener
 
 	UserData* GetUserDataA() { return m_pUserDataA; }
 	UserData* GetUserDataB() { return m_pUserDataB; }
+
+  private:
+	void SetUserContacts( UserData* a, UserData* b );
+
+  private:
+	UserData* m_pUserDataA{ nullptr };
+	UserData* m_pUserDataB{ nullptr };
 };
 } // namespace SCION_PHYSICS

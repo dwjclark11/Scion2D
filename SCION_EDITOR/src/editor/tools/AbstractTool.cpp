@@ -6,6 +6,8 @@
 #include "editor/utilities/EditorUtilities.h"
 #include "editor/scene/SceneObject.h"
 
+using namespace SCION_CORE;
+
 namespace SCION_EDITOR
 {
 
@@ -18,19 +20,42 @@ void AbstractTool::UpdateMouseWorldCoords()
 	m_MouseWorldCoords = m_pCamera->ScreenCoordsToWorld( m_MouseScreenCoords );
 }
 
-void AbstractTool::CheckOutOfBounds( const Canvas& canvas )
+void AbstractTool::CheckOutOfBounds( const SCION_CORE::Canvas& canvas )
 {
-	auto boundsWidth{ canvas.width - ( canvas.tileWidth * 0.5f ) };
-	auto boundsHeight{ canvas.height - ( canvas.tileHeight * 0.5f ) };
-
-	if ( m_MouseWorldCoords.x <= boundsWidth && m_MouseWorldCoords.y <= boundsHeight && m_MouseWorldCoords.x >= 0.f &&
-		 m_MouseWorldCoords.y >= 0.f )
+	if ( !m_pCurrentScene )
 	{
-		m_bOutOfBounds = false;
+		m_bOutOfBounds = true;
+		return;
+	}
+
+	if ( m_pCurrentScene->GetMapType() == EMapType::Grid )
+	{
+		auto boundsWidth{ canvas.width - ( canvas.tileWidth * 0.5f ) };
+		auto boundsHeight{ canvas.height - ( canvas.tileHeight * 0.5f ) };
+
+		if ( m_MouseWorldCoords.x <= boundsWidth && m_MouseWorldCoords.y <= boundsHeight &&
+			 m_MouseWorldCoords.x >= 0.f && m_MouseWorldCoords.y >= 0.f )
+		{
+			m_bOutOfBounds = false;
+		}
+		else
+		{
+			m_bOutOfBounds = true;
+		}
 	}
 	else
 	{
-		m_bOutOfBounds = true;
+		const auto& canvas = m_pCurrentScene->GetCanvas();
+		int xNumTiles = canvas.height / canvas.tileWidth - 1;
+		int yNumTiles = canvas.width / ( canvas.tileHeight * 2.f ) - 1;
+		if ( m_GridCoords.x >= 0 && m_GridCoords.y >= 0 && m_GridCoords.x <= xNumTiles && m_GridCoords.y <= yNumTiles )
+		{
+			m_bOutOfBounds = false;
+		}
+		else
+		{
+			m_bOutOfBounds = true;
+		}
 	}
 }
 
@@ -64,10 +89,11 @@ AbstractTool::AbstractTool()
 	, m_bActivated{ false }
 	, m_bOutOfBounds{ false }
 	, m_bOverTilemapWindow{ false }
+	, m_GridCoords{ 0.f }
 {
 }
 
-void AbstractTool::Update( Canvas& canvas )
+void AbstractTool::Update( SCION_CORE::Canvas& canvas )
 {
 	UpdateMouseWorldCoords();
 	CheckOutOfBounds( canvas );

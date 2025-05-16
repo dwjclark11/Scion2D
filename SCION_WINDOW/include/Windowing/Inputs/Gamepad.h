@@ -9,14 +9,6 @@ namespace SCION_WINDOWING::Inputs
 {
 class Gamepad
 {
-  private:
-	Controller m_pController;
-	std::map<int, Button> m_mapButtons;
-	SDL_JoystickID m_InstanceID;
-	std::map<Uint8, Sint16> m_mapAxisValues;
-	Uint8 m_JoystickHatValue;
-	std::string m_sName;
-
   public:
 	Gamepad( Controller controller );
 	~Gamepad() = default;
@@ -39,5 +31,13 @@ class Gamepad
 
 	inline const bool CheckJoystickID( SDL_JoystickID joystickID ) const { return m_InstanceID == joystickID; }
 	inline const std::string& GetName() const { return m_sName; }
+
+  private:
+	Controller m_pController;
+	std::map<int, Button> m_mapButtons;
+	SDL_JoystickID m_InstanceID;
+	std::map<Uint8, Sint16> m_mapAxisValues;
+	Uint8 m_JoystickHatValue;
+	std::string m_sName;
 };
 } // namespace SCION_WINDOWING::Inputs

@@ -6,10 +6,6 @@ namespace SCION_SOUNDS
 {
 class Music
 {
-  private:
-	SoundParams m_Params{};
-	MusicPtr m_pMusic{ nullptr };
-
   public:
 	Music( const SoundParams& params, MusicPtr pMusic );
 	~Music() = default;
@@ -25,5 +21,9 @@ class Music
 			return nullptr;
 		return m_pMusic.get();
 	}
+
+  private:
+	SoundParams m_Params{};
+	MusicPtr m_pMusic{ nullptr };
 };
 } // namespace SCION_SOUNDS

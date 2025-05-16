@@ -14,6 +14,8 @@ struct TransformComponent
 	glm::vec2 scale{ 1.f };
 	/* The rotation of the entity in degrees. */
 	float rotation{ 0.f };
+	/* Flag to use if there are any changes. */
+	bool bDirty{ true };
 
 	[[nodiscard]] std::string to_string();
 

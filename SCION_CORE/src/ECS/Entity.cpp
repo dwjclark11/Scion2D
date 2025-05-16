@@ -2,6 +2,9 @@
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/ECS/MetaUtilities.h"
 
+#include "Core/CoreUtilities/CoreUtilities.h"
+#include "Core/Scene/Scene.h"
+
 using namespace SCION_CORE::Utils;
 
 namespace SCION_CORE::ECS
@@ -207,7 +210,7 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 			},
 			[ & ]( const std::string& name, const std::string& group ) { return Entity{ registry, name, group }; },
 			[ & ]( std::uint32_t id ) { return Entity{ registry, static_cast<entt::entity>( id ) }; } ),
-		"add_component",
+		"addComponent",
 		[]( Entity& entity, const sol::table& comp, sol::this_state s ) -> sol::object {
 			if ( !comp.valid() )
 				return sol::lua_nil_t{};
@@ -216,19 +219,19 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 
 			return component ? component.cast<sol::reference>() : sol::lua_nil_t{};
 		},
-		"has_component",
+		"hasComponent",
 		[]( Entity& entity, const sol::table& comp ) {
 			const auto has_comp = InvokeMetaFunction( GetIdType( comp ), "has_component"_hs, entity );
 
 			return has_comp ? has_comp.cast<bool>() : false;
 		},
-		"get_component",
+		"getComponent",
 		[]( Entity& entity, const sol::table& comp, sol::this_state s ) {
 			const auto component = InvokeMetaFunction( GetIdType( comp ), "get_component"_hs, entity, s );
 
 			return component ? component.cast<sol::reference>() : sol::lua_nil_t{};
 		},
-		"remove_component",
+		"removeComponent",
 		[]( Entity& entity, const sol::table& comp ) {
 			const auto component = InvokeMetaFunction( GetIdType( comp ), "remove_component"_hs, entity );
 
@@ -244,6 +247,21 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 		[]( Entity& entity, Entity& child ) { entity.AddChild( child.GetEntity() ); },
 		"updateTransform",
 		&Entity::UpdateTransform,
+		"updateIsoSorting",
+		[]( Entity& entity, const Canvas& canvas )
+		{
+			if ( auto* pSprite = entity.TryGetComponent<SpriteComponent>(); pSprite->bIsoMetric )
+			{
+				auto& transform = entity.GetComponent<TransformComponent>();
+				auto [cellX, cellY] = SCION_CORE::ConvertWorldPosToIsoCoords( transform.position, canvas );
+				pSprite->isoCellX = cellX;
+				pSprite->isoCellY = cellY;
+			}
+			else
+			{
+				SCION_ERROR( "Entity does not have a sprite component or is not using iso sorting." );
+			}
+		},
 		"id",
 		[]( Entity& entity ) { return static_cast<uint32_t>( entity.GetEntity() ); } );
 }

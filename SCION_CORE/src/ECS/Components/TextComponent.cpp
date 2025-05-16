@@ -50,6 +50,26 @@ void SCION_CORE::ECS::TextComponent::CreateLuaTextBindings( sol::state& lua )
 		&TextComponent::wrap,
 		"color",
 		&TextComponent::color,
-		"to_string",
+		"setWrap", // Should be used instead of direct member variables
+		[]( TextComponent& text, const float wrap ) {
+			text.wrap = wrap;
+			text.bDirty = true;
+		},
+		"setText", // Should be used instead of direct member variables
+		[]( TextComponent& text, const std::string& sText ) {
+			text.sTextStr = sText;
+			text.bDirty = true;
+		},
+		"setFont", // Should be used instead of direct member variables
+		[]( TextComponent& text, const std::string& sFont ) {
+			text.sFontName = sFont;
+			text.bDirty = true;
+		},
+		"setPadding", // Should be used instead of direct member variables
+		[]( TextComponent& text, const int padding ) {
+			text.padding = padding;
+			text.bDirty = true;
+		},
+		"toString",
 		&TextComponent::to_string );
 }

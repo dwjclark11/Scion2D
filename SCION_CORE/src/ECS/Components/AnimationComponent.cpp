@@ -29,15 +29,15 @@ void SCION_CORE::ECS::AnimationComponent::CreateAnimationLuaBind( sol::state& lu
 									   .bVertical = bVertical,
 									   .bLooped = bLooped };
 		} ),
-		"num_frames",
+		"numFrames",
 		&AnimationComponent::numFrames,
-		"frame_rate",
+		"frameRate",
 		&AnimationComponent::frameRate,
-		"frame_offset",
+		"frameOffset",
 		&AnimationComponent::frameOffset,
-		"current_frame",
+		"currentFrame",
 		&AnimationComponent::currentFrame,
-		"start_time",
+		"startTime",
 		&AnimationComponent::startTime,
 		"bVertical",
 		&AnimationComponent::bVertical,
@@ -48,6 +48,6 @@ void SCION_CORE::ECS::AnimationComponent::CreateAnimationLuaBind( sol::state& lu
 			anim.currentFrame = 0;
 			anim.startTime = SDL_GetTicks();
 		},
-		"to_string",
+		"toString",
 		&AnimationComponent::to_string );
 }

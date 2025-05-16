@@ -1,6 +1,11 @@
 #pragma once
 #include <string>
 
+namespace SCION_CORE
+{
+struct SaveProject;
+}
+
 namespace SCION_EDITOR
 {
 
@@ -11,7 +16,7 @@ class ProjectLoader
   public:
 	bool CreateNewProject( const std::string& sProjectName, const std::string& sFilepath );
 	bool LoadProject( const std::string& sFilepath );
-	bool SaveLoadedProject( SaveProject& save );
+	bool SaveLoadedProject( SCION_CORE::SaveProject& save );
 
   private:
 	bool CreateProjectFile( const std::string& sProjectName, const std::string& sFilepath );

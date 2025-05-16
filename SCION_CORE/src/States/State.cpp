@@ -6,7 +6,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 	lua.new_usertype<State>(
 		"State",
 		sol::call_constructor,
-		sol::factories( []( const std::string& name ) { return State{ .name = name }; },
+		sol::factories( []( const std::string& name ) { return State{ .sName = name }; },
 						[]( const std::string& name,
 							sol::protected_function on_enter,
 							sol::protected_function on_exit,
@@ -14,7 +14,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 							sol::protected_function on_render,
 							sol::protected_function handle_inputs,
 							sol::object variables ) {
-							return State{ .name = name,
+							return State{ .sName = name,
 										  .on_render = on_render,
 										  .on_update = on_update,
 										  .on_enter = on_enter,
@@ -22,7 +22,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 										  .handle_inputs = handle_inputs,
 										  .variables = variables };
 						} ),
-		"set_on_enter",
+		"setOnEnter",
 		[]( State& state, sol::protected_function on_enter ) {
 			if ( !on_enter.valid() )
 			{
@@ -31,7 +31,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 			}
 			state.on_enter = on_enter;
 		},
-		"set_on_exit",
+		"setOnExit",
 		[]( State& state, sol::protected_function on_exit ) {
 			if ( !on_exit.valid() )
 			{
@@ -40,7 +40,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 			}
 			state.on_exit = on_exit;
 		},
-		"set_on_update",
+		"setOnUpdate",
 		[]( State& state, sol::protected_function on_update ) {
 			if ( !on_update.valid() )
 			{
@@ -49,7 +49,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 			}
 			state.on_update = on_update;
 		},
-		"set_on_render",
+		"setOnRender",
 		[]( State& state, sol::protected_function on_render ) {
 			if ( !on_render.valid() )
 			{
@@ -58,7 +58,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 			}
 			state.on_render = on_render;
 		},
-		"set_handle_inputs",
+		"setHandleInputs",
 		[]( State& state, sol::protected_function handle_inputs ) {
 			if ( !handle_inputs.valid() )
 			{
@@ -67,7 +67,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 			}
 			state.handle_inputs = handle_inputs;
 		},
-		"set_variable_table",
+		"setVariableTable",
 		[]( State& state, const sol::table& table ) {
 			if ( !table.valid() )
 			{
@@ -79,7 +79,7 @@ void SCION_CORE::State::CreateLuaStateBind( sol::state& lua )
 		"variables",
 		&State::variables,
 		"name",
-		&State::name,
+		&State::sName,
 		"bKillState",
 		&State::bKillState );
 }

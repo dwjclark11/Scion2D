@@ -19,6 +19,8 @@ struct UVs
 
 struct SpriteComponent
 {
+	/* The string name of the texture. Used to get the texture from the asset manager. */
+	std::string sTextureName{ "" };
 	/* The width of the sprite in pixels. */
 	float width{ 16.f };
 	/* The height of the sprite in pixels. */
@@ -35,9 +37,12 @@ struct SpriteComponent
 	int layer{ 0 };
 	/* Should the sprite be drawn or hidden? */
 	bool bHidden{ false };
-	/* The string name of the texture. Used to get the texture from the asset manager. */
-	std::string sTextureName{ "" };
-
+	/* Is the tile isometric? */
+	bool bIsoMetric{ false };
+	/* Iso cell is needed to sort when rendering. */
+	int isoCellX{ 0 };
+	/* Iso cell is needed to sort when rendering. */
+	int isoCellY{ 0 };
 	// void generate_uvs( int textureWidth, int textureHeight );
 	[[nodiscard]] std::string to_string() const;
 

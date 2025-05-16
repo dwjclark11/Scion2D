@@ -30,7 +30,7 @@ class AssetDisplay : public IDisplay
 	void OpenAssetContext( const std::string& sAssetName );
 
   private:
-	const std::vector<std::string> m_SelectableTypes{ "TEXTURES", "FONTS", "MUSIC", "SOUNDFX", "SCENES" };
+	const std::vector<std::string> m_SelectableTypes{ "TEXTURES", "FONTS", "MUSIC", "SOUNDFX", "SCENES", "PREFABS" };
 	bool m_bAssetTypeChanged;
 	bool m_bRename;
 	bool m_bWindowSelected;

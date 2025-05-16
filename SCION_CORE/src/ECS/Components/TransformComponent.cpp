@@ -37,6 +37,16 @@ void SCION_CORE::ECS::TransformComponent::CreateLuaTransformBind( sol::state& lu
 		&TransformComponent::scale,
 		"rotation",
 		&TransformComponent::rotation,
-		"to_string",
+		"setScale", // Should be used rather than directly accessing member.
+		[]( TransformComponent& transform, const glm::vec2& scale ) {
+			transform.scale = scale;
+			transform.bDirty = true;
+		},
+		"setRotation", // Should be used rather than directly accessing member.
+		[]( TransformComponent& transform, const float rotation ) {
+			transform.rotation = rotation;
+			transform.bDirty = true;
+		},
+		"toString",
 		&TransformComponent::to_string );
 }

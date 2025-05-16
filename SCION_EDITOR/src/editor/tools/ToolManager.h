@@ -14,10 +14,14 @@ namespace SCION_CORE::Events
 class EventDispatcher;
 }
 
+namespace SCION_CORE
+{
+struct Canvas;
+}
+
 namespace SCION_EDITOR
 {
 
-struct Canvas;
 class AbstractTool;
 class TileTool;
 class Gizmo;
@@ -31,7 +35,7 @@ class ToolManager
 	ToolManager();
 	~ToolManager() = default;
 
-	void Update( Canvas& canvas );
+	void Update( SCION_CORE::Canvas& canvas );
 
 	/*
 	 * @brief Activates the tool based on the passed in tool type.

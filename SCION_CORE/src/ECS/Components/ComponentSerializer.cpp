@@ -46,6 +46,9 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.AddKeyValuePair( "a", sprite.color.a )
 		.EndObject()
 		.AddKeyValuePair( "bHidden", sprite.bHidden )
+		.AddKeyValuePair( "bIsoMetric", sprite.bIsoMetric )
+		.AddKeyValuePair( "isoCellX", sprite.isoCellX )
+		.AddKeyValuePair( "isoCellY", sprite.isoCellY )
 		.EndObject();
 }
 
@@ -196,6 +199,20 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 	sprite.start_y = jsonValue[ "startY" ].GetInt();
 	sprite.layer = jsonValue[ "layer" ].GetInt(), sprite.bHidden = jsonValue[ "bHidden" ].GetBool();
 	sprite.sTextureName = jsonValue[ "sTexture" ].GetString();
+
+	// Check if sprite should be isometic
+	if (jsonValue.HasMember("bIsoMetric"))
+	{
+		sprite.bIsoMetric = jsonValue[ "bIsoMetric" ].GetBool();
+		if (jsonValue.HasMember("isoCellX"))
+		{
+			sprite.isoCellX = jsonValue[ "isoCellX" ].GetInt();
+		}
+		if ( jsonValue.HasMember( "isoCellY" ) )
+		{
+			sprite.isoCellY = jsonValue[ "isoCellY" ].GetInt();
+		}
+	}
 }
 
 void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, AnimationComponent& animation )
@@ -227,7 +244,7 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 	text.sTextStr = jsonValue[ "text" ].GetString();
 	text.sFontName = jsonValue[ "fontName" ].GetString();
 	text.padding = jsonValue[ "padding" ].GetInt();
-	text.wrap = jsonValue[ "wrap" ].GetInt();
+	text.wrap = jsonValue[ "wrap" ].GetFloat();
 	text.bHidden = jsonValue[ "bHidden" ].GetBool();
 
 	text.color = SCION_RENDERING::Color{ .r = static_cast<GLubyte>( jsonValue[ "color" ][ "r" ].GetInt() ),
@@ -260,11 +277,12 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 			.filterCategory = static_cast<uint16_t>( attr[ "filterCategory" ].GetUint() ),
 			.filterMask = static_cast<uint16_t>( attr[ "filterMask" ].GetUint() ),
 			.groupIndex = static_cast<int16_t>( attr[ "groupIndex" ].GetInt() ),
-			.objectData = ObjectData{ .tag = attr[ "objectData" ][ "tag" ].GetString(),
-									  .group = attr[ "objectData" ][ "group" ].GetString(),
-									  .bCollider = attr[ "objectData" ][ "bCollider" ].GetBool(),
-									  .bTrigger = attr[ "objectData" ][ "bTrigger" ].GetBool(),
-									  .bIsFriendly = attr[ "objectData" ][ "bIsFriendly" ].GetBool() } };
+			.objectData = ObjectData{ attr[ "objectData" ][ "tag" ].GetString(),
+									  attr[ "objectData" ][ "group" ].GetString(),
+									  attr[ "objectData" ][ "bCollider" ].GetBool(),
+									  attr[ "objectData" ][ "bTrigger" ].GetBool(),
+									  attr[ "objectData" ][ "bIsFriendly" ].GetBool() }
+		};
 
 		physics.GetChangableAttributes() = attributes;
 	}

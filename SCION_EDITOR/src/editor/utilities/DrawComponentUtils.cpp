@@ -40,31 +40,47 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TransformComponent
 	{
 		ImGui::PushItemWidth( 120.f );
 		ImGui::InlineLabel( "position" );
-		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
+		ImGui::ColoredLabel( "x"
+							 "##pos_x",
+							 LABEL_SINGLE_SIZE,
+							 LABEL_RED );
 		ImGui::SameLine();
 		ImGui::InputFloat( "##position_x", &transform.position.x, 1.f, 10.f, "%.1f" );
 		ImGui::SameLine();
-		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_GREEN );
+		ImGui::ColoredLabel( "y"
+							 "##pos_y",
+							 LABEL_SINGLE_SIZE,
+							 LABEL_GREEN );
 		ImGui::SameLine();
 		ImGui::InputFloat( "##position_y", &transform.position.y, 1.f, 10.f, "%.1f" );
 
-		ImGui::InlineLabel( "scale" );
+		ImGui::InlineLabel( "scale"
+							"##scl_x" );
 		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##scale_x", &transform.scale.x, 1.f, 1.f, "%.1f" ) )
 		{
 			transform.scale.x = std::clamp( transform.scale.x, 0.1f, 150.f );
+			transform.bDirty = true;
 		}
 		ImGui::SameLine();
-		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_GREEN );
+		ImGui::ColoredLabel( "y"
+							 "##scl_x",
+							 LABEL_SINGLE_SIZE,
+							 LABEL_GREEN );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##scale_y", &transform.scale.y, 1.f, 1.f, "%.1f" ) )
 		{
 			transform.scale.y = std::clamp( transform.scale.y, 0.1f, 150.f );
+			transform.bDirty = true;
 		}
 
 		ImGui::InlineLabel( "rotation" );
-		ImGui::InputFloat( "##rotation", &transform.rotation, 1.f, 1.f, "%.1f" );
+		if ( ImGui::InputFloat( "##rotation", &transform.rotation, 1.f, 1.f, "%.1f" ) )
+		{
+			transform.bDirty = true;
+		}
+
 		ImGui::PopItemWidth();
 		ImGui::TreePop();
 	}
@@ -153,7 +169,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 		ImGui::ItemToolTip( "Z-Index in which to draw the sprite." );
 		if ( ImGui::InputInt( "##layer", &sprite.layer, 1, 1 ) )
 		{
-			sprite.layer = std::clamp( sprite.layer, 0, 10 );
+			sprite.layer = std::clamp( sprite.layer, 0, 255 );
 		}
 
 		ImGui::InlineLabel( "start pos" );
@@ -173,6 +189,10 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 			sprite.start_y = std::clamp( sprite.start_y, 0, 32 );
 			bChanged = true;
 		}
+
+		ImGui::InlineLabel( "Iso Sorting" );
+		ImGui::Checkbox( "##isoSorting", &sprite.bIsoMetric );
+		ImGui::ItemToolTip( "If the scene is Isometric, the sprite should use iso sorting." );
 
 		ImGui::TreePop();
 		ImGui::PopItemWidth();
@@ -544,6 +564,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TextComponent& tex
 				 "##_textStr", sTextBuffer.data(), sizeof( char ) * 1024, 0 /*ImGuiInputTextFlags_EnterReturnsTrue*/ ) )
 		{
 			textComponent.sTextStr = std::string{ sTextBuffer.data() };
+			textComponent.bDirty = true;
 		}
 
 		std::string sFontName{ textComponent.sFontName };
@@ -558,6 +579,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TextComponent& tex
 				{
 					sFontName = sFont;
 					textComponent.sFontName = sFontName;
+					textComponent.bDirty = true;
 				}
 			}
 
@@ -568,13 +590,13 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TextComponent& tex
 		ImGui::InlineLabel( "padding" );
 		if ( ImGui::InputInt( "##padding", &textComponent.padding, 0, 0 ) )
 		{
-			// TODO
+			textComponent.bDirty = true;
 		}
 
 		ImGui::InlineLabel( "wrap" );
 		if ( ImGui::InputFloat( "##textWrap", &textComponent.wrap, 0.f, 0.f ) )
 		{
-			// TODO
+			textComponent.bDirty = true;
 		}
 
 		ImGui::PopItemWidth();
@@ -628,7 +650,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 										 "This is the relative position based on the parent's position."
 									   : "World or absolute position of the game object." );
 
-		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
+		ImGui::ColoredLabel( "x##pos_x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat(
 				 "##position_x", bHasParent ? &transform.localPosition.x : &transform.position.x, 1.f, 10.f, "%.1f" ) )
@@ -637,7 +659,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 		}
 
 		ImGui::SameLine();
-		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_GREEN );
+		ImGui::ColoredLabel( "y##pos_y", LABEL_SINGLE_SIZE, LABEL_GREEN );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat(
 				 "##position_y", bHasParent ? &transform.localPosition.y : &transform.position.y, 1.f, 10.f, "%.1f" ) )
@@ -648,25 +670,32 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 		if ( bPositionChanged )
 		{
 			entity.UpdateTransform();
+			// TODO: Post an event!
 		}
 
 		ImGui::InlineLabel( "scale" );
-		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
+		ImGui::ColoredLabel( "x##scl_x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##scale_x", &transform.scale.x, 1.f, 1.f, "%.1f" ) )
 		{
 			transform.scale.x = std::clamp( transform.scale.x, 0.1f, 150.f );
+			transform.bDirty = true;
 		}
 		ImGui::SameLine();
-		ImGui::ColoredLabel( "y", LABEL_SINGLE_SIZE, LABEL_GREEN );
+		ImGui::ColoredLabel( "y##scl_y", LABEL_SINGLE_SIZE, LABEL_GREEN );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##scale_y", &transform.scale.y, 1.f, 1.f, "%.1f" ) )
 		{
 			transform.scale.y = std::clamp( transform.scale.y, 0.1f, 150.f );
+			transform.bDirty = true;
 		}
 
 		ImGui::InlineLabel( "rotation" );
-		ImGui::InputFloat( "##rotation", &transform.rotation, 1.f, 1.f, "%.1f" );
+		if ( ImGui::InputFloat( "##rotation", &transform.rotation, 1.f, 1.f, "%.1f" ) )
+		{
+			transform.bDirty = true;
+		}
+
 		ImGui::PopItemWidth();
 		ImGui::TreePop();
 	}
@@ -732,12 +761,12 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 				 "##_name", sNameBuffer.data(), sizeof( char ) * 255, ImGuiInputTextFlags_EnterReturnsTrue ) )
 		{
 			std::string sBufferStr{ sNameBuffer.data() };
-			if ( !sBufferStr.empty() && !SCENE_MANAGER().CheckTagName( sBufferStr ))
+			if ( !sBufferStr.empty() && !SCENE_MANAGER().CheckTagName( sBufferStr ) )
 			{
-				 std::string sOldName{ identification.name };
-				 identification.name = std::string{ sNameBuffer.data() };
-				 EVENT_DISPATCHER().EmitEvent( Events::NameChangeEvent{ .sOldName = sOldName, .sNewName =
-				 identification.name, .pEntity = &entity } );
+				std::string sOldName{ identification.name };
+				identification.name = std::string{ sNameBuffer.data() };
+				EVENT_DISPATCHER().EmitEvent( Events::NameChangeEvent{
+					.sOldName = sOldName, .sNewName = identification.name, .pEntity = &entity } );
 			}
 		}
 

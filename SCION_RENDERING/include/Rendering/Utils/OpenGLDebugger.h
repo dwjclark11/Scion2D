@@ -15,14 +15,6 @@ enum class OpenGLDebuggerSeverity : short
 
 class OpenGLDebugger final
 {
-  private:
-	OpenGLDebugger() = delete;
-	OpenGLDebugger( const OpenGLDebugger& ) = delete;
-	OpenGLDebugger& operator=( const OpenGLDebugger& ) = delete;
-	OpenGLDebugger( OpenGLDebugger&& ) = delete;
-	OpenGLDebugger& operator=( OpenGLDebugger&& ) = delete;
-	~OpenGLDebugger() = delete;
-
   public:
 	/*
 	 * @brief Initializes the OpenGL debug callback. A valid OpenGL context is necessary.
@@ -60,5 +52,13 @@ class OpenGLDebugger final
 	static void breakOnError( bool );
 	static void breakOnWarning( bool );
 	static void setSeverityLevel( OpenGLDebuggerSeverity );
+
+  private:
+	OpenGLDebugger() = delete;
+	OpenGLDebugger( const OpenGLDebugger& ) = delete;
+	OpenGLDebugger& operator=( const OpenGLDebugger& ) = delete;
+	OpenGLDebugger( OpenGLDebugger&& ) = delete;
+	OpenGLDebugger& operator=( OpenGLDebugger&& ) = delete;
+	~OpenGLDebugger() = delete;
 };
 } // namespace SCION_RENDERING

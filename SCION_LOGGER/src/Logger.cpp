@@ -12,6 +12,11 @@ Logger::LogTime::LogTime( const std::string& date )
 	, year{ date.substr( 20, 4 ) }
 	, time{ date.substr( 11, 8 ) }
 {
+	// Ensure that the day number does not contain a space
+	if (!dayNumber.empty() && std::isspace(dayNumber[0]))
+	{
+		dayNumber[ 0 ] = '0';
+	}
 }
 
 std::string Logger::CurrentDateTime()

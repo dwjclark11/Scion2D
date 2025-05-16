@@ -24,7 +24,7 @@ ScaleGizmo::ScaleGizmo()
 	Init( "S2D_x_axis_scale", "S2D_y_axis_scale" );
 }
 
-void ScaleGizmo::Update( Canvas& canvas )
+void ScaleGizmo::Update( SCION_CORE::Canvas& canvas )
 {
 	Gizmo::Update( canvas );
 
@@ -39,8 +39,14 @@ void ScaleGizmo::Update( Canvas& canvas )
 	Entity selectedEntity{ *m_pRegistry, m_SelectedEntity };
 	auto& selectedTransform = selectedEntity.GetComponent<TransformComponent>();
 
-	selectedTransform.scale.x += GetDeltaX() * SCALING_FACTOR;
-	selectedTransform.scale.y += GetDeltaY() * SCALING_FACTOR;
+	float deltaX{ GetDeltaX() * SCALING_FACTOR };
+	float deltaY{ GetDeltaY() * SCALING_FACTOR };
+	if ( deltaX > 0.f || deltaY > 0.f )
+	{
+		selectedTransform.scale.x += deltaX;
+		selectedTransform.scale.y += deltaY;
+		selectedTransform.bDirty = true;
+	}
 
 	SetGizmoPosition( selectedEntity );
 

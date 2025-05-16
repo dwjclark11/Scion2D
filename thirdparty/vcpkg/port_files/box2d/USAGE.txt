@@ -1,0 +1,7 @@
+In SCION2D, we are currently using Box2D version 2.41
+These files are for VCPKG. If you update to the latest vcpkg, the version of box2d
+that will be installed is 3.1. 3.1 uses a C API that differs to what we already have in place.
+Eventually, I will update to use that latest; however, for now, we can just use these files 
+and perform a overlay-port to install 2.41.
+
+Dustin

@@ -8,16 +8,6 @@ namespace SCION_RENDERING
 {
 class Shader
 {
-  private:
-	GLuint m_ShaderProgramID;
-	std::string m_sVertexPath;
-	std::string m_sFragmentPath;
-
-	std::unordered_map<std::string, GLuint> m_UniformLocationMap;
-
-  private:
-	GLuint GetUniformLocation( const std::string& uniformName );
-
   public:
 	Shader();
 	Shader( GLuint program, const std::string vertexPath, const std::string& fragmentPath );
@@ -43,5 +33,15 @@ class Shader
 	void Disable() const;
 
 	inline const GLuint ShaderProgramID() const { return m_ShaderProgramID; }
+
+  private:
+	GLuint GetUniformLocation( const std::string& uniformName );
+
+  private:
+	GLuint m_ShaderProgramID;
+	std::string m_sVertexPath;
+	std::string m_sFragmentPath;
+
+	std::unordered_map<std::string, GLuint> m_UniformLocationMap;
 };
 } // namespace SCION_RENDERING

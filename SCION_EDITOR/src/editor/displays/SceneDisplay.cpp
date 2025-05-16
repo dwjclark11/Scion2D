@@ -11,7 +11,12 @@
 #include "Core/Systems/PhysicsSystem.h"
 #include "Core/Systems/ScriptingSystem.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
+
 #include "Logger/Logger.h"
+#include "Logger/CrashLogger.h"
+
+#include "Core/Scripting/CrashLoggerTestBindings.h"
+
 #include "Sounds/MusicPlayer/MusicPlayer.h"
 #include "Sounds/SoundPlayer/SoundFxPlayer.h"
 #include "Physics/Box2DWrappers.h"
@@ -21,7 +26,7 @@
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/EditorUtilities.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
-#include "editor/utilities/SaveProject.h"
+#include "Core/CoreUtilities/SaveProject.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 
@@ -46,7 +51,7 @@ namespace SCION_EDITOR
 {
 void SceneDisplay::LoadScene()
 {
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 	if ( !pCurrentScene )
 		return;
 
@@ -54,7 +59,7 @@ void SceneDisplay::LoadScene()
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 
 	const auto& canvas = pCurrentScene->GetCanvas();
-	runtimeRegistry.AddToContext<std::shared_ptr<Camera2D>>(
+	auto pCamera = runtimeRegistry.AddToContext<std::shared_ptr<Camera2D>>(
 		std::make_shared<Camera2D>( canvas.width, canvas.height ) );
 
 	auto pPhysicsWorld = runtimeRegistry.AddToContext<SCION_PHYSICS::PhysicsWorld>(
@@ -95,11 +100,10 @@ void SceneDisplay::LoadScene()
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaSystems( *lua, runtimeRegistry );
 	LuaCoreBinder::CreateLuaBind( *lua, runtimeRegistry );
 
-	SceneManager::CreateSceneManagerLuaBind( *lua );
+	EditorSceneManager::CreateSceneManagerLuaBind( *lua );
 
 	// We need to initialize all of the physics entities
 	auto physicsEntities = runtimeRegistry.GetRegistry().view<PhysicsComponent>();
-
 	for ( auto entity : physicsEntities )
 	{
 		Entity ent{ runtimeRegistry, entity };
@@ -135,20 +139,35 @@ void SceneDisplay::LoadScene()
 		physicsAttributes.scale = transform.scale;
 		physicsAttributes.objectData.entityID = static_cast<std::int32_t>( entity );
 
-		/*
-		 * TODO: Set Filters/Masks/Group Index
-		 */
+		physics.Init( pPhysicsWorld, pCamera->GetWidth(), pCamera->GetHeight() );
 
-		physics.Init( pPhysicsWorld, 640, 480 ); // We should be getting the size from the canvas
+		/*
+		 * Set Filters/Masks/Group Index
+		 */
+		if ( physics.UseFilters() ) // Right now filters are disabled, since there is no way to set this from the editor
+		{
+			physics.SetFilterCategory();
+			physics.SetFilterMask();
+
+			// Should the group index be set based on the sprite layer?
+			physics.SetGroupIndex();
+		}
 	}
 
 	// Get the main script path
-	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>();
+	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
 	if ( !scriptSystem->LoadMainScript( pSaveProject->sMainLuaScript, runtimeRegistry, *lua ) )
 	{
 		SCION_ERROR( "Failed to load the main lua script!" );
 		return;
 	}
+
+	// Setup Crash Tests
+	SCION_CORE::Scripting::CrashLoggerTests::CreateLuaBind( *lua );
+
+	// Set the lua state for the crash logger.
+	// This is used to log the lua stack trace in case of a crash
+	SCION_CRASH_LOGGER().SetLuaState( lua->lua_state() );
 
 	m_bSceneLoaded = true;
 	m_bPlayScene = true;
@@ -158,7 +177,10 @@ void SceneDisplay::UnloadScene()
 {
 	m_bPlayScene = false;
 	m_bSceneLoaded = false;
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
+
+	SCION_ASSERT( pCurrentScene && "Current Scene must be Valid." );
+
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 
 	runtimeRegistry.ClearRegistry();
@@ -191,7 +213,7 @@ void SceneDisplay::RenderScene() const
 	renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );
 	renderer->ClearBuffers( true, true, false );
 
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 
 	if ( pCurrentScene && m_bPlayScene )
 	{
@@ -229,7 +251,7 @@ void SceneDisplay::HandleKeyEvent( const SCION_CORE::Events::KeyEvent keyEvent )
 	}
 
 	// Send double dispatch events to the scene dispatcher.
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 	if ( !pCurrentScene )
 		return;
 
@@ -324,7 +346,7 @@ void SceneDisplay::Draw()
 		auto& editorFramebuffers = MAIN_REGISTRY().GetContext<std::shared_ptr<EditorFramebuffers>>();
 		const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];
 
-		if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene() )
+		if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject() )
 		{
 			auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 			// We need to set the relative mouse window so that any scripts scripts will
@@ -362,7 +384,7 @@ void SceneDisplay::Update()
 	if ( !m_bPlayScene )
 		return;
 
-	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 	if ( !pCurrentScene )
 		return;
 
@@ -374,6 +396,7 @@ void SceneDisplay::Update()
 	double dt = coreGlobals.GetDeltaTime();
 	coreGlobals.UpdateDeltaTime();
 
+	// Clamp delta time to the target frame rate
 	if ( dt < TARGET_FRAME_TIME )
 	{
 		std::this_thread::sleep_for( std::chrono::duration<double>( TARGET_FRAME_TIME - dt ) );

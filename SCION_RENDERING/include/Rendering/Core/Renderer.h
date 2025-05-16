@@ -29,18 +29,6 @@ class Renderer
 		ONE_MINUS_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA,
 	};
 
-  private:
-	std::vector<Line> m_Lines;
-	std::vector<Rect> m_Rects;
-	std::vector<Circle> m_Circles;
-	std::vector<Text> m_Text;
-
-	std::unique_ptr<LineBatchRenderer> m_pLineBatch;
-	std::unique_ptr<RectBatchRenderer> m_pRectBatch;
-	std::unique_ptr<CircleBatchRenderer> m_pCircleBatch;
-	std::unique_ptr<SpriteBatchRenderer> m_pSpriteBatch;
-	std::unique_ptr<TextBatchRenderer> m_pTextBatch;
-
   public:
 	Renderer();
 	~Renderer() = default;
@@ -81,5 +69,17 @@ class Renderer
 	void DrawAllText( class Shader& shader, class Camera2D& camera );
 
 	void ClearPrimitives();
+
+  private:
+	std::vector<Line> m_Lines;
+	std::vector<Rect> m_Rects;
+	std::vector<Circle> m_Circles;
+	std::vector<Text> m_Text;
+
+	std::unique_ptr<LineBatchRenderer> m_pLineBatch;
+	std::unique_ptr<RectBatchRenderer> m_pRectBatch;
+	std::unique_ptr<CircleBatchRenderer> m_pCircleBatch;
+	std::unique_ptr<SpriteBatchRenderer> m_pSpriteBatch;
+	std::unique_ptr<TextBatchRenderer> m_pTextBatch;
 };
 } // namespace SCION_RENDERING

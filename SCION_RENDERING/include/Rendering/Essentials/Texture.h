@@ -15,15 +15,6 @@ class Texture
 		NONE
 	};
 
-  private:
-	GLuint m_TextureID;
-	int m_Width;
-	int m_Height;
-	std::string m_sPath;
-	TextureType m_eType;
-	bool m_bTileset;
-	bool m_bEditorTexture;
-
   public:
 	Texture();
 	Texture( GLuint id, int width, int height, TextureType type = TextureType::PIXEL,
@@ -42,5 +33,14 @@ class Texture
 
 	void Bind();
 	void Unbind();
+
+  private:
+	GLuint m_TextureID;
+	int m_Width;
+	int m_Height;
+	std::string m_sPath;
+	TextureType m_eType;
+	bool m_bTileset;
+	bool m_bEditorTexture;
 };
 } // namespace SCION_RENDERING

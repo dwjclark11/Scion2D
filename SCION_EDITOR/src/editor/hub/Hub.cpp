@@ -10,6 +10,8 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 
+#include "ScionUtilities/HelperUtilities.h"
+
 // IMGUI
 // ===================================
 #include <imgui.h>
@@ -100,10 +102,7 @@ void Hub::DrawGui()
 		return;
 	}
 
-	int x, y;
-	SDL_GetWindowPosition( m_Window.GetWindow().get(), &x, &y );
-
-	ImGui::SetWindowPos( ImVec2{ static_cast<float>( x ), static_cast<float>( y ) } );
+	ImGui::SetWindowPos( ImVec2{ 0.f, 0.f } );
 	ImVec2 windowPos = ImGui::GetWindowPos();
 	ImGui::SetWindowSize( ImVec2{ m_Width, m_Height } );
 

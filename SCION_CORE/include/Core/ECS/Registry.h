@@ -13,10 +13,6 @@ enum ERegistryType
 
 class Registry
 {
-  private:
-	std::shared_ptr<entt::registry> m_pRegistry;
-	ERegistryType m_eType{ ERegistryType::ScionRegistry };
-
   public:
 	Registry();
 	~Registry() = default;
@@ -78,6 +74,10 @@ class Registry
 
 	template <typename TComponent>
 	static void RegisterMetaComponent();
+
+  private:
+	std::shared_ptr<entt::registry> m_pRegistry;
+	ERegistryType m_eType{ ERegistryType::ScionRegistry };
 };
 
 template <typename TComponent>

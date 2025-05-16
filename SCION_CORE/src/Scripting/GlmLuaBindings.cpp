@@ -2,12 +2,13 @@
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
+#include "Core/Scripting/ScriptingUtilities.h"
 
 namespace SCION_CORE::Scripting
 {
 
 // glm::vec2
-void CreateVec2Bind( sol::state& lua )
+static void CreateVec2Bind( sol::state& lua )
 {
 	// multiplier overloads
 	auto vec2_multiply_overloads = sol::overload( []( const glm::vec2& v1, const glm::vec2& v2 ) { return v1 * v2; },
@@ -61,7 +62,7 @@ void CreateVec2Bind( sol::state& lua )
 }
 
 // glm::vec3
-void CreateVec3Bind( sol::state& lua )
+static void CreateVec3Bind( sol::state& lua )
 {
 	// multiplier overloads
 	auto vec3_multiply_overloads = sol::overload( []( const glm::vec3& v1, const glm::vec3& v2 ) { return v1 * v2; },
@@ -119,7 +120,7 @@ void CreateVec3Bind( sol::state& lua )
 }
 
 // glm::vec4
-void CreateVec4Bind( sol::state& lua )
+static void CreateVec4Bind( sol::state& lua )
 {
 	// multiplier overloads
 	auto vec4_multiply_overloads = sol::overload( []( const glm::vec4& v1, const glm::vec4& v2 ) { return v1 * v2; },
@@ -180,7 +181,7 @@ void CreateVec4Bind( sol::state& lua )
 		[]( const glm::vec4& v ) { return glm::epsilonEqual( v.w, 0.f, 0.001f ); } );
 }
 
-void CreateQuaternionLuaBind( sol::state& lua )
+static void CreateQuaternionLuaBind( sol::state& lua )
 {
 	/* This might not be used */
 	lua.new_usertype<glm::quat>(
@@ -208,7 +209,7 @@ void CreateQuaternionLuaBind( sol::state& lua )
 /*
  * Some helper math functions
  */
-void MathFreeFunctions( sol::state& lua )
+static void MathFreeFunctions( sol::state& lua )
 {
 	lua.set_function( "S2D_distance",
 					  sol::overload( []( glm::vec2& a, glm::vec2& b ) { return glm::distance( a, b ); },
@@ -243,20 +244,27 @@ void MathFreeFunctions( sol::state& lua )
 					   []( const glm::vec3& v1, const glm::vec3& v2 ) { return glm::cross( v1, v2 ); } ) );
 }
 
-void MathConstants( sol::state& lua )
+static void MathConstants( sol::state& lua )
 {
-	lua.set( "S2D_PI", 3.14159265359f );
-	lua.set( "S2D_TWO_PI", 6.28318530717f );
-	lua.set( "S2D_PI_SQUARED", 9.86960440108f );
-	lua.set( "S2D_PI_OVER_2", 1.57079632679f );
-	lua.set( "S2D_PI_OVER_4", 0.78539816339f );
-	lua.set( "S2D_PHI", 1.6180339887498948482045868343656381f );
-	lua.set( "S2D_EULERS", 2.71828182845904523536f );
+	// clang-format off
+	auto constants = MakeReadOnlyTable( lua,
+		{
+			std::make_pair( "PI",			3.14159265359f ),
+			std::make_pair( "TWO_PI",		6.28318530717f ),
+			std::make_pair( "PI_SQUARED",	9.86960440108f ),
+			std::make_pair( "PI_OVER_2",	1.57079632679f ),
+			std::make_pair( "PI_OVER_4",	0.78539816339f ),
+			std::make_pair( "PHI",			1.6180339887498948482045868343656381f ),
+			std::make_pair( "EULERS",		2.71828182845904523536f ),
+			std::make_pair( "SQRT_2",		1.4142135623730950488016887242097f ),
+			std::make_pair( "SQRT_3",		1.7320508075688772935274463415059f ),
+			std::make_pair( "INV_SQRT_2",	0.70710678118654752440084436210485f ),
+			std::make_pair( "INV_SQRT_3",	0.57735026918962576450914878050196f )
+		}
+	);
+	// clang-format on
 
-	lua.set( "S2D_SQRT_2", 1.4142135623730950488016887242097f );
-	lua.set( "S2D_SQRT_3", 1.7320508075688772935274463415059f );
-	lua.set( "S2D_INV_SQRT_2", 0.70710678118654752440084436210485f );
-	lua.set( "S2D_INV_SQRT_3", 0.57735026918962576450914878050196f );
+	lua[ "S2D_Constants" ] = constants;
 }
 
 void GLMBindings::CreateGLMBindings( sol::state& lua )

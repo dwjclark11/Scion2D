@@ -7,6 +7,9 @@ add_library(SCION_CORE
     "include/Core/CoreUtilities/FollowCamera.h"
     "src/CoreUtilities/FollowCamera.cpp"
 	"include/Core/CoreUtilities/EngineShaders.h"
+	"include/Core/CoreUtilities/SaveProject.h"
+	"include/Core/CoreUtilities/Prefab.h"
+	"src/CoreUtilities/Prefab.cpp"
 
 	# ECS - Entity, Registry
     "include/Core/ECS/Entity.h"
@@ -24,7 +27,6 @@ add_library(SCION_CORE
 
     # Components
     "include/Core/ECS/Components/Identification.h"
-
     "include/Core/ECS/Components/AnimationComponent.h"
     "src/ECS/Components/AnimationComponent.cpp"
     "include/Core/ECS/Components/BoxColliderComponent.h"
@@ -45,7 +47,16 @@ add_library(SCION_CORE
     "include/Core/ECS/Components/TileComponent.h"
 	"include/Core/ECS/Components/Relationship.h"
 	"src/ECS/Components/Relationship.cpp"
+	"include/Core/ECS/Components/UIComponent.h"
+	"src/ECS/Components/UIComponent.cpp"
+
 	"include/Core/ECS/Components/AllComponents.h"
+
+	# Character
+	"include/Core/Character/Character.h"
+	"src/Character/Character.cpp"
+	"include/Core/Character/PlayerStart.h"
+	"src/Character/PlayerStart.cpp"
 
 	# Resources
     "include/Core/Resources/AssetManager.h"
@@ -68,6 +79,10 @@ add_library(SCION_CORE
     "src/Scripting/UserDataBindings.cpp"
 	"include/Core/Scripting/LuaFilesystemBindings.h"
 	"src/Scripting/LuaFilesystemBindings.cpp"
+	"include/Core/Scripting/CrashLoggerTestBindings.h"
+	"src/Scripting/CrashLoggerTestBindings.cpp"
+	"include/Core/Scripting/ScriptingUtilities.h"
+	"src/Scripting/ScriptingUtilities.cpp"
 
 	# States and State Machine
     "include/Core/States/State.h"
@@ -105,13 +120,21 @@ add_library(SCION_CORE
 	"src/Events/EventDispatcher.cpp"
 	"include/Core/Events/EngineEventTypes.h"
 	"src/Events/EngineEventTypes.cpp"
- "include/Core/Character/Character.h" "src/Character/Character.cpp" "include/Core/ECS/Components/UIComponent.h" "src/ECS/Components/UIComponent.cpp")
+	
+	# Scenes
+	"include/Core/Scene/Scene.h"
+	"src/Scene/Scene.cpp"
+	"include/Core/Scene/SceneManager.h"
+	"src/Scene/SceneManager.cpp"	
+)
 
 target_include_directories(
-    SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+	PRIVATE ${SOL2_INCLUDE_DIRS}
+)
 
 target_link_libraries(SCION_CORE PUBLIC
-    glm::glm EnTT::EnTT sol2
+    glm::glm EnTT::EnTT sol2::sol2 ${LUA_LIBRARIES}
     $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
     SCION_LOGGER SCION_UTILITIES SCION_PHYSICS

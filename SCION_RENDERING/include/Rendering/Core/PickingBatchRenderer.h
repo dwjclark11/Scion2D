@@ -6,10 +6,6 @@ namespace SCION_RENDERING
 {
 class PickingBatchRenderer : public Batcher<Batch, PickingGlyph>
 {
-  private: // Functions
-	void Initialize();
-	virtual void GenerateBatches() override;
-
   public:
 	PickingBatchRenderer();
 	virtual ~PickingBatchRenderer() = default;
@@ -38,5 +34,9 @@ class PickingBatchRenderer : public Batcher<Batch, PickingGlyph>
 	void AddSprite( const glm::vec4& spriteRect, const glm::vec4 uvRect, GLuint textureID, int layer, uint32_t id,
 					const Color& color = Color{ .r = 255, .g = 255, .b = 255, .a = 255 },
 					glm::mat4 model = glm::mat4{ 1.f } );
+
+  private: // Functions
+	void Initialize();
+	virtual void GenerateBatches() override;
 };
 } // namespace SCION_RENDERING

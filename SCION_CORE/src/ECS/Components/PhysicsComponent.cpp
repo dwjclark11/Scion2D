@@ -69,7 +69,20 @@ void PhysicsComponent::Init( SCION_PHYSICS::PhysicsWorld pPhysicsWorld, int wind
 	}
 	else
 	{
-		// TODO: Create your polygon shape
+		// TODO: Add the ability to create various convex polygon shapes based on the number
+		// of vertices and their position.
+		// Currently hardcoded to a 4 vertice shape, square, rect, diamond, etc.
+		auto halfWidth = PIXELS_TO_METERS * m_InitialAttribs.boxSize.x * m_InitialAttribs.scale.x * 0.5f;
+		auto halfHeight = PIXELS_TO_METERS * m_InitialAttribs.boxSize.y * m_InitialAttribs.scale.y * 0.5f;
+
+		b2Vec2 vertices[ 4 ];
+
+		vertices[ 0 ].Set( 0.f, 0.f );
+		vertices[ 1 ].Set( halfWidth, -halfHeight );
+		vertices[ 2 ].Set( -halfWidth, -halfHeight );
+		vertices[ 3 ].Set( 0.f, -halfHeight * 2.f );
+
+		polyShape.Set( vertices, 4 );
 	}
 
 	// Create the user data
@@ -220,7 +233,7 @@ SCION_PHYSICS::ObjectData PhysicsComponent::GetCurrentObjectData()
 {
 	SCION_ASSERT( m_pRigidBody );
 
-	if (!m_pRigidBody)
+	if ( !m_pRigidBody )
 	{
 		return {};
 	}
@@ -242,6 +255,81 @@ SCION_PHYSICS::ObjectData PhysicsComponent::GetCurrentObjectData()
 	return {};
 }
 
+void PhysicsComponent::SetFilterCategory( uint16_t category )
+{
+	if ( !m_pRigidBody )
+	{
+		m_InitialAttribs.filterCategory = category;
+		return;
+	}
+
+	auto pFixtureList = m_pRigidBody->GetFixtureList();
+	if ( !pFixtureList )
+	{
+		return;
+	}
+
+	b2Filter copyFilter{ pFixtureList->GetFilterData() };
+	copyFilter.categoryBits = category;
+	pFixtureList->SetFilterData( copyFilter );
+	m_InitialAttribs.filterCategory = category;
+}
+
+void PhysicsComponent::SetFilterCategory()
+{
+	SetFilterCategory( m_InitialAttribs.filterCategory );
+}
+
+void PhysicsComponent::SetFilterMask( uint16_t mask )
+{
+	if ( !m_pRigidBody )
+	{
+		m_InitialAttribs.filterMask = mask;
+		return;
+	}
+
+	auto pFixtureList = m_pRigidBody->GetFixtureList();
+	if ( !pFixtureList )
+	{
+		return;
+	}
+
+	b2Filter copyFilter{ pFixtureList->GetFilterData() };
+	copyFilter.maskBits = mask;
+	pFixtureList->SetFilterData( copyFilter );
+	m_InitialAttribs.filterMask = mask;
+}
+
+void PhysicsComponent::SetFilterMask()
+{
+	SetFilterMask( m_InitialAttribs.filterMask );
+}
+
+void PhysicsComponent::SetGroupIndex( int index )
+{
+	if ( !m_pRigidBody )
+	{
+		m_InitialAttribs.groupIndex = index;
+		return;
+	}
+
+	auto pFixtureList = m_pRigidBody->GetFixtureList();
+	if ( !pFixtureList )
+	{
+		return;
+	}
+
+	b2Filter copyFilter{ pFixtureList->GetFilterData() };
+	copyFilter.groupIndex = index;
+	pFixtureList->SetFilterData( copyFilter );
+	m_InitialAttribs.groupIndex = index;
+}
+
+void PhysicsComponent::SetGroupIndex()
+{
+	SetGroupIndex( m_InitialAttribs.groupIndex );
+}
+
 void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& registry )
 {
 	lua.new_usertype<ObjectData>(
@@ -255,21 +343,14 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 				bool bCollider,
 				bool bTrigger,
 				bool bFriendly,
-				std::uint32_t entityID ) {
-				return ObjectData{ .tag = tag,
-								   .group = group,
-								   .bCollider = bCollider,
-								   .bTrigger = bTrigger,
-								   .bIsFriendly = bFriendly,
-								   .entityID = entityID };
-			},
+				std::uint32_t entityID ) { return ObjectData{ tag, group, bCollider, bTrigger, bFriendly, entityID }; },
 			[]( const sol::table& objectData ) {
-				return ObjectData{ .tag = objectData[ "tag" ].get_or( std::string{ "" } ),
-								   .group = objectData[ "group" ].get_or( std::string{ "" } ),
-								   .bCollider = objectData[ "bCollider" ].get_or( false ),
-								   .bTrigger = objectData[ "bTrigger" ].get_or( false ),
-								   .bIsFriendly = objectData[ "bIsFriendly" ].get_or( false ),
-								   .entityID = objectData[ "entityID" ].get_or( (std::uint32_t)entt::null ) };
+				return ObjectData{ objectData[ "tag" ].get_or( std::string{ "" } ),
+								   objectData[ "group" ].get_or( std::string{ "" } ),
+								   objectData[ "bCollider" ].get_or( false ),
+								   objectData[ "bTrigger" ].get_or( false ),
+								   objectData[ "bIsFriendly" ].get_or( false ),
+								   objectData[ "entityID" ].get_or( (std::uint32_t)entt::null ) };
 			} ),
 		"tag",
 		&ObjectData::tag,
@@ -283,8 +364,8 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 		&ObjectData::bTrigger,
 		"entityID",
 		&ObjectData::entityID,
-		"contactEntities",
-		&ObjectData::contactEntities,
+		"contactEntities", // This returns the vector directly. Use physics.contactEntites
+		sol::readonly_property( []( ObjectData& objData ) { return objData.GetContactEntities(); } ),
 		"to_string",
 		&ObjectData::to_string );
 
@@ -320,12 +401,13 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 								.bIsSensor = physAttr[ "bIsSensor" ].get_or( false ),
 								.filterCategory = physAttr[ "filterCategory" ].get_or( (uint16_t)0 ),
 								.filterMask = physAttr[ "filterMask" ].get_or( (uint16_t)0 ),
-								.objectData = ObjectData{
-									.tag = physAttr[ "objectData" ][ "tag" ].get_or( std::string{ "" } ),
-									.group = physAttr[ "objectData" ][ "group" ].get_or( std::string{ "" } ),
-									.bCollider = physAttr[ "objectData" ][ "bCollider" ].get_or( false ),
-									.bTrigger = physAttr[ "objectData" ][ "bTrigger" ].get_or( false ),
-									.entityID = physAttr[ "objectData" ][ "entityID" ].get_or( (std::uint32_t)0 ) } };
+								.objectData =
+									ObjectData{ physAttr[ "objectData" ][ "tag" ].get_or( std::string{ "" } ),
+												physAttr[ "objectData" ][ "group" ].get_or( std::string{ "" } ),
+												physAttr[ "objectData" ][ "bCollider" ].get_or( false ),
+												physAttr[ "objectData" ][ "bTrigger" ].get_or( false ),
+												physAttr[ "objectData" ][ "bIsFriendly" ].get_or( false ),
+												physAttr[ "objectData" ][ "entityID" ].get_or( (std::uint32_t)0 ) } };
 						} ),
 		"eType",
 		&PhysicsAttributes::eType,
@@ -379,7 +461,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			pc.Init( pPhysicsWorld, 640, 480 ); // TODO: Change based on window values
 			return pc;
 		} ),
-		"linear_impulse",
+		"linearImpulse",
 		[]( PhysicsComponent& pc, const glm::vec2& impulse ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -390,7 +472,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->ApplyLinearImpulse( b2Vec2{ impulse.x, impulse.y }, body->GetPosition(), true );
 		},
-		"angular_impulse",
+		"angularImpulse",
 		[]( PhysicsComponent& pc, float impulse ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -401,7 +483,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->ApplyAngularImpulse( impulse, true );
 		},
-		"set_linear_velocity",
+		"setLinearVelocity",
 		[]( PhysicsComponent& pc, const glm::vec2& velocity ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -412,7 +494,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->SetLinearVelocity( b2Vec2{ velocity.x, velocity.y } );
 		},
-		"get_linear_velocity",
+		"getLinearVelocity",
 		[]( PhysicsComponent& pc ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -423,7 +505,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			const auto& linearVelocity = body->GetLinearVelocity();
 			return glm::vec2{ linearVelocity.x, linearVelocity.y };
 		},
-		"set_angular_velocity",
+		"setAngularVelocity",
 		[]( PhysicsComponent& pc, float angularVelocity ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -434,7 +516,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->SetAngularVelocity( angularVelocity );
 		},
-		"get_angular_velocity",
+		"getAngularVelocity",
 		[]( PhysicsComponent& pc ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -445,7 +527,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			return body->GetAngularVelocity();
 		},
-		"set_gravity_scale",
+		"setGravityScale",
 		[]( PhysicsComponent& pc, float gravityScale ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -456,7 +538,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->SetGravityScale( gravityScale );
 		},
-		"get_gravity_scale",
+		"getGravityScale",
 		[]( PhysicsComponent& pc ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -467,7 +549,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			return body->GetGravityScale();
 		},
-		"set_transform",
+		"setTransform",
 		[]( PhysicsComponent& pc, const glm::vec2& position ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -487,11 +569,11 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->SetTransform( b2Vec2{ bx, by }, 0.f );
 		},
-		"get_transform",
+		"getTransform",
 		[]( const PhysicsComponent& pc ) {
 
 		},
-		"set_body_type",
+		"setBodyType",
 		[ & ]( PhysicsComponent& pc, RigidBodyType type ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -512,7 +594,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 			body->SetType( bodyType );
 		},
-		"set_bullet",
+		"setAsBullet",
 		[ & ]( PhysicsComponent& pc, bool bullet ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -522,7 +604,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			}
 			body->SetBullet( bullet );
 		},
-		"is_bullet",
+		"isBullet",
 		[ & ]( PhysicsComponent& pc ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -532,7 +614,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			}
 			return body->IsBullet();
 		},
-		"set_filter_category",
+		"setFilterCategory",
 		[]( PhysicsComponent& pc ) {
 			auto body = pc.GetBody();
 			if ( !body )
@@ -540,18 +622,18 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 				return;
 			}
 		},
-		"cast_ray",
+		"castRay",
 		[]( PhysicsComponent& pc, const glm::vec2& p1, const glm::vec2& p2, sol::this_state s ) {
 			auto objectData = pc.CastRay( b2Vec2{ p1.x, p1.y }, b2Vec2{ p2.x, p2.y } );
 			return objectData.entityID == entt::null ? sol::lua_nil_t{} : sol::make_object( s, objectData );
 		},
-		"box_trace",
+		"boxTrace",
 		[]( PhysicsComponent& pc, const glm::vec2& lowerBounds, const glm::vec2& upperBounds, sol::this_state s ) {
 			auto vecObjectData =
 				pc.BoxTrace( b2Vec2{ lowerBounds.x, lowerBounds.y }, b2Vec2{ upperBounds.x, upperBounds.y } );
 			return vecObjectData.empty() ? sol::lua_nil_t{} : sol::make_object( s, vecObjectData );
 		},
-		"object_data",
+		"objectData",
 		[]( PhysicsComponent& pc ) { return pc.GetCurrentObjectData(); }
 
 	);
