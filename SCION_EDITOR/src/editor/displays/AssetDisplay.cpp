@@ -365,6 +365,12 @@ void AssetDisplay::DrawSelectedAssets()
 
 		ImGui::EndTable();
 	}
+
+	// If we are clicking on the display and no item, we want to reset the selection.
+	if ( !ImGui::IsAnyItemHovered() && ImGui::IsMouseClicked( 0 ) && !m_bRename )
+	{
+		m_SelectedID = -1;
+	}
 }
 
 AssetDisplay::AssetDisplay()
