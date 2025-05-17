@@ -32,8 +32,7 @@
 
 #define SCION_ASSERT( x ) assert( x )
 #define SCION_INIT_LOGS( console, retain ) SCION_LOGGER::Logger::GetInstance().Init( console, retain )
-#define SCION_LOG_ADDED() SCION_LOGGER::Logger::GetInstance().LogAdded()
-#define SCION_RESET_ADDED() SCION_LOGGER::Logger::GetInstance().ResetLogAdded()
+
 #define SCION_GET_LOGS() SCION_LOGGER::Logger::GetInstance().GetLogs()
 #define SCION_CLEAR_LOGS() SCION_LOGGER::Logger::GetInstance().ClearLogs()
 
@@ -82,12 +81,13 @@ class Logger
 
 	inline void ClearLogs() { m_LogEntries.clear(); }
 	inline const std::vector<LogEntry>& GetLogs() { return m_LogEntries; }
-	inline void ResetLogAdded() { m_bLogAdded = false; }
-	inline bool LogAdded() const { return m_bLogAdded; }
-
+	
   private:
 	std::vector<LogEntry> m_LogEntries;
-	bool m_bLogAdded{ false }, m_bInitialized{ false }, m_bConsoleLog{ true }, m_bRetainLogs{ true };
+
+	bool m_bInitialized{ false };
+	bool m_bConsoleLog{ true };
+	bool m_bRetainLogs{ true };
 
 	Logger() = default;
 

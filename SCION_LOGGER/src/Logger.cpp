@@ -82,7 +82,6 @@ void Logger::LuaLog( const std::string_view message )
 	if ( m_bRetainLogs )
 	{
 		m_LogEntries.emplace_back( LogEntry::LogType::INFO, ss.str() );
-		m_bLogAdded = true;
 	}
 }
 
@@ -114,7 +113,6 @@ void Logger::LuaWarn( const std::string_view message )
 	if ( m_bRetainLogs )
 	{
 		m_LogEntries.emplace_back( LogEntry::LogType::WARN, ss.str() );
-		m_bLogAdded = true;
 	}
 }
 
@@ -146,7 +144,6 @@ void Logger::LuaError( const std::string_view message )
 	if ( m_bRetainLogs )
 	{
 		m_LogEntries.emplace_back( LogEntry::LogType::ERR, ss.str() );
-		m_bLogAdded = true;
 	}
 }
 } // namespace SCION_LOGGER
