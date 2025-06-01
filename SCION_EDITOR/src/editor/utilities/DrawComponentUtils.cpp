@@ -316,7 +316,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& 
 		ImGui::AddSpaces( 2 );
 
 		PhysicsAttributes& physicsAttributes = physics.GetChangableAttributes();
-		static std::string sSelectedBodyType{ "" };
+		std::string sSelectedBodyType{ GetRigidBodyTypeString( physicsAttributes.eType ) };
 
 		ImGui::InlineLabel( "body type" );
 		ImGui::ItemToolTip( "The body type: static, kinematic, or dynamic." );
@@ -336,7 +336,9 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& 
 			ImGui::EndCombo();
 		}
 
-		static std::string sSelectedCategoryType{ "" };
+		std::string sSelectedCategoryType{
+			GetFilterCategoryString( static_cast<FilterCategory>( physicsAttributes.filterCategory ) ) };
+
 		ImGui::InlineLabel( "category type" );
 		ImGui::ItemToolTip( "The collision category bits. Bodies will usually only use one category type." );
 		if ( ImGui::BeginCombo( "##category_type", sSelectedCategoryType.c_str() ) )
@@ -356,8 +358,9 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& 
 		ImGui::Separator();
 		ImGui::AddSpaces( 2 );
 
-		static std::string sSelectedMaskBit{ "" };
-		static FilterCategory eMaskCategory{ FilterCategory::NO_CATEGORY };
+		std::string sSelectedMaskBit{ "" };
+		FilterCategory eMaskCategory{ FilterCategory::NO_CATEGORY };
+
 		ImGui::InlineLabel( "masks" );
 		ImGui::ItemToolTip(
 			"The collision mask bits. This states the categories that this shape would accept for collision." );
@@ -372,13 +375,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& 
 				}
 			}
 
-			ImGui::EndCombo();
-		}
-
-		if ( !sSelectedMaskBit.empty() && eMaskCategory != FilterCategory::NO_CATEGORY )
-		{
-			ImGui::SetCursorPosX( 128.f );
-			if ( ImGui::Button( "apply mask" ) )
+			if ( !sSelectedMaskBit.empty() && eMaskCategory != FilterCategory::NO_CATEGORY )
 			{
 				uint16_t filterCat = static_cast<uint16_t>( eMaskCategory );
 				if ( !( IsBitSet( physicsAttributes.filterMask, filterCat ) ) )
@@ -392,6 +389,8 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& 
 					SCION_ERROR( "Masks already contain [{}]", sSelectedMaskBit );
 				}
 			}
+
+			ImGui::EndCombo();
 		}
 
 		if ( physicsAttributes.filterMask > 0 )
