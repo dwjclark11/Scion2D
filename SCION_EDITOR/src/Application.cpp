@@ -488,7 +488,14 @@ void Application::ProcessEvents()
 		case SDL_WINDOWEVENT: {
 			switch ( m_Event.window.event )
 			{
-			case SDL_WINDOWEVENT_SIZE_CHANGED: m_pWindow->SetSize( m_Event.window.data1, m_Event.window.data2 ); break;
+			case SDL_WINDOWEVENT_SIZE_CHANGED:
+				// We only care to control the application window.
+				// ImGui handles all separate child windows separately.
+				if ( SDL_GetWindowID( m_pWindow->GetWindow().get() ) == m_Event.window.windowID )
+				{
+					m_pWindow->SetSize( m_Event.window.data1, m_Event.window.data2 );
+				}
+				break;
 			default: break;
 			}
 			break;

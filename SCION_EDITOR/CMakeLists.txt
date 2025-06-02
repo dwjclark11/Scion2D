@@ -100,15 +100,29 @@ add_executable(SCION_EDITOR
 
 target_sources(
 	SCION_EDITOR PRIVATE
-	../thirdparty/imgui_backends/imgui_impl_sdl2.cpp
+	../thirdparty/imgui/imgui.cpp
+	../thirdparty/imgui/imgui_demo.cpp
+	../thirdparty/imgui/imgui_draw.cpp
+	../thirdparty/imgui/imgui_tables.cpp
+	../thirdparty/imgui/imgui_widgets.cpp
+	../thirdparty/imgui/imgui_backends/imgui_impl_opengl3.cpp
+	../thirdparty/imgui/imgui_backends/imgui_impl_sdl2.cpp
+	../thirdparty/imgui/imgui_cpp/imgui_stdlib.cpp
 )
 
 target_include_directories(
     SCION_EDITOR PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src
-	PRIVATE ../thirdparty/imgui_backends
+	PRIVATE
+	../thirdparty/imgui
+	../thirdparty/imgui/imgui_backends
+	../thirdparty/imgui/imgui_cpp
 )
-target_link_libraries(SCION_EDITOR PRIVATE SCION_CORE imgui::imgui)
+
+target_link_libraries(
+	SCION_EDITOR
+	PRIVATE SCION_CORE
+)
 
 add_resources(TARGET Assets IN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets OUT_DIR assets)
 add_dependencies(SCION_EDITOR Copy-Assets)

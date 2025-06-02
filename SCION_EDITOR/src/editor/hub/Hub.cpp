@@ -102,7 +102,7 @@ void Hub::DrawGui()
 		return;
 	}
 
-	ImGui::SetWindowPos( ImVec2{ 0.f, 0.f } );
+	ImGui::SetWindowPos( ImGui::GetMainViewport()->Pos );
 	ImVec2 windowPos = ImGui::GetWindowPos();
 	ImGui::SetWindowSize( ImVec2{ m_Width, m_Height } );
 

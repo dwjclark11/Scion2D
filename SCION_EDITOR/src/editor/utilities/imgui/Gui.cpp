@@ -80,11 +80,11 @@ void Gui::End( SCION_WINDOWING::Window* pWindow )
 	ImGuiIO& io = ImGui::GetIO();
 	if ( io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable )
 	{
-		SDL_GLContext backupContext = SDL_GL_GetCurrentContext();
+		SDL_Window* backupCurrentWindow = SDL_GL_GetCurrentWindow();
+		SDL_GLContext backupCurrentContext = SDL_GL_GetCurrentContext();
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
-
-		SDL_GL_MakeCurrent( pWindow->GetWindow().get(), backupContext );
+		SDL_GL_MakeCurrent( backupCurrentWindow, backupCurrentContext );
 	}
 }
 
