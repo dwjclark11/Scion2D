@@ -79,7 +79,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 ## Install dependencies 
 - Windows
 	```
-	vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer lua sol2 stb tinyfiledialogs rapidjson imgui[docking-experimental,opengl3-binding]
+	vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer lua sol2 stb tinyfiledialogs rapidjson
 	```
 - Linux[debian based]
 	```
@@ -98,11 +98,13 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 		sudo apt install build-essential
 		```
 	```
-	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer lua sol2 stb tinyfiledialogs rapidjson imgui[docking-experimental,opengl3-binding]
+	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer lua sol2 stb tinyfiledialogs rapidjson
 	```
-- ImGui SDL2-Binding
-  * It seems like the ```ImGui[sdl2-binding]``` no longer exists in vcpkg. I have added the necessary files under the [thirdparty](https://github.com/dwjclark11/Scion2D/tree/master/thirdparty/imgui_backends) folder.
+- ImGui Docking and SDL2-Binding
+  * It seems like the ```ImGui[sdl2-binding]``` no longer exists in vcpkg. Also the current ```Imgui[docking-experimental]``` does not seep to be up to date either.
+  * For now, we grabbed the latest from the docking imgui branch and build with the editor. I have added the necessary files under the [thirdparty](https://github.com/dwjclark11/Scion2D/tree/master/thirdparty/imgui_backends) folder.
   * These should already be setup in cmake.
+  * Will move back to using vcpkg bindings once the correct version is available.
 - Box2d Install
   * There has been a huge change in the latest box2d that is a breaking change to our codebase.
   * We are using Box2D 2.41, the latest 3.1, uses a C-API that is done in a completely different way.
