@@ -110,11 +110,11 @@ void TileTool::ExamineMousePosition()
 	{
 		if ( m_pCurrentScene->GetMapType() == SCION_CORE::EMapType::Grid )
 		{
-			glm::vec2 mouseGrid{ mouseWorldPos.x / ( m_MouseRect.x * transform.scale.x ) * cameraScale,
-								 mouseWorldPos.y / ( m_MouseRect.y * transform.scale.y ) * cameraScale };
+			glm::vec2 mouseGrid{ mouseWorldPos.x / ( m_MouseRect.x * transform.scale.x ),
+								 mouseWorldPos.y / ( m_MouseRect.y * transform.scale.y ) };
 
-			auto scaledGridToCamX = std::floor( mouseGrid.x / cameraScale );
-			auto scaledGridToCamY = std::floor( mouseGrid.y / cameraScale );
+			auto scaledGridToCamX = std::floor( mouseGrid.x );
+			auto scaledGridToCamY = std::floor( mouseGrid.y );
 			transform.position.x = scaledGridToCamX * m_MouseRect.x * transform.scale.x;
 			transform.position.y = scaledGridToCamY * m_MouseRect.y * transform.scale.y;
 
