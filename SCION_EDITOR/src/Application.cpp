@@ -305,7 +305,7 @@ bool Application::LoadEditorTextures()
 	auto& assetManager = mainRegistry.GetAssetManager();
 
 	if ( !assetManager.AddTextureFromMemory(
-			 "play_button", play_button, sizeof( play_button ) / sizeof( play_button[ 0 ] ) ) )
+			 "play_button", EditorTextures::g_PlayButton, EditorTextures::g_PlayButtonSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [play_button] from memory." );
 		return false;
@@ -314,7 +314,7 @@ bool Application::LoadEditorTextures()
 	assetManager.GetTexture( "play_button" )->SetIsEditorTexture( true );
 
 	if ( !assetManager.AddTextureFromMemory(
-			 "stop_button", stop_button, sizeof( stop_button ) / sizeof( stop_button[ 0 ] ) ) )
+			 "stop_button", EditorTextures::g_StopButton, EditorTextures::g_StopButtonSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [stop_button] from memory." );
 		return false;
@@ -323,7 +323,7 @@ bool Application::LoadEditorTextures()
 	assetManager.GetTexture( "stop_button" )->SetIsEditorTexture( true );
 
 	if ( !assetManager.AddTextureFromMemory(
-			 "music_icon", music_icon, sizeof( music_icon ) / sizeof( music_icon[ 0 ] ) ) )
+			 "music_icon", EditorTextures::g_MusicIcon, EditorTextures::g_MusicIconSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [music_icon] from memory." );
 		return false;
@@ -332,7 +332,7 @@ bool Application::LoadEditorTextures()
 	assetManager.GetTexture( "music_icon" )->SetIsEditorTexture( true );
 
 	if ( !assetManager.AddTextureFromMemory(
-			 "scene_icon", scene_icon, sizeof( scene_icon ) / sizeof( scene_icon[ 0 ] ) ) )
+			 "scene_icon", EditorTextures::g_SceneIcon, EditorTextures::g_SceneIconSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [scene_icon] from memory." );
 		return false;
@@ -342,7 +342,8 @@ bool Application::LoadEditorTextures()
 
 	// ====== Gizmo Textures Start ======
 
-	if ( !assetManager.AddTextureFromMemory( "S2D_x_axis_translate", x_axis_arrow, x_axis_arrow_size ) )
+	if ( !assetManager.AddTextureFromMemory(
+			 "S2D_x_axis_translate", EditorTextures::g_XAxisArrow, EditorTextures::g_XAxisArrowSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [S2D_x_axis_translate] from memory." );
 		return false;
@@ -350,7 +351,8 @@ bool Application::LoadEditorTextures()
 
 	assetManager.GetTexture( "S2D_x_axis_translate" )->SetIsEditorTexture( true );
 
-	if ( !assetManager.AddTextureFromMemory( "S2D_y_axis_translate", y_axis_arrow, y_axis_arrow_size ) )
+	if ( !assetManager.AddTextureFromMemory(
+			 "S2D_y_axis_translate", EditorTextures::g_YAxisArrow, EditorTextures::g_YAxisArrowSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [S2D_y_axis_translate] from memory." );
 		return false;
@@ -358,7 +360,8 @@ bool Application::LoadEditorTextures()
 
 	assetManager.GetTexture( "S2D_y_axis_translate" )->SetIsEditorTexture( true );
 
-	if ( !assetManager.AddTextureFromMemory( "S2D_x_axis_scale", x_axis_scale, x_axis_scale_size ) )
+	if ( !assetManager.AddTextureFromMemory(
+			 "S2D_x_axis_scale", EditorTextures::g_XAxisScale, EditorTextures::g_XAxisScaleSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [S2D_x_axis_scale] from memory." );
 		return false;
@@ -366,7 +369,8 @@ bool Application::LoadEditorTextures()
 
 	assetManager.GetTexture( "S2D_x_axis_scale" )->SetIsEditorTexture( true );
 
-	if ( !assetManager.AddTextureFromMemory( "S2D_y_axis_scale", y_axis_scale, y_axis_scale_size ) )
+	if ( !assetManager.AddTextureFromMemory(
+			 "S2D_y_axis_scale", EditorTextures::g_YAxisScale, EditorTextures::g_YAxisScaleSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [S2D_y_axis_scale] from memory." );
 		return false;
@@ -374,7 +378,8 @@ bool Application::LoadEditorTextures()
 
 	assetManager.GetTexture( "S2D_y_axis_scale" )->SetIsEditorTexture( true );
 
-	if ( !assetManager.AddTextureFromMemory( "S2D_rotate_tool", rotate_tool, rotate_tool_size ) )
+	if ( !assetManager.AddTextureFromMemory(
+			 "S2D_rotate_tool", EditorTextures::g_RotateTool, EditorTextures::g_RotateToolSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [S2D_rotate_tool] from memory." );
 		return false;
@@ -386,7 +391,7 @@ bool Application::LoadEditorTextures()
 
 	// ====== Content Display Textures Start ======
 	if ( !assetManager.AddTextureFromMemory(
-			 "S2D_file_icon", file_icon, sizeof( file_icon ) / sizeof( file_icon[ 0 ] ) ) )
+			 "S2D_file_icon", EditorTextures::g_FileIcon, EditorTextures::g_FileIconSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [file_icon] from memory." );
 		return false;
@@ -395,7 +400,7 @@ bool Application::LoadEditorTextures()
 	assetManager.GetTexture( "S2D_file_icon" )->SetIsEditorTexture( true );
 
 	if ( !assetManager.AddTextureFromMemory(
-			 "S2D_music_icon", music_icon, sizeof( music_icon ) / sizeof( music_icon[ 0 ] ) ) )
+			 "S2D_music_icon", EditorTextures::g_MusicIcon, EditorTextures::g_MusicIconSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [music_icon] from memory." );
 		return false;
@@ -404,7 +409,7 @@ bool Application::LoadEditorTextures()
 	assetManager.GetTexture( "S2D_music_icon" )->SetIsEditorTexture( true );
 
 	if ( !assetManager.AddTextureFromMemory(
-			 "S2D_folder_icon", folder_icon, sizeof( folder_icon ) / sizeof( folder_icon[ 0 ] ) ) )
+			 "S2D_folder_icon", EditorTextures::g_FolderIcon, EditorTextures::g_FolderIconSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [folder_icon] from memory." );
 		return false;
@@ -413,7 +418,7 @@ bool Application::LoadEditorTextures()
 	assetManager.GetTexture( "S2D_folder_icon" )->SetIsEditorTexture( true );
 
 	if ( !assetManager.AddTextureFromMemory(
-			 "S2D_image_icon", image_icon, sizeof( image_icon ) / sizeof( image_icon[ 0 ] ) ) )
+			 "S2D_image_icon", EditorTextures::g_ImageIcon, EditorTextures::g_ImageIconSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [image_icon] from memory." );
 		return false;
@@ -422,7 +427,8 @@ bool Application::LoadEditorTextures()
 	assetManager.GetTexture( "S2D_image_icon" )->SetIsEditorTexture( true );
 	// ====== Content Display Textures End   ======
 
-	if ( !assetManager.AddTextureFromMemory( "S2D_scion_logo", scion_logo, scion_logo_size ) )
+	if ( !assetManager.AddTextureFromMemory(
+			 "S2D_scion_logo", EditorTextures::g_ScionLogo, EditorTextures::g_ScionLogoSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [scion_logo] from memory." );
 		return false;
@@ -430,7 +436,8 @@ bool Application::LoadEditorTextures()
 
 	assetManager.GetTexture( "S2D_scion_logo" )->SetIsEditorTexture( true );
 
-	if ( !assetManager.AddTextureFromMemory( "ZZ_S2D_PlayerStart", ZZ_S2D_PlayerStart, ZZ_S2D_PlayerStart_size ) )
+	if ( !assetManager.AddTextureFromMemory(
+			 "ZZ_S2D_PlayerStart", EditorTextures::g_PlayerStart, EditorTextures::g_PlayerStartSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [ZZ_S2D_PlayerStart] from memory." );
 		return false;
@@ -439,7 +446,7 @@ bool Application::LoadEditorTextures()
 	assetManager.GetTexture( "ZZ_S2D_PlayerStart" )->SetIsEditorTexture( true );
 
 	if ( !assetManager.AddTextureFromMemory(
-			 "ZZ_S2D_default_player", ZZ_S2D_default_player, ZZ_S2D_default_player_size ) )
+			 "ZZ_S2D_default_player", EditorTextures::g_DefaultPlayer, EditorTextures::g_DefaultPlayerSize ) )
 	{
 		SCION_ERROR( "Failed to load texture [ZZ_S2D_default_player] from memory." );
 		return false;

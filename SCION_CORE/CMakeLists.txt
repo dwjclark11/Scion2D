@@ -60,9 +60,10 @@ add_library(SCION_CORE
 
 	# Resources
     "include/Core/Resources/AssetManager.h"
+	"src/Resources/AssetManager.cpp"
     "include/Core/Resources/fonts/default_fonts.h"
-    "src/Resources/AssetManager.cpp"
-
+	"src/Resources/fonts/default_fonts.cpp"
+    
 	# Scripting
     "include/Core/Scripting/ContactListenerBind.h"
     "src/Scripting/ContactListenerBind.cpp"

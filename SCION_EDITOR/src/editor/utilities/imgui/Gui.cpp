@@ -48,7 +48,8 @@ bool Gui::InitImGui( SCION_WINDOWING::Window* pWindow )
 	icons_config.PixelSnapH = true;
 	icons_config.GlyphMinAdvanceX = iconFontSize;
 	icons_config.GlyphOffset = ImVec2{ 0.f, 2.f };
-	io.Fonts->AddFontFromMemoryTTF( fa_solid_900, fa_solid_900_size, baseFontSize, &icons_config, icons_ranges );
+	io.Fonts->AddFontFromMemoryTTF(
+		EditorFonts::g_FaSolid900, EditorFonts::g_FaSolid900Size, baseFontSize, &icons_config, icons_ranges );
 
 	if ( !ImGui_ImplSDL2_InitForOpenGL( pWindow->GetWindow().get(), pWindow->GetGLContext() ) )
 	{
