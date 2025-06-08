@@ -4,7 +4,10 @@ add_executable(SCION_EDITOR
     "src/main.cpp"
 
     # Editor Utilities
-    "src/editor/utilities/editor_textures.h" 
+	"src/editor/utilities/fonts/editor_fonts.h"
+	"src/editor/utilities/fonts/editor_fonts.cpp"
+    "src/editor/utilities/editor_textures.h"
+	"src/editor/utilities/editor_textures.cpp"
     "src/editor/utilities/EditorUtilities.h"
     "src/editor/utilities/EditorUtilities.cpp"
 	"src/editor/utilities/imgui/ImGuiUtils.h"
@@ -93,9 +96,9 @@ add_executable(SCION_EDITOR
 	"src/editor/loaders/ProjectLoader.cpp"
 
 	${APP_ICON_RESOURCE}
-	"src/editor/utilities/fonts/editor_fonts.h"
 	"src/editor/scripting/EditorCoreLuaWrappers.h"
 	"src/editor/scripting/EditorCoreLuaWrappers.cpp"
+	
 )
 
 target_sources(

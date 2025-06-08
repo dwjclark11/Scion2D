@@ -34,9 +34,15 @@ AssetManager::~AssetManager()
 
 bool AssetManager::CreateDefaultFonts()
 {
-	if ( !AddFontFromMemory( "pixel", pixel_font ) )
+	if ( !AddFontFromMemory( "pixel-32", CoreFonts::g_PixelFont ) )
 	{
 		SCION_ERROR( "Failed to create pixel font." );
+		return false;
+	}
+
+	if ( !AddFontFromMemory( "roboto-bold-32", CoreFonts::g_PixelFont ) )
+	{
+		SCION_ERROR( "Failed to create roboto font." );
 		return false;
 	}
 
