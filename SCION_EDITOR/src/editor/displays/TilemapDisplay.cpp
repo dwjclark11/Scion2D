@@ -142,7 +142,7 @@ void TilemapDisplay::RenderTilemap()
 		pActiveTool->Draw();
 
 	if ( pActiveGizmo )
-		pActiveGizmo->Draw();
+		pActiveGizmo->Draw(renderUISystem.GetCamera());
 
 	fb->Unbind();
 	fb->CheckResize();

@@ -58,4 +58,28 @@ struct NameChangeEvent
 	SCION_CORE::ECS::Entity* pEntity{ nullptr };
 };
 
+enum class EComponentType
+{
+	Transform,
+	Sprite,
+	Physics,
+	Text,
+	BoxCollider,
+	CircleCollider,
+	RigidBody,
+	Animation,
+	Tile,
+	UI,
+	NoType
+};
+
+struct AddComponentEvent
+{
+	SCION_CORE::ECS::Entity* pEntity{ nullptr };
+	EComponentType eType{ EComponentType::NoType };
+};
+
+EComponentType GetComponentTypeFromStr( const std::string& componentStr );
+std::string GetComponentStrFromType( EComponentType eType );
+
 } // namespace SCION_EDITOR::Events

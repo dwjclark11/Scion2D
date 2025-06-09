@@ -23,6 +23,7 @@ class RenderUISystem
 	~RenderUISystem();
 
 	void Update( SCION_CORE::ECS::Registry& registry );
+	inline SCION_RENDERING::Camera2D* GetCamera() { return m_pCamera2D.get(); }
 
 	static void CreateRenderUISystemLuaBind( sol::state& lua );
 

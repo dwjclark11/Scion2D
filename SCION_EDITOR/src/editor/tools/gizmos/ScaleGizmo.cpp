@@ -41,7 +41,7 @@ void ScaleGizmo::Update( SCION_CORE::Canvas& canvas )
 
 	float deltaX{ GetDeltaX() * SCALING_FACTOR };
 	float deltaY{ GetDeltaY() * SCALING_FACTOR };
-	if ( deltaX > 0.f || deltaY > 0.f )
+	if ( deltaX != 0.f || deltaY != 0.f )
 	{
 		selectedTransform.scale.x += deltaX;
 		selectedTransform.scale.y += deltaY;
@@ -53,7 +53,7 @@ void ScaleGizmo::Update( SCION_CORE::Canvas& canvas )
 	ExamineMousePosition();
 }
 
-void ScaleGizmo::Draw()
+void ScaleGizmo::Draw( SCION_RENDERING::Camera2D* pCamera )
 {
 	if ( m_bHidden )
 		return;
@@ -63,7 +63,17 @@ void ScaleGizmo::Draw()
 		return;
 
 	pShader->Enable();
-	auto camMat = m_pCamera->GetCameraMatrix();
+
+	glm::mat4 camMat{ 1.f };
+	if ( m_bUIComponent && pCamera )
+	{
+		camMat = pCamera->GetCameraMatrix();
+	}
+	else
+	{
+		camMat = m_pCamera->GetCameraMatrix();
+	}
+
 	pShader->SetUniformMat4( "uProjection", camMat );
 
 	m_pBatchRenderer->Begin();

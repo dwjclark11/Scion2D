@@ -74,7 +74,7 @@ void TranslateGizmo::Update( SCION_CORE::Canvas& canvas )
 	ExamineMousePosition();
 }
 
-void TranslateGizmo::Draw()
+void TranslateGizmo::Draw( SCION_RENDERING::Camera2D* pCamera )
 {
 	if ( m_bHidden )
 		return;
@@ -84,7 +84,17 @@ void TranslateGizmo::Draw()
 		return;
 
 	pShader->Enable();
-	auto camMat = m_pCamera->GetCameraMatrix();
+
+	glm::mat4 camMat{ 1.f };
+	if ( m_bUIComponent && pCamera )
+	{
+		camMat = pCamera->GetCameraMatrix();
+	}
+	else
+	{
+		camMat = m_pCamera->GetCameraMatrix();
+	}
+
 	pShader->SetUniformMat4( "uProjection", camMat );
 
 	m_pBatchRenderer->Begin();
