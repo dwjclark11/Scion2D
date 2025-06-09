@@ -38,7 +38,7 @@ void SCION_EDITOR::RotateGizmo::Update( SCION_CORE::Canvas& canvas )
 	auto& selectedTransform = selectedEntity.GetComponent<TransformComponent>();
 
 	float deltaX{ GetDeltaX() };
-	if ( deltaX > 0.f )
+	if ( deltaX != 0.f )
 	{
 		selectedTransform.rotation += deltaX;
 
@@ -60,7 +60,7 @@ void SCION_EDITOR::RotateGizmo::Update( SCION_CORE::Canvas& canvas )
 	ExamineMousePosition();
 }
 
-void SCION_EDITOR::RotateGizmo::Draw()
+void SCION_EDITOR::RotateGizmo::Draw( SCION_RENDERING::Camera2D* pCamera )
 {
 	if ( m_bHidden )
 		return;
@@ -70,7 +70,15 @@ void SCION_EDITOR::RotateGizmo::Draw()
 		return;
 
 	pShader->Enable();
-	auto camMat = m_pCamera->GetCameraMatrix();
+	glm::mat4 camMat{ 1.f };
+	if ( m_bUIComponent && pCamera )
+	{
+		camMat = pCamera->GetCameraMatrix();
+	}
+	else
+	{
+		camMat = m_pCamera->GetCameraMatrix();
+	}
 	pShader->SetUniformMat4( "uProjection", camMat );
 
 	m_pBatchRenderer->Begin();

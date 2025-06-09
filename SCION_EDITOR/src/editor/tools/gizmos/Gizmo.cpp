@@ -4,6 +4,7 @@
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
+#include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/Events/EventDispatcher.h"
 
 #include "editor/utilities/EditorUtilities.h"
@@ -46,7 +47,10 @@ Gizmo::Gizmo( const GizmoAxisParams& xAxisParams, const GizmoAxisParams& yAxisPa
 	, m_bHoldingY{ false }
 	, m_bHidden{ false }
 	, m_bOnlyOneAxis{ bOneAxis }
+	, m_bUIComponent{ false }
 {
+	ADD_EVENT_HANDLER( SCION_EDITOR::Events::AddComponentEvent, &Gizmo::OnAddComponent, *this )
+
 	m_pXAxisParams = std::make_unique<GizmoAxisParams>( xAxisParams );
 
 	if ( m_bOnlyOneAxis )
@@ -74,6 +78,7 @@ void Gizmo::SetSelectedEntity( entt::entity entity )
 		Entity ent{ *m_pRegistry, entity };
 		SetGizmoPosition( ent );
 		GetDispatcher().EmitEvent( Events::SwitchEntityEvent{ .pEntity = &ent } );
+		m_bUIComponent = ent.HasComponent<UIComponent>();
 	}
 }
 
@@ -142,7 +147,23 @@ void Gizmo::Init( const std::string& sXAxisTexture, const std::string& sYAxisTex
 
 void Gizmo::ExamineMousePosition()
 {
-	const auto& mousePos = GetMouseWorldCoords();
+	glm::vec2 mousePos{ 0.f };
+	if ( m_bUIComponent )
+	{
+		mousePos = GetMouseScreenCoords();
+		const auto& guiWindowSize = GetWindowSize();
+		auto& coreGlobals = CORE_GLOBALS();
+		const int windowWidth = coreGlobals.WindowWidth();
+		const int windowHeight = coreGlobals.WindowHeight();
+		const float ratioX = windowWidth / guiWindowSize.x;
+		const float ratioY = windowHeight / guiWindowSize.y;
+		mousePos.x *= ratioX;
+		mousePos.y *= ratioY;
+	}
+	else
+	{
+		mousePos = GetMouseWorldCoords();
+	}
 
 	// Check to see if we are hovering the x-axis of the gizmo
 	const auto& xAxisTransform = m_pXAxisParams->transform;
@@ -215,7 +236,22 @@ float Gizmo::GetDeltaX()
 	if ( MouseBtnPressed( AbstractTool::EMouseButton::LEFT ) && MouseMoving() )
 	{
 		m_bHoldingX = true;
-		return std::ceil( ( GetMouseScreenCoords().x - m_LastMousePos.x ) / m_pCamera->GetScale() );
+		if ( m_bUIComponent )
+		{
+			float mousePosX = GetMouseScreenCoords().x;
+			const auto& guiWindowSize = GetWindowSize();
+			auto& coreGlobals = CORE_GLOBALS();
+			const int windowWidth = coreGlobals.WindowWidth();
+			const float ratioX = windowWidth / guiWindowSize.x;
+			mousePosX *= ratioX;
+			m_LastMousePos.x *= ratioX;
+
+			return std::ceil( mousePosX - m_LastMousePos.x );
+		}
+		else
+		{
+			return std::ceil( ( GetMouseScreenCoords().x - m_LastMousePos.x ) / m_pCamera->GetScale() );
+		}
 	}
 
 	if ( MouseBtnJustReleased( AbstractTool::EMouseButton::LEFT ) )
@@ -237,7 +273,22 @@ float Gizmo::GetDeltaY()
 	if ( MouseBtnPressed( AbstractTool::EMouseButton::LEFT ) && MouseMoving() )
 	{
 		m_bHoldingY = true;
-		return std::ceil( ( GetMouseScreenCoords().y - m_LastMousePos.y ) / m_pCamera->GetScale() );
+		if ( m_bUIComponent )
+		{
+			float mousePosY = GetMouseScreenCoords().y;
+			const auto& guiWindowSize = GetWindowSize();
+			auto& coreGlobals = CORE_GLOBALS();
+			const int windowHeight = coreGlobals.WindowHeight();
+			const float ratioY = windowHeight / guiWindowSize.y;
+			mousePosY *= ratioY;
+			m_LastMousePos.y *= ratioY;
+
+			return std::ceil( mousePosY - m_LastMousePos.y );
+		}
+		else
+		{
+			return std::ceil( ( GetMouseScreenCoords().y - m_LastMousePos.y ) / m_pCamera->GetScale() );
+		}
 	}
 
 	if ( MouseBtnJustReleased( AbstractTool::EMouseButton::LEFT ) )
@@ -283,6 +334,14 @@ void Gizmo::SetGizmoPosition( SCION_CORE::ECS::Entity& selectedEntity )
 						   ( m_pXAxisParams->sprite.width * m_pXAxisParams->transform.scale.x * 0.5f ),
 					   ( spriteHeight * selectedTransform.scale.y * 0.5f ) -
 						   ( m_pXAxisParams->sprite.height * m_pXAxisParams->transform.scale.y * 0.5f ) };
+	}
+}
+
+void Gizmo::OnAddComponent( const SCION_EDITOR::Events::AddComponentEvent& addCompEvent )
+{
+	if ( addCompEvent.eType == Events::EComponentType::UI )
+	{
+		m_bUIComponent = true;
 	}
 }
 

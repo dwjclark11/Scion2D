@@ -88,6 +88,7 @@ add_executable(SCION_EDITOR
 	
 	# Events
 	"src/editor/events/EditorEventTypes.h"
+	
 	"src/editor/hub/Hub.cpp"
 	"src/editor/hub/Hub.h"
 	
@@ -99,7 +100,7 @@ add_executable(SCION_EDITOR
 	"src/editor/scripting/EditorCoreLuaWrappers.h"
 	"src/editor/scripting/EditorCoreLuaWrappers.cpp"
 	
-)
+ "src/editor/events/EditorEventTypes.cpp")
 
 target_sources(
 	SCION_EDITOR PRIVATE

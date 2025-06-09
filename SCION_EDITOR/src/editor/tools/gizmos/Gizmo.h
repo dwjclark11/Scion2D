@@ -21,10 +21,15 @@ class SpriteBatchRenderer;
 namespace SCION_CORE::Events
 {
 class EventDispatcher;
-}
+} // namespace SCION_CORE::Events
 
 namespace SCION_EDITOR
 {
+namespace Events
+{
+struct AddComponentEvent;
+}
+
 struct GizmoAxisParams;
 
 class Gizmo : public AbstractTool
@@ -35,7 +40,7 @@ class Gizmo : public AbstractTool
 	virtual ~Gizmo();
 
 	virtual void Update( SCION_CORE::Canvas& canvas ) override;
-	virtual void Draw() = 0;
+	virtual void Draw( SCION_RENDERING::Camera2D* pCamera ) = 0;
 
 	void SetSelectedEntity( entt::entity entity );
 	void Hide();
@@ -69,5 +74,9 @@ class Gizmo : public AbstractTool
 	bool m_bHoldingY;
 	bool m_bHidden;
 	bool m_bOnlyOneAxis;
+	bool m_bUIComponent;
+
+  private:
+	void OnAddComponent( const SCION_EDITOR::Events::AddComponentEvent& addCompEvent );
 };
 } // namespace SCION_EDITOR

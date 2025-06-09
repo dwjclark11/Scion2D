@@ -179,6 +179,9 @@ void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool*
 
 					if ( addComponent )
 					{
+						EVENT_DISPATCHER().EmitEvent( Events::AddComponentEvent{
+							.pEntity = &entity, .eType = Events::GetComponentTypeFromStr( componentStr ) } );
+
 						*bAddComponent = false;
 						ImGui::CloseCurrentPopup();
 					}
@@ -194,6 +197,10 @@ void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool*
 				else
 				{
 					storage->push( entity.GetEntity() );
+
+					EVENT_DISPATCHER().EmitEvent( Events::AddComponentEvent{
+						.pEntity = &entity, .eType = Events::GetComponentTypeFromStr( componentStr ) } );
+
 					*bAddComponent = false;
 					ImGui::CloseCurrentPopup();
 				}
@@ -229,7 +236,9 @@ void SceneHierarchyDisplay::DrawGameObjectDetails()
 	}
 
 	if ( m_pSelectedEntity && m_bAddComponent )
+	{
 		AddComponent( *m_pSelectedEntity, &m_bAddComponent );
+	}
 
 	if ( m_pSelectedEntity )
 	{
@@ -438,7 +447,7 @@ void SceneHierarchyDisplay::Draw()
 		{
 			if ( !pCurrentScene->AddGameObject() )
 			{
-				SCION_ERROR( "Failed to add new game object to scene [{}]", pCurrentScene->GetName() );	
+				SCION_ERROR( "Failed to add new game object to scene [{}]", pCurrentScene->GetName() );
 			}
 		}
 

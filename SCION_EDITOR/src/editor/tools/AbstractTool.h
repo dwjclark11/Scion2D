@@ -87,6 +87,7 @@ class AbstractTool
 	inline const glm::vec2& GetMouseScreenCoords() const { return m_MouseScreenCoords; }
 	inline const glm::vec2& GetMouseWorldCoords() const { return m_MouseWorldCoords; }
 	inline const glm::vec2& GetGridCoords() const { return m_GridCoords; }
+	inline const glm::vec2& GetWindowSize() const { return m_WindowSize; }
 
 	inline void Activate() { m_bActivated = true; }
 	inline void Deactivate() { m_bActivated = false; }
