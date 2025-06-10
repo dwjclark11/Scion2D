@@ -84,6 +84,15 @@ void MenuDisplay::Draw()
 				else
 					coreGlobals.DisableColliderRender();
 			}
+			
+			static bool bShowAnimations{ true };
+			if ( ImGui::Checkbox("Show Animations", &bShowAnimations))
+			{
+				if ( bShowAnimations )
+					coreGlobals.EnableAnimationRender();
+				else
+					coreGlobals.DisableAnimationRender();
+			}
 
 			if ( ImGui::TreeNode( "Project Settings" ) )
 			{

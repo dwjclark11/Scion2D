@@ -473,6 +473,11 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 	lua.set_function( "S2D_EnableCollisionRendering", [ & ] { engine.EnableColliderRender(); } );
 	lua.set_function( "S2D_CollisionRenderingEnabled", [ & ] { return engine.RenderCollidersEnabled(); } );
 
+	// Animation Enable functions
+	lua.set_function("S2D_DisableAnimationRendering", [&] { engine.DisableAnimationRender(); });
+	lua.set_function("S2D_EnableAnimationRendering", [&] { engine.EnableAnimationRender(); });
+	lua.set_function("S2D_AnimationRenderingEnabled", [&] { return engine.IsAnimationRenderEnabled(); });
+
 	lua.set_function( "S2D_GetProjecPath", [ & ] { return engine.GetProjectPath(); } );
 
 	lua.new_usertype<SCION_UTIL::RandomIntGenerator>(

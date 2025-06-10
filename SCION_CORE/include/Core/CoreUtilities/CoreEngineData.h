@@ -40,6 +40,10 @@ class CoreEngineData
 	inline void DisableColliderRender() { m_bRenderColliders = false; }
 	inline bool RenderCollidersEnabled() const { return m_bRenderColliders; }
 
+	inline void EnableAnimationRender() { m_bRenderAnimations = true; }
+	inline void DisableAnimationRender() { m_bRenderAnimations = false; }
+	inline bool AnimationRenderEnabled() const { return m_bRenderAnimations; }
+
 	inline float ScaledWidth() const { return m_ScaledWidth; }
 	inline float ScaledHeight() const { return m_ScaledHeight; }
 
