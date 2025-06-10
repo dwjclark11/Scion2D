@@ -48,6 +48,7 @@ CoreEngineData::CoreEngineData()
 	, m_bPhysicsEnabled{ true }
 	, m_bPhysicsPaused{ false }
 	, m_bRenderColliders{ false }
+	, m_bRenderAnimations{ false }
 {
 	m_ScaledWidth = m_WindowWidth / METERS_TO_PIXELS;
 	m_ScaledHeight = m_WindowHeight / METERS_TO_PIXELS;

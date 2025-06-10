@@ -17,6 +17,10 @@ namespace SCION_CORE::Systems
 
 void AnimationSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
 {
+
+	if (!CoreEngineData::GetInstance().IsAnimationRenderEnable())
+		return;
+
 	auto view = registry.GetRegistry().view<AnimationComponent, SpriteComponent, TransformComponent>();
 	if ( view.size_hint() < 1 )
 		return;
