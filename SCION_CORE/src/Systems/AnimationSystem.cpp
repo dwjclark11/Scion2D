@@ -3,6 +3,7 @@
 #include "Core/ECS/Components/SpriteComponent.h"
 #include "Core/ECS/Components/TransformComponent.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
+#include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/ECS/Registry.h"
 
 #include "Logger/Logger.h"
@@ -18,7 +19,7 @@ namespace SCION_CORE::Systems
 void AnimationSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
 {
 
-	if (!CoreEngineData::GetInstance().IsAnimationRenderEnable())
+	if ( !CORE_GLOBALS().AnimationRenderEnabled() )
 		return;
 
 	auto view = registry.GetRegistry().view<AnimationComponent, SpriteComponent, TransformComponent>();

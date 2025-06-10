@@ -476,7 +476,7 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 	// Animation Enable functions
 	lua.set_function("S2D_DisableAnimationRendering", [&] { engine.DisableAnimationRender(); });
 	lua.set_function("S2D_EnableAnimationRendering", [&] { engine.EnableAnimationRender(); });
-	lua.set_function("S2D_AnimationRenderingEnabled", [&] { return engine.IsAnimationRenderEnabled(); });
+	lua.set_function( "S2D_AnimationRenderingEnabled", [ & ] { return engine.AnimationRenderEnabled(); } );
 
 	lua.set_function( "S2D_GetProjecPath", [ & ] { return engine.GetProjectPath(); } );
 

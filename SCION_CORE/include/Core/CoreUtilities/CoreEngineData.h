@@ -92,6 +92,8 @@ class CoreEngineData
 	bool m_bPhysicsEnabled;
 	bool m_bPhysicsPaused;
 	bool m_bRenderColliders;
+	bool m_bRenderAnimations;
+
 	std::string m_sProjectPath;
 
 	EGameType m_eGameType{ EGameType::NoType };
