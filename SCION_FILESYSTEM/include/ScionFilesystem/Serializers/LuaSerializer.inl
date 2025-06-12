@@ -3,10 +3,11 @@
 namespace SCION_FILESYSTEM
 {
 template <Streamable TValue>
-inline LuaSerializer& LuaSerializer::AddValue( const TValue& value, bool bNewLine, bool bFinalValue, bool bIndent )
+inline LuaSerializer& LuaSerializer::AddValue( const TValue& value, bool bNewLine, bool bFinalValue, bool bIndent,
+											   bool bQuote )
 {
 	SeparateValues( bNewLine );
-	Stream( value );
+	Stream( bQuote ? AddQuotes(to_string(value)) : value );
 
 	if ( bIndent )
 		++m_NumIndents;
@@ -54,7 +55,7 @@ inline LuaSerializer& LuaSerializer::AddWords( T words, bool bNewLine, bool bInd
 	if ( bNewLine )
 		AddNewLine();
 
-	if (bIndent)
+	if ( bIndent )
 	{
 		m_NumIndents += indentSize;
 		AddIndents();

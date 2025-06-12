@@ -22,6 +22,7 @@
 #include "editor/displays/MenuDisplay.h"
 #include "editor/displays/AssetDisplay.h"
 #include "editor/displays/SceneDisplay.h"
+#include "editor/displays/ScriptDisplay.h"
 #include "editor/displays/SceneHierarchyDisplay.h"
 #include "editor/displays/TileDetailsDisplay.h"
 #include "editor/displays/TilesetDisplay.h"
@@ -635,6 +636,13 @@ bool Application::CreateDisplays()
 		return false;
 	}
 
+	auto pScriptDisplay = std::make_unique<ScriptDisplay>();
+	if ( !pScriptDisplay )
+	{
+		SCION_ERROR( "Failed to Create Script Display!" );
+		return false;
+	}
+
 	pDisplayHolder->displays.push_back( std::move( pMenuDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pSceneHierarchyDisplay ) );
@@ -644,6 +652,7 @@ bool Application::CreateDisplays()
 	pDisplayHolder->displays.push_back( std::move( pTilemapDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pAssetDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pContentDisplay ) );
+	pDisplayHolder->displays.push_back( std::move( pScriptDisplay ) );
 
 	return true;
 }
@@ -676,6 +685,7 @@ void Application::InitDisplays()
 		ImGui::DockBuilderDockWindow( "Tile Layers", TileLayerId );
 		ImGui::DockBuilderDockWindow( "Scene Hierarchy", leftNodeId );
 		ImGui::DockBuilderDockWindow( "Scene", centerNodeId );
+		ImGui::DockBuilderDockWindow( "Script List", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Tilemap Editor", centerNodeId );
 		ImGui::DockBuilderDockWindow( "Assets", LogNodeId );
 		ImGui::DockBuilderDockWindow( "Logs", LogNodeId );

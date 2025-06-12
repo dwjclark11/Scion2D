@@ -44,7 +44,7 @@ class LuaSerializer
 
 	template <Streamable TValue>
 	LuaSerializer& AddValue( const TValue& value, bool bNewLine = true, bool bFinalValue = false,
-							 bool bIndent = false );
+							 bool bIndent = false, bool bQuote = false );
 
 	template <Streamable TKey, Streamable TValue>
 	LuaSerializer& AddKeyValuePair( TKey key, const TValue& value, bool bAddNewLine = true, bool bFinalValue = false,

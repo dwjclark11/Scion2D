@@ -43,6 +43,8 @@ add_executable(SCION_EDITOR
 	"src/editor/displays/ContentDisplay.cpp"
 	"src/editor/displays/AssetDisplayUtils.h"
 	"src/editor/displays/AssetDisplayUtils.cpp"
+	"src/editor/displays/ScriptDisplay.h"
+	"src/editor/displays/ScriptDisplay.cpp"
 
     # Editor Systems
     "src/editor/systems/GridSystem.h" 
@@ -87,8 +89,9 @@ add_executable(SCION_EDITOR
 	"src/editor/commands/cmds/RectToolCmds.cpp"
 	
 	# Events
-	"src/editor/events/EditorEventTypes.h"
-	
+	"src/editor/events/EditorEventTypes.h"	
+	"src/editor/events/EditorEventTypes.cpp"
+
 	"src/editor/hub/Hub.cpp"
 	"src/editor/hub/Hub.h"
 	
@@ -99,8 +102,7 @@ add_executable(SCION_EDITOR
 	${APP_ICON_RESOURCE}
 	"src/editor/scripting/EditorCoreLuaWrappers.h"
 	"src/editor/scripting/EditorCoreLuaWrappers.cpp"
-	
- "src/editor/events/EditorEventTypes.cpp")
+)
 
 target_sources(
 	SCION_EDITOR PRIVATE
