@@ -4,6 +4,7 @@
 #include <source_location>
 #include <vector>
 #include <cassert>
+#include <mutex>
 
 /*
  * @brief Variadic Macro for logging Information. This macro takes in a string message, followed by the
@@ -83,8 +84,8 @@ class Logger
 	inline const std::vector<LogEntry>& GetLogs() { return m_LogEntries; }
 	
   private:
+	std::mutex m_Mutex;
 	std::vector<LogEntry> m_LogEntries;
-
 	bool m_bInitialized{ false };
 	bool m_bConsoleLog{ true };
 	bool m_bRetainLogs{ true };

@@ -6,6 +6,7 @@
 #include "ScionUtilities/ScionUtilities.h"
 
 #include "ScionFilesystem/Serializers/LuaSerializer.h"
+#include "ScionFilesystem/Utilities/DirectoryWatcher.h"
 
 #include "Logger/Logger.h"
 
@@ -27,6 +28,9 @@ ScriptDisplay::ScriptDisplay()
 										"content", PATH_SEPARATOR, "scripts" ) }
 	, m_Selected{ -1 }
 	, m_bScriptsChanged{ false }
+	, m_bListScripts{ false }
+	, m_pDirWatcher{ nullptr }
+	, m_bFilesChanged{ false }
 {
 	SCION_ASSERT( fs::exists( fs::path{ m_sScriptsDirectory } ) && "Scripts directory must exist." );
 	const std::string sScriptListPath = m_sScriptsDirectory + PATH_SEPARATOR + "script_list.lua";
@@ -45,6 +49,10 @@ ScriptDisplay::ScriptDisplay()
 	}
 
 	GenerateScriptList();
+
+	m_pDirWatcher = std::make_unique<SCION_FILESYSTEM::DirectoryWatcher>(
+		fs::path{ m_sScriptsDirectory },
+		[ this ]( const fs::path& file, bool bModified ) { OnFileChanged( file, bModified ); } );
 }
 
 ScriptDisplay::~ScriptDisplay() = default;
@@ -141,25 +149,65 @@ void ScriptDisplay::Draw()
 
 void ScriptDisplay::Update()
 {
-	// TODO: Handle directory changes here
+	if ( m_bFilesChanged.exchange( false, std::memory_order_acquire ) )
+	{
+		m_bListScripts = true;
+		SCION_LOG( "File was changed or added to scripts directory." );
+	}
+
+	if ( m_bListScripts )
+	{
+		m_Scripts.clear();
+		for ( const auto& dirEntry : fs::recursive_directory_iterator( fs::path{ m_sScriptsDirectory } ) )
+		{
+			if ( fs::is_directory( dirEntry ) || dirEntry.path().extension() != ".lua" ||
+				 dirEntry.path().filename().string() == "main.lua" ||
+				 dirEntry.path().filename().string() == "script_list.lua" )
+			{
+				continue;
+			}
+
+			auto foundScript = GET_SUBSTRING( dirEntry.path().relative_path().string(), "scripts" );
+			if ( !foundScript.empty() )
+			{
+				m_Scripts.push_back( std::string{ foundScript } );
+			}
+		}
+
+		std::unordered_set<std::string> lookupSet( m_Scripts.begin(), m_Scripts.end() );
+
+		auto removeRange = std::ranges::remove_if(
+			m_ScriptList, [ &lookupSet ]( const std::string& item ) { return !lookupSet.contains( item ); } );
+
+		if (removeRange.begin() != removeRange.end())
+		{
+			m_ScriptList.erase( removeRange.begin(), removeRange.end() );
+			m_bScriptsChanged = true;
+		}
+
+		for ( const auto& script : m_Scripts )
+		{
+			if ( std::ranges::find( m_ScriptList, script ) == m_ScriptList.end() )
+			{
+				m_ScriptList.push_back( script );
+				m_bScriptsChanged = true;
+			}
+		}
+
+		m_bListScripts = false;
+	}
 }
 
 void ScriptDisplay::GenerateScriptList()
 {
 	if ( m_ScriptList.empty() )
 	{
-		// TODO: Remove Dummy Data
-		m_ScriptList.push_back( "scripts\\character.lua" );
-		m_ScriptList.push_back( "scripts\\states\\move_state.lua" );
-		m_ScriptList.push_back( "scripts\\states\\damage_state.lua" );
-		// ======
-
-		/*const std::string sScriptListPath = m_sScriptsDirectory + PATH_SEPARATOR + "script_list.lua";
-		if (fs::exists(fs::path{ sScriptListPath }))
+		const std::string sScriptListPath = m_sScriptsDirectory + PATH_SEPARATOR + "script_list.lua";
+		if ( fs::exists( fs::path{ sScriptListPath } ) )
 		{
 			sol::state lua{};
 			auto result = lua.safe_script_file( sScriptListPath );
-			if (!result.valid())
+			if ( !result.valid() )
 			{
 				sol::error err = result;
 				SCION_ERROR( "Failed to load script list. {}", err.what() );
@@ -167,22 +215,22 @@ void ScriptDisplay::GenerateScriptList()
 			}
 
 			sol::optional<sol::table> scriptList = lua[ "ScriptList" ];
-			if (!scriptList)
+			if ( !scriptList )
 			{
 				SCION_ERROR( "Failed to load script list. Missing \"ScriptList\" table." );
 				return;
 			}
 
 			std::string sPath{ m_sScriptsDirectory.substr( 0, m_sScriptsDirectory.find( "scripts" ) ) };
-			for (const auto& [_, script] : *scriptList)
+			for ( const auto& [ _, script ] : *scriptList )
 			{
 				std::string newScript{ script.as<std::string>() };
-				if (fs::exists(fs::path{ sPath + newScript }))
+				if ( fs::exists( fs::path{ sPath + newScript } ) )
 				{
 					m_ScriptList.push_back( newScript );
 				}
 			}
-		}*/
+		}
 	}
 }
 
@@ -220,4 +268,10 @@ void ScriptDisplay::WriteScriptListToFile()
 	pSerializer->EndTable().FinishStream();
 	m_bScriptsChanged = false;
 }
+
+void ScriptDisplay::OnFileChanged( const std::filesystem::path& path, bool bModified )
+{
+	m_bFilesChanged.store( true, std::memory_order_relaxed );
+}
+
 } // namespace SCION_EDITOR

@@ -21,6 +21,10 @@ add_library(SCION_FILESYSTEM
 	# Process
 	"include/ScionFilesystem/Process/FileProcessor.h"
 	${FILE_PROCESSOR_PATH}
+
+	# Utilities
+	"include/ScionFilesystem/Utilities/DirectoryWatcher.h"
+	"src/DirectoryWatcher.cpp"
 )
 
 target_include_directories(

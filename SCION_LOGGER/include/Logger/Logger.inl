@@ -23,6 +23,7 @@ namespace SCION_LOGGER
 template <typename... Args>
 void Logger::Log( const std::string_view message, Args&&... args )
 {
+	std::scoped_lock lock{ m_Mutex };
 	assert( m_bInitialized && "The logger must be initialized before it is used!" );
 
 	if ( !m_bInitialized )
@@ -55,6 +56,7 @@ void Logger::Log( const std::string_view message, Args&&... args )
 template <typename... Args>
 void Logger::Warn( const std::string_view message, Args&&... args )
 {
+	std::scoped_lock lock{ m_Mutex };
 	assert( m_bInitialized && "The logger must be initialized before it is used!" );
 
 	if ( !m_bInitialized )
@@ -87,6 +89,7 @@ void Logger::Warn( const std::string_view message, Args&&... args )
 template <typename... Args>
 void Logger::Error( std::source_location location, const std::string_view message, Args&&... args )
 {
+	std::scoped_lock lock{ m_Mutex };
 	assert( m_bInitialized && "The logger must be initialized before it is used!" );
 
 	if ( !m_bInitialized )
@@ -120,6 +123,7 @@ void Logger::Error( std::source_location location, const std::string_view messag
 template <typename... Args>
 void Logger::Error( const std::string_view message, Args&&... args )
 {
+	std::scoped_lock lock{ m_Mutex };
 	assert( m_bInitialized && "The logger must be initialized before it is used!" );
 
 	if ( !m_bInitialized )

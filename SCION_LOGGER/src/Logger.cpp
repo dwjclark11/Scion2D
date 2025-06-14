@@ -56,6 +56,7 @@ void Logger::Init( bool consoleLog, bool retainLogs )
 
 void Logger::LuaLog( const std::string_view message )
 {
+	std::scoped_lock lock{ m_Mutex };
 	assert( m_bInitialized && "The logger must be initialized before it is used!" );
 
 	if ( !m_bInitialized )
@@ -87,6 +88,7 @@ void Logger::LuaLog( const std::string_view message )
 
 void Logger::LuaWarn( const std::string_view message )
 {
+	std::scoped_lock lock{ m_Mutex };
 	assert( m_bInitialized && "The logger must be initialized before it is used!" );
 
 	if ( !m_bInitialized )
@@ -118,6 +120,7 @@ void Logger::LuaWarn( const std::string_view message )
 
 void Logger::LuaError( const std::string_view message )
 {
+	std::scoped_lock lock{ m_Mutex };
 	assert( m_bInitialized && "The logger must be initialized before it is used!" );
 
 	if ( !m_bInitialized )

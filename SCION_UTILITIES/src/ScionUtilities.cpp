@@ -7,26 +7,27 @@
 
 namespace SCION_UTIL
 {
-std::string_view GetSubstring( const std::string_view& str, const std::string& find )
+std::string GetSubstring( std::string_view str, std::string_view find )
 {
 	if ( find.empty() )
-		return std::string_view{};
+		return {};
 
 	if ( find.size() > 1 )
 	{
 		auto const found = str.find( find );
 		if ( found == std::string_view::npos )
-			return std::string_view{};
+			return {};
 
-		return str.substr( found );
+		return std::string{ str.substr( found ) };
 	}
 
 	auto const found = str.find_last_of( find[ 0 ] );
-	if ( found == std::string_view::npos )
-		return std::string_view{};
+	if ( found == std::string_view::npos || found + 1 >= str.size() )
+		return {};
 
-	return str.substr( found + 1 );
+	return std::string{ str.substr( found + 1 ) };
 }
+
 std::string ConvertWideToANSI( const std::wstring& wstr )
 {
 #ifdef _WIN32
