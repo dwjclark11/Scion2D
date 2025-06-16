@@ -11,10 +11,14 @@ There are definitely better engines out there; however, I find it more fun to tr
 
 ---- 
 
-## Check the Docs
-The documentation is still a work in progress, a lot of stuff has changed and it needs to be updated; however, you can check it out here:
-
+## 📖 Documentation
+> **⚠️ Active Development Notice:** This engine and editor are currently under active development. The documentation is still a work in progress and will not be up to date.
 [Scion2D Docs](https://dwjclark11.github.io/Scion2D_Docs/)
+
+## 🚀 Features
+-  **Cross-Platform**: Builds on Windows and Linux. Currently Mac is not supported.
+-  **Modern C++20**: Use of modern c++ standards and functionality.
+-  **Integrated Tilemap Editor**: Ability to create tilemaps, create game objects, and more.
 
 ---- 
 ### Hub
@@ -143,8 +147,39 @@ Activate the debugger in your code as soon as you have a valid OpenGL context ma
 ## Force the discrete GPU on Optimus laptops
 In Scion2D/CMakeLists.txt:
 * Set the variable ```SCION_OPENGL_FORCE_DISCRETE_GPU``` to ```ON```.
-
 Note: Ids can differ between platforms or drivers.
 Note for linux users: this is currently working only on nVidia GPUs.
 
-#### Under Construction
+## 🎯 Supported Platforms
+
+| Platform | Compiler   | Status             |
+| -------- | ---------- | ------------------ |
+| Windows  | MSVC 2019+ | ✅ Fully Supported |
+| Windows  | MinGW/GCC  | 🔧 To be tested    |
+| Linux    | GCC 10+    | ✅ Partially Supported |
+| Linux    | Clang 12+  | 🔧 To be tested    |
+
+## 📝 License
+
+This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+This project would not be possible without the help of all the contributors, the motivation to keep working forward through the wonderful comments and supporters from my YouTube Channel. 
+Also from all the wonderful open source projects that I have been able to use in the creation of the engine.
+
+### Open Source Dependencies
+Check out these amazing open source projects that we are using in the engine. Make sure to give them all a star! for all of their amazing work.
+
+-   **[EnTT](https://github.com/skypjack/entt)** - Fast and reliable Entity Component System.
+-   **[SDL2](https://github.com/libsdl-org/SDL)** -  a cross-platform library that provides an abstraction layer for computer multimedia hardware components.
+-   **[SDL_mixer](https://github.com/libsdl-org/SDL_mixer)** - An audio mixer that supports various file formats for Simple Directmedia Layer.
+-   **[Dear ImGui](https://github.com/ocornut/imgui)** - Immediate mode GUI for C++.
+-   **[Box2D](https://github.com/erincatto/box2d)** - 2D physics engine for games.
+-   **[GLM](https://github.com/g-truc/glm)** - Mathematics library for graphics software.
+-   **[RapidJSON](https://github.com/Tencent/rapidjson)** - Fast JSON parser and generator.
+-   **[sol2](https://github.com/ThePhD/sol2)** - C++ Lua binding library.
+-   **[stb](https://github.com/nothings/stb)** - Single-file public domain libraries.
+-   **[Lua](https://www.lua.org/)** - Powerful, efficient scripting language.
+-   **[tinyfiledialogs](https://github.com/native-toolkit/libtinyfiledialogs)** - Cross-Platform Native dialog library for WINDOWS MAC OSX GTK+ QT CONSOLE **[Official](https://sourceforge.net/projects/tinyfiledialogs/)**.
+
+_Thank you to all the contributors and maintainers of these projects!_ ❤️
