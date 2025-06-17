@@ -416,6 +416,68 @@ void SceneHierarchyDisplay::OnKeyPressed( SCION_CORE::Events::KeyEvent& keyEvent
 	}
 }
 
+void SceneHierarchyDisplay::OpenContext( SceneObject* pCurrentScene )
+{
+	if ( !pCurrentScene )
+		return;
+
+	if ( m_pSelectedEntity )
+	{
+		if ( ImGui::BeginPopupContextWindow() )
+		{
+			// Uneditable entities cannot be made into prefabs
+			if ( !m_pSelectedEntity->HasComponent<UneditableComponent>() )
+			{
+				if ( ImGui::Selectable( "Create Prefab" ) )
+				{
+					auto newPrefab = SCION_CORE::PrefabCreator::CreatePrefab( SCION_CORE::EPrefabType::Character,
+																			  *m_pSelectedEntity );
+					ASSET_MANAGER().AddPrefab( m_pSelectedEntity->GetName() + "_pfab", std::move( newPrefab ) );
+				}
+			}
+
+			if ( ImGui::Selectable( "Delete" ) )
+			{
+				if ( !DeleteSelectedEntity() )
+				{
+					SCION_ERROR( "Failed to delete the selected entity." );
+				}
+			}
+
+			if ( ImGui::Selectable( "Duplicate" ) )
+			{
+				if ( !DuplicateSelectedEntity() )
+				{
+					SCION_ERROR( "Failed to duplicated the selected entity." );
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+	else
+	{
+		if ( ImGui::BeginPopupContextWindow( "##SceneHierarchyContext" ) )
+		{
+			if ( ImGui::Selectable( "Add New Game Object" ) )
+			{
+				if ( !pCurrentScene->AddGameObject() )
+				{
+					SCION_ERROR( "Failed to add new game object to scene [{}]", pCurrentScene->GetName() );
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+
+	if ( m_bWindowActive && !ImGui::IsAnyItemHovered() &&
+		 ( ImGui::IsMouseClicked( ImGuiMouseButton_Left ) || ImGui::IsMouseClicked( ImGuiMouseButton_Right ) ) )
+	{
+		m_pSelectedEntity = nullptr;
+	}
+}
+
 SceneHierarchyDisplay::SceneHierarchyDisplay()
 {
 	ADD_SWE_HANDLER( Events::SwitchEntityEvent, &SceneHierarchyDisplay::OnEntityChanged, *this );
@@ -440,31 +502,7 @@ void SceneHierarchyDisplay::Draw()
 	}
 
 	m_bWindowActive = ImGui::IsWindowFocused();
-
-	if ( ImGui::BeginPopupContextWindow() )
-	{
-		if ( ImGui::Selectable( "Add New Game Object" ) )
-		{
-			if ( !pCurrentScene->AddGameObject() )
-			{
-				SCION_ERROR( "Failed to add new game object to scene [{}]", pCurrentScene->GetName() );
-			}
-		}
-
-		// Uneditable entities cannot be made into prefabs
-		if ( m_pSelectedEntity && !m_pSelectedEntity->HasComponent<UneditableComponent>() )
-		{
-			if ( ImGui::Selectable( "Create Prefab" ) )
-			{
-				auto newPrefab =
-					SCION_CORE::PrefabCreator::CreatePrefab( SCION_CORE::EPrefabType::Character, *m_pSelectedEntity );
-
-				ASSET_MANAGER().AddPrefab( m_pSelectedEntity->GetName() + "_pfab", std::move( newPrefab ) );
-			}
-		}
-
-		ImGui::EndPopup();
-	}
+	OpenContext( pCurrentScene );
 
 	ImGui::Separator();
 	ImGui::AddSpaces( 1 );

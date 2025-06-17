@@ -17,16 +17,16 @@ namespace SCION_CORE::Events
 struct KeyEvent;
 }
 
-
 namespace SCION_EDITOR
 {
 class SceneHierarchyDisplay : public IDisplay
 {
-  private:
-	std::shared_ptr<SCION_CORE::ECS::Entity> m_pSelectedEntity{ nullptr };
-	ImGuiTextFilter m_TextFilter;
-	bool m_bAddComponent{ false };
-	bool m_bWindowActive{ false };
+  public:
+	SceneHierarchyDisplay();
+	~SceneHierarchyDisplay();
+
+	virtual void Update() override;
+	virtual void Draw() override;
 
   private:
 	bool OpenTreeNode( SCION_CORE::ECS::Entity& entity );
@@ -42,11 +42,12 @@ class SceneHierarchyDisplay : public IDisplay
 	void OnEntityChanged( SCION_EDITOR::Events::SwitchEntityEvent& swEntEvent );
 	void OnKeyPressed( SCION_CORE::Events::KeyEvent& keyEvent );
 
-  public:
-	SceneHierarchyDisplay();
-	~SceneHierarchyDisplay();
+	void OpenContext( class SceneObject* pCurrentScene );
 
-	virtual void Update() override;
-	virtual void Draw() override;
+  private:
+	std::shared_ptr<SCION_CORE::ECS::Entity> m_pSelectedEntity{ nullptr };
+	ImGuiTextFilter m_TextFilter;
+	bool m_bAddComponent{ false };
+	bool m_bWindowActive{ false };
 };
 } // namespace SCION_EDITOR
