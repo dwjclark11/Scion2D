@@ -471,7 +471,7 @@ void SceneHierarchyDisplay::OpenContext( SceneObject* pCurrentScene )
 		}
 	}
 
-	if ( m_bWindowActive && !ImGui::IsAnyItemHovered() &&
+	if ( ImGui::IsWindowFocused() && !ImGui::IsAnyItemHovered() &&
 		 ( ImGui::IsMouseClicked( ImGuiMouseButton_Left ) || ImGui::IsMouseClicked( ImGuiMouseButton_Right ) ) )
 	{
 		m_pSelectedEntity = nullptr;
