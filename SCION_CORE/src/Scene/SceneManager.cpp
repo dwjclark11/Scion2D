@@ -2,6 +2,9 @@
 #include "Core/Scene/Scene.h"
 
 #include "ScionUtilities/ScionUtilities.h"
+#include "Core/ECS/Components/AllComponents.h"
+
+using namespace SCION_CORE::ECS;
 
 namespace SCION_CORE
 {
@@ -92,4 +95,63 @@ bool SceneManager::ChangeSceneName( const std::string& sOldName, const std::stri
 {
 	return SCION_UTIL::KeyChange( m_mapScenes, sOldName, sNewName );
 }
+
+void SceneManager::CreateLuaBind( sol::state& lua, SceneManager& sceneManager )
+{
+	lua.new_usertype<SceneManager>(
+		"SceneManager",
+		sol::no_constructor,
+		"changeScene",
+		// TODO: This will still need testing once the runtime has been created.
+		[ & ]( const std::string& sSceneName ) {
+			auto pCurrentScene = sceneManager.GetCurrentScene();
+			if ( !pCurrentScene )
+			{
+				SCION_ERROR( "Failed to change to scene [{}] - Current scene is invalid.", sSceneName );
+				return false;
+			}
+
+			if ( pCurrentScene->GetSceneName() == sSceneName )
+			{
+				SCION_ERROR( "Failed to load scene [{}] - Scene has already been loaded.", sSceneName );
+				return false;
+			}
+
+			auto pScene = sceneManager.GetScene( sSceneName );
+			if ( !pScene )
+			{
+				SCION_ERROR( "Failed to change to scene [{}] - Scene [{}] is invalid.", sSceneName, sSceneName );
+				return false;
+			}
+
+			pCurrentScene->GetRegistry().DestroyEntities<ScriptComponent>();
+			pCurrentScene->UnloadScene();
+
+			if ( !pScene->IsLoaded() )
+			{
+				pScene->LoadScene();
+			}
+
+			sceneManager.SetCurrentScene( sSceneName );
+
+			return true;
+		},
+		"getCanvas", // Returns the canvas of the current scene or an empty canvas object.
+		[ & ] {
+			if ( auto pCurrentScene = sceneManager.GetCurrentScene() )
+				return pCurrentScene->GetCanvas();
+
+			return SCION_CORE::Canvas{};
+		},
+		"getDefaultMusic",
+		[ & ] {
+			if ( auto pCurrentScene = sceneManager.GetCurrentScene() )
+				return pCurrentScene->GetDefaultMusicName();
+
+			return std::string{ "" };
+		},
+		"getCurrentSceneName", [ & ] { return sceneManager.GetCurrentSceneName(); }
+	);
+}
+
 } // namespace SCION_CORE

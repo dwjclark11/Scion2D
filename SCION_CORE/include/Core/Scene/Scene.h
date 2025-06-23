@@ -86,6 +86,8 @@ class Scene
 	inline PlayerStart& GetPlayerStart() { return m_PlayerStart; }
 	inline bool IsPlayerStartEnabled() const { return m_bUsePlayerStart; }
 	inline void SetPlayerStartEnabled( bool bEnable ) { m_bUsePlayerStart = bEnable; }
+	inline const std::string& GetSceneName() const { return m_sSceneName; }
+
 
 	static void CreateLuaBind( sol::state& lua );
 
