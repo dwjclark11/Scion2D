@@ -41,6 +41,7 @@ SceneObject::SceneObject( const std::string& sceneName, const std::string& scene
 	: m_RuntimeRegistry{} 
 	, m_CurrentLayer{ 0 }
 {
+	m_sSceneName = sceneName;
 	m_sSceneDataPath = sceneData;
 
 	// We need to load the scene data from the json file!
@@ -53,12 +54,12 @@ SceneObject::SceneObject( const std::string& sceneName, const std::string& scene
 	// Verify that the tilemap and objectmap files exist.
 	if ( !fs::exists( fs::path{ m_sTilemapPath } ) )
 	{
-		// Log Some error??
+		SCION_WARN( "Tilemap file [{}] does not exist.", m_sTilemapPath );
 	}
 
 	if ( !fs::exists( fs::path{ m_sObjectPath } ) )
 	{
-		// Log Some error??
+		SCION_WARN( "Object file [{}] does not exist.", m_sObjectPath );
 	}
 
 	ADD_EVENT_HANDLER( SCION_EDITOR::Events::NameChangeEvent, &SceneObject::OnEntityNameChanges, *this );
@@ -98,7 +99,7 @@ void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
 	auto& registry = sceneToCopy.GetRegistry();
 	auto& registryToCopy = registry.GetRegistry();
 
-	for ( auto entityToCopy : registryToCopy.view<entt::entity>( entt::exclude<ScriptComponent> ) )
+	for ( auto entityToCopy : registryToCopy.view<entt::entity>( entt::exclude<ScriptComponent, UneditableComponent> ) )
 	{
 		entt::entity newEntity = m_RuntimeRegistry.CreateEntity();
 
@@ -113,10 +114,22 @@ void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
 		}
 	}
 
-	if ( m_bUsePlayerStart )
+	// We want to copy the player start from the new scene.
+	if ( sceneToCopy.IsPlayerStartEnabled() )
 	{
-		m_PlayerStart.CreatePlayer( m_RuntimeRegistry );
+		sceneToCopy.CopyPlayerStartToRuntimeRegistry( m_RuntimeRegistry );
 	}
+}
+
+void SceneObject::CopyPlayerStartToRuntimeRegistry( SCION_CORE::ECS::Registry& runtimeRegistry )
+{
+	if (!m_bUsePlayerStart)
+	{
+		SCION_ERROR( "Failed to copy player to runtime. Not enabled." );
+		return;
+	}
+
+	m_PlayerStart.CreatePlayer( runtimeRegistry );
 }
 
 void SceneObject::ClearRuntimeScene()

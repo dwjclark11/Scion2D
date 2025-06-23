@@ -208,6 +208,7 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 {
 	auto& sceneManager = SCENE_MANAGER();
 
+	// clang-format off
 	lua.new_usertype<EditorSceneManager>(
 		"SceneManager",
 		sol::no_constructor,
@@ -239,7 +240,6 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 				pScene->LoadScene();
 			}
 
-			// TODO: Check to see if this is valid
 			auto pSceneObject = dynamic_cast<SceneObject*>( pScene );
 			SCION_ASSERT( pSceneObject && "Scene Must be a valid Scene Object If run in the editor!" );
 			if ( !pSceneObject )
@@ -266,7 +266,10 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 				return pCurrentScene->GetDefaultMusicName();
 
 			return std::string{ "" };
-		} );
+		},
+		"getCurrentSceneName", [ & ] { return sceneManager.GetCurrentSceneName(); }
+	);
+	// clang-format on
 }
 
 } // namespace SCION_EDITOR
