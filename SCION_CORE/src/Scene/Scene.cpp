@@ -147,7 +147,7 @@ bool Scene::UnloadScene( bool bSaveScene )
 	m_Registry.ClearRegistry();
 	m_bSceneLoaded = false;
 
-	return false;
+	return true;
 }
 
 int Scene::AddLayer( const std::string& sLayerName, bool bVisible )

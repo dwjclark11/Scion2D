@@ -10,6 +10,21 @@ struct NameChangeEvent;
 namespace SCION_EDITOR
 {
 
+/**
+* SceneRuntimeData
+*
+* When running the scenes in the editor,
+* we don't actually change scenes, we change the data.
+*
+* Represents the accessible data for the currently loaded scene.
+*/
+struct SceneRuntimeData
+{
+	std::string sSceneName;
+	std::string sDefaultMusic;
+	SCION_CORE::Canvas canvas;
+};
+
 class SceneObject : public SCION_CORE::Scene
 {
   public:
@@ -122,7 +137,7 @@ class SceneObject : public SCION_CORE::Scene
 	bool CheckTagName( const std::string& sTagName );
 
 	inline const std::string& GetName() { return m_sSceneName; }
-	inline const std::string& GetRuntimeName() { return m_sRuntimeSceneName; }
+	inline SceneRuntimeData* GetRuntimeData() { return m_pRuntimeData.get(); }
 	inline SCION_CORE::ECS::Registry& GetRuntimeRegistry() { return m_RuntimeRegistry; }
 
   private:
@@ -132,8 +147,8 @@ class SceneObject : public SCION_CORE::Scene
 	/* The runtime registry. This registry starts with the current scene's data;
 	however, different scenes can be loaded via lua scripts. */
 	SCION_CORE::ECS::Registry m_RuntimeRegistry;
-	/* The current scene that the runtime is using. Scene can be changed via lua script. */
-	std::string m_sRuntimeSceneName;
+	
+	std::unique_ptr<SceneRuntimeData> m_pRuntimeData;
 	std::map<std::string, entt::entity> m_mapTagToEntity;
 	int m_CurrentLayer;
 };

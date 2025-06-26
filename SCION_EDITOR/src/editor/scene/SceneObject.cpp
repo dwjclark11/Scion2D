@@ -31,7 +31,7 @@ namespace SCION_EDITOR
 SceneObject::SceneObject( const std::string& sceneName, SCION_CORE::EMapType eType )
 	: Scene(sceneName, eType)
 	, m_RuntimeRegistry{}
-	, m_sRuntimeSceneName{ "" }
+	, m_pRuntimeData{ nullptr }
 	, m_CurrentLayer{ 0 }
 {
 	ADD_EVENT_HANDLER( SCION_EDITOR::Events::NameChangeEvent, &SceneObject::OnEntityNameChanges, *this );
@@ -67,7 +67,15 @@ SceneObject::SceneObject( const std::string& sceneName, const std::string& scene
 
 void SceneObject::CopySceneToRuntime()
 {
-	m_sRuntimeSceneName = m_sSceneName;
+	if ( !m_pRuntimeData )
+	{
+		m_pRuntimeData = std::make_unique<SceneRuntimeData>();
+	}
+
+	// Setup runtime data
+	m_pRuntimeData->canvas = m_Canvas;
+	m_pRuntimeData->sDefaultMusic = m_sDefaultMusic;
+	m_pRuntimeData->sSceneName = m_sSceneName;
 
 	auto& registryToCopy = m_Registry.GetRegistry();
 
@@ -94,7 +102,15 @@ void SceneObject::CopySceneToRuntime()
 
 void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
 {
-	m_sRuntimeSceneName = sceneToCopy.GetName();
+	if ( !m_pRuntimeData )
+	{
+		m_pRuntimeData = std::make_unique<SceneRuntimeData>();
+	}
+
+	// Setup runtime data
+	m_pRuntimeData->canvas = sceneToCopy.GetCanvas();
+	m_pRuntimeData->sDefaultMusic = sceneToCopy.GetDefaultMusicName();
+	m_pRuntimeData->sSceneName = sceneToCopy.GetName();
 
 	auto& registry = sceneToCopy.GetRegistry();
 	auto& registryToCopy = registry.GetRegistry();
@@ -135,7 +151,7 @@ void SceneObject::CopyPlayerStartToRuntimeRegistry( SCION_CORE::ECS::Registry& r
 void SceneObject::ClearRuntimeScene()
 {
 	m_RuntimeRegistry.ClearRegistry();
-	m_sRuntimeSceneName.clear();
+	m_pRuntimeData.reset();
 }
 
 void SceneObject::AddNewLayer()

@@ -221,7 +221,9 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 				return false;
 			}
 
-			if ( pCurrentScene->GetRuntimeName() == sSceneName )
+			auto* pRuntimeData = pCurrentScene->GetRuntimeData();
+			SCION_ASSERT(pRuntimeData && "Runtime Data was not initialized.");
+			if ( pRuntimeData->sSceneName == sSceneName )
 			{
 				SCION_ERROR( "Failed to load scene [{}] - Scene has already been loaded.", sSceneName );
 				return false;
@@ -246,28 +248,43 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 			{
 				SCION_ERROR( "Failed to load scene [{}] - Scene is not a valid SceneObject.", sSceneName );
 
-				return pScene->UnloadScene();
+				return pScene->UnloadScene( false );
 			}
 
 			pCurrentScene->CopySceneToRuntime( *pSceneObject );
 
-			return pScene->UnloadScene();
+			return pScene->UnloadScene( false );
 		},
 		"getCanvas", // Returns the canvas of the current scene or an empty canvas object.
 		[ & ] {
-			if ( auto pCurrentScene = sceneManager.GetCurrentScene() )
-				return pCurrentScene->GetCanvas();
+			if ( auto pCurrentScene = sceneManager.GetCurrentSceneObject() )
+			{
+				auto* pRuntimeData = pCurrentScene->GetRuntimeData();
+				return pRuntimeData ? pRuntimeData->canvas : SCION_CORE::Canvas{};
+			}
 
 			return SCION_CORE::Canvas{};
 		},
 		"getDefaultMusic",
 		[ & ] {
-			if ( auto pCurrentScene = sceneManager.GetCurrentScene() )
-				return pCurrentScene->GetDefaultMusicName();
+			if ( auto pCurrentScene = sceneManager.GetCurrentSceneObject() )
+			{
+				auto* pRuntimeData = pCurrentScene->GetRuntimeData();
+				return pRuntimeData ? pRuntimeData->sDefaultMusic : "";
+			}
 
 			return std::string{ "" };
 		},
-		"getCurrentSceneName", [ & ] { return sceneManager.GetCurrentSceneName(); }
+		"getCurrentSceneName", [ & ]
+		{
+			if (auto pCurrentScene = sceneManager.GetCurrentSceneObject())
+			{
+				auto* pRuntimeData = pCurrentScene->GetRuntimeData();
+				return pRuntimeData ? pRuntimeData->sSceneName : "";
+			}
+
+			return std::string{""};
+		}
 	);
 	// clang-format on
 }
