@@ -14,38 +14,52 @@ void SpriteBatchRenderer::Initialize()
 void SpriteBatchRenderer::GenerateBatches()
 {
 	std::vector<Vertex> vertices;
-	vertices.resize( m_Glyphs.size() * NUM_SPRITE_VERTICES );
+	vertices.resize( (m_Glyphs.size() > MAX_SPRITES ? MAX_SPRITES : m_Glyphs.size()) * NUM_SPRITE_VERTICES );
 
-	int currentVertex{ 0 }, currentSprite{ 0 };
-	GLuint offset{ 0 }, prevTextureID{ 0 };
+	GLuint prevTextureID{ 0 };
 
 	for ( const auto& sprite : m_Glyphs )
 	{
-		if ( currentSprite == 0 )
+		if ( m_CurrentObject == 0 )
+		{
 			m_Batches.emplace_back( std::make_shared<Batch>(
-				Batch{ .numIndices = NUM_SPRITE_INDICES, .offset = offset, .textureID = sprite->textureID } ) );
+				Batch{ .numIndices = NUM_SPRITE_INDICES, .offset = m_Offset, .textureID = sprite->textureID } ) );
+		}
 		else if ( sprite->textureID != prevTextureID )
+		{
 			m_Batches.emplace_back( std::make_shared<Batch>(
-				Batch{ .numIndices = NUM_SPRITE_INDICES, .offset = offset, .textureID = sprite->textureID } ) );
+				Batch{ .numIndices = NUM_SPRITE_INDICES, .offset = m_Offset, .textureID = sprite->textureID } ) );
+		}
 		else
+		{
 			m_Batches.back()->numIndices += NUM_SPRITE_INDICES;
+		}
 
-		vertices[ currentVertex++ ] = sprite->topLeft;
-		vertices[ currentVertex++ ] = sprite->topRight;
-		vertices[ currentVertex++ ] = sprite->bottomRight;
-		vertices[ currentVertex++ ] = sprite->bottomLeft;
+		vertices[ m_CurrentVertex++ ] = sprite->topLeft;
+		vertices[ m_CurrentVertex++ ] = sprite->topRight;
+		vertices[ m_CurrentVertex++ ] = sprite->bottomRight;
+		vertices[ m_CurrentVertex++ ] = sprite->bottomLeft;
 
 		prevTextureID = sprite->textureID;
-		offset += NUM_SPRITE_INDICES;
-		currentSprite++;
+		m_Offset += NUM_SPRITE_INDICES;
+		m_CurrentObject++;
+
+		if (m_CurrentObject == MAX_SPRITES)
+		{
+			Flush( vertices );
+		}
 	}
 
-	glBindBuffer( GL_ARRAY_BUFFER, GetVBO() );
+	// Buffer remaining data
+	if ( !vertices.empty() && !m_Batches.empty() )
+	{
+		glBindBuffer( GL_ARRAY_BUFFER, GetVBO() );
 
-	glBufferData( GL_ARRAY_BUFFER, vertices.size() * sizeof( Vertex ), nullptr, GL_DYNAMIC_DRAW );
-	glBufferSubData( GL_ARRAY_BUFFER, 0, vertices.size() * sizeof( Vertex ), vertices.data() );
+		glBufferData( GL_ARRAY_BUFFER, vertices.size() * sizeof( Vertex ), nullptr, GL_DYNAMIC_DRAW );
+		glBufferSubData( GL_ARRAY_BUFFER, 0, vertices.size() * sizeof( Vertex ), vertices.data() );
 
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		glBindBuffer( GL_ARRAY_BUFFER, 0 );
+	}
 }
 
 SpriteBatchRenderer::SpriteBatchRenderer()

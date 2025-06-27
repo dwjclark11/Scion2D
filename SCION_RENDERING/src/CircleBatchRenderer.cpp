@@ -9,33 +9,42 @@ void CircleBatchRenderer::GenerateBatches()
 	std::vector<CircleVertex> vertices;
 	vertices.resize( m_Glyphs.size() * NUM_SPRITE_VERTICES );
 
-	int currentVertex{ 0 }, currentCircle{ 0 };
-	GLuint offset{ 0 };
-
 	for ( const auto& circle : m_Glyphs )
 	{
-		if ( currentCircle == 0 )
+		if ( m_CurrentObject == 0 )
+		{
 			m_Batches.emplace_back(
-				std::make_shared<RectBatch>( RectBatch{ .numIndices = NUM_SPRITE_INDICES, .offset = offset } ) );
+				std::make_shared<RectBatch>( RectBatch{ .numIndices = NUM_SPRITE_INDICES, .offset = m_Offset } ) );
+		}
 		else
+		{
 			m_Batches.back()->numIndices += NUM_SPRITE_INDICES;
+		}
 
-		vertices[ currentVertex++ ] = circle->topLeft;
-		vertices[ currentVertex++ ] = circle->topRight;
-		vertices[ currentVertex++ ] = circle->bottomRight;
-		vertices[ currentVertex++ ] = circle->bottomLeft;
+		vertices[ m_CurrentVertex++ ] = circle->topLeft;
+		vertices[ m_CurrentVertex++ ] = circle->topRight;
+		vertices[ m_CurrentVertex++ ] = circle->bottomRight;
+		vertices[ m_CurrentVertex++ ] = circle->bottomLeft;
 
-		offset += NUM_SPRITE_INDICES;
-		currentCircle++;
+		m_Offset += NUM_SPRITE_INDICES;
+		m_CurrentObject++;
+
+		if (m_CurrentObject == MAX_SPRITES)
+		{
+			Flush(vertices);
+		}
 	}
 
-	glBindBuffer( GL_ARRAY_BUFFER, GetVBO() );
+	if ( !vertices.empty() && !m_Batches.empty())
+	{
+		glBindBuffer( GL_ARRAY_BUFFER, GetVBO() );
 
-	glBufferData( GL_ARRAY_BUFFER, vertices.size() * sizeof( CircleVertex ), nullptr, GL_DYNAMIC_DRAW );
+		glBufferData( GL_ARRAY_BUFFER, vertices.size() * sizeof( CircleVertex ), nullptr, GL_DYNAMIC_DRAW );
 
-	glBufferSubData( GL_ARRAY_BUFFER, 0, vertices.size() * sizeof( CircleVertex ), vertices.data() );
+		glBufferSubData( GL_ARRAY_BUFFER, 0, vertices.size() * sizeof( CircleVertex ), vertices.data() );
 
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		glBindBuffer( GL_ARRAY_BUFFER, 0 );
+	}
 }
 
 void CircleBatchRenderer::Initialize()

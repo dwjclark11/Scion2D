@@ -27,6 +27,9 @@ class Batcher
   protected:
 	std::vector<std::shared_ptr<TGlyph>> m_Glyphs;
 	std::vector<std::shared_ptr<TBatch>> m_Batches;
+	int m_CurrentObject;
+	int m_CurrentVertex;
+	GLuint m_Offset;
 
   protected:
 	void SetVertexAttribute( GLuint layoutPosition, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset,
@@ -41,6 +44,9 @@ class Batcher
 
 	virtual void GenerateBatches() = 0;
 
+	template <typename TVertex>
+	void Flush( std::vector<TVertex>& vertices );
+
   private:
 	void Initialize();
 
@@ -49,6 +55,7 @@ class Batcher
 	GLuint m_VBO;
 	GLuint m_IBO;
 	bool m_bUseIBO;
+	
 };
 
 template <typename TBatch, typename TGlyph>
@@ -120,11 +127,15 @@ inline Batcher<TBatch, TGlyph>::Batcher()
 
 template <typename TBatch, typename TGlyph>
 inline Batcher<TBatch, TGlyph>::Batcher( bool bUseIBO )
-	: m_VAO{ 0 }
+	: m_Glyphs{}
+	, m_Batches{}
+	, m_CurrentObject{ 0 }
+	, m_CurrentVertex{ 0 }
+	, m_Offset{ 0 }
+	, m_VAO{ 0 }
 	, m_VBO{ 0 }
 	, m_IBO{ 0 }
-	, m_Glyphs{}
-	, m_Batches{}
+
 	, m_bUseIBO{ bUseIBO }
 {
 	Initialize();
@@ -146,5 +157,30 @@ inline void Batcher<TBatch, TGlyph>::Begin()
 {
 	m_Glyphs.clear();
 	m_Batches.clear();
+	m_CurrentObject = 0;
+	m_CurrentVertex = 0;
+	m_Offset = 0;
 }
+
+template <typename TBatch, typename TGlyph>
+template <typename TVertex>
+inline void Batcher<TBatch, TGlyph>::Flush( std::vector<TVertex>& vertices )
+{
+	glBindBuffer( GL_ARRAY_BUFFER, GetVBO() );
+	// Orphan the buffer
+	glBufferData( GL_ARRAY_BUFFER, vertices.size() * sizeof( TVertex ), nullptr, GL_DYNAMIC_DRAW );
+	// Upload the data
+	glBufferSubData( GL_ARRAY_BUFFER, 0, vertices.size() * sizeof( TVertex ), vertices.data() );
+
+	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+	Render();
+	m_Batches.clear();
+	vertices.clear();
+	vertices.resize( MAX_SPRITES * NUM_SPRITE_VERTICES );
+	m_CurrentObject = 0;
+	m_CurrentVertex = 0;
+	m_Offset = 0;
+}
+
 } // namespace SCION_RENDERING

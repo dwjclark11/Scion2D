@@ -7,29 +7,47 @@ namespace SCION_RENDERING
 void RectBatchRenderer::GenerateBatches()
 {
 	std::vector<Vertex> vertices;
-	vertices.resize( m_Glyphs.size() * 4 );
-
-	int currentVertex{ 0 };
-
-	m_Batches.push_back( std::make_shared<RectBatch>( RectBatch{ .numIndices = 6, .offset = 0 } ) );
+	vertices.resize( (m_Glyphs.size() > MAX_SPRITES ? MAX_SPRITES : m_Glyphs.size()) * 4 );
 
 	for ( const auto& shape : m_Glyphs )
 	{
-		vertices[ currentVertex++ ] = shape->topLeft;
-		vertices[ currentVertex++ ] = shape->topRight;
-		vertices[ currentVertex++ ] = shape->bottomRight;
-		vertices[ currentVertex++ ] = shape->bottomLeft;
+		if ( m_CurrentObject == 0 )
+		{
+			m_Batches.push_back(
+				std::make_shared<RectBatch>( RectBatch{ .numIndices = NUM_SPRITE_INDICES, .offset = 0 } ) );
+		}
+		else
+		{
+			m_Batches.back()->numIndices += NUM_SPRITE_INDICES;
+		}
 
-		m_Batches.back()->numIndices += 6;
+		vertices[ m_CurrentVertex++ ] = shape->topLeft;
+		vertices[ m_CurrentVertex++ ] = shape->topRight;
+		vertices[ m_CurrentVertex++ ] = shape->bottomRight;
+		vertices[ m_CurrentVertex++ ] = shape->bottomLeft;
+
+		m_CurrentObject++;
+		m_Offset += NUM_SPRITE_INDICES;
+
+		// If the number of objects are equal to max sprites,
+		// Flush early
+		if ( m_CurrentObject == MAX_SPRITES )
+		{
+			Flush( vertices );
+		}
 	}
 
-	glBindBuffer( GL_ARRAY_BUFFER, GetVBO() );
-	// Orphan the buffer
-	glBufferData( GL_ARRAY_BUFFER, vertices.size() * sizeof( Vertex ), nullptr, GL_DYNAMIC_DRAW );
-	// Upload the data
-	glBufferSubData( GL_ARRAY_BUFFER, 0, vertices.size() * sizeof( Vertex ), vertices.data() );
+	// Buffer remaining data
+	if ( !vertices.empty() && !m_Batches.empty() )
+	{
+		glBindBuffer( GL_ARRAY_BUFFER, GetVBO() );
+		// Orphan the buffer
+		glBufferData( GL_ARRAY_BUFFER, vertices.size() * sizeof( Vertex ), nullptr, GL_DYNAMIC_DRAW );
+		// Upload the data
+		glBufferSubData( GL_ARRAY_BUFFER, 0, vertices.size() * sizeof( Vertex ), vertices.data() );
 
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		glBindBuffer( GL_ARRAY_BUFFER, 0 );
+	}
 }
 
 void RectBatchRenderer::Initialize()
