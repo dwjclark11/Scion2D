@@ -25,8 +25,8 @@ class Batcher
 	virtual void Render() = 0;
 
   protected:
-	std::vector<std::shared_ptr<TGlyph>> m_Glyphs;
-	std::vector<std::shared_ptr<TBatch>> m_Batches;
+	std::vector<std::unique_ptr<TGlyph>> m_Glyphs;
+	std::vector<std::unique_ptr<TBatch>> m_Batches;
 	int m_CurrentObject;
 	int m_CurrentVertex;
 	GLuint m_Offset;

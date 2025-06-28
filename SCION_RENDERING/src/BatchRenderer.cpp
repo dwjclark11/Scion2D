@@ -22,12 +22,12 @@ void SpriteBatchRenderer::GenerateBatches()
 	{
 		if ( m_CurrentObject == 0 )
 		{
-			m_Batches.emplace_back( std::make_shared<Batch>(
+			m_Batches.emplace_back( std::make_unique<Batch>(
 				Batch{ .numIndices = NUM_SPRITE_INDICES, .offset = m_Offset, .textureID = sprite->textureID } ) );
 		}
 		else if ( sprite->textureID != prevTextureID )
 		{
-			m_Batches.emplace_back( std::make_shared<Batch>(
+			m_Batches.emplace_back( std::make_unique<Batch>(
 				Batch{ .numIndices = NUM_SPRITE_INDICES, .offset = m_Offset, .textureID = sprite->textureID } ) );
 		}
 		else
@@ -107,47 +107,71 @@ void SpriteBatchRenderer::Render()
 void SpriteBatchRenderer::AddSprite( const glm::vec4& spriteRect, const glm::vec4 uvRect, GLuint textureID, int layer,
 									 glm::mat4 model, const Color& color )
 {
-	auto newSprite = std::make_shared<SpriteGlyph>( SpriteGlyph{
-		.topLeft = Vertex{ .position = model * glm::vec4{ spriteRect.x, spriteRect.y + spriteRect.w, 0.f, 1.f },
-						   .uvs = glm::vec2{ uvRect.x, uvRect.y + uvRect.w },
-						   .color = color },
-		.bottomLeft = Vertex{ .position = model * glm::vec4{ spriteRect.x, spriteRect.y, 0.f, 1.f },
-							  .uvs = glm::vec2{ uvRect.x, uvRect.y },
-							  .color = color },
-		.topRight =
-			Vertex{ .position = model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y + spriteRect.w, 0.f, 1.f },
+	// clang-format off
+	m_Glyphs.emplace_back(
+		std::make_unique<SpriteGlyph>(
+			SpriteGlyph{
+				.topLeft = Vertex{
+					.position = model * glm::vec4{ spriteRect.x, spriteRect.y + spriteRect.w, 0.f, 1.f },
+					.uvs = glm::vec2{ uvRect.x, uvRect.y + uvRect.w },
+					.color = color
+				},
+				.bottomLeft = Vertex{
+					.position = model * glm::vec4{ spriteRect.x, spriteRect.y, 0.f, 1.f },
+					.uvs = glm::vec2{ uvRect.x, uvRect.y },
+					.color = color
+				},
+				.topRight = Vertex{
+					.position = model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y + spriteRect.w, 0.f, 1.f },
 					.uvs = glm::vec2{ uvRect.x + uvRect.z, uvRect.y + uvRect.w },
-					.color = color },
-		.bottomRight = Vertex{ .position = model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y, 0.f, 1.f },
-							   .uvs = glm::vec2{ uvRect.x + uvRect.z, uvRect.y },
-							   .color = color },
-		.layer = layer,
-		.textureID = textureID } );
-
-	m_Glyphs.push_back( std::move( newSprite ) );
+					.color = color
+				},
+				.bottomRight = Vertex{
+					.position = model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y, 0.f, 1.f },
+					.uvs = glm::vec2{ uvRect.x + uvRect.z, uvRect.y },
+					.color = color
+				},
+				.layer = layer,
+				.textureID = textureID
+			}
+		)
+	);
+	// clang-format off
 }
 
 void SpriteBatchRenderer::AddSpriteIso( const glm::vec4& spriteRect, const glm::vec4 uvRect, GLuint textureID,
 										int cellX, int cellY, int layer, glm::mat4 model, const Color& color )
 {
-	auto newSprite = std::make_shared<SpriteGlyph>( SpriteGlyph{
-		.topLeft = Vertex{ .position = model * glm::vec4{ spriteRect.x, spriteRect.y + spriteRect.w, 0.f, 1.f },
-						   .uvs = glm::vec2{ uvRect.x, uvRect.y + uvRect.w },
-						   .color = color },
-		.bottomLeft = Vertex{ .position = model * glm::vec4{ spriteRect.x, spriteRect.y, 0.f, 1.f },
-							  .uvs = glm::vec2{ uvRect.x, uvRect.y },
-							  .color = color },
-		.topRight =
-			Vertex{ .position = model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y + spriteRect.w, 0.f, 1.f },
+	// clang-format off
+	m_Glyphs.emplace_back(
+		std::make_unique<SpriteGlyph>(
+			SpriteGlyph{
+				.topLeft = Vertex{
+					.position = model * glm::vec4{ spriteRect.x, spriteRect.y + spriteRect.w, 0.f, 1.f },
+					.uvs = glm::vec2{ uvRect.x, uvRect.y + uvRect.w },
+					.color = color
+				},
+				.bottomLeft = Vertex{
+					.position = model * glm::vec4{ spriteRect.x, spriteRect.y, 0.f, 1.f },
+					.uvs = glm::vec2{ uvRect.x, uvRect.y },
+					.color = color
+				},
+				.topRight = Vertex{
+					.position = model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y + spriteRect.w, 0.f, 1.f },
 					.uvs = glm::vec2{ uvRect.x + uvRect.z, uvRect.y + uvRect.w },
-					.color = color },
-		.bottomRight = Vertex{ .position = model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y, 0.f, 1.f },
-							   .uvs = glm::vec2{ uvRect.x + uvRect.z, uvRect.y },
-							   .color = color },
-		.layer = cellY + cellX + static_cast<int>( layer * spriteRect.w ),
-		.textureID = textureID } );
-
-	m_Glyphs.push_back( std::move( newSprite ) );
+					.color = color
+				},
+				.bottomRight = Vertex{
+					.position = model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y, 0.f, 1.f },
+					.uvs = glm::vec2{ uvRect.x + uvRect.z, uvRect.y },
+					.color = color
+				},
+				.layer = cellY + cellX + static_cast<int>( layer * spriteRect.w ),
+				.textureID = textureID
+			}
+		)
+	);
+	// clang-format on
 }
 
 } // namespace SCION_RENDERING

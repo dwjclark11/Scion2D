@@ -14,7 +14,7 @@ void CircleBatchRenderer::GenerateBatches()
 		if ( m_CurrentObject == 0 )
 		{
 			m_Batches.emplace_back(
-				std::make_shared<RectBatch>( RectBatch{ .numIndices = NUM_SPRITE_INDICES, .offset = m_Offset } ) );
+				std::make_unique<RectBatch>( RectBatch{ .numIndices = NUM_SPRITE_INDICES, .offset = m_Offset } ) );
 		}
 		else
 		{
@@ -74,58 +74,76 @@ void CircleBatchRenderer::End()
 
 void CircleBatchRenderer::AddCircle( const glm::vec4& destRect, const Color& color, float thickness, glm::mat4 model )
 {
-	auto newCircle = std::make_shared<CircleGlyph>( CircleGlyph{
-		.topLeft = CircleVertex{ .position = model * glm::vec4{ destRect.x, destRect.y + destRect.w, 0.f, 1.f },
-								 .uvs = glm::vec2{ 1.f, 1.f },
-								 .color = color,
-								 .lineThickness = thickness },
-		.bottomLeft = CircleVertex{ .position = model * glm::vec4{ destRect.x, destRect.y, 0.f, 1.f },
-									.uvs = glm::vec2{ 1.f, -1.f },
-									.color = color,
-									.lineThickness = thickness },
-		.topRight =
-			CircleVertex{ .position = model * glm::vec4{ destRect.x + destRect.z, destRect.y + destRect.w, 0.f, 1.f },
-						  .uvs = glm::vec2{ -1.f, 1.f },
-						  .color = color,
-						  .lineThickness = thickness },
-		.bottomRight = CircleVertex{ .position = model * glm::vec4{ destRect.x + destRect.z, destRect.y, 0.f, 1.f },
-									 .uvs = glm::vec2{ -1.f, -1.f },
-									 .color = color,
-									 .lineThickness = thickness },
-	} );
-	m_Glyphs.emplace_back( std::move( newCircle ) );
+	// clang-format off
+	m_Glyphs.emplace_back(
+		std::make_unique<CircleGlyph>(
+			CircleGlyph{
+				.topLeft = CircleVertex{
+					.position = model * glm::vec4{ destRect.x, destRect.y + destRect.w, 0.f, 1.f },
+					.uvs = glm::vec2{ 1.f, 1.f },
+					.color = color,
+					.lineThickness = thickness
+				},
+				.bottomLeft = CircleVertex{
+					.position = model * glm::vec4{ destRect.x, destRect.y, 0.f, 1.f },
+					.uvs = glm::vec2{ 1.f, -1.f },
+					.color = color,
+					.lineThickness = thickness
+				},
+				.topRight = CircleVertex{
+					.position = model * glm::vec4{ destRect.x + destRect.z, destRect.y + destRect.w, 0.f, 1.f },
+					.uvs = glm::vec2{ -1.f, 1.f },
+					.color = color,
+					.lineThickness = thickness
+				},
+				.bottomRight = CircleVertex{
+					.position = model * glm::vec4{ destRect.x + destRect.z, destRect.y, 0.f, 1.f },
+					.uvs = glm::vec2{ -1.f, -1.f },
+					.color = color,
+					.lineThickness = thickness
+				},
+			}
+		)
+	);
+	// clang-format on
 }
 
 void CircleBatchRenderer::AddCircle( const Circle& circle )
 {
+	// clang-format off
 	glm::mat4 model{ 1.f };
-	auto newCircle = std::make_shared<CircleGlyph>( CircleGlyph{
-		.topLeft =
-			CircleVertex{ .position =
-							  model * glm::vec4{ circle.position.x, circle.position.y + circle.radius, 0.f, 1.f },
-						  .uvs = glm::vec2{ 1.f, 1.f },
-						  .color = circle.color,
-						  .lineThickness = circle.lineThickness },
-		.bottomLeft = CircleVertex{ .position = model * glm::vec4{ circle.position.x, circle.position.y, 0.f, 1.f },
-									.uvs = glm::vec2{ 1.f, -1.f },
-									.color = circle.color,
-									.lineThickness = circle.lineThickness },
-		.topRight = CircleVertex{ .position = model * glm::vec4{ circle.position.x + circle.radius,
-																 circle.position.y + circle.radius,
-																 0.f,
-																 1.f },
-								  .uvs = glm::vec2{ -1.f, 1.f },
-								  .color = circle.color,
-								  .lineThickness = circle.lineThickness },
-		.bottomRight =
-			CircleVertex{ .position =
-							  model * glm::vec4{ circle.position.x + circle.radius, circle.position.y, 0.f, 1.f },
-						  .uvs = glm::vec2{ -1.f, -1.f },
-						  .color = circle.color,
-						  .lineThickness = circle.lineThickness },
-	} );
+	m_Glyphs.emplace_back(
+		std::make_unique<CircleGlyph>(
+			CircleGlyph{
+				.topLeft = CircleVertex{
+					.position = model * glm::vec4{ circle.position.x, circle.position.y + circle.radius, 0.f, 1.f },
+					.uvs = glm::vec2{ 1.f, 1.f },
+					.color = circle.color,
+					.lineThickness = circle.lineThickness
+				},
+				.bottomLeft = CircleVertex{
+					.position = model * glm::vec4{ circle.position.x, circle.position.y, 0.f, 1.f },
+					.uvs = glm::vec2{ 1.f, -1.f },
+					.color = circle.color,
+					.lineThickness = circle.lineThickness
+				},
+				.topRight = CircleVertex{
+					.position = model * glm::vec4{ circle.position.x + circle.radius, circle.position.y + circle.radius, 0.f, 1.f },
+					.uvs = glm::vec2{ -1.f, 1.f },
+					.color = circle.color,
+					.lineThickness = circle.lineThickness
+				},
+				.bottomRight = CircleVertex{
+					.position = model * glm::vec4{ circle.position.x + circle.radius, circle.position.y, 0.f, 1.f },
+					.uvs = glm::vec2{ -1.f, -1.f },
+					.color = circle.color,
+					.lineThickness = circle.lineThickness
+				},
+			}
+		)
+	);
 
-	m_Glyphs.emplace_back( std::move( newCircle ) );
+	// clang-format on
 }
 
 void CircleBatchRenderer::Render()

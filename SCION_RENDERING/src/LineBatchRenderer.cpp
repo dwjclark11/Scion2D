@@ -10,7 +10,7 @@ void LineBatchRenderer::GenerateBatches()
 
 	int currentVertex{ 0 };
 
-	m_Batches.push_back( std::make_shared<LineBatch>( LineBatch{ .offset = 0, .numVertices = 2 } ) );
+	m_Batches.push_back( std::make_unique<LineBatch>( LineBatch{ .offset = 0, .numVertices = 2 } ) );
 
 	for ( const auto& line : m_Glyphs )
 	{
@@ -66,12 +66,16 @@ void LineBatchRenderer::Render()
 
 void LineBatchRenderer::AddLine( const Line& line )
 {
-	std::shared_ptr<LineGlyph> newGlyph = std::make_shared<LineGlyph>( LineGlyph{
-		.p1 = Vertex{ .position = line.p1, .color = line.color },
-		.p2 = Vertex{ .position = line.p2, .color = line.color },
-		.lineWidth = line.lineWidth,
-	} );
-
-	m_Glyphs.push_back( std::move( newGlyph ) );
+	// clang-format off
+	m_Glyphs.emplace_back(
+		std::make_unique<LineGlyph>(
+			LineGlyph{
+				.p1 = Vertex{ .position = line.p1, .color = line.color },
+				.p2 = Vertex{ .position = line.p2, .color = line.color },
+				.lineWidth = line.lineWidth
+			}
+		)
+	);
+	// clang-format on
 }
 } // namespace SCION_RENDERING

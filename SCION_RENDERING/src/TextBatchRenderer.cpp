@@ -3,6 +3,8 @@
 
 /* If the loop is more that 100, fail and let the user know. */
 constexpr int MAX_LOOP_FAIL_CHECK = 100;
+constexpr GLuint NUM_VERTICES = 6;
+constexpr float MIN_TEXT_WRAP = 100.f;
 
 namespace SCION_RENDERING
 {
@@ -26,7 +28,7 @@ void TextBatchRenderer::GenerateBatches()
 		total += textGlpyh->textStr.size();
 
 	std::vector<Vertex> vertices;
-	vertices.resize( total * 6 );
+	vertices.resize( total * NUM_VERTICES );
 
 	for ( const auto& textGlyph : m_Glyphs )
 	{
@@ -36,7 +38,7 @@ void TextBatchRenderer::GenerateBatches()
 		auto fontSize = textGlyph->font->GetFontSize();
 		int infiniteLoopCheck{ 0 };
 
-		if ( textGlyph->wrap > 100.f )
+		if ( textGlyph->wrap > MIN_TEXT_WRAP )
 		{
 			// Create the text chunks for each line.
 			for ( int i = 0; i < textGlyph->textStr.size(); i++ )
@@ -161,17 +163,27 @@ void TextBatchRenderer::GenerateBatches()
 					.color = textGlyph->color };
 
 				if ( currentFont == 0 )
-					m_Batches.push_back( std::make_shared<TextBatch>( TextBatch{
-						.offset = offset, .numVertices = 6, .fontAtlasID = textGlyph->font->GetFontAtlasID() } ) );
+				{
+					m_Batches.push_back(
+						std::make_unique<TextBatch>( TextBatch{ .offset = offset,
+																.numVertices = NUM_VERTICES,
+																.fontAtlasID = textGlyph->font->GetFontAtlasID() } ) );
+				}
 				else if ( textGlyph->font->GetFontAtlasID() != prevFontID )
-					m_Batches.push_back( std::make_shared<TextBatch>( TextBatch{
-						.offset = offset, .numVertices = 6, .fontAtlasID = textGlyph->font->GetFontAtlasID() } ) );
+				{
+					m_Batches.push_back(
+						std::make_unique<TextBatch>( TextBatch{ .offset = offset,
+																.numVertices = NUM_VERTICES,
+																.fontAtlasID = textGlyph->font->GetFontAtlasID() } ) );
+				}
 				else
-					m_Batches.back()->numVertices += 6;
+				{
+					m_Batches.back()->numVertices += NUM_VERTICES;
+				}
 
 				currentFont++;
 				prevFontID = textGlyph->font->GetFontAtlasID();
-				offset += 6;
+				offset += NUM_VERTICES;
 			}
 
 			// Move to the next Line
@@ -221,14 +233,20 @@ void TextBatchRenderer::AddText( const std::string& text, const std::shared_ptr<
 	if ( !font )
 		return;
 
-	auto newTextGlyph = std::make_shared<TextGlyph>( TextGlyph{ .textStr = text,
-																.position = position,
-																.color = color,
-																.model = model,
-																.font = font,
-																.wrap = wrap,
-																.padding = padding } );
-
-	m_Glyphs.push_back( std::move( newTextGlyph ) );
+	// clang-format off
+	m_Glyphs.emplace_back(
+		std::make_unique<TextGlyph>(
+			TextGlyph{
+				.textStr = text,
+				.position = position,
+				.color = color,
+				.model = model,
+				.font = font,
+				.wrap = wrap,
+				.padding = padding
+			}
+		)
+	);
+	// clang-format on
 }
 } // namespace SCION_RENDERING

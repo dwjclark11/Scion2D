@@ -22,10 +22,10 @@ void PickingBatchRenderer::GenerateBatches()
 	for ( const auto& sprite : m_Glyphs )
 	{
 		if ( currentSprite == 0 )
-			m_Batches.emplace_back( std::make_shared<Batch>(
+			m_Batches.emplace_back( std::make_unique<Batch>(
 				Batch{ .numIndices = NUM_SPRITE_INDICES, .offset = offset, .textureID = sprite->textureID } ) );
 		else if ( sprite->textureID != prevTextureID )
-			m_Batches.emplace_back( std::make_shared<Batch>(
+			m_Batches.emplace_back( std::make_unique<Batch>(
 				Batch{ .numIndices = NUM_SPRITE_INDICES, .offset = offset, .textureID = sprite->textureID } ) );
 		else
 			m_Batches.back()->numIndices += NUM_SPRITE_INDICES;
@@ -84,29 +84,39 @@ void PickingBatchRenderer::Render()
 void PickingBatchRenderer::AddSprite( const glm::vec4& spriteRect, const glm::vec4 uvRect, GLuint textureID, int layer,
 									  uint32_t id, const Color& color, glm::mat4 model )
 {
-	auto newSprite = std::make_shared<PickingGlyph>( PickingGlyph{
-		.topLeft = PickingVertex{ .position = model * glm::vec4{ spriteRect.x, spriteRect.y + spriteRect.w, 0.f, 1.f },
-								  .uvs = glm::vec2{ uvRect.x, uvRect.y + uvRect.w },
-								  .color = color,
-								  .uid = id },
-		.bottomLeft = PickingVertex{ .position = model * glm::vec4{ spriteRect.x, spriteRect.y, 0.f, 1.f },
-									 .uvs = glm::vec2{ uvRect.x, uvRect.y },
-									 .color = color,
-									 .uid = id },
-		.topRight =
-			PickingVertex{ .position =
-							   model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y + spriteRect.w, 0.f, 1.f },
-						   .uvs = glm::vec2{ uvRect.x + uvRect.z, uvRect.y + uvRect.w },
-						   .color = color,
-						   .uid = id },
-		.bottomRight =
-			PickingVertex{ .position = model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y, 0.f, 1.f },
-						   .uvs = glm::vec2{ uvRect.x + uvRect.z, uvRect.y },
-						   .color = color,
-						   .uid = id },
-		.layer = layer,
-		.textureID = textureID } );
-
-	m_Glyphs.push_back( std::move( newSprite ) );
+	// clang-format off
+	m_Glyphs.emplace_back(
+		std::make_unique<PickingGlyph>(
+			PickingGlyph{
+				.topLeft = PickingVertex{
+					.position = model * glm::vec4{ spriteRect.x, spriteRect.y + spriteRect.w, 0.f, 1.f },
+					.uvs = glm::vec2{ uvRect.x, uvRect.y + uvRect.w },
+					.color = color,
+					.uid = id
+				},
+				.bottomLeft = PickingVertex{
+					.position = model * glm::vec4{ spriteRect.x, spriteRect.y, 0.f, 1.f },
+					.uvs = glm::vec2{ uvRect.x, uvRect.y },
+					.color = color,
+					.uid = id
+				},
+				.topRight = PickingVertex{
+					.position = model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y + spriteRect.w, 0.f, 1.f },
+					.uvs = glm::vec2{ uvRect.x + uvRect.z, uvRect.y + uvRect.w },
+					.color = color,
+					.uid = id
+				},
+				.bottomRight = PickingVertex{
+					.position = model * glm::vec4{ spriteRect.x + spriteRect.z, spriteRect.y, 0.f, 1.f },
+					.uvs = glm::vec2{ uvRect.x + uvRect.z, uvRect.y },
+					.color = color,
+					.uid = id
+				},
+				.layer = layer,
+				.textureID = textureID
+			}
+		)
+	);
+	// clang-format on
 }
 } // namespace SCION_RENDERING
