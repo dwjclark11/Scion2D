@@ -225,6 +225,18 @@ class AssetManager
 	 */
 	bool DeleteAsset( const std::string& sAssetName, SCION_UTIL::AssetType eAssetType );
 
+	/**
+	 * @brief Searches for an asset by file path across textures, music, and sound effects
+	 * and deletes the matching asset if found.
+	 * @brief The function iterates through internal maps of loaded textures, music tracks,
+	 * and sound effects, comparing each asset's path or filename with the given path.
+	 * If a match is found, the corresponding asset is deleted using the appropriate type.
+	 *
+	 * @param sAssetPath The full path or filename of the asset to delete.
+	 * @return true if the asset is not found or successfully deleted; false if deletion fails.
+	 */
+	bool DeleteAssetFromPath( const std::string& sAssetPath );
+
 	/*
 	 * Binds the AssetManager functionality to the lua state.
 	 * @param takes in the sol::state& for binding to lua.
