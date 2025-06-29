@@ -369,9 +369,41 @@ void ContentDisplay::HandleFileEvent( const SCION_EDITOR::Events::FileEvent& fil
 	case EFileAction::Delete: {
 		fs::path path{ fileEvent.sFilepath };
 		if ( fs::is_directory( path ) )
+		{
+			std::unordered_set<std::string> setFilesToCheck;
+			// Collect all regular file paths inside the directory before deleting it
+			for (const auto& entry : fs::recursive_directory_iterator(path))
+			{
+				if ( entry.is_regular_file() )
+				{
+					setFilesToCheck.insert( entry.path().string() );
+				}
+			}
+
+			// Recursively delete the directory and its contents
 			fs::remove_all( path );
+
+			// Remove each file from the asset manager
+			for (const auto& sFilepath : setFilesToCheck)
+			{
+				if ( !ASSET_MANAGER().DeleteAssetFromPath( sFilepath ) )
+				{
+					SCION_ERROR( "Failed to remove asset from asset manager. [{}]", sFilepath );
+				}
+			}
+		}
 		else if ( fs::is_regular_file( path ) )
-			fs::remove( path );
+		{
+			// Remove the file from disk
+			if (fs::remove(path))
+			{
+				// Remove the file from the asset manager
+				if (!ASSET_MANAGER().DeleteAssetFromPath(path.string()))
+				{
+					SCION_ERROR( "Failed to remove asset from asset manager. [{}]", path.string() );
+				}
+			}
+		}
 		break;
 	}
 	case EFileAction::Paste: {

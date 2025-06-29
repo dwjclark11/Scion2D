@@ -537,7 +537,44 @@ bool AssetManager::DeleteAsset( const std::string& sAssetName, SCION_UTIL::Asset
 		}
 	}
 
+	if (bSuccess)
+	{
+		SCION_LOG( "Deleted asset [{}]", sAssetName );
+	}
+
 	return bSuccess;
+}
+
+bool AssetManager::DeleteAssetFromPath( const std::string& sAssetPath )
+{
+	auto textureItr = std::ranges::find_if(
+		m_mapTextures, [ & ]( const auto& pair ) { return pair.second->GetPath() == sAssetPath; } );
+
+	if ( textureItr != m_mapTextures.end() )
+	{
+		std::string sTextureName{ textureItr->first };
+		return DeleteAsset( sTextureName, SCION_UTIL::AssetType::TEXTURE );
+	}
+
+	auto musicItr = std::ranges::find_if(
+		m_mapMusic, [ & ]( const auto& pair ) { return pair.second->GetFilename() == sAssetPath; } );
+
+	if ( musicItr != m_mapMusic.end() )
+	{
+		std::string sMusicName{ musicItr->first };
+		return DeleteAsset( sMusicName, SCION_UTIL::AssetType::MUSIC );
+	}
+
+	auto soundItr = std::ranges::find_if(
+		m_mapSoundFx, [ & ]( const auto& pair ) { return pair.second->GetFilename() == sAssetPath; } );
+
+	if ( soundItr != m_mapSoundFx.end() )
+	{
+		std::string sSoundName{ soundItr->first };
+		return DeleteAsset( sSoundName, SCION_UTIL::AssetType::SOUNDFX );
+	}
+
+	return true;
 }
 
 void AssetManager::CreateLuaAssetManager( sol::state& lua )
@@ -596,6 +633,9 @@ void AssetManager::FileWatcher()
 		{
 			std::shared_lock sharedLock{ m_AssetMutex };
 			fs::path path{ fileParam.sFilepath };
+			if ( !fs::exists( path ) )
+				continue;
+
 			if ( fileParam.lastWrite != fs::last_write_time( path ) )
 			{
 				sharedLock.unlock();
