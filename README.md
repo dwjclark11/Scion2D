@@ -94,7 +94,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 ## Install dependencies 
 - Windows
 	```
-	vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer lua sol2 stb tinyfiledialogs rapidjson
+	vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer[mpg123] lua sol2 stb tinyfiledialogs rapidjson
 	```
 - Linux[debian based]
 	```
@@ -113,7 +113,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 		sudo apt install build-essential
 		```
 	```
-	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer lua sol2 stb tinyfiledialogs rapidjson
+	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer[mpg123] lua sol2 stb tinyfiledialogs rapidjson
 	```
 - ImGui Docking and SDL2-Binding
   * It seems like the ```ImGui[sdl2-binding]``` no longer exists in vcpkg. Also the current ```Imgui[docking-experimental]``` does not seem to be up to date either.
