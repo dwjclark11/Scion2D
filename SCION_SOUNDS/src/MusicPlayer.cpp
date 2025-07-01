@@ -14,6 +14,11 @@ MusicPlayer::MusicPlayer()
 		return;
 	}
 	SCION_LOG( "CHANNELS ALLOCATED [{}]", Mix_AllocateChannels( 16 ) );
+
+	if ( ( Mix_Init( MIX_INIT_MP3 ) & MIX_INIT_MP3 ) == 0 )
+	{
+		SCION_ERROR( "MP3 support not available: {}", Mix_GetError() );
+	}
 }
 
 MusicPlayer::~MusicPlayer()

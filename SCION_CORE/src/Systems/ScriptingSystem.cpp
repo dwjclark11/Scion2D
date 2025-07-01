@@ -20,6 +20,7 @@
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Core/CoreUtilities/FollowCamera.h"
+#include "Core/CoreUtilities/SaveProject.h"
 
 #include "Core/States/State.h"
 #include "Core/States/StateStack.h"
@@ -101,6 +102,71 @@ bool ScriptingSystem::LoadMainScript( const std::string& sMainLuaFile, SCION_COR
 
 	m_bMainLoaded = true;
 	return true;
+}
+
+bool ScriptingSystem::LoadMainScript( const SCION_CORE::SaveProject& save, SCION_CORE::ECS::Registry& registry,
+									  sol::state& lua )
+{
+	std::error_code ec;
+	fs::path mainLuaPath{ save.sMainLuaScript };
+
+	if ( !fs::exists( mainLuaPath, ec ) )
+	{
+		SCION_ERROR( "Failed to load main lua script: {}", ec.message() );
+		return false;
+	}
+
+	fs::path parentPath = mainLuaPath.parent_path();
+	fs::path scriptListPath = parentPath / "script_list.lua";
+	fs::path contentPath = fs::path{ save.sProjectPath } / "content"; 
+
+	// Try to load script list files.
+	if ( fs::exists( scriptListPath ) && fs::exists( contentPath ) )
+	{
+		try
+		{
+			sol::state scriptLua;
+			auto result = scriptLua.safe_script_file( scriptListPath.string() );
+			if (!result.valid())
+			{
+				sol::error err = result;
+				throw err;
+			}
+
+			sol::optional<sol::table> scriptList = scriptLua[ "ScriptList" ];
+			if ( !scriptList )
+			{
+				SCION_ERROR( "Failed to load script list. Missing \"ScriptList\" table." );
+				return false;
+			}
+
+			for (const auto& [_, script] : *scriptList)
+			{
+				try
+				{
+					fs::path scriptPath = contentPath / script.as<std::string>();
+					auto result = lua.safe_script_file( scriptPath.string() );
+					if (!result.valid())
+					{
+						sol::error error = result;
+						throw error;
+					}
+				}
+				catch (const sol::error& error)
+				{
+					SCION_ERROR( "Failed to load script: {}, Error: {}", script.as<std::string>(), error.what() );
+					return false;
+				}
+			}
+		}
+		catch (const sol::error& error)
+		{
+			SCION_ERROR( "Error Loading script_list.lua: {}", error.what() );
+			return false;
+		}
+	}
+
+	return LoadMainScript(save.sMainLuaScript, registry, lua);
 }
 
 void ScriptingSystem::Update( SCION_CORE::ECS::Registry& registry )

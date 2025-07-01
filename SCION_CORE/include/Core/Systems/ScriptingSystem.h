@@ -2,10 +2,17 @@
 #include <sol/sol.hpp>
 #include <string>
 
-namespace SCION_CORE::ECS
+namespace SCION_CORE
 {
-class Registry;
+
+struct SaveProject;
+
+namespace ECS 
+{
+	class Registry;
 }
+}
+
 
 namespace SCION_CORE::Systems
 {
@@ -16,6 +23,8 @@ class ScriptingSystem
 	~ScriptingSystem() = default;
 
 	bool LoadMainScript( const std::string& sMainLuaFile, SCION_CORE::ECS::Registry& registry, sol::state& lua );
+	bool LoadMainScript( const SCION_CORE::SaveProject& save, SCION_CORE::ECS::Registry& registry, sol::state& lua );
+
 	void Update( SCION_CORE::ECS::Registry& registry );
 	void Render( SCION_CORE::ECS::Registry& registry );
 

@@ -156,7 +156,8 @@ void SceneDisplay::LoadScene()
 
 	// Get the main script path
 	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
-	if ( !scriptSystem->LoadMainScript( pSaveProject->sMainLuaScript, runtimeRegistry, *lua ) )
+
+	if ( !scriptSystem->LoadMainScript( *pSaveProject, runtimeRegistry, *lua ) )
 	{
 		SCION_ERROR( "Failed to load the main lua script!" );
 		return;
