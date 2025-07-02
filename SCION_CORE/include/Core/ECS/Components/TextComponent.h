@@ -9,7 +9,7 @@ struct TextComponent
 	/* The name of the font to use. This must exist in the Asset Manager. */
 	std::string sFontName{ "pixel" };
 	/* The actual string value to be drawn to the screen. */
-	std::string sTextStr{ "" };
+	std::string sTextStr{};
 	/* Any padding to be used around the text. */
 	int padding{ 0 };
 	/* The length of the text line before it will wrap to the next line. */

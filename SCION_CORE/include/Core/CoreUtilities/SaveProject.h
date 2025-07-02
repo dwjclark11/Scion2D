@@ -6,21 +6,23 @@ namespace SCION_CORE
 struct SaveProject
 {
 	/* The name of the project. */
-	std::string sProjectName{ "" };
+	std::string sProjectName{};
 	/* The active path of the project. */
-	std::string sProjectPath{ "" };
+	std::string sProjectPath{};
 	/* The active project file path. */
-	std::string sProjectFilePath{ "" };
+	std::string sProjectFilePath{};
 	/* The main lua script path of the project. */
-	std::string sMainLuaScript{ "" };
+	std::string sMainLuaScript{};
 	/* Game exe file icon path. */
-	std::string sFileIconPath{ "" };
+	std::string sFileIconPath{};
+	/* The path to the script_list.lua file. */
+	std::string sScriptListPath{};
 };
 
 struct GameConfig
 {
-	std::string sGameName{ "" };
-	std::string sStartupScene{ "" };
+	std::string sGameName{};
+	std::string sStartupScene{};
 
 	int windowWidth{ 640 };
 	int windowHeight{ 480 };

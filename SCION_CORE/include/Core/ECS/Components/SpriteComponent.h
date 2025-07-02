@@ -20,7 +20,7 @@ struct UVs
 struct SpriteComponent
 {
 	/* The string name of the texture. Used to get the texture from the asset manager. */
-	std::string sTextureName{ "" };
+	std::string sTextureName{};
 	/* The width of the sprite in pixels. */
 	float width{ 16.f };
 	/* The height of the sprite in pixels. */

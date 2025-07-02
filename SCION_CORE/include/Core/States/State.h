@@ -5,7 +5,7 @@ namespace SCION_CORE
 {
 struct State
 {
-	std::string sName{ "" };
+	std::string sName{};
 	sol::protected_function on_render{ sol::lua_nil };
 	sol::protected_function on_update{ sol::lua_nil };
 	sol::protected_function on_enter{ sol::lua_nil };

@@ -18,9 +18,9 @@ namespace SCION_EDITOR
 {
 PackageGameDisplay::PackageGameDisplay()
 	: m_pGameConfig{ std::make_unique<SCION_CORE::GameConfig>() }
-	, m_sDestinationPath{ "" }
-	, m_sScriptListPath{ "" }
-	, m_sFileIconPath{ "" }
+	, m_sDestinationPath{}
+	, m_sScriptListPath{}
+	, m_sFileIconPath{}
 	, m_bResizable{ false }
 	, m_bBorderless{ false }
 	, m_bFullScreen{ false }
@@ -29,16 +29,9 @@ PackageGameDisplay::PackageGameDisplay()
 {
 	const auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
 	m_sScriptListPath = fmt::format(
-		"{0}{1}{2}{3}{2}{4}",
-		pSaveProject->sProjectPath,
-		"content",
-		PATH_SEPARATOR,
-		"scripts",
-		"script_list.lua"
-	);
+		"{0}{1}{2}{3}{2}{4}", pSaveProject->sProjectPath, "content", PATH_SEPARATOR, "scripts", "script_list.lua" );
 
 	m_bScriptListExists = fs::exists( fs::path{ m_sScriptListPath } );
-
 }
 
 PackageGameDisplay::~PackageGameDisplay() = default;
@@ -50,7 +43,7 @@ void PackageGameDisplay::Update()
 
 void PackageGameDisplay::Draw()
 {
-	if (!ImGui::Begin("Package Game"))
+	if ( !ImGui::Begin( "Package Game" ) )
 	{
 		ImGui::End();
 		return;
@@ -59,7 +52,7 @@ void PackageGameDisplay::Draw()
 	ImGui::SeparatorText( "Package and Export Game" );
 	ImGui::NewLine();
 
-	if (ImGui::BeginChild("Game Packager"))
+	if ( ImGui::BeginChild( "Game Packager" ) )
 	{
 		ImGui::SeparatorText( "File Information" );
 		ImGui::PushItemWidth( 256.f );
@@ -67,17 +60,18 @@ void PackageGameDisplay::Draw()
 		ImGui::InputText( "##gameTitle", &m_pGameConfig->sGameName );
 
 		ImGui::InlineLabel( "Destination" );
-		ImGui::InputText( "##destination", &m_sDestinationPath);
+		ImGui::InputText( "##destination", &m_sDestinationPath );
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
-		if (ImGui::Button("...""##dest"))
+		if ( ImGui::Button( "..."
+							"##dest" ) )
 		{
 			// TODO: Open file dialog and set destination path.
 		}
 
 		ImGui::InlineLabel( "Icon" );
 		ImGui::PushItemWidth( 256.f );
-		ImGui::InputText( "##icon", &m_sFileIconPath);
+		ImGui::InputText( "##icon", &m_sFileIconPath );
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 		if ( ImGui::Button( "..."
@@ -102,12 +96,12 @@ void PackageGameDisplay::Draw()
 		ImGui::InputInt( "##windowHeight", &m_pGameConfig->windowHeight );
 		ImGui::PopItemWidth();
 		ImGui::Separator();
-		ImGui::AddSpaces(2);
+		ImGui::AddSpaces( 2 );
 		ImGui::Text( "Window Flags" );
 		ImGui::Separator();
 
 		ImGui::InlineLabel( "Resizable" );
-		if (ImGui::Checkbox("##resizable", &m_bResizable))
+		if ( ImGui::Checkbox( "##resizable", &m_bResizable ) )
 		{
 			if ( m_bResizable )
 			{
@@ -116,7 +110,7 @@ void PackageGameDisplay::Draw()
 		}
 
 		ImGui::InlineLabel( "Fullscreen" );
-		if ( ImGui::Checkbox( "##fullscreen", &m_bFullScreen) )
+		if ( ImGui::Checkbox( "##fullscreen", &m_bFullScreen ) )
 		{
 			if ( m_bFullScreen )
 			{
@@ -136,7 +130,7 @@ void PackageGameDisplay::Draw()
 		}
 
 		ImGui::InlineLabel( "Borderless" );
-		if ( ImGui::Checkbox( "##borderless", &m_bBorderless) )
+		if ( ImGui::Checkbox( "##borderless", &m_bBorderless ) )
 		{
 			if ( m_bBorderless )
 			{
@@ -154,7 +148,7 @@ void PackageGameDisplay::Draw()
 		ImGui::InputInt( "##cameraWidth", &m_pGameConfig->cameraWidth );
 		ImGui::SameLine();
 		ImGui::InputInt( "##cameraHeight", &m_pGameConfig->cameraHeight );
-		
+
 		ImGui::InlineLabel( "Camera Scale" );
 		ImGui::InputFloat( "##camerascale", &m_pGameConfig->cameraScale );
 		ImGui::PopItemWidth();
@@ -164,11 +158,11 @@ void PackageGameDisplay::Draw()
 
 		ImGui::PushItemWidth( 256.f );
 
-		if (ImGui::BeginCombo("##start_up_scenes", m_pGameConfig->sStartupScene.c_str()))
+		if ( ImGui::BeginCombo( "##start_up_scenes", m_pGameConfig->sStartupScene.c_str() ) )
 		{
-			for (const auto& sSceneName : SCENE_MANAGER().GetSceneNames())
+			for ( const auto& sSceneName : SCENE_MANAGER().GetSceneNames() )
 			{
-				if (ImGui::Selectable(sSceneName.c_str(), sSceneName == m_pGameConfig->sStartupScene))
+				if ( ImGui::Selectable( sSceneName.c_str(), sSceneName == m_pGameConfig->sStartupScene ) )
 				{
 					m_pGameConfig->sStartupScene = sSceneName;
 				}
@@ -185,7 +179,7 @@ void PackageGameDisplay::Draw()
 
 	ImGui::AddSpaces( 3 );
 
-	if (ImGui::Button("Package Game"))
+	if ( ImGui::Button( "Package Game" ) )
 	{
 		SCION_LOG( "PACKED THE GAME!" );
 	}

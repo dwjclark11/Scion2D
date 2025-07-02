@@ -11,8 +11,8 @@ namespace SCION_CORE
 
 SceneManager::SceneManager()
 	: m_mapScenes{}
-	, m_sCurrentScene{ "" }
-	, m_sCurrentTileset{ "" }
+	, m_sCurrentScene{ }
+	, m_sCurrentTileset{ }
 {
 }
 
@@ -148,7 +148,7 @@ void SceneManager::CreateLuaBind( sol::state& lua, SceneManager& sceneManager )
 			if ( auto pCurrentScene = sceneManager.GetCurrentScene() )
 				return pCurrentScene->GetDefaultMusicName();
 
-			return std::string{ "" };
+			return std::string{  };
 		},
 		"getCurrentSceneName", [ & ] { return sceneManager.GetCurrentSceneName(); }
 	);

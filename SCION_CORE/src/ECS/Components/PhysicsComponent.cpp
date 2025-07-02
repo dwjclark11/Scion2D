@@ -345,8 +345,8 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 				bool bFriendly,
 				std::uint32_t entityID ) { return ObjectData{ tag, group, bCollider, bTrigger, bFriendly, entityID }; },
 			[]( const sol::table& objectData ) {
-				return ObjectData{ objectData[ "tag" ].get_or( std::string{ "" } ),
-								   objectData[ "group" ].get_or( std::string{ "" } ),
+				return ObjectData{ objectData[ "tag" ].get_or( std::string{} ),
+								   objectData[ "group" ].get_or( std::string{} ),
 								   objectData[ "bCollider" ].get_or( false ),
 								   objectData[ "bTrigger" ].get_or( false ),
 								   objectData[ "bIsFriendly" ].get_or( false ),
@@ -402,8 +402,8 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 								.filterCategory = physAttr[ "filterCategory" ].get_or( (uint16_t)0 ),
 								.filterMask = physAttr[ "filterMask" ].get_or( (uint16_t)0 ),
 								.objectData =
-									ObjectData{ physAttr[ "objectData" ][ "tag" ].get_or( std::string{ "" } ),
-												physAttr[ "objectData" ][ "group" ].get_or( std::string{ "" } ),
+									ObjectData{ physAttr[ "objectData" ][ "tag" ].get_or( std::string{} ),
+												physAttr[ "objectData" ][ "group" ].get_or( std::string{} ),
 												physAttr[ "objectData" ][ "bCollider" ].get_or( false ),
 												physAttr[ "objectData" ][ "bTrigger" ].get_or( false ),
 												physAttr[ "objectData" ][ "bIsFriendly" ].get_or( false ),

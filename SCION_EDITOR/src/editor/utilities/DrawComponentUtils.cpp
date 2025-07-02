@@ -40,23 +40,16 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TransformComponent
 	{
 		ImGui::PushItemWidth( 120.f );
 		ImGui::InlineLabel( "position" );
-		ImGui::ColoredLabel( "x"
-							 "##pos_x",
-							 LABEL_SINGLE_SIZE,
-							 LABEL_RED );
+		ImGui::ColoredLabel( "x##pos_x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
 		ImGui::InputFloat( "##position_x", &transform.position.x, 1.f, 10.f, "%.1f" );
 		ImGui::SameLine();
-		ImGui::ColoredLabel( "y"
-							 "##pos_y",
-							 LABEL_SINGLE_SIZE,
-							 LABEL_GREEN );
+		ImGui::ColoredLabel( "y##pos_y", LABEL_SINGLE_SIZE, LABEL_GREEN );
 		ImGui::SameLine();
 		ImGui::InputFloat( "##position_y", &transform.position.y, 1.f, 10.f, "%.1f" );
 
-		ImGui::InlineLabel( "scale"
-							"##scl_x" );
-		ImGui::ColoredLabel( "x", LABEL_SINGLE_SIZE, LABEL_RED );
+		ImGui::InlineLabel( "scale" );
+		ImGui::ColoredLabel( "x##scl_x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##scale_x", &transform.scale.x, 1.f, 1.f, "%.1f" ) )
 		{
@@ -64,10 +57,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TransformComponent
 			transform.bDirty = true;
 		}
 		ImGui::SameLine();
-		ImGui::ColoredLabel( "y"
-							 "##scl_x",
-							 LABEL_SINGLE_SIZE,
-							 LABEL_GREEN );
+		ImGui::ColoredLabel( "y##scl_y", LABEL_SINGLE_SIZE, LABEL_GREEN );
 		ImGui::SameLine();
 		if ( ImGui::InputFloat( "##scale_y", &transform.scale.y, 1.f, 1.f, "%.1f" ) )
 		{
@@ -358,7 +348,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& 
 		ImGui::Separator();
 		ImGui::AddSpaces( 2 );
 
-		std::string sSelectedMaskBit{ "" };
+		std::string sSelectedMaskBit{  };
 		FilterCategory eMaskCategory{ FilterCategory::NO_CATEGORY };
 
 		ImGui::InlineLabel( "masks" );
@@ -751,7 +741,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 	ImGui::PushID( entt::type_hash<Identification>::value() );
 	if ( ImGui::TreeNodeEx( "", ImGuiTreeNodeFlags_DefaultOpen ) )
 	{
-		std::string sError{ "" };
+		std::string sError{  };
 		std::string sNameBuffer{ identification.name };
 		bool bNameError{ false };
 

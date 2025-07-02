@@ -12,27 +12,14 @@
 
 namespace fs = std::filesystem;
 
-#define IMAGE_FILTERS                                                                                                  \
-	std::vector<const char*>                                                                                           \
-	{                                                                                                                  \
-		"*.png", "*.bmp", "*.jpg"                                                                                      \
-	}
+#define IMAGE_FILTERS std::vector<const char*>{ "*.png", "*.bmp", "*.jpg" }
 #define FONT_FILTERS                                                                                                   \
-	std::vector<const char*>                                                                                           \
-	{                                                                                                                  \
+	std::vector<const char*>{                                                                                          \
 		"*.ttf" /* add more font types */                                                                              \
 	}
-#define MUSIC_FILTERS                                                                                                  \
-	std::vector<const char*>                                                                                           \
-	{                                                                                                                  \
-		"*.mp3", "*.wav", "*.ogg"                                                                                      \
-	}
+#define MUSIC_FILTERS std::vector<const char*>{ "*.mp3", "*.wav", "*.ogg" }
 
-#define SOUNDFX_FILTERS                                                                                                \
-	std::vector<const char*>                                                                                           \
-	{                                                                                                                  \
-		"*.mp3", "*.wav", "*.ogg"                                                                                      \
-	}
+#define SOUNDFX_FILTERS std::vector<const char*>{ "*.mp3", "*.wav", "*.ogg" }
 
 using namespace SCION_FILESYSTEM;
 using namespace SCION_EDITOR;
@@ -66,7 +53,7 @@ class AssetModalCreator
 
 	std::string CheckForAsset( const std::string& sAssetName, SCION_UTIL::AssetType eAssetType )
 	{
-		std::string sError{ "" };
+		std::string sError{};
 		if ( sAssetName.empty() )
 		{
 			sError = "Asset name cannot be empty!";
@@ -93,7 +80,7 @@ class AssetModalCreator
 		if ( ImGui::BeginPopupModal( "Add New Scene" ) )
 		{
 			ImGui::InlineLabel( "Name" );
-			static std::string sAssetName{ "" };
+			static std::string sAssetName{};
 			ImGui::InputText( "##assetName", sAssetName.data(), 255 );
 
 			static std::vector<std::string> mapTypes{ "Grid", "IsoGrid" };
@@ -114,7 +101,7 @@ class AssetModalCreator
 					ImGui::ItemToolTip( "{}",
 										eMapType == SCION_CORE::EMapType::IsoGrid
 											? "Warning! IsoGrid maps are not fully supported."
-																	  : "2D Grid tile map." );
+											: "2D Grid tile map." );
 				}
 
 				ImGui::EndCombo();
@@ -169,8 +156,8 @@ class AssetModalCreator
 
 		if ( ImGui::BeginPopupModal( sAssetType.c_str() ) )
 		{
-			static std::string sAssetName{ "" };
-			static std::string sFilepath{ "" };
+			static std::string sAssetName{};
+			static std::string sFilepath{};
 			static bool bTileset{ false };
 			static bool bPixelArt{ false };
 			static float fontSize{ 32.f };

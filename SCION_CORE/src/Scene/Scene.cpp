@@ -27,11 +27,11 @@ namespace SCION_CORE
 {
 Scene::Scene()
 	: m_Registry{}
-	, m_sSceneName{ "" }
-	, m_sTilemapPath{ "" }
-	, m_sObjectPath{ "" }
-	, m_sSceneDataPath{ "" }
-	, m_sDefaultMusic{ "" }
+	, m_sSceneName{}
+	, m_sTilemapPath{}
+	, m_sObjectPath{}
+	, m_sSceneDataPath{}
+	, m_sDefaultMusic{}
 	, m_bSceneLoaded{ false }
 	, m_bUsePlayerStart{ false }
 	, m_Canvas{}
@@ -44,10 +44,10 @@ Scene::Scene()
 Scene::Scene( const std::string& sceneName, EMapType eType )
 	: m_Registry{}
 	, m_sSceneName{ sceneName }
-	, m_sTilemapPath{ "" }
-	, m_sObjectPath{ "" }
-	, m_sSceneDataPath{ "" }
-	, m_sDefaultMusic{ "" }
+	, m_sTilemapPath{}
+	, m_sObjectPath{}
+	, m_sSceneDataPath{}
+	, m_sDefaultMusic{}
 	, m_bSceneLoaded{ false }
 	, m_bUsePlayerStart{ false }
 	, m_Canvas{}
@@ -450,7 +450,6 @@ void Scene::CreateLuaBind( sol::state& lua )
 							  &Canvas::tileWidth,
 							  "tileHeight",
 							  &Canvas::tileHeight );
-
 }
 
 } // namespace SCION_CORE

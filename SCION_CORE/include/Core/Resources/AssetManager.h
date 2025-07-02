@@ -252,8 +252,8 @@ class AssetManager
 
 	struct AssetWatchParams
 	{
-		std::string sAssetName{ "" };
-		std::string sFilepath{ "" };
+		std::string sAssetName{};
+		std::string sFilepath{};
 		std::filesystem::file_time_type lastWrite;
 		SCION_UTIL::AssetType eType{};
 		bool bDirty{ false };
@@ -268,8 +268,6 @@ class AssetManager
 	void ReloadShader( const std::string& sShaderName );
 
   private:
-
-
 	std::map<std::string, std::shared_ptr<SCION_RENDERING::Texture>> m_mapTextures{};
 	std::map<std::string, std::shared_ptr<SCION_RENDERING::Shader>> m_mapShader{};
 	std::map<std::string, std::shared_ptr<SCION_RENDERING::Font>> m_mapFonts{};

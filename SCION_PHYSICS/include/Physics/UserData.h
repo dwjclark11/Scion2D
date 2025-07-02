@@ -41,8 +41,8 @@ struct UserData
 
 struct ObjectData
 {
-	std::string tag{ "" };
-	std::string group{ "" };
+	std::string tag{};
+	std::string group{};
 	bool bCollider{ false };
 	bool bTrigger{ false };
 	bool bIsFriendly{ false };

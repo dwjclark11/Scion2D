@@ -31,8 +31,8 @@ Entity::Entity( Registry& registry, const std::string& name, const std::string& 
 Entity::Entity( Registry& registry, const entt::entity& entity )
 	: m_Registry( registry )
 	, m_Entity( entity )
-	, m_sName{ "" }
-	, m_sGroup{ "" }
+	, m_sName{}
+	, m_sGroup{}
 {
 	if ( HasComponent<Identification>() )
 	{
@@ -248,12 +248,11 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 		"updateTransform",
 		&Entity::UpdateTransform,
 		"updateIsoSorting",
-		[]( Entity& entity, const Canvas& canvas )
-		{
+		[]( Entity& entity, const Canvas& canvas ) {
 			if ( auto* pSprite = entity.TryGetComponent<SpriteComponent>(); pSprite->bIsoMetric )
 			{
 				auto& transform = entity.GetComponent<TransformComponent>();
-				auto [cellX, cellY] = SCION_CORE::ConvertWorldPosToIsoCoords( transform.position, canvas );
+				auto [ cellX, cellY ] = SCION_CORE::ConvertWorldPosToIsoCoords( transform.position, canvas );
 				pSprite->isoCellX = cellX;
 				pSprite->isoCellY = cellY;
 			}

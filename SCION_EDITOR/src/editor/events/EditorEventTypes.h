@@ -22,7 +22,7 @@ enum class EFileAction
 struct FileEvent
 {
 	EFileAction eAction{ EFileAction::NoAction };
-	std::string sFilepath{ "" };
+	std::string sFilepath{};
 };
 
 struct CloseEditorEvent
@@ -48,13 +48,13 @@ enum class EContentCreateAction
 struct ContentCreateEvent
 {
 	EContentCreateAction eAction{ EContentCreateAction::NoAction };
-	std::string sFilepath{ "" };
+	std::string sFilepath{};
 };
 
 struct NameChangeEvent
 {
-	std::string sOldName{ "" };
-	std::string sNewName{ "" };
+	std::string sOldName{};
+	std::string sNewName{};
 	SCION_CORE::ECS::Entity* pEntity{ nullptr };
 };
 

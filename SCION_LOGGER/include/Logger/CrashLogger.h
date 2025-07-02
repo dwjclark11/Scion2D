@@ -126,9 +126,9 @@ class CrashLogger
 	/* Flag to determine if the logger was initialized. */
 	bool m_bInitialized{ false };
 	/* The specified project path. Used to keep logs with separate projects. */
-	std::string m_sProjectPath{ "" };
+	std::string m_sProjectPath{ };
 	/* Stores the filename to where the crash occurred. */
-	static inline std::string sCrashFile{ "" };
+	static inline std::string sCrashFile{ };
 	/* Stores the line number where the crash occurred. */
 	static inline int CrashLine{ -1 };
 };

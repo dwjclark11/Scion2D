@@ -36,7 +36,7 @@ GLuint ShaderLoader::CompileShader( GLuint shaderType, const std::string& filepa
 		return 0;
 	}
 
-	std::string contents{ "" };
+	std::string contents{};
 	std::string line;
 
 	while ( std::getline( ifs, line ) )

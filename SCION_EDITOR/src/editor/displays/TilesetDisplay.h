@@ -7,8 +7,8 @@ namespace SCION_EDITOR
 class TilesetDisplay : public IDisplay
 {
   private:
-	std::string m_sTileset{ "" };
-	
+	std::string m_sTileset{};
+
 	struct TableSelection
 	{
 		int startRow{ -1 };

@@ -32,8 +32,8 @@ Prefab::Prefab()
 	: m_eType{ EPrefabType::GameObject }
 	, m_Entity{}
 	, m_RelatedPrefabs{}
-	, m_sName{ "" }
-	, m_sPrefabPath{ "" }
+	, m_sName{}
+	, m_sPrefabPath{}
 {
 	// EMPTY PREFAB
 }
@@ -42,8 +42,8 @@ Prefab::Prefab( EPrefabType eType, const PrefabbedEntity& prefabbed )
 	: m_eType{ eType }
 	, m_Entity{ prefabbed }
 	, m_RelatedPrefabs{}
-	, m_sName{ "" }
-	, m_sPrefabPath{ "" }
+	, m_sName{}
+	, m_sPrefabPath{}
 {
 	SCION_ASSERT( prefabbed.id && "Must have an ID Component" );
 	SCION_ASSERT( !prefabbed.id->name.empty() && "All prefabs must have unique names!" );
@@ -74,7 +74,7 @@ Prefab::Prefab( const std::string& sPrefabPath )
 	: m_eType{ EPrefabType::GameObject }
 	, m_Entity{}
 	, m_RelatedPrefabs{}
-	, m_sName{ "" }
+	, m_sName{}
 	, m_sPrefabPath{ sPrefabPath }
 {
 	if ( !Load( sPrefabPath ) )
@@ -447,11 +447,10 @@ std::shared_ptr<Prefab> PrefabCreator::CreatePrefab( const std::string& sPrefabP
 }
 
 std::shared_ptr<SCION_CORE::ECS::Entity> PrefabCreator::AddPrefabToScene( const Prefab& prefab,
-																		  SCION_CORE::ECS::Registry& registry)
+																		  SCION_CORE::ECS::Registry& registry )
 {
 	const auto& prefabbed = prefab.GetPrefabbedEntity();
-	auto newEnt =
-		std::make_shared<SCION_CORE::ECS::Entity>( registry, prefabbed.id->name, prefabbed.id->group );
+	auto newEnt = std::make_shared<SCION_CORE::ECS::Entity>( registry, prefabbed.id->name, prefabbed.id->group );
 
 	newEnt->AddComponent<TransformComponent>( prefabbed.transform );
 	if ( prefabbed.sprite )

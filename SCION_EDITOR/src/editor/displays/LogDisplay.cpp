@@ -24,7 +24,7 @@ void LogDisplay::GetLogs()
 }
 
 LogDisplay::LogDisplay()
-	: m_sSearchQuery{ "" }
+	: m_sSearchQuery{  }
 	, m_bAutoScroll{ true }
 	, m_bShowInfo{ true }
 	, m_bShowWarn{ true }

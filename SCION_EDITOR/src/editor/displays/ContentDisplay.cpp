@@ -27,7 +27,7 @@ namespace SCION_EDITOR
 ContentDisplay::ContentDisplay()
 	: m_pFileDispatcher{ std::make_unique<SCION_CORE::Events::EventDispatcher>() }
 	, m_CurrentDir{ MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>()->sProjectPath + "content" }
-	, m_sFilepathToAction{ "" }
+	, m_sFilepathToAction{}
 	, m_Selected{ -1 }
 	, m_eFileAction{ Events::EFileAction::NoAction }
 	, m_eCreateAction{ Events::EContentCreateAction::NoAction }
@@ -278,7 +278,7 @@ void ContentDisplay::DrawToolbar()
 		ImGui::PushStyleColor( ImGuiCol_Button, BLACK_TRANSPARENT );
 		ImGui::PushStyleColor( ImGuiCol_ButtonHovered, BLACK_TRANSPARENT );
 		ImGui::PushStyleColor( ImGuiCol_ButtonActive, BLACK_TRANSPARENT );
-		ImGui::Button( ICON_FA_ANGLE_RIGHT, { 16.f, 18.f } );
+		ImGui::Button( fmt::format( "{}##{}", ICON_FA_ANGLE_RIGHT, i ).c_str(), { 16.f, 18.f } );
 		ImGui::PopStyleColor( 3 );
 
 		if ( i < dir.size() - 1 )
@@ -372,7 +372,7 @@ void ContentDisplay::HandleFileEvent( const SCION_EDITOR::Events::FileEvent& fil
 		{
 			std::unordered_set<std::string> setFilesToCheck;
 			// Collect all regular file paths inside the directory before deleting it
-			for (const auto& entry : fs::recursive_directory_iterator(path))
+			for ( const auto& entry : fs::recursive_directory_iterator( path ) )
 			{
 				if ( entry.is_regular_file() )
 				{
@@ -384,7 +384,7 @@ void ContentDisplay::HandleFileEvent( const SCION_EDITOR::Events::FileEvent& fil
 			fs::remove_all( path );
 
 			// Remove each file from the asset manager
-			for (const auto& sFilepath : setFilesToCheck)
+			for ( const auto& sFilepath : setFilesToCheck )
 			{
 				if ( !ASSET_MANAGER().DeleteAssetFromPath( sFilepath ) )
 				{
@@ -395,10 +395,10 @@ void ContentDisplay::HandleFileEvent( const SCION_EDITOR::Events::FileEvent& fil
 		else if ( fs::is_regular_file( path ) )
 		{
 			// Remove the file from disk
-			if (fs::remove(path))
+			if ( fs::remove( path ) )
 			{
 				// Remove the file from the asset manager
-				if (!ASSET_MANAGER().DeleteAssetFromPath(path.string()))
+				if ( !ASSET_MANAGER().DeleteAssetFromPath( path.string() ) )
 				{
 					SCION_ERROR( "Failed to remove asset from asset manager. [{}]", path.string() );
 				}
@@ -495,7 +495,7 @@ void ContentDisplay::OpenCreateFolderPopup()
 
 	if ( ImGui::BeginPopupModal( "Create Folder" ) )
 	{
-		static std::string newFolderStr{ "" };
+		static std::string newFolderStr{};
 		char temp[ 256 ];
 		memset( temp, 0, sizeof( temp ) );
 #ifdef _WIN32
@@ -516,12 +516,12 @@ void ContentDisplay::OpenCreateFolderPopup()
 			newFolderStr = std::string{ temp };
 			bNameEntered = true;
 		}
-		else if ( ImGui::IsKeyPressed( ImGuiKey_Escape  ) )
+		else if ( ImGui::IsKeyPressed( ImGuiKey_Escape ) )
 		{
 			bExit = true;
 		}
 
-		static std::string errorText{ "" };
+		static std::string errorText{};
 		if ( bNameEntered && !newFolderStr.empty() )
 		{
 			std::string folderPathStr = m_CurrentDir.string() + PATH_SEPARATOR + newFolderStr;
@@ -569,7 +569,7 @@ void ContentDisplay::OpenCreateLuaClassPopup()
 	if ( ImGui::BeginPopupModal( "Create Lua Class" ) )
 	{
 		char buffer[ 256 ];
-		static std::string className{ "" };
+		static std::string className{};
 		memset( buffer, 0, sizeof( buffer ) );
 #ifdef _WIN32
 		strcpy_s( buffer, className.c_str() );
@@ -593,7 +593,7 @@ void ContentDisplay::OpenCreateLuaClassPopup()
 			bExit = true;
 		}
 
-		static std::string errorText{ "" };
+		static std::string errorText{};
 
 		if ( bNameEntered && !className.empty() )
 		{
@@ -652,7 +652,7 @@ void ContentDisplay::OpenCreateLuaTablePopup()
 	if ( ImGui::BeginPopupModal( "Create Lua Table" ) )
 	{
 		char buffer[ 256 ];
-		static std::string tableName{ "" };
+		static std::string tableName{};
 		memset( buffer, 0, sizeof( buffer ) );
 #ifdef _WIN32
 		strcpy_s( buffer, tableName.c_str() );
@@ -676,7 +676,7 @@ void ContentDisplay::OpenCreateLuaTablePopup()
 			bExit = true;
 		}
 
-		static std::string errorText{ "" };
+		static std::string errorText{};
 
 		if ( bNameEntered && !tableName.empty() )
 		{
@@ -729,7 +729,7 @@ void ContentDisplay::OpenCreateEmptyLuaFilePopup()
 	if ( ImGui::BeginPopupModal( "Create Lua File" ) )
 	{
 		char buffer[ 256 ];
-		static std::string tableName{ "" };
+		static std::string tableName{};
 		memset( buffer, 0, sizeof( buffer ) );
 #ifdef _WIN32
 		strcpy_s( buffer, tableName.c_str() );
@@ -753,7 +753,7 @@ void ContentDisplay::OpenCreateEmptyLuaFilePopup()
 			bExit = true;
 		}
 
-		static std::string errorText{ "" };
+		static std::string errorText{};
 
 		if ( bNameEntered && !tableName.empty() )
 		{

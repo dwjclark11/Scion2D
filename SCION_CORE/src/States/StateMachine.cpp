@@ -10,7 +10,7 @@ StateMachine::StateMachine()
 
 StateMachine::StateMachine( const sol::table& stateFuncs )
 	: m_mapStates{}
-	, m_sCurrentState{ "" }
+	, m_sCurrentState{}
 	, m_StateTable{ stateFuncs }
 {
 }

@@ -38,10 +38,10 @@ Hub::Hub( SCION_WINDOWING::Window& window )
 	, m_eState{ EHubState::Default }
 	, m_Width{ static_cast<float>( m_Window.GetWidth() ) }
 	, m_Height{ static_cast<float>( m_Window.GetHeight() ) }
-	, m_sNewProjectName{ "" }
+	, m_sNewProjectName{}
 	, m_sNewProjectPath{ DEFAULT_PROJECT_PATH }
-	, m_sPrevProjectPath{ "" }
-	, m_sPrevProjectName{ "" }
+	, m_sPrevProjectPath{}
+	, m_sPrevProjectName{}
 {
 	fs::path projectPath{ m_sNewProjectPath };
 	if ( !fs::exists( projectPath ) )
@@ -78,7 +78,7 @@ bool Hub::Run()
 		SDL_SetWindowBordered( m_Window.GetWindow().get(), SDL_TRUE );
 		SDL_SetWindowResizable( m_Window.GetWindow().get(), SDL_TRUE );
 		SDL_MaximizeWindow( m_Window.GetWindow().get() );
-		
+
 		std::string sTitle{ "Scion2D - " };
 		sTitle += !m_sNewProjectName.empty() ? m_sNewProjectName : m_sPrevProjectName;
 		SDL_SetWindowTitle( m_Window.GetWindow().get(), sTitle.c_str() );

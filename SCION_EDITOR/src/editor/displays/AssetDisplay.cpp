@@ -379,10 +379,10 @@ AssetDisplay::AssetDisplay()
 	, m_bWindowSelected{ false }
 	, m_bWindowHovered{ false }
 	, m_bOpenAddAssetModal{ false }
-	, m_sSelectedAssetName{ "" }
+	, m_sSelectedAssetName{}
 	, m_sSelectedType{ "TEXTURES" }
-	, m_sDragSource{ "" }
-	, m_sRenameBuf{ "" }
+	, m_sDragSource{}
+	, m_sRenameBuf{}
 	, m_eSelectedType{ SCION_UTIL::AssetType::TEXTURE }
 	, m_AssetSize{ DEFAULT_ASSET_SIZE }
 	, m_SelectedID{ -1 }

@@ -18,9 +18,9 @@ class StateMachine;
 
 struct CharacterParams
 {
-	std::string sName{ "" };
-	std::string sGroup{ "" };
-	
+	std::string sName{};
+	std::string sGroup{};
+
 	std::optional<std::unique_ptr<SCION_CORE::ECS::AnimationComponent>> animation{ std::nullopt };
 	std::optional<std::unique_ptr<SCION_CORE::ECS::SpriteComponent>> sprite{ std::nullopt };
 	std::optional<std::unique_ptr<SCION_CORE::ECS::BoxColliderComponent>> boxCollider{ std::nullopt };

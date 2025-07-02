@@ -90,7 +90,7 @@ void LuaFilesystem::CreateLuaFileSystemBind( sol::state& lua )
 		"read_file",
 		[]( const std::string& sFilename ) {
 			std::ifstream ifs( sFilename );
-			std::string data{ "" };
+			std::string data{};
 			// If the stream is good, read the steam into the data
 			if ( ifs.good() )
 			{

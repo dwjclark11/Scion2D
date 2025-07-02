@@ -41,10 +41,10 @@ class SceneManager
 	Scene* GetScene( const std::string& sSceneName );
 
 	/**
-	* @brief Returns a pointer to the current selected scene.
-	*
-	* @return pointer to the current scene if set, nullptr otherwise.
-	*/
+	 * @brief Returns a pointer to the current selected scene.
+	 *
+	 * @return pointer to the current scene if set, nullptr otherwise.
+	 */
 	Scene* GetCurrentScene();
 
 	std::vector<std::string> GetSceneNames() const;
@@ -60,7 +60,7 @@ class SceneManager
 
   protected:
 	std::map<std::string, std::shared_ptr<Scene>> m_mapScenes;
-	std::string m_sCurrentScene{ "" };
-	std::string m_sCurrentTileset{ "" };
+	std::string m_sCurrentScene{};
+	std::string m_sCurrentTileset{};
 };
 } // namespace SCION_CORE

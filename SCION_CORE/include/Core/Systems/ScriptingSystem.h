@@ -7,12 +7,11 @@ namespace SCION_CORE
 
 struct SaveProject;
 
-namespace ECS 
+namespace ECS
 {
-	class Registry;
+class Registry;
 }
-}
-
+} // namespace SCION_CORE
 
 namespace SCION_CORE::Systems
 {

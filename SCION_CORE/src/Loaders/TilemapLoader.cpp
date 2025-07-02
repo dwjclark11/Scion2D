@@ -264,7 +264,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			}
 			else
 			{
-				pSerializer->AddKeyValuePair( "parent", std::string{ "" } );
+				pSerializer->AddKeyValuePair( "parent", std::string{} );
 			}
 
 			if ( relations->nextSibling != entt::null )
@@ -274,7 +274,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			}
 			else
 			{
-				pSerializer->AddKeyValuePair( "nextSibling", std::string{ "" } );
+				pSerializer->AddKeyValuePair( "nextSibling", std::string{} );
 			}
 
 			if ( relations->prevSibling != entt::null )
@@ -284,7 +284,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			}
 			else
 			{
-				pSerializer->AddKeyValuePair( "prevSibling", std::string{ "" } );
+				pSerializer->AddKeyValuePair( "prevSibling", std::string{} );
 			}
 
 			if ( relations->firstChild != entt::null )
@@ -294,7 +294,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			}
 			else
 			{
-				pSerializer->AddKeyValuePair( "firstChild", std::string{ "" } );
+				pSerializer->AddKeyValuePair( "firstChild", std::string{} );
 			}
 			pSerializer->EndObject(); // Relationship Object
 		}
@@ -468,7 +468,7 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 		// Find the firstChild
 		if ( !saveRelations.sFirstChild.empty() )
 		{
-			relations.firstChild = findTag( saveRelations.sFirstChild);
+			relations.firstChild = findTag( saveRelations.sFirstChild );
 		}
 	}
 

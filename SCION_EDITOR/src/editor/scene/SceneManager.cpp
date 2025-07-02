@@ -273,7 +273,7 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 				return pRuntimeData ? pRuntimeData->sDefaultMusic : "";
 			}
 
-			return std::string{ "" };
+			return std::string{  };
 		},
 		"getCurrentSceneName", [ & ]
 		{
@@ -283,7 +283,7 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 				return pRuntimeData ? pRuntimeData->sSceneName : "";
 			}
 
-			return std::string{""};
+			return std::string{ };
 		}
 	);
 	// clang-format on

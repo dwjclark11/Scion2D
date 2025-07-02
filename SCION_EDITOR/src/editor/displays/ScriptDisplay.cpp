@@ -23,15 +23,16 @@ namespace SCION_EDITOR
 {
 
 ScriptDisplay::ScriptDisplay()
-	: m_sScriptsDirectory{ fmt::format( "{}{}{}{}",
-										MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>()->sProjectPath,
-										"content", PATH_SEPARATOR, "scripts" ) }
+	: m_sScriptsDirectory{}
 	, m_Selected{ -1 }
 	, m_bScriptsChanged{ false }
 	, m_bListScripts{ false }
 	, m_pDirWatcher{ nullptr }
 	, m_bFilesChanged{ false }
 {
+	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>();
+	m_sScriptsDirectory = fmt::format( "{}{}{}{}", pSaveProject->sProjectPath, "content", PATH_SEPARATOR, "scripts" );
+
 	SCION_ASSERT( fs::exists( fs::path{ m_sScriptsDirectory } ) && "Scripts directory must exist." );
 	const std::string sScriptListPath = m_sScriptsDirectory + PATH_SEPARATOR + "script_list.lua";
 
@@ -46,6 +47,12 @@ ScriptDisplay::ScriptDisplay()
 			SCION_ERROR( "Failed to create script list file at path: [{}].", m_sScriptsDirectory );
 			return;
 		}
+	}
+
+	// Set the script list path if not already set
+	if ( pSaveProject->sScriptListPath.empty() )
+	{
+		pSaveProject->sScriptListPath = sScriptListPath;
 	}
 
 	GenerateScriptList();
@@ -179,7 +186,7 @@ void ScriptDisplay::Update()
 		auto removeRange = std::ranges::remove_if(
 			m_ScriptList, [ &lookupSet ]( const std::string& item ) { return !lookupSet.contains( item ); } );
 
-		if (removeRange.begin() != removeRange.end())
+		if ( removeRange.begin() != removeRange.end() )
 		{
 			m_ScriptList.erase( removeRange.begin(), removeRange.end() );
 			m_bScriptsChanged = true;

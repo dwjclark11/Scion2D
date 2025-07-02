@@ -34,7 +34,7 @@ void TileDetailsDisplay::DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& 
 		ImGui::InlineLabel( "texture: " );
 		ImGui::TextColored( ImVec4{ 0.f, 1.f, 0.f, 1.f }, sprite.sTextureName.c_str() );
 
-		std::string sLayer{ "" };
+		std::string sLayer{};
 
 		// Sets the layer description
 		if ( sprite.layer >= 0 && sprite.layer < pScene->GetLayerParams().size() )
@@ -104,7 +104,7 @@ void TileDetailsDisplay::DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& 
 
 TileDetailsDisplay::TileDetailsDisplay()
 	: m_SelectedLayer{ -1 }
-	, m_sRenameLayerBuf{ "" }
+	, m_sRenameLayerBuf{}
 	, m_bRename{ false }
 {
 }

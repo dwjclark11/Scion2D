@@ -49,7 +49,7 @@ struct LogEntry
 		NONE
 	};
 	LogType type{ LogType::INFO };
-	std::string log{ "" };
+	std::string log{};
 };
 
 class Logger
@@ -82,7 +82,7 @@ class Logger
 
 	inline void ClearLogs() { m_LogEntries.clear(); }
 	inline const std::vector<LogEntry>& GetLogs() { return m_LogEntries; }
-	
+
   private:
 	std::mutex m_Mutex;
 	std::vector<LogEntry> m_LogEntries;
