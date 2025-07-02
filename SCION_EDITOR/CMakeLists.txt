@@ -102,7 +102,7 @@ add_executable(SCION_EDITOR
 	${APP_ICON_RESOURCE}
 	"src/editor/scripting/EditorCoreLuaWrappers.h"
 	"src/editor/scripting/EditorCoreLuaWrappers.cpp"
-)
+ "src/editor/displays/PackageDisplay.h" "src/editor/displays/PackageDisplay.cpp")
 
 target_sources(
 	SCION_EDITOR PRIVATE
