@@ -150,7 +150,6 @@ class SceneObject : public SCION_CORE::Scene
 	
 	std::unique_ptr<SceneRuntimeData> m_pRuntimeData;
 	std::map<std::string, entt::entity> m_mapTagToEntity;
-	int m_CurrentLayer;
 };
 
 } // namespace SCION_EDITOR
