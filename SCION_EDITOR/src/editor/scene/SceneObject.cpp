@@ -29,17 +29,15 @@ namespace SCION_EDITOR
 {
 
 SceneObject::SceneObject( const std::string& sceneName, SCION_CORE::EMapType eType )
-	: Scene(sceneName, eType)
+	: Scene( sceneName, eType )
 	, m_RuntimeRegistry{}
 	, m_pRuntimeData{ nullptr }
-	, m_CurrentLayer{ 0 }
 {
 	ADD_EVENT_HANDLER( SCION_EDITOR::Events::NameChangeEvent, &SceneObject::OnEntityNameChanges, *this );
 }
 
 SceneObject::SceneObject( const std::string& sceneName, const std::string& sceneData )
-	: m_RuntimeRegistry{} 
-	, m_CurrentLayer{ 0 }
+	: m_RuntimeRegistry{}
 {
 	m_sSceneName = sceneName;
 	m_sSceneDataPath = sceneData;
@@ -139,7 +137,7 @@ void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
 
 void SceneObject::CopyPlayerStartToRuntimeRegistry( SCION_CORE::ECS::Registry& runtimeRegistry )
 {
-	if (!m_bUsePlayerStart)
+	if ( !m_bUsePlayerStart )
 	{
 		SCION_ERROR( "Failed to copy player to runtime. Not enabled." );
 		return;
@@ -156,8 +154,26 @@ void SceneObject::ClearRuntimeScene()
 
 void SceneObject::AddNewLayer()
 {
+	bool bCheckLayer{ true };
+	size_t currentLayer{ 0 };
+	while ( bCheckLayer )
+	{
+		auto hasLayerItr = std::ranges::find_if( m_LayerParams, [ & ]( const auto& layerParam ) {
+			return layerParam.sLayerName == fmt::format( "NewLayer_{}", currentLayer );
+		} );
+
+		if ( hasLayerItr != m_LayerParams.end() )
+		{
+			++currentLayer;
+		}
+		else
+		{
+			bCheckLayer = false;
+		}
+	}
+
 	m_LayerParams.emplace_back(
-		SCION_UTIL::SpriteLayerParams{ .sLayerName = fmt::format( "NewLayer_{}", m_CurrentLayer++ ) } );
+		SCION_UTIL::SpriteLayerParams{ .sLayerName = fmt::format( "NewLayer_{}", currentLayer ) } );
 }
 
 bool SceneObject::AddGameObject()
@@ -324,7 +340,6 @@ bool SceneObject::CheckTagName( const std::string& sTagName )
 {
 	return m_mapTagToEntity.contains( sTagName );
 }
-
 
 void SceneObject::OnEntityNameChanges( SCION_EDITOR::Events::NameChangeEvent& nameChange )
 {
