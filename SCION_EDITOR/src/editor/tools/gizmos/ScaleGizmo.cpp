@@ -14,7 +14,7 @@
 using namespace SCION_CORE::ECS;
 
 // TODO: Add a scaling factor to the editor for all gizmos.
-constexpr float SCALING_FACTOR = 0.01f;
+constexpr float SCALING_FACTOR = 0.1f;
 
 namespace SCION_EDITOR
 {
@@ -44,7 +44,7 @@ void ScaleGizmo::Update( SCION_CORE::Canvas& canvas )
 	if ( deltaX != 0.f || deltaY != 0.f )
 	{
 		selectedTransform.scale.x += deltaX;
-		selectedTransform.scale.y += deltaY;
+		selectedTransform.scale.y -= deltaY;
 		selectedTransform.bDirty = true;
 	}
 
