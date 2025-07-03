@@ -93,7 +93,7 @@ class Scene
 
   protected:
 	bool LoadSceneData();
-	bool SaveSceneData();
+	bool SaveSceneData(bool bOverride = false);
 	void SetCanvasOffset();
 	
   protected:

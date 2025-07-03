@@ -486,7 +486,9 @@ bool TilemapLoader::SaveTilemap( SCION_CORE::ECS::Registry& registry, const std:
 bool TilemapLoader::LoadTilemap( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON )
 {
 	if ( bUseJSON )
+	{
 		return LoadTilemapJSON( registry, sTilemapFile );
+	}
 
 	return false;
 }
@@ -495,7 +497,9 @@ bool TilemapLoader::LoadGameObjects( SCION_CORE::ECS::Registry& registry, const 
 									 bool bUseJSON )
 {
 	if ( bUseJSON )
+	{
 		return LoadObjectMapJSON( registry, sObjectMapFile );
+	}
 
 	return false;
 }

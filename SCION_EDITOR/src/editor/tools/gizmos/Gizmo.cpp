@@ -169,7 +169,7 @@ void Gizmo::ExamineMousePosition()
 	const auto& xAxisTransform = m_pXAxisParams->transform;
 	auto& xAxisSprite = m_pXAxisParams->sprite;
 
-	if ( mousePos.x >= xAxisTransform.position.x &&
+	if ( !m_bHoldingY && mousePos.x >= xAxisTransform.position.x &&
 		 mousePos.x <= ( xAxisTransform.position.x + ( xAxisSprite.width * xAxisTransform.scale.x ) ) &&
 		 mousePos.y >= xAxisTransform.position.y &&
 		 mousePos.y <= ( xAxisTransform.position.y + ( xAxisSprite.height * xAxisTransform.scale.y ) ) )
@@ -200,7 +200,7 @@ void Gizmo::ExamineMousePosition()
 	const auto& yAxisTransform = m_pYAxisParams->transform;
 	auto& yAxisSprite = m_pYAxisParams->sprite;
 
-	if ( mousePos.x >= yAxisTransform.position.x &&
+	if ( !m_bHoldingX && mousePos.x >= yAxisTransform.position.x &&
 		 mousePos.x <= ( yAxisTransform.position.x + ( yAxisSprite.width * yAxisTransform.scale.x ) ) &&
 		 mousePos.y >= yAxisTransform.position.y &&
 		 mousePos.y <= ( yAxisTransform.position.y + ( yAxisSprite.height * yAxisTransform.scale.y ) ) )
@@ -227,7 +227,7 @@ void Gizmo::ExamineMousePosition()
 
 float Gizmo::GetDeltaX()
 {
-	if ( !IsOverTilemapWindow() || OutOfBounds() )
+	if ( !IsOverTilemapWindow() || m_bHoldingY )
 		return 0.f;
 
 	if ( !m_bOverXAxis && !m_bHoldingX )
@@ -246,11 +246,11 @@ float Gizmo::GetDeltaX()
 			mousePosX *= ratioX;
 			m_LastMousePos.x *= ratioX;
 
-			return std::ceil( mousePosX - m_LastMousePos.x );
+			return mousePosX - m_LastMousePos.x;
 		}
 		else
 		{
-			return std::ceil( ( GetMouseScreenCoords().x - m_LastMousePos.x ) / m_pCamera->GetScale() );
+			return ( GetMouseScreenCoords().x - m_LastMousePos.x ) / m_pCamera->GetScale(); 
 		}
 	}
 
@@ -264,7 +264,7 @@ float Gizmo::GetDeltaX()
 
 float Gizmo::GetDeltaY()
 {
-	if ( !IsOverTilemapWindow() || OutOfBounds() || m_bOnlyOneAxis )
+	if ( !IsOverTilemapWindow() || m_bOnlyOneAxis || m_bHoldingX )
 		return 0.f;
 
 	if ( !m_bOverYAxis && !m_bHoldingY )
@@ -283,11 +283,11 @@ float Gizmo::GetDeltaY()
 			mousePosY *= ratioY;
 			m_LastMousePos.y *= ratioY;
 
-			return std::ceil( mousePosY - m_LastMousePos.y );
+			return mousePosY - m_LastMousePos.y;
 		}
 		else
 		{
-			return std::ceil( ( GetMouseScreenCoords().y - m_LastMousePos.y ) / m_pCamera->GetScale() );
+			return ( GetMouseScreenCoords().y - m_LastMousePos.y ) / m_pCamera->GetScale();
 		}
 	}
 

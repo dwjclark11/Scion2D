@@ -95,12 +95,11 @@ Scene::Scene( const std::string& sceneName, EMapType eType )
 	SCION_ASSERT( sceneData.is_open() && "File should have been created and opened." );
 	sceneData.close();
 
-	SaveSceneData();
+	SaveSceneData( true );
 }
 
 bool Scene::LoadScene()
 {
-	SCION_LOG( "LOADED SCENE" );
 	if ( m_bSceneLoaded )
 	{
 		SCION_ERROR( "Scene [{}] has already been loaded", m_sSceneName );
@@ -125,6 +124,7 @@ bool Scene::LoadScene()
 	}
 
 	m_bSceneLoaded = true;
+	SCION_LOG( "Loaded Scene: {}", m_sSceneName );
 	return true;
 }
 
@@ -302,13 +302,13 @@ bool Scene::LoadSceneData()
 	return true;
 }
 
-bool Scene::SaveSceneData()
+bool Scene::SaveSceneData( bool bOverride )
 {
 	/*
 	 * Scenes that have not been loaded do not need to be re-saved. They would have been
 	 * saved when unloading the scene previously. Only save loaded scenes.
 	 */
-	if ( !m_bSceneLoaded )
+	if ( !m_bSceneLoaded && !bOverride )
 	{
 		return true;
 	}
