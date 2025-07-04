@@ -250,7 +250,7 @@ float Gizmo::GetDeltaX()
 		}
 		else
 		{
-			return ( GetMouseScreenCoords().x - m_LastMousePos.x ) / m_pCamera->GetScale(); 
+			return ( GetMouseScreenCoords().x - m_LastMousePos.x ) / m_pCamera->GetScale();
 		}
 	}
 
@@ -339,7 +339,7 @@ void Gizmo::SetGizmoPosition( SCION_CORE::ECS::Entity& selectedEntity )
 
 void Gizmo::OnAddComponent( const SCION_EDITOR::Events::AddComponentEvent& addCompEvent )
 {
-	if ( addCompEvent.eType == Events::EComponentType::UI )
+	if ( addCompEvent.eType == Events::EComponentType::UI || addCompEvent.eType == Events::EComponentType::Text )
 	{
 		m_bUIComponent = true;
 	}

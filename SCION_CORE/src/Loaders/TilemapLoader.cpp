@@ -254,6 +254,12 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			SERIALIZE_COMPONENT( *pSerializer, text );
 		}
 
+		if (objectEnt.HasComponent<UIComponent>())
+		{
+			const auto& ui = objectEnt.GetComponent<UIComponent>();
+			SERIALIZE_COMPONENT( *pSerializer, ui );
+		}
+
 		if ( auto* relations = objectEnt.TryGetComponent<Relationship>() )
 		{
 			pSerializer->StartNewObject( "relationship" );
@@ -411,6 +417,13 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			const auto& jsonText = components[ "text" ];
 			auto& text = gameObject.AddComponent<TextComponent>();
 			DESERIALIZE_COMPONENT( jsonText, text );
+		}
+
+		if (components.HasMember("ui"))
+		{
+			const auto& jsonUI = components[ "ui" ];
+			auto& ui = gameObject.AddComponent<UIComponent>();
+			DESERIALIZE_COMPONENT( jsonUI, ui );
 		}
 
 		if ( components.HasMember( "relationship" ) )

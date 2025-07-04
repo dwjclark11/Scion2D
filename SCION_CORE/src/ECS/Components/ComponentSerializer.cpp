@@ -176,6 +176,14 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.EndObject(); // End id table
 }
 
+void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const UIComponent& id )
+{
+	serializer.StartNewObject( "ui" ).EndObject();
+	// TODO: Add more members as needed.
+	// Currently the UIComponent only has a type; however, it is not currently used.
+	// The UI Component is currently only used as a flag for UI Rendering
+}
+
 void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, TransformComponent& transform )
 {
 	transform.position =
@@ -298,6 +306,14 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 {
 	id.name = jsonValue[ "name" ].GetString();
 	id.group = jsonValue[ "group" ].GetString();
+}
+
+void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, UIComponent& ui )
+{
+	ui.eType = UIObjectType::NO_TYPE;
+	// TODO: Add more members as needed.
+	// Currently the UIComponent only has a type; however, it is not currently used.
+	// The UI Component is currently only used as a flag for UI Rendering
 }
 
 } // namespace SCION_CORE::ECS

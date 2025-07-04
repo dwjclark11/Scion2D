@@ -117,8 +117,8 @@ void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool*
 			componentMap[ id ] = std::string{ name };
 		}
 
-		static std::string componentStr{  };
-		static std::string componentStrPrev{ };
+		static std::string componentStr{};
+		static std::string componentStrPrev{};
 		static entt::id_type id_type{ 0 };
 		static bool bError{ false };
 
@@ -416,6 +416,17 @@ void SceneHierarchyDisplay::OnKeyPressed( SCION_CORE::Events::KeyEvent& keyEvent
 	}
 }
 
+void SceneHierarchyDisplay::OnAddComponent( SCION_EDITOR::Events::AddComponentEvent& addCompEvent )
+{
+	if ( addCompEvent.pEntity && addCompEvent.eType == Events::EComponentType::Text )
+	{
+		if ( !addCompEvent.pEntity->HasComponent<UIComponent>() )
+		{
+			addCompEvent.pEntity->AddComponent<UIComponent>();
+		}
+	}
+}
+
 void SceneHierarchyDisplay::OpenContext( SceneObject* pCurrentScene )
 {
 	if ( !pCurrentScene )
@@ -471,7 +482,7 @@ void SceneHierarchyDisplay::OpenContext( SceneObject* pCurrentScene )
 		}
 	}
 
-	if ( ImGui::IsWindowFocused() && !ImGui::IsAnyItemHovered() &&
+	if ( m_bWindowActive && ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered() &&
 		 ( ImGui::IsMouseClicked( ImGuiMouseButton_Left ) || ImGui::IsMouseClicked( ImGuiMouseButton_Right ) ) )
 	{
 		m_pSelectedEntity = nullptr;
@@ -482,11 +493,10 @@ SceneHierarchyDisplay::SceneHierarchyDisplay()
 {
 	ADD_SWE_HANDLER( Events::SwitchEntityEvent, &SceneHierarchyDisplay::OnEntityChanged, *this );
 	ADD_EVENT_HANDLER( KeyEvent, &SceneHierarchyDisplay::OnKeyPressed, *this );
+	ADD_EVENT_HANDLER( Events::AddComponentEvent, &SceneHierarchyDisplay::OnAddComponent, *this )
 }
 
-SceneHierarchyDisplay::~SceneHierarchyDisplay()
-{
-}
+SceneHierarchyDisplay::~SceneHierarchyDisplay() = default;
 
 void SceneHierarchyDisplay::Update()
 {
@@ -502,6 +512,7 @@ void SceneHierarchyDisplay::Draw()
 	}
 
 	m_bWindowActive = ImGui::IsWindowFocused();
+
 	OpenContext( pCurrentScene );
 
 	ImGui::Separator();

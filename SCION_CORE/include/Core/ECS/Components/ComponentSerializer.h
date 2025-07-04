@@ -38,6 +38,7 @@ class ComponentSerializer
 	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const PhysicsComponent& physics );
 	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const RigidBodyComponent& rigidBody );
 	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const Identification& id);
+	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const UIComponent& id);
 
 	static void DeserializeComponent( const rapidjson::Value& jsonValue, TransformComponent& transform );
 	static void DeserializeComponent( const rapidjson::Value& jsonValue, SpriteComponent& sprite );
@@ -48,6 +49,7 @@ class ComponentSerializer
 	static void DeserializeComponent( const rapidjson::Value& jsonValue, PhysicsComponent& physics );
 	static void DeserializeComponent( const rapidjson::Value& jsonValue, RigidBodyComponent& rigidBody );
 	static void DeserializeComponent( const rapidjson::Value& jsonValue, Identification& id);
+	static void DeserializeComponent( const rapidjson::Value& jsonValue, UIComponent& id);
 };
 
 } // namespace SCION_CORE::ECS
