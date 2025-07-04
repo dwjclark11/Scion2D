@@ -266,12 +266,25 @@ void ContentDisplay::DrawToolbar()
 	std::string pathStr{ m_CurrentDir.string() };
 	std::string pathToSplit = pathStr.substr( pathStr.find( savedPath ) + savedPath.size() );
 	auto dir = SplitStr( pathToSplit, PATH_SEPARATOR );
+
+	// List all of the folders as buttons -- TODO: Possibly Truncate folders if too deep.
 	for ( size_t i = 0; i < dir.size(); i++ )
 	{
-		if ( ImGui::Button( dir[ i ].c_str() ) )
+		// Folders can have the same name if they are not in the same folder.
+		// This will cause an ImGui issue because a button has the same ID. Append the index to the folder name.
+		std::string sFolderName{ fmt::format( "{}##_{}", dir[ i ], i ) };
+		if ( ImGui::Button( sFolderName.c_str() ) )
 		{
-			std::string pathChange = pathStr.substr( 0, pathStr.find( dir[ i ] ) + dir[ i ].size() );
-			m_CurrentDir = fs::path{ pathChange };
+			fs::path rebuildPath;
+			for ( size_t j = 0; j <= i; j++ )
+			{
+				rebuildPath /= dir[ j ];
+			}
+
+			fs::path finalPath{ savedPath };
+			finalPath /= rebuildPath;
+
+			m_CurrentDir = finalPath;
 		}
 
 		ImGui::SameLine();
@@ -282,7 +295,9 @@ void ContentDisplay::DrawToolbar()
 		ImGui::PopStyleColor( 3 );
 
 		if ( i < dir.size() - 1 )
+		{
 			ImGui::SameLine();
+		}
 	}
 
 	ImGui::Separator();
