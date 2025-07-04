@@ -10,6 +10,7 @@ class Entity;
 namespace SCION_EDITOR::Events
 {
 struct SwitchEntityEvent;
+struct AddComponentEvent;
 }
 
 namespace SCION_CORE::Events
@@ -41,9 +42,10 @@ class SceneHierarchyDisplay : public IDisplay
 
 	void OnEntityChanged( SCION_EDITOR::Events::SwitchEntityEvent& swEntEvent );
 	void OnKeyPressed( SCION_CORE::Events::KeyEvent& keyEvent );
+	void OnAddComponent( SCION_EDITOR::Events::AddComponentEvent& addCompEvent );
 
 	void OpenContext( class SceneObject* pCurrentScene );
-
+	
   private:
 	std::shared_ptr<SCION_CORE::ECS::Entity> m_pSelectedEntity{ nullptr };
 	ImGuiTextFilter m_TextFilter;
