@@ -25,6 +25,8 @@ add_library(SCION_FILESYSTEM
 	# Utilities
 	"include/ScionFilesystem/Utilities/DirectoryWatcher.h"
 	"src/DirectoryWatcher.cpp"
+	"include/ScionFilesystem/Utilities/FilesystemUtilities.h"
+	"src/FilesystemUtilities.cpp"
 )
 
 target_include_directories(

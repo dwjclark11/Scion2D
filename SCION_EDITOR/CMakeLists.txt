@@ -45,6 +45,8 @@ add_executable(SCION_EDITOR
 	"src/editor/displays/AssetDisplayUtils.cpp"
 	"src/editor/displays/ScriptDisplay.h"
 	"src/editor/displays/ScriptDisplay.cpp"
+	"src/editor/displays/PackageDisplay.h"
+	"src/editor/displays/PackageDisplay.cpp"
 
     # Editor Systems
     "src/editor/systems/GridSystem.h" 
@@ -102,7 +104,10 @@ add_executable(SCION_EDITOR
 	${APP_ICON_RESOURCE}
 	"src/editor/scripting/EditorCoreLuaWrappers.h"
 	"src/editor/scripting/EditorCoreLuaWrappers.cpp"
- "src/editor/displays/PackageDisplay.h" "src/editor/displays/PackageDisplay.cpp")
+	
+	# Packaging
+	"src/editor/packaging/ScriptCompiler.h"
+	"src/editor/packaging/ScriptCompiler.cpp")
 
 target_sources(
 	SCION_EDITOR PRIVATE

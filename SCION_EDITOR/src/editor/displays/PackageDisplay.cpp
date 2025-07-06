@@ -181,7 +181,7 @@ void PackageGameDisplay::Draw()
 
 	if ( ImGui::Button( "Package Game" ) )
 	{
-		SCION_LOG( "PACKED THE GAME!" );
+
 	}
 
 	ImGui::End();
