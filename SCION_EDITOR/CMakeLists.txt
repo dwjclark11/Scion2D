@@ -107,7 +107,10 @@ add_executable(SCION_EDITOR
 	
 	# Packaging
 	"src/editor/packaging/ScriptCompiler.h"
-	"src/editor/packaging/ScriptCompiler.cpp")
+	"src/editor/packaging/ScriptCompiler.cpp"
+	"src/editor/packaging/IconReplacer.h"
+	"src/editor/packaging/IconReplacer.cpp"
+)
 
 target_sources(
 	SCION_EDITOR PRIVATE
