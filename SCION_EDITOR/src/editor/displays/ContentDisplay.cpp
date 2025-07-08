@@ -15,6 +15,8 @@
 
 #include "ScionFilesystem/Process/FileProcessor.h"
 #include "ScionFilesystem/Serializers/LuaSerializer.h"
+
+#include <Rendering/Essentials/Texture.h>
 #include <imgui.h>
 
 using namespace SCION_EDITOR::Events;

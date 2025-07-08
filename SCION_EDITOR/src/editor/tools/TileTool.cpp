@@ -6,6 +6,9 @@
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Rendering/Core/BatchRenderer.h"
 #include "Rendering/Core/Camera2D.h"
+#include <Rendering/Essentials/Shader.h>
+#include <Rendering/Essentials/Texture.h>
+
 #include "editor/scene/SceneObject.h"
 
 #include "ScionUtilities/MathUtilities.h"

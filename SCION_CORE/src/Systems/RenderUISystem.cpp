@@ -7,6 +7,9 @@
 #include "Core/CoreUtilities/CoreUtilities.h"
 
 #include <Rendering/Essentials/Font.h>
+#include <Rendering/Essentials/Shader.h>
+#include <Rendering/Essentials/Texture.h>
+
 #include <Rendering/Core/BatchRenderer.h>
 #include <Rendering/Core/TextBatchRenderer.h>
 #include <Rendering/Core/Camera2D.h>

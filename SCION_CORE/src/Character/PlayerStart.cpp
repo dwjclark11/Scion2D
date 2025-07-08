@@ -8,6 +8,8 @@
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
 
+#include <Rendering/Essentials/Texture.h>
+
 using namespace SCION_CORE::ECS;
 
 constexpr const char* PlayerStartTag = "S2D_PlayerStart";

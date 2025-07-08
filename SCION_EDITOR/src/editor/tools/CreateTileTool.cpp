@@ -4,6 +4,9 @@
 #include "Rendering/Core/Camera2D.h"
 #include "Logger/Logger.h"
 
+#include <Rendering/Essentials/Shader.h>
+#include <Rendering/Essentials/Texture.h>
+
 #include "editor/utilities/EditorUtilities.h"
 #include "editor/commands/CommandManager.h"
 

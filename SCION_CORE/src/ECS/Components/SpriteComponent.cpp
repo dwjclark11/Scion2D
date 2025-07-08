@@ -2,6 +2,7 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
+#include <Rendering/Essentials/Texture.h>
 #include <Logger/Logger.h>
 
 using namespace SCION_RESOURCES;

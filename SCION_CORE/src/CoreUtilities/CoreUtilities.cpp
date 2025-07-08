@@ -6,6 +6,8 @@
 #include "Core/Resources/AssetManager.h"
 #include "Core/ECS/Registry.h"
 
+#include <Rendering/Essentials/Font.h>
+
 using namespace SCION_CORE::ECS;
 
 namespace SCION_CORE

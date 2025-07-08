@@ -6,8 +6,10 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
-
 #include "Core/ECS/Entity.h"
+
+#include <Rendering/Essentials/Shader.h>
+#include <Rendering/Essentials/Texture.h>
 
 #include "Logger/Logger.h"
 

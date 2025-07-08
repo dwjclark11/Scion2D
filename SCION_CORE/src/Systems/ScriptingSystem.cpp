@@ -39,6 +39,10 @@
 
 #include "Core/Scene/Scene.h"
 
+#include "Rendering/Essentials/Texture.h"
+#include "Rendering/Essentials/Shader.h"
+#include "Rendering/Essentials/Font.h"
+
 #include <filesystem>
 
 namespace fs = std::filesystem;

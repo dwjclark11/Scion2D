@@ -14,6 +14,7 @@
 
 #include "Rendering/Core/BatchRenderer.h"
 #include "Rendering/Essentials/Vertex.h"
+#include <Rendering/Essentials/Texture.h>
 
 using namespace SCION_CORE::ECS;
 

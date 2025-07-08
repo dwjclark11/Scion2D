@@ -2,10 +2,17 @@
 #include "Core/Resources/fonts/default_fonts.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/CoreUtilities/Prefab.h"
+#include "Core/ECS/Registry.h"
 
 #include <Rendering/Essentials/TextureLoader.h>
 #include <Rendering/Essentials/ShaderLoader.h>
 #include <Rendering/Essentials/FontLoader.h>
+#include <Rendering/Essentials/Shader.h>
+#include <Rendering/Essentials/Texture.h>
+#include <Rendering/Essentials/Font.h>
+#include <Sounds/Essentials/Music.h>
+#include <Sounds/Essentials/SoundFX.h>
+
 #include <ScionUtilities/ScionUtilities.h>
 #include <Logger/Logger.h>
 

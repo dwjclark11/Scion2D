@@ -5,7 +5,7 @@
 #include "Core/ECS/MetaUtilities.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
-
+#include <Rendering/Essentials/Texture.h>
 #include "Logger/Logger.h"
 
 using namespace SCION_CORE::Utils;

@@ -5,6 +5,9 @@
 #include "Rendering/Core/Camera2D.h"
 #include "Rendering/Essentials/Primitives.h"
 #include "Rendering/Essentials/Vertex.h"
+#include <Rendering/Essentials/Shader.h>
+#include <Rendering/Essentials/Texture.h>
+
 #include "editor/scene/SceneObject.h"
 
 using namespace SCION_CORE;

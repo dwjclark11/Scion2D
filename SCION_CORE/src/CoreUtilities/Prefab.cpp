@@ -12,6 +12,8 @@
 #include "ScionUtilities/ScionUtilities.h"
 #include "ScionUtilities/HelperUtilities.h"
 
+#include <Rendering/Essentials/Texture.h>
+
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
 #include <fmt/format.h>

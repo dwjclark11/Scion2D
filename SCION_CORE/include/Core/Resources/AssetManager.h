@@ -9,13 +9,6 @@
 #include <atomic>
 #include <thread>
 
-#include <Rendering/Essentials/Shader.h>
-#include <Rendering/Essentials/Texture.h>
-#include <Rendering/Essentials/Font.h>
-#include <Sounds/Essentials/Music.h>
-#include <Sounds/Essentials/SoundFX.h>
-
-#include "Core/ECS/Registry.h"
 #include <sol/sol.hpp>
 
 namespace SCION_UTIL
@@ -27,6 +20,19 @@ namespace SCION_CORE
 {
 class Prefab;
 }
+
+namespace SCION_RENDERING
+{
+class Texture;
+class Shader;
+class Font;
+} // namespace SCION_RENDERING
+
+namespace SCION_SOUNDS
+{
+class Music;
+class SoundFX;
+} // namespace SCION_SOUNDS
 
 namespace SCION_RESOURCES
 {

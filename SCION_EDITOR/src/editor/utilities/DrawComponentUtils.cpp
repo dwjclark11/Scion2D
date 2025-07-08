@@ -4,6 +4,7 @@
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Core/Events/EventDispatcher.h"
 #include "ScionUtilities/ScionUtilities.h"
+#include "Rendering/Essentials/Texture.h"
 #include "Physics/PhysicsUtilities.h"
 #include "Logger/Logger.h"
 

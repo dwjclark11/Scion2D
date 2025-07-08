@@ -11,6 +11,7 @@
 
 #include <Rendering/Core/Camera2D.h>
 #include <Rendering/Essentials/Primitives.h>
+#include <Rendering/Essentials/Shader.h>
 #include <Rendering/Core/RectBatchRenderer.h>
 #include <Rendering/Core/CircleBatchRenderer.h>
 

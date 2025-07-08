@@ -12,6 +12,8 @@
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
+
+#include <Rendering/Essentials/Texture.h>
 #include "Logger/Logger.h"
 
 #include <imgui.h>

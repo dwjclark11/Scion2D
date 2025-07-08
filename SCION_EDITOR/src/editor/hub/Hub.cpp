@@ -12,6 +12,9 @@
 
 #include "ScionUtilities/HelperUtilities.h"
 
+#include <Rendering/Essentials/Texture.h>
+
+
 // IMGUI
 // ===================================
 #include <imgui.h>

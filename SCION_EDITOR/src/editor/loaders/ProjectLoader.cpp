@@ -12,6 +12,13 @@
 
 #include "ScionFilesystem/Serializers/JSONSerializer.h"
 #include "ScionFilesystem/Serializers/LuaSerializer.h"
+
+#include <Rendering/Essentials/Shader.h>
+#include <Rendering/Essentials/Texture.h>
+#include <Rendering/Essentials/Font.h>
+#include <Sounds/Essentials/Music.h>
+#include <Sounds/Essentials/SoundFX.h>
+
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
 
