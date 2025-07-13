@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <string>
 #include <map>
+#include <vector>
 
 namespace SCION_PHYSICS
 {
@@ -71,6 +72,7 @@ bool AddCustomFilterCategoryType( const std::string& sNewFilterCatType, std::str
  * @brief Returns a map for the filter catergories and their visual representation.
  */
 const std::map<FilterCategory, std::string> GetFilterCategoryToStringMap();
+std::vector<std::string> GetFilterStrings();
 
 std::string GetRigidBodyTypeString( RigidBodyType eRigidType );
 RigidBodyType GetRigidBodyTypeByString( const std::string sRigidType );

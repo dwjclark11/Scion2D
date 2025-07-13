@@ -1,5 +1,6 @@
 #include "ImGuiUtils.h"
 #include "Logger/Logger.h"
+#include <imgui_stdlib.h>
 
 namespace ImGui
 {
@@ -90,6 +91,7 @@ void InlineLabel( const std::string& label, float spaceSize )
 	ImGui::SameLine();
 	ImGui::SetCursorPosX( spaceSize );
 }
+
 void ActiveButton( const char* label, ImVec2 size )
 {
 	ImGui::PushStyleColor( ImGuiCol_Button, BUTTON_HELD );
@@ -110,7 +112,7 @@ void DisabledButton( const char* label, ImVec2 size, const std::string& disabled
 	ImGui::EndDisabled();
 }
 
-void ActiveImageButton(const char* buttonId,  ImTextureID textureID, ImVec2 size )
+void ActiveImageButton( const char* buttonId, ImTextureID textureID, ImVec2 size )
 {
 	ImGui::PushStyleColor( ImGuiCol_Button, BUTTON_HELD );
 	ImGui::PushStyleColor( ImGuiCol_ButtonHovered, BUTTON_HELD );
@@ -128,5 +130,17 @@ void DisabledImageButton( const char* buttonId, ImTextureID textureID, ImVec2 si
 		ImGui::SetItemTooltip( disabledMsg.c_str() );
 
 	ImGui::EndDisabled();
+}
+void InputTextReadOnly( const std::string& sLabel, std::string* sInputText )
+{
+	ImVec4 textDisabled = ImGui::GetStyle().Colors[ ImGuiCol_TextDisabled ];
+	ImVec4 bgHovered = ImGui::GetStyle().Colors[ ImGuiCol_FrameBgHovered ];
+	ImVec4 dimmedBg = ImVec4( bgHovered.x, bgHovered.y, bgHovered.z, bgHovered.w * 0.5f );
+
+	ImGui::PushStyleColor( ImGuiCol_FrameBg, dimmedBg );
+	ImGui::PushStyleColor( ImGuiCol_Text, textDisabled );
+	ImGui::InputText( sLabel.c_str(), sInputText, ImGuiInputTextFlags_ReadOnly );
+
+	ImGui::PopStyleColor( 2 );
 }
 } // namespace ImGui

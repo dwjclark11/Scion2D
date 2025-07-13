@@ -10,7 +10,7 @@
 #include "Logger/Logger.h"
 
 #include "editor/events/EditorEventTypes.h"
-#include "Core/CoreUtilities/SaveProject.h"
+#include "Core/CoreUtilities/ProjectInfo.h"
 #include "Core/Events/EventDispatcher.h"
 
 #include "ScionFilesystem/Process/FileProcessor.h"
@@ -24,11 +24,14 @@ using namespace SCION_FILESYSTEM;
 
 namespace fs = std::filesystem;
 
+
+
 namespace SCION_EDITOR
 {
 ContentDisplay::ContentDisplay()
 	: m_pFileDispatcher{ std::make_unique<SCION_CORE::Events::EventDispatcher>() }
-	, m_CurrentDir{ MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>()->sProjectPath + "content" }
+	, m_CurrentDir{ *MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>()->TryGetFolderPath(
+		  SCION_CORE::EProjectFolderType::Content ) }
 	, m_sFilepathToAction{}
 	, m_Selected{ -1 }
 	, m_eFileAction{ Events::EFileAction::NoAction }
@@ -40,9 +43,7 @@ ContentDisplay::ContentDisplay()
 	m_pFileDispatcher->AddHandler<FileEvent, &ContentDisplay::HandleFileEvent>( *this );
 }
 
-ContentDisplay::~ContentDisplay()
-{
-}
+ContentDisplay::~ContentDisplay() = default;
 
 void ContentDisplay::Update()
 {
@@ -264,9 +265,13 @@ void ContentDisplay::DrawToolbar()
 	ImGui::ItemToolTip( "Create Folder" );
 	ImGui::SameLine( 0.f, 16.f );
 
-	const auto& savedPath = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>()->sProjectPath;
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto optContentPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::Content );
+	SCION_ASSERT( optContentPath && "Content path has not be setup correctly in project info." );
+
+	const auto& savedPath = optContentPath->string();
 	std::string pathStr{ m_CurrentDir.string() };
-	std::string pathToSplit = pathStr.substr( pathStr.find( savedPath ) + savedPath.size() );
+	std::string pathToSplit = pathStr.substr( pathStr.find( savedPath ) + savedPath.size() - CONTENT_FOLDER.size() );
 	auto dir = SplitStr( pathToSplit, PATH_SEPARATOR );
 
 	// List all of the folders as buttons -- TODO: Possibly Truncate folders if too deep.
@@ -280,11 +285,20 @@ void ContentDisplay::DrawToolbar()
 			fs::path rebuildPath;
 			for ( size_t j = 0; j <= i; j++ )
 			{
+				// We don't want to add the content folder to the path.
+				if (rebuildPath.empty() && dir[ j ] == CONTENT_FOLDER )
+				{
+					continue;
+				}
+
 				rebuildPath /= dir[ j ];
 			}
 
 			fs::path finalPath{ savedPath };
-			finalPath /= rebuildPath;
+			if ( !rebuildPath.empty() )
+			{
+				finalPath /= rebuildPath;
+			}
 
 			m_CurrentDir = finalPath;
 		}
@@ -381,10 +395,20 @@ void ContentDisplay::HandleFileEvent( const SCION_EDITOR::Events::FileEvent& fil
 	if ( fileEvent.sFilepath.empty() || fileEvent.eAction == EFileAction::NoAction )
 		return;
 
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	if ( !pProjectInfo )
+		return;
+
 	switch ( fileEvent.eAction )
 	{
 	case EFileAction::Delete: {
 		fs::path path{ fileEvent.sFilepath };
+		if ( IsDefaultProjectPathOrFile( path, *pProjectInfo ) )
+		{
+			SCION_ERROR( "Failed to delete [{}] - This is a reserved default project folder or file.", path.string() );
+			return;
+		}
+
 		if ( fs::is_directory( path ) )
 		{
 			std::unordered_set<std::string> setFilesToCheck;

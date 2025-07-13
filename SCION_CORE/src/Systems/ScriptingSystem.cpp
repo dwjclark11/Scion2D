@@ -20,7 +20,7 @@
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Core/CoreUtilities/FollowCamera.h"
-#include "Core/CoreUtilities/SaveProject.h"
+#include "Core/CoreUtilities/ProjectInfo.h"
 
 #include "Core/States/State.h"
 #include "Core/States/StateStack.h"
@@ -108,29 +108,22 @@ bool ScriptingSystem::LoadMainScript( const std::string& sMainLuaFile, SCION_COR
 	return true;
 }
 
-bool ScriptingSystem::LoadMainScript( const SCION_CORE::SaveProject& save, SCION_CORE::ECS::Registry& registry,
+bool ScriptingSystem::LoadMainScript( SCION_CORE::ProjectInfo& projectInfo, SCION_CORE::ECS::Registry& registry,
 									  sol::state& lua )
 {
-	std::error_code ec;
-	fs::path mainLuaPath{ save.sMainLuaScript };
-
-	if ( !fs::exists( mainLuaPath, ec ) )
-	{
-		SCION_ERROR( "Failed to load main lua script: {}", ec.message() );
-		return false;
-	}
-
-	fs::path parentPath = mainLuaPath.parent_path();
-	fs::path scriptListPath = parentPath / "script_list.lua";
-	fs::path contentPath = fs::path{ save.sProjectPath } / "content"; 
+	
+	auto optScriptListPath = projectInfo.GetScriptListPath();
+	SCION_ASSERT( optScriptListPath && "Script List Path not setup correctly in project info." );
+	auto optContentPath = projectInfo.TryGetFolderPath( SCION_CORE::EProjectFolderType::Content );
+	SCION_ASSERT( optContentPath && "Content Path not setup correctly in project info." );
 
 	// Try to load script list files.
-	if ( fs::exists( scriptListPath ) && fs::exists( contentPath ) )
+	if ( fs::exists( *optScriptListPath ) && fs::exists( *optContentPath ) )
 	{
 		try
 		{
 			sol::state scriptLua;
-			auto result = scriptLua.safe_script_file( scriptListPath.string() );
+			auto result = scriptLua.safe_script_file( optScriptListPath->string() );
 			if (!result.valid())
 			{
 				sol::error err = result;
@@ -148,7 +141,7 @@ bool ScriptingSystem::LoadMainScript( const SCION_CORE::SaveProject& save, SCION
 			{
 				try
 				{
-					fs::path scriptPath = contentPath / script.as<std::string>();
+					fs::path scriptPath = *optContentPath / script.as<std::string>();
 					auto result = lua.safe_script_file( scriptPath.string() );
 					if (!result.valid())
 					{
@@ -170,7 +163,10 @@ bool ScriptingSystem::LoadMainScript( const SCION_CORE::SaveProject& save, SCION
 		}
 	}
 
-	return LoadMainScript(save.sMainLuaScript, registry, lua);
+	auto optMainLuaScript = projectInfo.GetMainLuaScriptPath();
+	SCION_ASSERT( optMainLuaScript && "Main lua script has not been set correctly in project info." );
+
+	return LoadMainScript( optMainLuaScript->string(), registry, lua );
 }
 
 void ScriptingSystem::Update( SCION_CORE::ECS::Registry& registry )

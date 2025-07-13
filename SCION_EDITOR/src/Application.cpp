@@ -31,13 +31,14 @@
 #include "editor/displays/EditorStyleToolDisplay.h"
 #include "editor/displays/ContentDisplay.h"
 #include "editor/displays/PackageDisplay.h"
+#include "editor/displays/ProjectSettingsDisplay.h"
 
 #include "editor/scene/SceneManager.h"
 
 #include "editor/utilities/editor_textures.h"
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/DrawComponentUtils.h"
-#include "Core/CoreUtilities/SaveProject.h"
+#include "Core/CoreUtilities/ProjectInfo.h"
 #include "editor/systems/GridSystem.h"
 
 #include "editor/events/EditorEventTypes.h"
@@ -180,7 +181,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::SaveProject>>( std::make_shared<SCION_CORE::SaveProject>() );
+	mainRegistry.AddToContext<SCION_CORE::ProjectInfoPtr>( std::make_shared<SCION_CORE::ProjectInfo>() );
 	m_pHub = std::make_unique<Hub>( *m_pWindow );
 
 	return true;
@@ -253,7 +254,8 @@ bool Application::InitApp()
 
 	// We can now set the Crash Logger path to the running project
 	const auto& sProjectPath = CORE_GLOBALS().GetProjectPath();
-	SCION_CRASH_LOGGER().SetProjectPath( sProjectPath );
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	SCION_CRASH_LOGGER().SetProjectPath( pProjectInfo->GetProjectPath().string() );
 
 	return true;
 }
@@ -662,6 +664,7 @@ bool Application::CreateDisplays()
 	pDisplayHolder->displays.push_back( std::move( pContentDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pScriptDisplay ) );
 	pDisplayHolder->displays.push_back( std::move( pPackageDisplay ) );
+	pDisplayHolder->displays.push_back( std::make_unique<ProjectSettingsDisplay>() );
 
 	return true;
 }

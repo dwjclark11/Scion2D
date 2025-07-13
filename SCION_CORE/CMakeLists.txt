@@ -7,7 +7,8 @@ add_library(SCION_CORE
     "include/Core/CoreUtilities/FollowCamera.h"
     "src/CoreUtilities/FollowCamera.cpp"
 	"include/Core/CoreUtilities/EngineShaders.h"
-	"include/Core/CoreUtilities/SaveProject.h"
+	"include/Core/CoreUtilities/ProjectInfo.h"
+	"src/CoreUtilities/ProjectInfo.cpp"
 	"include/Core/CoreUtilities/Prefab.h"
 	"src/CoreUtilities/Prefab.cpp"
 

@@ -12,6 +12,7 @@ class Texture
 		PIXEL = 0,
 		BLENDED,
 		FRAMEBUFFER,
+		ICON,
 		NONE
 	};
 
@@ -33,6 +34,12 @@ class Texture
 
 	void Bind();
 	void Unbind();
+
+	/*
+	* @brief Deletes the underlying OpenGL Texture.
+	* Only use this if texture is no longer needed.
+	*/
+	void Destroy();
 
   private:
 	GLuint m_TextureID;

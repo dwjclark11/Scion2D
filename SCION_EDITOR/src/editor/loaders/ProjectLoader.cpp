@@ -2,7 +2,7 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
-#include "Core/CoreUtilities/SaveProject.h"
+#include "Core/CoreUtilities/ProjectInfo.h"
 #include "Core/CoreUtilities/Prefab.h"
 
 #include "editor/utilities/EditorUtilities.h"
@@ -28,47 +28,62 @@ namespace fs = std::filesystem;
 
 using namespace SCION_FILESYSTEM;
 
+// clang-format off
+static const std::map<SCION_CORE::EProjectFolderType, std::string> mapProjectDirs = {
+		{ SCION_CORE::EProjectFolderType::Content,		"content" },
+		{ SCION_CORE::EProjectFolderType::Scripts,		"content/scripts" },
+		// Asset Folders
+		{ SCION_CORE::EProjectFolderType::Assets,		"content/assets" },
+		{ SCION_CORE::EProjectFolderType::SoundFx,		"content/assets/soundfx" },
+		{ SCION_CORE::EProjectFolderType::Music,		"content/assets/music" },
+		{ SCION_CORE::EProjectFolderType::Textures,		"content/assets/textures" },
+		{ SCION_CORE::EProjectFolderType::Shaders,		"content/assets/shaders" },
+		{ SCION_CORE::EProjectFolderType::Fonts,		"content/assets/fonts" },
+		{ SCION_CORE::EProjectFolderType::Prefabs,		"content/assets/prefabs" },
+		{ SCION_CORE::EProjectFolderType::Scenes,		"content/assets/scenes" },
+		// Config Folders
+		{ SCION_CORE::EProjectFolderType::Config,		"config"},
+		{ SCION_CORE::EProjectFolderType::GameConfig,	"config/game"},
+		{ SCION_CORE::EProjectFolderType::EditorConfig, "config/editor"},
+	};
+// clang-format on
+
 namespace SCION_EDITOR
 {
 
 bool ProjectLoader::CreateNewProject( const std::string& sProjectName, const std::string& sFilepath )
 {
-	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
-	SCION_ASSERT( pSaveProject && "Save project must exist." );
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	SCION_ASSERT( pProjectInfo && "Project Info must exist." );
 
 	// Create the game filepath
-	std::string sGameFilepath =
-		fmt::format( "{}{}{}{}{}", sFilepath, PATH_SEPARATOR, sProjectName, PATH_SEPARATOR, "SCION_2D" );
+	fs::path gameFilepath{
+		fmt::format( "{}{}{}{}{}", sFilepath, PATH_SEPARATOR, sProjectName, PATH_SEPARATOR, "SCION_2D" ) };
 
-	if ( fs::is_directory( sGameFilepath ) )
+	if ( fs::is_directory( gameFilepath ) )
 	{
 		SCION_ERROR( "Project [{}] at [{}] already exists.", sProjectName, sFilepath );
 		return false;
 	}
 
-	char sep{ PATH_SEPARATOR };
-	sGameFilepath += sep;
 	std::error_code ec;
-	if ( !fs::create_directories( sGameFilepath + "content", ec ) ||
-		 !fs::create_directories( sGameFilepath + "content" + sep + "scripts", ec ) ||
-		 !fs::create_directories( sGameFilepath + "content" + sep + "assets", ec ) ||
-		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "soundfx", ec ) ||
-		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "music", ec ) ||
-		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "textures", ec ) ||
-		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "shaders", ec ) ||
-		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "fonts", ec ) ||
-		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "prefabs", ec ) ||
-		 !fs::create_directories( sGameFilepath + "content" + sep + "assets" + sep + "scenes", ec ) )
+	for ( const auto& [ eFolderType, sSubDir ] : mapProjectDirs )
 	{
-		SCION_ERROR( "Failed to create directories - {}", ec.message() );
-		// TODO: Delete any created directories??
-		return false;
+		fs::path fullpath{ gameFilepath / fs::path{ sSubDir } };
+
+		if ( !fs::create_directories( fullpath, ec ) )
+		{
+			SCION_ERROR( "Failed to create directories: {} - {}", fullpath.string(), ec.message() );
+			return false;
+		}
+
+		pProjectInfo->AddFolderPath( eFolderType, fullpath );
 	}
 
-	pSaveProject->sProjectName = sProjectName;
-	pSaveProject->sProjectPath = sGameFilepath;
-
-	return CreateProjectFile( pSaveProject->sProjectName, pSaveProject->sProjectPath );
+	pProjectInfo->SetProjectName( sProjectName );
+	pProjectInfo->SetProjectPath( gameFilepath );
+	
+	return CreateProjectFile( sProjectName, gameFilepath.string() );
 }
 
 bool ProjectLoader::LoadProject( const std::string& sFilepath )
@@ -108,17 +123,16 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 	}
 
 	auto& mainRegistry = MAIN_REGISTRY();
-	auto& pSaveProject = mainRegistry.GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
-
-	SCION_ASSERT( pSaveProject && "Save Project must be valid!" );
+	auto& pProjectInfo = mainRegistry.GetContext<SCION_CORE::ProjectInfoPtr>();
+	SCION_ASSERT( pProjectInfo && "Project Info must be valid!" );
 
 	// We need the project filepath saved!
-	pSaveProject->sProjectFilePath = sFilepath;
+	pProjectInfo->SetProjectFilePath( sFilepath );
 
 	const rapidjson::Value& projectData = doc[ "project_data" ];
 
 	// Set the project name. The actual project name might be different to the project files name.
-	pSaveProject->sProjectName = projectData[ "project_name" ].GetString();
+	pProjectInfo->SetProjectName( projectData[ "project_name" ].GetString() );
 
 	// We need to load all the assets
 	if ( !projectData.HasMember( "assets" ) )
@@ -129,27 +143,121 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 
 	// Get Content Path
 	fs::path filePath{ sFilepath };
-	std::string sContentPath = filePath.parent_path().string();
+	fs::path projectPath{ filePath.parent_path() };
+	pProjectInfo->SetProjectPath( projectPath );
+
+	// Setup Project Folders
+	std::error_code ec;
+	for ( const auto& [ eFolderType, subDir ] : mapProjectDirs )
+	{
+		fs::path fullPath{ projectPath / subDir };
+		if ( !fs::exists( fullPath, ec ) )
+		{
+			SCION_ERROR( "Failed to load project: Failed to setup project folders. [{}] - {}", ec.message() );
+			return false;
+		}
+
+		if ( !pProjectInfo->AddFolderPath( eFolderType, fullPath ) )
+		{
+			SCION_ERROR( "Failed to setup project folder [{}]", fullPath.string() );
+			return false;
+		}
+	}
+
+	// Setup Project Files
+	if ( auto optScriptPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::Scripts ) )
+	{
+		fs::path mainScriptPath = *optScriptPath / "main.lua";
+		if ( !fs::exists( mainScriptPath ) )
+		{
+			SCION_ERROR( "Failed to load project: main.lua file was not found at [{}]", mainScriptPath.string() );
+			return false;
+		}
+	}
+
+	// Setup Project Files
+	if ( auto optGameConfigPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::GameConfig ) )
+	{
+		fs::path scriptListPath = *optGameConfigPath / "script_list.lua";
+		if ( !fs::exists( scriptListPath ) )
+		{
+			SCION_ERROR( "Failed to load project: script_list.lua file was not found at [{}]",
+						 scriptListPath.string() );
+			return false;
+		}
+	}
 
 	// Get the project path before we adjust it to the content path
-	pSaveProject->sProjectPath = sContentPath + PATH_SEPARATOR;
-	CORE_GLOBALS().SetProjectPath( pSaveProject->sProjectPath );
+	CORE_GLOBALS().SetProjectPath( projectPath.string() );
 
-	sContentPath += PATH_SEPARATOR;
-	sContentPath += "content";
-	sContentPath += PATH_SEPARATOR;
+	auto optContentFolderPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::Content );
+	SCION_ASSERT( optContentFolderPath && "Content folder not set correctly in project info." );
 
 	// Check to see if there is a main lua path
 	if ( projectData.HasMember( "main_lua_script" ) )
 	{
-		pSaveProject->sMainLuaScript = sContentPath + projectData[ "main_lua_script" ].GetString();
+		auto mainLuaScript = *optContentFolderPath / projectData[ "main_lua_script" ].GetString();
+		if ( !fs::exists( mainLuaScript ) )
+		{
+			SCION_ERROR( "Failed to set main lua script path. [{}] does not exist.", mainLuaScript.string() );
+			return false;
+		}
+
+		pProjectInfo->SetMainLuaScriptPath( mainLuaScript );
 	}
+
+	// Check to see if there is a file icon and load it
+	if ( projectData.HasMember( "file_icon" ) )
+	{
+		std::string sFileIcon = projectData[ "file_icon" ].GetString();
+		if ( !sFileIcon.empty() )
+		{
+			auto fileIconPath = *optContentFolderPath / sFileIcon;
+			if ( !fs::exists( fileIconPath ) )
+			{
+				SCION_ERROR( "Failed to set game file icon path. [{}] does not exist.", fileIconPath.string() );
+				return false;
+			}
+
+			pProjectInfo->SetFileIconPath( fileIconPath );
+		}
+	}
+
+	auto optGameConfigPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::GameConfig );
+	SCION_ASSERT( optGameConfigPath && "Game Config folder path has not been setup correctly in project info." );
+
+	fs::path scriptListPath = *optGameConfigPath / "script_list.lua";
+	if (!fs::exists(scriptListPath))
+	{
+		SCION_ERROR( "Failed to load project. ScriptList was not found at path [{}]", scriptListPath.string() );
+		return false;
+	}
+
+	pProjectInfo->SetScriptListPath( scriptListPath );
 
 	auto& coreGlobals = CORE_GLOBALS();
 
 	if ( projectData.HasMember( "game_type" ) )
 	{
 		coreGlobals.SetGameType( coreGlobals.GetGameTypeFromStr( projectData[ "game_type" ].GetString() ) );
+	}
+
+	if (projectData.HasMember("copyright"))
+	{
+		std::string sCopyRight = projectData[ "copyright" ].GetString();
+		pProjectInfo->SetCopyRightNotice( sCopyRight );
+	}
+
+	if ( projectData.HasMember( "version" ) )
+	{
+		std::string sVersion = projectData[ "version" ].GetString();
+		pProjectInfo->SetProjectVersion( sVersion );
+	}
+
+	if ( projectData.HasMember( "description" ) )
+	{
+		std::string sDescription = projectData[ "description" ].GetString();
+		pProjectInfo->SetProjectDescription( sDescription );
 	}
 
 	const rapidjson::Value& assets = projectData[ "assets" ];
@@ -171,14 +279,15 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 			// Assets path's should be saved as follows "assets/[asset_type]/[extra_folders opt]/file"
 
 			std::string sTextureName{ jsonTexture[ "name" ].GetString() };
-			std::string sTexturePath{ sContentPath + jsonTexture[ "path" ].GetString() };
+			std::string sJsonTexturePath = jsonTexture[ "path" ].GetString();
+			fs::path texturePath = *optContentFolderPath / sJsonTexturePath;
 
 			if ( !assetManager.AddTexture( sTextureName,
-										   sTexturePath,
+										   texturePath.string(),
 										   jsonTexture[ "bPixelArt" ].GetBool(),
 										   jsonTexture[ "bTilemap" ].GetBool() ) )
 			{
-				SCION_ERROR( "Failed to load texture [{}] at path [{}]", sTextureName, sTexturePath );
+				SCION_ERROR( "Failed to load texture [{}] at path [{}]", sTextureName, texturePath.string() );
 				// Should we stop loading or finish??
 			}
 		}
@@ -198,11 +307,12 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		for ( const auto& jsonSoundFx : soundfx.GetArray() )
 		{
 			std::string sSoundFxName{ jsonSoundFx[ "name" ].GetString() };
-			std::string sSoundFxPath{ sContentPath + jsonSoundFx[ "path" ].GetString() };
-
-			if ( !assetManager.AddSoundFx( sSoundFxName, sSoundFxPath ) )
+			std::string sJsonSoundFxPath = jsonSoundFx[ "path" ].GetString();
+			fs::path soundFxPath = *optContentFolderPath / sJsonSoundFxPath;
+			
+			if ( !assetManager.AddSoundFx( sSoundFxName, soundFxPath.string()) )
 			{
-				SCION_ERROR( "Failed to load soundfx [{}] at path [{}]", sSoundFxName, sSoundFxPath );
+				SCION_ERROR( "Failed to load soundfx [{}] at path [{}]", sSoundFxName, soundFxPath.string() );
 				// Should we stop loading or finish??
 			}
 		}
@@ -222,11 +332,12 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		for ( const auto& jsonMusic : music.GetArray() )
 		{
 			std::string sMusicName{ jsonMusic[ "name" ].GetString() };
-			std::string sMusicPath{ sContentPath + jsonMusic[ "path" ].GetString() };
+			std::string sJsonMusicPath = jsonMusic[ "path" ].GetString(); 
+			fs::path musicPath = *optContentFolderPath / sJsonMusicPath;
 
-			if ( !assetManager.AddMusic( sMusicName, sMusicPath ) )
+			if ( !assetManager.AddMusic( sMusicName, musicPath.string() ) )
 			{
-				SCION_ERROR( "Failed to load music [{}] at path [{}]", sMusicName, sMusicPath );
+				SCION_ERROR( "Failed to load music [{}] at path [{}]", sMusicName, musicPath.string() );
 				// Should we stop loading or finish??
 			}
 		}
@@ -246,11 +357,12 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		for ( const auto& jsonFonts : fonts.GetArray() )
 		{
 			std::string sFontName{ jsonFonts[ "name" ].GetString() };
-			std::string sFontPath{ sContentPath + jsonFonts[ "path" ].GetString() };
-
-			if ( !assetManager.AddFont( sFontName, sFontPath, jsonFonts[ "fontSize" ].GetFloat() ) )
+			std::string sJsonFontPath = jsonFonts[ "path" ].GetString(); 
+			fs::path fontPath = *optContentFolderPath / sJsonFontPath;
+			
+			if ( !assetManager.AddFont( sFontName, fontPath.string(), jsonFonts[ "fontSize" ].GetFloat() ) )
 			{
-				SCION_ERROR( "Failed to load fonts [{}] at path [{}]", sFontName, sFontPath );
+				SCION_ERROR( "Failed to load fonts [{}] at path [{}]", sFontName, fontPath.string() );
 				// Should we stop loading or finish??
 			}
 		}
@@ -272,11 +384,12 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		for ( const auto& jsonScenes : scenes.GetArray() )
 		{
 			std::string sSceneName{ jsonScenes[ "name" ].GetString() };
-			std::string sSceneDataPath{ sContentPath + jsonScenes[ "sceneData" ].GetString() };
+			std::string sJsonScenePath = jsonScenes[ "sceneData" ].GetString();
+			fs::path scenePath = *optContentFolderPath / sJsonScenePath;
 
-			if ( !sceneManager.AddSceneObject( sSceneName, sSceneDataPath ) )
+			if ( !sceneManager.AddSceneObject( sSceneName, scenePath.string() ) )
 			{
-				SCION_ERROR( "Failed to load scene: {}", sSceneName );
+				SCION_ERROR( "Failed to load scene [{}] at path [{}]", sSceneName, scenePath.string() );
 			}
 		}
 	}
@@ -295,9 +408,10 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		for ( const auto& jsonPrefab : prefabs.GetArray() )
 		{
 			std::string sName{ jsonPrefab[ "name" ].GetString() };
-			std::string sFilepath{ sContentPath + jsonPrefab[ "path" ].GetString() };
-
-			if ( auto pPrefab = SCION_CORE::PrefabCreator::CreatePrefab( sFilepath ) )
+			std::string sJsonPrefabPath = jsonPrefab[ "path" ].GetString();
+			fs::path prefabPath = *optContentFolderPath / sJsonPrefabPath;
+			
+			if ( auto pPrefab = SCION_CORE::PrefabCreator::CreatePrefab( prefabPath.string() ) )
 			{
 				if ( !assetManager.AddPrefab( sName, std::move( pPrefab ) ) )
 				{
@@ -306,7 +420,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 			}
 			else
 			{
-				SCION_ERROR( "Failed to load prefab [{}] from path [{}].", sName, sFilepath );
+				SCION_ERROR( "Failed to load prefab [{}] from path [{}].", sName, prefabPath.string() );
 			}
 		}
 	}
@@ -332,11 +446,16 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 	return true;
 }
 
-bool ProjectLoader::SaveLoadedProject( SCION_CORE::SaveProject& save )
+bool ProjectLoader::SaveLoadedProject( const SCION_CORE::ProjectInfo& projectInfo )
 {
-	if ( !fs::exists( save.sProjectFilePath ) )
+	auto optProjectFilePath = projectInfo.GetProjectFilePath();
+	SCION_ASSERT( optProjectFilePath && "Project file path not set correctly." );
+
+	if ( !fs::exists( *optProjectFilePath ) )
 	{
-		SCION_ERROR( "Failed to save project file for [{}] at path [{}]", save.sProjectName, save.sProjectFilePath );
+		SCION_ERROR( "Failed to save project file for [{}] at path [{}]",
+					 projectInfo.GetProjectName(),
+					 optProjectFilePath->string() );
 		return false;
 	}
 
@@ -344,11 +463,11 @@ bool ProjectLoader::SaveLoadedProject( SCION_CORE::SaveProject& save )
 
 	try
 	{
-		pSerializer = std::make_unique<JSONSerializer>( save.sProjectFilePath );
+		pSerializer = std::make_unique<JSONSerializer>( optProjectFilePath->string() );
 	}
 	catch ( const std::exception& ex )
 	{
-		SCION_ERROR( "Failed to save tilemap [{}] - [{}]", save.sProjectFilePath, ex.what() );
+		SCION_ERROR( "Failed to save tilemap [{}] - [{}]", optProjectFilePath->string(), ex.what() );
 		return false;
 	}
 
@@ -366,10 +485,26 @@ bool ProjectLoader::SaveLoadedProject( SCION_CORE::SaveProject& save )
 		.AddKeyValuePair( "warning", std::string{ "DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING." } );
 	pSerializer->EndObject(); // Warnings
 
+	auto optMainLuaScript = projectInfo.GetMainLuaScriptPath();
+	SCION_ASSERT( optMainLuaScript && "Main Lua script not setup correctly in project info." );
+	std::string sMainLuaScript = optMainLuaScript->string();
+
+	std::string sFileIconPath{};
+	auto optGameFileIcon = projectInfo.GetFileIconPath();
+	if (optGameFileIcon)
+	{
+		std::string sGameFileIcon{ optGameFileIcon->string() };
+		sFileIconPath = sGameFileIcon.substr( sGameFileIcon.find( CONTENT_FOLDER ) + CONTENT_FOLDER.size() + 1 );
+	}
+
 	pSerializer->StartNewObject( "project_data" )
-		.AddKeyValuePair( "project_name", save.sProjectName )
-		.AddKeyValuePair( "main_lua_script", save.sMainLuaScript.substr( save.sMainLuaScript.find( SCRIPTS ) ) )
+		.AddKeyValuePair( "project_name", projectInfo.GetProjectName() )
+		.AddKeyValuePair( "main_lua_script", sMainLuaScript.substr( sMainLuaScript.find( SCRIPTS ) ) )
+		.AddKeyValuePair( "file_icon", sFileIconPath )
 		.AddKeyValuePair( "game_type", coreGlobals.GetGameTypeStr( coreGlobals.GetGameType() ) )
+		.AddKeyValuePair( "copyright", projectInfo.GetCopyRightNotice() )
+		.AddKeyValuePair( "version", projectInfo.GetProjectVersion() )
+		.AddKeyValuePair( "description", projectInfo.GetProjectDescription() )
 		.StartNewObject( "assets" );
 
 	pSerializer->StartNewArray( "textures" );
@@ -461,7 +596,13 @@ bool ProjectLoader::CreateProjectFile( const std::string& sProjectName, const st
 		return false;
 	}
 
-	std::string sProjectFile{ sFilepath + sProjectName + S2D_PRJ_FILE_EXT };
+	if ( !CreateScriptListFile() )
+	{
+		SCION_ERROR( "Failed to create Script List" );
+		false;
+	}
+
+	std::string sProjectFile{ sFilepath + PATH_SEPARATOR + sProjectName + std::string{ S2D_PRJ_FILE_EXT } };
 
 	std::unique_ptr<JSONSerializer> pSerializer{ nullptr };
 
@@ -476,8 +617,12 @@ bool ProjectLoader::CreateProjectFile( const std::string& sProjectName, const st
 	}
 
 	// We want to grab the project file path
-	auto& pSaveFile = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
-	pSaveFile->sProjectFilePath = sProjectFile;
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	pProjectInfo->SetProjectFilePath( fs::path{ sProjectFile } );
+
+	auto optMainLuaScript = pProjectInfo->GetMainLuaScriptPath();
+	SCION_ASSERT( optMainLuaScript && "Main lua script not setup in project info." );
+	std::string sMainLuaScript = optMainLuaScript->string();
 
 	pSerializer->StartDocument();
 	pSerializer->StartNewObject( "warnings" );
@@ -487,8 +632,7 @@ bool ProjectLoader::CreateProjectFile( const std::string& sProjectName, const st
 
 	pSerializer->StartNewObject( "project_data" )
 		.AddKeyValuePair( "project_name", sProjectName )
-		.AddKeyValuePair( "main_lua_file",
-						  pSaveFile->sMainLuaScript.substr( pSaveFile->sMainLuaScript.find( SCRIPTS ) ) )
+		.AddKeyValuePair( "main_lua_file", sMainLuaScript.substr( sMainLuaScript.find( SCRIPTS ) ) )
 		.AddKeyValuePair( "game_type", std::string{ "No Type" } )
 		.StartNewObject( "assets" )
 		.StartNewArray( "textures" )
@@ -513,14 +657,16 @@ bool ProjectLoader::CreateProjectFile( const std::string& sProjectName, const st
 
 bool ProjectLoader::CreateMainLuaScript( const std::string& sProjectName, const std::string& sFilepath )
 {
-	std::string sMainLuaFile =
-		fmt::format( "{}{}{}{}{}main.lua", sFilepath, "content", PATH_SEPARATOR, "scripts", PATH_SEPARATOR );
+	fs::path mainLuaFilePath{ sFilepath };
+	mainLuaFilePath /= "content";
+	mainLuaFilePath /= "scripts";
+	mainLuaFilePath /= "main.lua";
 
-	auto pLuaSerializer = std::make_unique<LuaSerializer>( sMainLuaFile );
+	auto pLuaSerializer = std::make_unique<LuaSerializer>( mainLuaFilePath.string() );
 	SCION_ASSERT( pLuaSerializer );
 
 	// Save the main lua file path
-	MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>()->sMainLuaScript = sMainLuaFile;
+	MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>()->SetMainLuaScriptPath( mainLuaFilePath );
 
 	pLuaSerializer->AddBlockComment( "\tMain Lua script. This is needed to run all scripts in the editor"
 									 "\n\tGENERATED BY THE ENGINE ON PROJECT CREATION. DON'T CHANGE UNLESS "
@@ -539,6 +685,37 @@ bool ProjectLoader::CreateMainLuaScript( const std::string& sProjectName, const 
 		.EndTable();
 
 	return pLuaSerializer->FinishStream();
+}
+
+bool ProjectLoader::CreateScriptListFile()
+{
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+
+	auto optPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::GameConfig );
+	if ( !optPath )
+	{
+		SCION_ERROR( "Failed to create script list file. Game Config path does not exist." );
+		return false;
+	}
+
+	fs::path scriptListPath = *optPath / "script_list.lua";
+
+	if ( !fs::exists( scriptListPath ) )
+	{
+		std::ofstream file{ scriptListPath.string() };
+		file.close();
+	}
+
+	std::error_code ec;
+	if ( !fs::exists( scriptListPath, ec ) )
+	{
+		SCION_ERROR( "Failed to create script list: {}", ec.message() );
+		return false;
+	}
+
+	pProjectInfo->SetScriptListPath( scriptListPath );
+
+	return true;
 }
 
 } // namespace SCION_EDITOR

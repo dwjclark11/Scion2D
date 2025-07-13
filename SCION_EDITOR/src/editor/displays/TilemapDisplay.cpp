@@ -142,7 +142,7 @@ void TilemapDisplay::RenderTilemap()
 		pActiveTool->Draw();
 
 	if ( pActiveGizmo )
-		pActiveGizmo->Draw(renderUISystem.GetCamera());
+		pActiveGizmo->Draw( renderUISystem.GetCamera() );
 
 	fb->Unbind();
 	fb->CheckResize();
@@ -217,17 +217,18 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 		bOffsetChanged = true;
 	}
 
-	scale = std::clamp( scale, 1.f, 10.f );
-
 	if ( bScaledChanged )
+	{
+		scale = std::clamp( scale, 1.f, 10.f );
 		m_pTilemapCam->SetScale( scale );
-
-	glm::vec2 afterMovePos = m_pTilemapCam->ScreenCoordsToWorld( mousePos );
-
-	screenOffset += ( afterMovePos - currentWorldPos );
+	}
 
 	if ( bOffsetChanged )
+	{
+		glm::vec2 afterMovePos = m_pTilemapCam->ScreenCoordsToWorld( mousePos );
+		screenOffset += ( afterMovePos - currentWorldPos );
 		m_pTilemapCam->SetScreenOffset( screenOffset );
+	}
 
 	startPosition = mousePos;
 }
@@ -539,7 +540,7 @@ void TilemapDisplay::Draw()
 		if ( ImGui::BeginDragDropTarget() )
 		{
 
-			if ( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( DROP_SCENE_SRC ) )
+			if ( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( std::string{ DROP_SCENE_SRC }.c_str() ) )
 			{
 				SCENE_MANAGER().UnloadCurrentScene();
 				SCENE_MANAGER().SetCurrentScene( std::string{ (const char*)payload->Data } );
@@ -547,7 +548,8 @@ void TilemapDisplay::Draw()
 				LoadNewScene();
 				m_pTilemapCam->Reset();
 			}
-			else if ( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( DROP_PREFAB_SRC ) )
+			else if ( const ImGuiPayload* payload =
+						  ImGui::AcceptDragDropPayload( std::string{ DROP_PREFAB_SRC }.c_str() ) )
 			{
 				if ( auto pPrefab = ASSET_MANAGER().GetPrefab( std::string{ (const char*)payload->Data } ) )
 				{

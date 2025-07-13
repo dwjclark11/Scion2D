@@ -26,5 +26,9 @@ class TextureLoader
 	static bool LoadFBTexture( GLuint& id, int& width, int& height );
 	static bool LoadTextureFromMemory( const unsigned char* imageData, size_t length, GLuint& id, int& width,
 									   int& height, bool blended = false );
+
+	static bool LoadIconTexture( const std::string& filepath, GLuint& id, int& width, int& height );
+
+	static bool IsPNG( const uint8_t* data, size_t size );
 };
 } // namespace SCION_RENDERING

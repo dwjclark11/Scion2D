@@ -2,7 +2,7 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/Components/ComponentSerializer.h"
-#include "Core/CoreUtilities/SaveProject.h"
+#include "Core/CoreUtilities/ProjectInfo.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Core/Scene/Scene.h"
 
@@ -53,21 +53,21 @@ Prefab::Prefab( EPrefabType eType, const PrefabbedEntity& prefabbed )
 	m_sName = prefabbed.id->name + "_pfab";
 	m_Entity.id->name = m_sName;
 
-	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
-	SCION_ASSERT( pSaveProject && "SaveProject must exists here!" );
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	SCION_ASSERT( pProjectInfo && "Project Info must exist!" );
 
-	m_sPrefabPath = fmt::format( "{}content{}assets{}prefabs{}{}",
-								 pSaveProject->sProjectPath,
-								 PATH_SEPARATOR,
-								 PATH_SEPARATOR,
-								 PATH_SEPARATOR,
-								 m_sName + ".json" );
+	auto optPrefabPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::Prefabs );
+	SCION_ASSERT( optPrefabPath && "Prefab folder path not set correctly." );
 
-	if ( fs::exists( m_sPrefabPath ) )
+	fs::path prefabPath = *optPrefabPath / fs::path{ m_sName + ".json" };
+
+	if ( fs::exists( prefabPath ) )
 	{
 		SCION_ERROR( "Failed to create prefab. [{}] Already exists!", m_sName );
 		throw std::runtime_error( fmt::format( "Failed to create prefab. [{}] Already exists!", m_sName ).c_str() );
 	}
+
+	m_sPrefabPath = prefabPath.string();
 
 	Save();
 }
@@ -346,12 +346,11 @@ bool Prefab::Save()
 		SERIALIZE_COMPONENT( *pSerializer, textComp );
 	}
 
-	// TODO: Create serialize UI component
-	/*if (m_Entity.uiComp)
+	if (m_Entity.uiComp)
 	{
 		const auto& ui = m_Entity.uiComp.value();
 		SERIALIZE_COMPONENT( *pSerializer, ui );
-	}*/
+	}
 
 	pSerializer->EndObject(); // End Components
 	pSerializer->EndObject(); // End Prefab

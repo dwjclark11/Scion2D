@@ -1,20 +1,26 @@
 #pragma once
 #include "Core/ECS/Components/AllComponents.h"
 #include "Physics/UserData.h"
+#include <filesystem>
 
 namespace SCION_RENDERING
 {
 class Texture;
 }
 
+namespace SCION_CORE
+{
+class ProjectInfo;
+}
+
 namespace SCION_EDITOR
 {
-constexpr const char* DROP_TEXTURE_SRC = "DropTextureSource";
-constexpr const char* DROP_FONT_SRC = "DropFontSource";
-constexpr const char* DROP_SOUNDFX_SRC = "DropSoundFxSource";
-constexpr const char* DROP_MUSIC_SRC = "DropMusicSource";
-constexpr const char* DROP_SCENE_SRC = "DropSceneSource";
-constexpr const char* DROP_PREFAB_SRC = "DropPrefabSource";
+constexpr const std::string_view DROP_TEXTURE_SRC = "DropTextureSource";
+constexpr const std::string_view DROP_FONT_SRC = "DropFontSource";
+constexpr const std::string_view DROP_SOUNDFX_SRC = "DropSoundFxSource";
+constexpr const std::string_view DROP_MUSIC_SRC = "DropMusicSource";
+constexpr const std::string_view DROP_SCENE_SRC = "DropSceneSource";
+constexpr const std::string_view DROP_PREFAB_SRC = "DropPrefabSource";
 
 struct Tile
 {
@@ -68,5 +74,7 @@ EFileType GetFileType( const std::string& sPath );
 
 std::vector<std::string> SplitStr( const std::string& str, char delimiter );
 SCION_RENDERING::Texture* GetIconTexture( const std::string& sPath );
+bool IsReservedPathOrFile( const std::filesystem::path& path );
+bool IsDefaultProjectPathOrFile( const std::filesystem::path& path, const SCION_CORE::ProjectInfo& projectInfo );
 
 } // namespace SCION_EDITOR

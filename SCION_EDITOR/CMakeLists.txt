@@ -110,6 +110,8 @@ add_executable(SCION_EDITOR
 	"src/editor/packaging/ScriptCompiler.cpp"
 	"src/editor/packaging/IconReplacer.h"
 	"src/editor/packaging/IconReplacer.cpp"
+	"src/editor/displays/ProjectSettingsDisplay.h"
+	"src/editor/displays/ProjectSettingsDisplay.cpp"
 )
 
 target_sources(

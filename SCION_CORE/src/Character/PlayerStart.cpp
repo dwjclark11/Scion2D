@@ -12,7 +12,7 @@
 
 using namespace SCION_CORE::ECS;
 
-constexpr const char* PlayerStartTag = "S2D_PlayerStart";
+constexpr const std::string_view PlayerStartTag = "S2D_PlayerStart";
 
 namespace SCION_CORE
 {
@@ -168,7 +168,8 @@ void PlayerStart::LoadVisualEntity()
 
 	if ( !m_pVisualEntity)
 	{
-		m_pVisualEntity = std::make_shared<Entity>(Entity{ m_SceneRef.GetRegistry(), PlayerStartTag, "" });
+		m_pVisualEntity =
+			std::make_shared<Entity>( Entity{ m_SceneRef.GetRegistry(), std::string{ PlayerStartTag }, "" } );
 	}
 
 	m_pVisualEntity->AddComponent<TransformComponent>( TransformComponent{} );

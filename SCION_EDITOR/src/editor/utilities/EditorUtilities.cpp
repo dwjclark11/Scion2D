@@ -2,8 +2,34 @@
 #include <filesystem>
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
+#include "Core/CoreUtilities/ProjectInfo.h"
 
 namespace fs = std::filesystem;
+
+// clang-format off
+#ifdef _WIN32
+static const std::unordered_set<std::string> g_setReservedSystemDirs
+{
+	"c:\\windows",
+	"c:\\program files",
+	"c:\\program files (x86)",
+	"c:\\users\\default",
+	"c:\\users\\public",
+	"c:\\sysyem32"
+};
+#else
+static const std::unordered_set<std::string> g_setReservedSystemDirs
+{
+	"/proc",
+	"/sys",
+	"/dev",
+	"/run",
+	"/boot",
+	"/lib",
+	"/lib64"
+};
+#endif
+// clang-format on
 
 namespace SCION_EDITOR
 {
@@ -56,4 +82,38 @@ SCION_RENDERING::Texture* GetIconTexture( const std::string& sPath )
 	default: return nullptr;
 	}
 }
+
+bool IsReservedPathOrFile( const std::filesystem::path& path )
+{
+	std::string lowerPath = path.string();
+	std::ranges::transform( lowerPath, lowerPath.begin(), ::tolower );
+	return std::ranges::any_of( g_setReservedSystemDirs,
+								[ & ]( const auto& dir ) { return lowerPath.starts_with( dir ); } );
+}
+
+bool IsDefaultProjectPathOrFile( const std::filesystem::path& path, const SCION_CORE::ProjectInfo& projectInfo )
+{
+	if ( fs::is_directory(path) )
+	{
+		bool bIsProjectPath = std::ranges::any_of( projectInfo.GetProjectPaths(),
+												   [ & ]( const auto& pair ) { return pair.second == path; } );
+
+		if ( bIsProjectPath )
+			return true;
+	}
+
+	if ( fs::is_regular_file(path) )
+	{
+		auto optMainLuaScript = projectInfo.GetMainLuaScriptPath();
+		if ( optMainLuaScript && *optMainLuaScript == path )
+			return true;
+
+		auto optScriptList = projectInfo.GetScriptListPath();
+		if ( optScriptList && *optScriptList == path )
+			return true;
+	}
+
+	return false;
+}
+
 } // namespace SCION_EDITOR

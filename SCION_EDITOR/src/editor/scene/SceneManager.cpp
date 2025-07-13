@@ -10,7 +10,7 @@
 #include "Core/Events/EventDispatcher.h"
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/ECS/MainRegistry.h"
-#include "Core/CoreUtilities/SaveProject.h"
+#include "Core/CoreUtilities/ProjectInfo.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
 
 #include "Logger/Logger.h"
@@ -98,16 +98,18 @@ bool EditorSceneManager::DeleteScene( const std::string& sSceneName )
 
 	if ( m_mapScenes.erase( sSceneName ) > 0 )
 	{
-		auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
-		SCION_ASSERT( pSaveProject && "Save Project must exist!" );
+		auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+		SCION_ASSERT( pProjectInfo && "Project Info must exist!" );
 		// Save entire project
 		ProjectLoader pl{};
-		if ( !pl.SaveLoadedProject( *pSaveProject ) )
+		if ( !pl.SaveLoadedProject( *pProjectInfo ) )
 		{
+			auto optProjectFilePath = pProjectInfo->GetProjectFilePath();
+			SCION_ASSERT( optProjectFilePath && "Project file path not set correctly in project info." );
 			SCION_ERROR( "Failed to save project [{}] at file [{}] after deleting scene. Please ensure the scene files "
 						 "have been removed.",
-						 pSaveProject->sProjectName,
-						 pSaveProject->sProjectFilePath );
+						 pProjectInfo->GetProjectName(),
+						 optProjectFilePath->string() );
 
 			return false;
 		}

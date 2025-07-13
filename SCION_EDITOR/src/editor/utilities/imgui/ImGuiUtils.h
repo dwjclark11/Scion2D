@@ -38,6 +38,8 @@ void ActiveImageButton( const char* buttonId, ImTextureID textureID, ImVec2 size
 void DisabledImageButton( const char* buttonId, ImTextureID textureID, ImVec2 size = TOOL_BUTTON_SIZE,
 						  const std::string& disabledMsg = "" );
 
+void InputTextReadOnly( const std::string& sLabel, std::string* sInputText );
+
 template <typename... Args>
 void ItemToolTip( const std::string_view tipMsg, Args&&... args )
 {
