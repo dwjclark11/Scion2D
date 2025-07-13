@@ -6,7 +6,7 @@
 #include "Core/Loaders/TilemapLoader.h"
 #include "Core/Events/EventDispatcher.h"
 
-#include "Core/CoreUtilities/SaveProject.h"
+#include "Core/CoreUtilities/ProjectInfo.h"
 #include "editor/events/EditorEventTypes.h"
 
 #include "ScionUtilities/ScionUtilities.h"

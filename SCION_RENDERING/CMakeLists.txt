@@ -40,7 +40,7 @@ add_library(SCION_RENDERING
 	"src/PickingTexture.cpp"
 	"include/Rendering/Core/PickingBatchRenderer.h"
 	"src/PickingBatchRenderer.cpp"
-)
+ "include/Rendering/Essentials/IconInfo.h")
 
 target_include_directories(
     SCION_RENDERING PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

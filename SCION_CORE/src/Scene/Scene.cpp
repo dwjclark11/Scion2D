@@ -4,7 +4,7 @@
 #include "ScionUtilities/ScionUtilities.h"
 #include "ScionFilesystem/Serializers/JSONSerializer.h"
 
-#include "Core/CoreUtilities/SaveProject.h"
+#include "Core/CoreUtilities/ProjectInfo.h"
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/ECS/MetaUtilities.h"
 #include "Core/ECS/MainRegistry.h"
@@ -54,30 +54,30 @@ Scene::Scene( const std::string& sceneName, EMapType eType )
 	, m_eMapType{ eType }
 	, m_PlayerStart{ m_Registry, *this }
 {
-	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
-	SCION_ASSERT( pSaveProject && "SaveProject must exists here!" );
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto optScenesPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::Scenes );
 
-	std::string sScenePath = fmt::format( "{}content{}assets{}scenes{}{}",
-										  pSaveProject->sProjectPath,
-										  PATH_SEPARATOR,
-										  PATH_SEPARATOR,
-										  PATH_SEPARATOR,
-										  m_sSceneName );
+	SCION_ASSERT( optScenesPath && "Scenes folder path not set correctly." );
 
-	if ( fs::exists( sScenePath ) )
+	fs::path scenePath = *optScenesPath /= m_sSceneName;
+
+	if ( fs::exists( scenePath ) )
 	{
 		SCION_ERROR( "SCENE ALREADY EXISTS!" );
 	}
 
 	std::error_code ec;
-	if ( !fs::create_directory( fs::path{ sScenePath }, ec ) )
+	if ( !fs::create_directory( scenePath, ec ) )
 	{
 		SCION_ERROR( "Failed to create scene directory [{}] - Error: ", ec.message() );
 	}
 
-	m_sTilemapPath = sScenePath + PATH_SEPARATOR + m_sSceneName + "_tilemap.json";
-	m_sObjectPath = sScenePath + PATH_SEPARATOR + m_sSceneName + "_objects.json";
-	m_sSceneDataPath = sScenePath + PATH_SEPARATOR + m_sSceneName + "_scene_data.json";
+	auto tilemapPath = scenePath / fs::path{ m_sSceneName + "_tilemap.json" };
+	m_sTilemapPath = tilemapPath.string();
+	auto objectPath = scenePath / fs::path{ m_sSceneName + "_objects.json" };
+	m_sObjectPath = objectPath.string();
+	auto sceneDataPath = scenePath / fs::path{ m_sSceneName + "_scene_data.json" };
+	m_sSceneDataPath = sceneDataPath.string();
 
 	// Create the files
 	std::fstream tilemap{};
@@ -215,19 +215,33 @@ bool Scene::LoadSceneData()
 
 	const rapidjson::Value& sceneData = doc[ "scene_data" ];
 
-	auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SaveProject>>();
-	SCION_ASSERT( pSaveProject && "SaveProject must exists here!" );
-
-	std::string sScenePath = fmt::format( "{}content{}", pSaveProject->sProjectPath, PATH_SEPARATOR );
-
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<ProjectInfoPtr>();
+	auto optScenesPath = pProjectInfo->TryGetFolderPath( EProjectFolderType::Scenes );
+	SCION_ASSERT( optScenesPath && "Scenes folder path must exist." );
+	
 	if ( m_sTilemapPath.empty() )
 	{
-		m_sTilemapPath = sScenePath + sceneData[ "tilemapPath" ].GetString();
+		const std::string sRelativeTilemap = sceneData[ "tilemapPath" ].GetString();
+		fs::path tilemapPath = *optScenesPath / sRelativeTilemap;
+		if ( !fs::exists( tilemapPath ) )
+		{
+			SCION_ERROR( "Failed to set tilemap path: [{}] does not exist.", tilemapPath.string() );
+			return false;
+		}
+
+		m_sTilemapPath = tilemapPath.string();
 	}
 
 	if ( m_sObjectPath.empty() )
 	{
-		m_sObjectPath = sScenePath + sceneData[ "objectmapPath" ].GetString();
+		const std::string sRelativeObjectPath = sceneData[ "objectmapPath" ].GetString();
+		fs::path objectPath = *optScenesPath / sRelativeObjectPath;
+		if ( !fs::exists( objectPath ) )
+		{
+			SCION_ERROR( "Failed to set tilemap path: [{}] does not exist.", objectPath.string() );
+			return false;
+		}
+		m_sObjectPath = objectPath.string();
 	}
 
 	if ( sceneData.HasMember( "canvas" ) )
@@ -271,7 +285,8 @@ bool Scene::LoadSceneData()
 		{
 			m_PlayerStart.Load( sPlayerStartPrefab );
 		}
-		else if ( m_bUsePlayerStart && !m_PlayerStart.IsPlayerStartCreated() )
+
+		if ( m_bUsePlayerStart && !m_PlayerStart.IsPlayerStartCreated() )
 		{
 			m_PlayerStart.LoadVisualEntity();
 		}
@@ -336,8 +351,8 @@ bool Scene::SaveSceneData( bool bOverride )
 	pSerializer->StartDocument();
 	pSerializer->StartNewObject( "scene_data" );
 
-	std::string sTilemapPath = m_sTilemapPath.substr( m_sTilemapPath.find( ASSETS ) );
-	std::string sObjectPath = m_sObjectPath.substr( m_sObjectPath.find( ASSETS ) );
+	std::string sTilemapPath = m_sTilemapPath.substr( m_sTilemapPath.find( m_sSceneName ) );
+	std::string sObjectPath = m_sObjectPath.substr( m_sObjectPath.find( m_sSceneName ) );
 
 	glm::vec2 playerStartPosition = m_bUsePlayerStart ? m_PlayerStart.GetPosition() : glm::vec2{ 0.f };
 

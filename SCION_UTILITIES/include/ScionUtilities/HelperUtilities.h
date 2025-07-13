@@ -17,8 +17,10 @@ constexpr char PATH_SEPARATOR = '/';
 
 #define SCRIPTS "scripts"
 #define ASSETS "assets"
+#define CONTENT "content"
 
-constexpr const char* S2D_PRJ_FILE_EXT = ".s2dprj";
+constexpr const std::string_view CONTENT_FOLDER = "content";
+constexpr const std::string_view S2D_PRJ_FILE_EXT = ".s2dprj";
 
 namespace SCION_UTIL
 {

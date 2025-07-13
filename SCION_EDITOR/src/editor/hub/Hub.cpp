@@ -14,7 +14,6 @@
 
 #include <Rendering/Essentials/Texture.h>
 
-
 // IMGUI
 // ===================================
 #include <imgui.h>
@@ -202,20 +201,29 @@ void Hub::DrawNewProject()
 
 		if ( fs::exists( projectPath ) )
 		{
-			ImGui::SetCursorPosX( 128.f );
-			if ( ImGui::Button( "Create", BUTTON_SIZE ) )
+			if ( IsReservedPathOrFile( fs::path{ m_sNewProjectPath } ) )
 			{
-				// Create the project
-				ProjectLoader pl{};
-				if ( !pl.CreateNewProject( m_sNewProjectName, m_sNewProjectPath ) )
+				ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f },
+									"Path [%s] is a reserved path. Please change paths.",
+									m_sNewProjectPath.c_str() );
+			}
+			else
+			{
+				ImGui::SetCursorPosX( 128.f );
+				if ( ImGui::Button( "Create", BUTTON_SIZE ) )
 				{
-					// TODO: show an error
-				}
-				else
-				{
+					// Create the project
+					ProjectLoader pl{};
+					if ( !pl.CreateNewProject( m_sNewProjectName, m_sNewProjectPath ) )
+					{
+						// TODO: show an error
+					}
+					else
+					{
 
-					m_bRunning = false;
-					m_eState = EHubState::CreateNew;
+						m_bRunning = false;
+						m_eState = EHubState::CreateNew;
+					}
 				}
 			}
 		}

@@ -10,9 +10,9 @@
 #include <array>
 
 #ifdef _WIN32
-constexpr const char* FIND_LUAC_COMMAND = "where luac";
+constexpr const std::string_view FIND_LUAC_COMMAND = "where luac";
 #else
-constexpr const char* FIND_LUAC_COMMAND = "which luac";
+constexpr const std::string_view FIND_LUAC_COMMAND = "which luac";
 #endif
 
 namespace fs = std::filesystem;

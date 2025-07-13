@@ -13,7 +13,7 @@
 #include "editor/loaders/ProjectLoader.h"
 
 #include "Core/CoreUtilities/Prefab.h"
-#include "Core/CoreUtilities/SaveProject.h"
+#include "Core/CoreUtilities/ProjectInfo.h"
 
 #include <Rendering/Essentials/Shader.h>
 #include <Rendering/Essentials/Texture.h>
@@ -203,15 +203,18 @@ void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 		// There should be some sort of message to the user before deleting??
 		if ( bSuccess )
 		{
-			auto& pSaveProject = MAIN_REGISTRY().GetContext<std::shared_ptr<SCION_CORE::SaveProject>>();
-			SCION_ASSERT( pSaveProject && "Save Project must exist!" );
+			auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+			SCION_ASSERT( pProjectInfo && "Project Info must exist!" );
 			// Save entire project
 			ProjectLoader pl{};
-			if ( !pl.SaveLoadedProject( *pSaveProject ) )
+			if ( !pl.SaveLoadedProject( *pProjectInfo ) )
 			{
+				auto optProjectFilePath = pProjectInfo->GetProjectFilePath();
+				SCION_ASSERT( optProjectFilePath && "Project file path not set correctly in project info." );
+
 				SCION_ERROR( "Failed to save project [{}] at file [{}] after deleting asset [{}].",
-							 pSaveProject->sProjectName,
-							 pSaveProject->sProjectFilePath,
+							 pProjectInfo->GetProjectName(),
+							 optProjectFilePath->string(),
 							 sAssetName );
 			}
 		}
@@ -274,9 +277,6 @@ void AssetDisplay::DrawSelectedAssets()
 				GLuint textureID{ GetTextureID( *assetItr ) };
 				std::string sCheckName{ m_sRenameBuf.data() };
 
-				if ( textureID == 0 )
-					break;
-
 				std::string assetBtn = "##asset" + std::to_string( id );
 
 				if ( m_eSelectedType == SCION_UTIL::AssetType::PREFAB )
@@ -294,11 +294,22 @@ void AssetDisplay::DrawSelectedAssets()
 												ImVec2{ m_AssetSize, m_AssetSize },
 												ImVec2{ sprite->uvs.u, sprite->uvs.v },
 												ImVec2{ sprite->uvs.uv_width, sprite->uvs.uv_height } );
+							
+						}
+						else
+						{
+							ImGui::Button( assetBtn.c_str(), ImVec2{ m_AssetSize, m_AssetSize } );
 						}
 					}
 				}
 				else
 				{
+					if ( textureID == 0 )
+					{
+						ImGui::PopID();
+						break;
+					}
+
 					ImGui::ImageButton(
 						assetBtn.c_str(), (ImTextureID)(intptr_t)textureID, ImVec2{ m_AssetSize, m_AssetSize } );
 				}

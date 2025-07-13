@@ -5,7 +5,7 @@
 namespace SCION_CORE
 {
 
-struct SaveProject;
+struct ProjectInfo;
 
 namespace ECS
 {
@@ -22,7 +22,7 @@ class ScriptingSystem
 	~ScriptingSystem() = default;
 
 	bool LoadMainScript( const std::string& sMainLuaFile, SCION_CORE::ECS::Registry& registry, sol::state& lua );
-	bool LoadMainScript( const SCION_CORE::SaveProject& save, SCION_CORE::ECS::Registry& registry, sol::state& lua );
+	bool LoadMainScript( SCION_CORE::ProjectInfo& projectInfo, SCION_CORE::ECS::Registry& registry, sol::state& lua );
 
 	void Update( SCION_CORE::ECS::Registry& registry );
 	void Render( SCION_CORE::ECS::Registry& registry );

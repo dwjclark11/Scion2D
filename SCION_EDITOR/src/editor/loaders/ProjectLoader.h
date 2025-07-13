@@ -3,24 +3,23 @@
 
 namespace SCION_CORE
 {
-struct SaveProject;
+class ProjectInfo;
 }
 
 namespace SCION_EDITOR
 {
-
-class SaveProject;
 
 class ProjectLoader
 {
   public:
 	bool CreateNewProject( const std::string& sProjectName, const std::string& sFilepath );
 	bool LoadProject( const std::string& sFilepath );
-	bool SaveLoadedProject( SCION_CORE::SaveProject& save );
+	bool SaveLoadedProject( const SCION_CORE::ProjectInfo& projectInfo );
 
   private:
 	bool CreateProjectFile( const std::string& sProjectName, const std::string& sFilepath );
 	bool CreateMainLuaScript( const std::string& sProjectName, const std::string& sFilepath );
+	bool CreateScriptListFile( );
 
 };
 
