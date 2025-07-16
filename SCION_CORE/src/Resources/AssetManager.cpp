@@ -343,6 +343,47 @@ bool AssetManager::AddMusic( const std::string& musicName, const std::string& fi
 	return bSuccess;
 }
 
+bool AssetManager::AddMusicFromMemory( const std::string& musicName, const unsigned char* musicData, size_t dataSize )
+{
+	if ( m_mapMusic.contains( musicName ) )
+	{
+		SCION_ERROR( "Failed to add music [{}] -- Already exists!", musicName );
+		return false;
+	}
+
+	SDL_RWops* rw = SDL_RWFromMem( (void*)musicData, static_cast<int>( dataSize ) );
+	Mix_MusicType type = DetectAudioFormat( musicData, dataSize );
+
+	if ( type == MUS_NONE )
+	{
+		SCION_ERROR( "Failed to add music [{}] from memory. Unable to determine music type.", musicName );
+		return false;
+	}
+
+	auto pMusic = Mix_LoadMUSType_RW( rw, type, 1 );
+	if ( !pMusic )
+	{
+		SCION_ERROR( "Failed to add music [{}] from memory.", musicName );
+		return false;
+	}
+
+	// Create the sound parameters
+	SCION_SOUNDS::SoundParams params{
+		.name = musicName, .filename = "From Data", .duration = Mix_MusicDuration( pMusic ) };
+
+	// Create the music Pointer
+	auto pMusicPtr = std::make_shared<SCION_SOUNDS::Music>( params, MusicPtr{ pMusic } );
+	if ( !pMusicPtr )
+	{
+		SCION_ERROR( "Failed to create the music ptr for [{}]", musicName );
+		return false;
+	}
+
+	auto [ itr, bSuccess ] = m_mapMusic.emplace( musicName, std::move( pMusicPtr ) );
+
+	return bSuccess;
+}
+
 std::shared_ptr<SCION_SOUNDS::Music> AssetManager::GetMusic( const std::string& musicName )
 {
 	auto musicItr = m_mapMusic.find( musicName );
@@ -353,6 +394,48 @@ std::shared_ptr<SCION_SOUNDS::Music> AssetManager::GetMusic( const std::string& 
 	}
 
 	return musicItr->second;
+}
+
+Mix_MusicType AssetManager::DetectAudioFormat( const unsigned char* audioData, size_t dataSize )
+{
+	if ( !audioData || dataSize < 12 )
+	{
+		SCION_ERROR( "Failed to detect the audio format. Data or size is invalid." );
+		return MUS_NONE;
+	}
+
+	// WAV Format
+	if ( std::memcmp( audioData, "RIFF", 4 ) == 0 && std::memcmp( audioData + 8, "WAVE", 4 ) == 0 )
+	{
+		return MUS_WAV;
+	}
+
+	// MP3 Format
+	if ( std::memcmp( audioData, "ID3", 3 ) == 0 || audioData[ 0 ] == 0xFF && ( audioData[ 1 ] & 0xE0 ) == 0xE0 )
+	{
+		return MUS_MP3;
+	}
+
+	// OGG Format
+	if ( std::memcmp( audioData, "OggS", 4 ) == 0 )
+	{
+		return MUS_OGG;
+	}
+
+	// Flac Format
+	if ( std::memcmp( audioData, "fLaC", 4 ) == 0 )
+	{
+		return MUS_FLAC;
+	}
+
+	if ( dataSize >= 36 && std::memcmp( audioData + 28, "OpusHead", 8 ) == 0 )
+	{
+		return MUS_OPUS;
+	}
+
+	SCION_ERROR( "Failed to detect audio type - Unknown or unsupported format." );
+
+	return MUS_NONE;
 }
 
 bool AssetManager::AddSoundFx( const std::string& soundFxName, const std::string& filepath )
@@ -391,6 +474,31 @@ bool AssetManager::AddSoundFx( const std::string& soundFxName, const std::string
 															  .eType = SCION_UTIL::AssetType::SOUNDFX } );
 		}
 	}
+
+	return bSuccess;
+}
+
+bool AssetManager::AddSoundFxFromMemory( const std::string& soundFxName, const unsigned char* soundFxData,
+										 size_t dataSize )
+{
+	if ( m_mapSoundFx.contains( soundFxName ) )
+	{
+		SCION_ERROR( "Failed to add soundfx [{}] -- Already exists!", soundFxName );
+		return false;
+	}
+
+	SDL_RWops* rw = SDL_RWFromMem( (void*)soundFxData, static_cast<int>( dataSize ) );
+	auto pChunk = Mix_LoadWAV_RW( rw, 1 );
+	if ( !pChunk )
+	{
+		SCION_ERROR( "Failed to add soundfx [{}] from memory.", soundFxName );
+		return false;
+	}
+
+	SCION_SOUNDS::SoundParams params{ .name = soundFxName, .filename = "From Data", .duration = pChunk->alen / 179.4 };
+
+	auto pSoundFx = std::make_shared<SCION_SOUNDS::SoundFX>( params, SoundFxPtr{ pChunk } );
+	auto [ itr, bSuccess ] = m_mapSoundFx.emplace( soundFxName, std::move( pSoundFx ) );
 
 	return bSuccess;
 }
@@ -544,7 +652,7 @@ bool AssetManager::DeleteAsset( const std::string& sAssetName, SCION_UTIL::Asset
 		}
 	}
 
-	if (bSuccess)
+	if ( bSuccess )
 	{
 		SCION_LOG( "Deleted asset [{}]", sAssetName );
 	}
