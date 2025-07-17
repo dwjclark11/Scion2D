@@ -602,9 +602,12 @@ void TilemapDisplay::Update()
 		pActiveGizmo->Update( pCurrentScene->GetCanvas() );
 	}
 
-	auto& mainRegistry = MAIN_REGISTRY();
-	auto& animationSystem = mainRegistry.GetAnimationSystem();
-	animationSystem.Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
+	if ( CORE_GLOBALS().AnimationRenderEnabled() )
+	{
+		auto& mainRegistry = MAIN_REGISTRY();
+		auto& animationSystem = mainRegistry.GetAnimationSystem();
+		animationSystem.Update( pCurrentScene->GetRegistry(), *m_pTilemapCam );
+	}
 
 	m_pTilemapCam->Update();
 
