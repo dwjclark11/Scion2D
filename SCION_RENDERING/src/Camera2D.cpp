@@ -36,7 +36,13 @@ void Camera2D::Update()
 {
 	if ( !m_bNeedsUpdate )
 		return;
+
 	// Translate
+	m_Position.x = std::round( m_Position.x );
+	m_Position.y = std::round( m_Position.y );
+	m_ScreenOffset.x = std::round( m_ScreenOffset.x );
+	m_ScreenOffset.y = std::round( m_ScreenOffset.y );
+
 	glm::vec3 translate{ -m_Position.x + m_ScreenOffset.x, -m_Position.y + m_ScreenOffset.y, 0.f };
 	m_CameraMatrix = glm::translate( m_OrthoProjection, translate );
 

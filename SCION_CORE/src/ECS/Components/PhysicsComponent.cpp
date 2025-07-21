@@ -445,11 +445,15 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 	);
 
 	auto& pPhysicsWorld = registry.ctx().get<SCION_PHYSICS::PhysicsWorld>();
+	SCION_ASSERT( pPhysicsWorld && "Physics World was not setup properly." );
 
 	if ( !pPhysicsWorld )
 	{
+		SCION_ERROR( "Failed to create Physics Component Lua bind. Physics World was not set properly." );
 		return;
 	}
+
+	auto& coreGlobals = CORE_GLOBALS();
 
 	lua.new_usertype<PhysicsComponent>(
 		"PhysicsComp",
@@ -458,7 +462,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 		sol::call_constructor,
 		sol::factories( [ & ]( const PhysicsAttributes& attr ) {
 			PhysicsComponent pc{ attr };
-			pc.Init( pPhysicsWorld, 640, 480 ); // TODO: Change based on window values
+			pc.Init( pPhysicsWorld, coreGlobals.WindowWidth(), coreGlobals.WindowHeight() );
 			return pc;
 		} ),
 		"linearImpulse",
@@ -526,6 +530,17 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			}
 
 			return body->GetAngularVelocity();
+		},
+		"applyForceToCenter",
+		[]( PhysicsComponent& pc, const glm::vec2& force ) {
+			auto body = pc.GetBody();
+			if ( !body )
+			{
+				// TODO: Add Error
+				return;
+			}
+
+			body->ApplyForceToCenter( b2Vec2{ force.x, force.y }, true );
 		},
 		"setGravityScale",
 		[]( PhysicsComponent& pc, float gravityScale ) {

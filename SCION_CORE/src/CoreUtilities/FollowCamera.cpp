@@ -21,6 +21,7 @@ FollowCamera::FollowCamera( SCION_RENDERING::Camera2D& camera, const ECS::Entity
 	m_Params.maxY *= m_Params.scale;
 
 	m_Params.springback = std::clamp( m_Params.springback, 0.f, 1.f );
+	camera.SetScale( m_Params.scale );
 }
 
 void FollowCamera::Update()
