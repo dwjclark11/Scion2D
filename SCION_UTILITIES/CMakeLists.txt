@@ -11,6 +11,7 @@ add_library(SCION_UTILITIES
 	"include/ScionUtilities/MathUtilities.h"
 	"include/ScionUtilities/Tween.h"
 	"src/Tween.cpp"
+	"include/ScionUtilities/ThreadPool.h"
 )
 
 target_include_directories(

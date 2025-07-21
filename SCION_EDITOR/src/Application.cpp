@@ -45,6 +45,7 @@
 #include "Core/Events/EventDispatcher.h"
 #include "Core/Events/EngineEventTypes.h"
 
+#include "ScionUtilities/ThreadPool.h"
 #include "editor/hub/Hub.h"
 
 // IMGUI
@@ -256,6 +257,8 @@ bool Application::InitApp()
 	const auto& sProjectPath = CORE_GLOBALS().GetProjectPath();
 	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
 	SCION_CRASH_LOGGER().SetProjectPath( pProjectInfo->GetProjectPath().string() );
+
+	MAIN_REGISTRY().AddToContext<SharedThreadPool>( std::make_shared<SCION_UTIL::ThreadPool>( 6 ) );
 
 	return true;
 }
