@@ -52,7 +52,7 @@ void ContentDisplay::Update()
 
 void ContentDisplay::Draw()
 {
-	if ( !ImGui::Begin( "Content Browser" ) )
+	if ( !ImGui::Begin( ICON_FA_FOLDER " Content Browser" ) )
 	{
 		ImGui::End();
 		return;

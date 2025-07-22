@@ -1,4 +1,5 @@
 #include "editor/displays/LogDisplay.h"
+#include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "Logger/Logger.h"
 #include <ranges>
 #include <imgui_stdlib.h>
@@ -42,7 +43,7 @@ void LogDisplay::Clear()
 
 void LogDisplay::Draw()
 {
-	if ( !ImGui::Begin( "Logs" ) )
+	if ( !ImGui::Begin( ICON_FA_TERMINAL " Logs" ) )
 	{
 		ImGui::End();
 		return;

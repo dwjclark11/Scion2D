@@ -26,6 +26,8 @@
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/EditorUtilities.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
+#include "editor/utilities/fonts/IconsFontAwesome5.h"
+
 #include "Core/CoreUtilities/ProjectInfo.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
@@ -329,7 +331,7 @@ SceneDisplay::SceneDisplay()
 void SceneDisplay::Draw()
 {
 	static bool pOpen{ true };
-	if ( !ImGui::Begin( "Scene", &pOpen ) )
+	if ( !ImGui::Begin( ICON_FA_IMAGE " Scene", &pOpen ) )
 	{
 		ImGui::End();
 		return;

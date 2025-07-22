@@ -189,7 +189,7 @@ void TileDetailsDisplay::Draw()
 
 	ImGui::End();
 
-	if ( ImGui::Begin( "Tile Layers" ) )
+	if ( ImGui::Begin( ICON_FA_LAYER_GROUP " Tile Layers" ) )
 	{
 		ImGui::SeparatorText( "Tile Layers" );
 		auto& spriteLayers = pCurrentScene->GetLayerParams();

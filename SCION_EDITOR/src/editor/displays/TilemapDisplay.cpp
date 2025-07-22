@@ -494,7 +494,7 @@ TilemapDisplay::~TilemapDisplay()
 
 void TilemapDisplay::Draw()
 {
-	if ( !ImGui::Begin( "Tilemap Editor" ) )
+	if ( !ImGui::Begin( ICON_FA_MAP " Tilemap Editor" ) )
 	{
 		ImGui::End();
 		return;

@@ -8,6 +8,7 @@
 #include "ScionFilesystem/Serializers/LuaSerializer.h"
 #include "ScionFilesystem/Utilities/DirectoryWatcher.h"
 
+#include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "Logger/Logger.h"
 
 #include <filesystem>
@@ -66,7 +67,7 @@ ScriptDisplay::~ScriptDisplay() = default;
 
 void ScriptDisplay::Draw()
 {
-	if ( !ImGui::Begin( "Script List" ) )
+	if ( !ImGui::Begin( ICON_FA_CODE " Script List" ) )
 	{
 		ImGui::End();
 		return;

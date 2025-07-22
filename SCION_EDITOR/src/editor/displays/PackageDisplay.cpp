@@ -5,6 +5,7 @@
 #include "ScionUtilities/HelperUtilities.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/scene/SceneManager.h"
 #include "ScionFilesystem/Dialogs/FileDialog.h"
 #include "Logger/Logger.h"
@@ -45,7 +46,7 @@ void PackageGameDisplay::Update()
 
 void PackageGameDisplay::Draw()
 {
-	if ( !ImGui::Begin( "Package Game" ) )
+	if ( !ImGui::Begin( ICON_FA_ARCHIVE " Package Game" ) )
 	{
 		ImGui::End();
 		return;
