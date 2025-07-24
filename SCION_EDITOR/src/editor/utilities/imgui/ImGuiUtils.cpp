@@ -1,6 +1,7 @@
 #include "ImGuiUtils.h"
 #include "Logger/Logger.h"
 #include <imgui_stdlib.h>
+#include <unordered_map>
 
 namespace ImGui
 {
@@ -143,4 +144,79 @@ void InputTextReadOnly( const std::string& sLabel, std::string* sInputText )
 
 	ImGui::PopStyleColor( 2 );
 }
+
+static std::unordered_map<std::string, ImFont*> g_mapImGuiFonts;
+
+ImFont* GetFont( const std::string& sFontName )
+{
+	auto fontItr = g_mapImGuiFonts.find( sFontName );
+	if ( fontItr == g_mapImGuiFonts.end() )
+	{
+		SCION_ERROR( "Failed to get font [{}] - Does not exist." );
+		ImFont* pFont = ImGui::GetIO().Fonts->Fonts[ 0 ];
+		return pFont;
+	}
+
+	return fontItr->second;
+}
+
+bool AddFont( const std::string& sFontName, ImFont* pFont, float fontSize )
+{
+	if ( g_mapImGuiFonts.contains( sFontName ) )
+	{
+		SCION_ERROR( "Failed to add font [{}] to imgui fonts. Already exists.", sFontName );
+		return false;
+	}
+
+	if ( !pFont )
+	{
+		SCION_ERROR( "Failed to add font [{}] to imgui fonts.", sFontName );
+		return false;
+	}
+
+	return g_mapImGuiFonts.emplace( sFontName, pFont ).second;
+}
+
+bool AddFontFromFile( const std::string sFontName, const std::string& sFontFile, float fontSize )
+{
+	if ( g_mapImGuiFonts.contains( sFontName ) )
+	{
+		SCION_ERROR( "Failed to add font [{}] to imgui fonts. Already exists.", sFontName );
+		return false;
+	}
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImFont* pFont =
+		io.Fonts->AddFontFromFileTTF( sFontFile.c_str(), fontSize, nullptr, io.Fonts->GetGlyphRangesDefault() );
+
+	if ( !pFont )
+	{
+		SCION_ERROR( "Failed to add font [{}] to imgui fonts.", sFontName );
+		return false;
+	}
+
+	return g_mapImGuiFonts.emplace( sFontName, pFont ).second;
+}
+
+bool AddFontFromMemory( const std::string& sFontName, void* fontData, float dataSize, float fontSize )
+{
+	if ( g_mapImGuiFonts.contains( sFontName ) )
+	{
+		SCION_ERROR( "Failed to add font [{}] to imgui fonts. Already exists.", sFontName );
+		return false;
+	}
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImFont* pFont =
+		io.Fonts->AddFontFromMemoryTTF( fontData, dataSize, fontSize, nullptr, io.Fonts->GetGlyphRangesDefault() );
+
+	if ( !pFont )
+	{
+		SCION_ERROR( "Failed to add font [{}] to imgui fonts.", sFontName );
+		return false;
+	}
+
+	return g_mapImGuiFonts.emplace( sFontName, pFont ).second;
+}
+
 } // namespace ImGui

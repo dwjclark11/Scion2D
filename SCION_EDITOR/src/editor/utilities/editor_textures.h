@@ -48,4 +48,7 @@ extern const size_t g_PlayerStartSize;
 extern unsigned char* g_DefaultPlayer;
 extern const size_t g_DefaultPlayerSize;
 
+extern unsigned char* g_PanningCursor;
+extern const size_t g_PanningCursorSize;
+
 } // namespace SCION_EDITOR::EditorTextures

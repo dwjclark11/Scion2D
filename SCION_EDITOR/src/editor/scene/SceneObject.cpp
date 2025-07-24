@@ -8,9 +8,12 @@
 
 #include "Core/CoreUtilities/ProjectInfo.h"
 #include "editor/events/EditorEventTypes.h"
+#include "editor/commands/CommandManager.h"
 
 #include "ScionUtilities/ScionUtilities.h"
 #include "ScionFilesystem/Serializers/JSONSerializer.h"
+
+#include "editor/scene/SceneManager.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
@@ -172,8 +175,85 @@ void SceneObject::AddNewLayer()
 		}
 	}
 
-	m_LayerParams.emplace_back(
-		SCION_UTIL::SpriteLayerParams{ .sLayerName = fmt::format( "NewLayer_{}", currentLayer ) } );
+	const SCION_UTIL::SpriteLayerParams spriteLayerParams{ .sLayerName = fmt::format( "NewLayer_{}", currentLayer ),
+														   .layer = static_cast<int>( currentLayer ) };
+
+	m_LayerParams.emplace_back( spriteLayerParams );
+
+	auto addTileLayerCmd =
+		UndoableCommands{ AddTileLayerCmd{ .pSceneObject = this, .spriteLayerParams = spriteLayerParams } };
+
+	COMMAND_MANAGER().Execute( addTileLayerCmd );
+}
+
+bool SceneObject::DeleteLayer( int layer )
+{
+	SCION_ASSERT( !m_LayerParams.empty() && "Layer params should not be empty." );
+	SCION_ASSERT( m_LayerParams.size() > layer && "Layer is outside of the range." );
+
+	auto copySpriteLayer = m_LayerParams[ layer ];
+
+	m_LayerParams.erase( m_LayerParams.begin() + layer );
+
+	// Drop all layers above removed layer down by 1
+	for ( auto& spriteLayer : m_LayerParams )
+	{
+		if ( spriteLayer.layer > layer )
+		{
+			spriteLayer.layer -= 1;
+		}
+	}
+	std::vector<Tile> removedTiles{};
+	auto view = m_Registry.GetRegistry().view<TileComponent, SpriteComponent>();
+	for ( auto entity : view )
+	{
+		Entity ent{ m_Registry, entity };
+		auto& sprite = ent.GetComponent<SpriteComponent>();
+		if ( sprite.layer == layer )
+		{
+			Tile removedTile{};
+			removedTile.transform = ent.GetComponent<TransformComponent>();
+			removedTile.sprite = ent.GetComponent<SpriteComponent>();
+
+			if ( auto* boxCollider = ent.TryGetComponent<BoxColliderComponent>() )
+			{
+				removedTile.bCollider = true;
+				removedTile.boxCollider = *boxCollider;
+			}
+
+			if ( auto* circleCollider = ent.TryGetComponent<CircleColliderComponent>() )
+			{
+				removedTile.bCircle = true;
+				removedTile.circleCollider = *circleCollider;
+			}
+
+			if ( auto* animation = ent.TryGetComponent<AnimationComponent>() )
+			{
+				removedTile.bAnimation = true;
+				removedTile.animation = *animation;
+			}
+
+			if ( auto* physics = ent.TryGetComponent<PhysicsComponent>() )
+			{
+				removedTile.bPhysics = true;
+				removedTile.physics = *physics;
+			}
+
+			ent.Kill();
+			removedTiles.push_back( removedTile );
+		}
+		else if ( sprite.layer > layer ) // Drop the layer down if greater.
+		{
+			sprite.layer -= 1;
+		}
+	}
+
+	auto removeTileLayerCmd = UndoableCommands{ RemoveTileLayerCmd{
+		.pSceneObject = this, .tilesRemoved = removedTiles, .spriteLayerParams = copySpriteLayer } };
+
+	COMMAND_MANAGER().Execute( removeTileLayerCmd );
+
+	return true;
 }
 
 bool SceneObject::AddGameObject()

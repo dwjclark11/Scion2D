@@ -1,4 +1,4 @@
-#include "Core/Systems/RenderSystem.h"
+#include "EditorRenderSystem.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/ECS/MainRegistry.h"
@@ -14,20 +14,22 @@
 
 #include <ranges>
 
+using namespace SCION_CORE;
 using namespace SCION_CORE::ECS;
 using namespace SCION_RENDERING;
 using namespace SCION_RESOURCES;
 
-namespace SCION_CORE::Systems
+namespace SCION_EDITOR
 {
-RenderSystem::RenderSystem()
+EditorRenderSystem::EditorRenderSystem()
 	: m_pBatchRenderer{ std::make_unique<SpriteBatchRenderer>() }
 {
 }
 
-RenderSystem::~RenderSystem() = default;
+EditorRenderSystem::~EditorRenderSystem() = default;
 
-void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
+void EditorRenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera,
+								 const std::vector<SCION_UTIL::SpriteLayerParams>& layerFilters )
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
@@ -48,8 +50,35 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING:
 	m_pBatchRenderer->Begin();
 
 	auto spriteView = registry.GetRegistry().view<SpriteComponent, TransformComponent>( entt::exclude<UIComponent> );
+	std::function<bool( entt::entity )> filterFunc;
 
-	for ( const auto entity : spriteView )
+	// Check to see if the layers are visible, if not, filter them out.
+	if ( layerFilters.empty() )
+	{
+		filterFunc = []( entt::entity ) { return true; };
+	}
+	else
+	{
+		filterFunc = [ & ]( entt::entity entity ) {
+			// We only want to filter tiles
+			if ( !registry.GetRegistry().all_of<TileComponent>( entity ) )
+				return true;
+
+			const auto& sprite = spriteView.get<SpriteComponent>( entity );
+			if ( sprite.layer >= 0 )
+			{
+				auto layerItr = std::ranges::find_if( layerFilters, [ &sprite ]( const auto& layerParams ) {
+					return layerParams.layer == sprite.layer;
+				} );
+
+				return layerItr != layerFilters.end() ? layerItr->bVisible : false;
+			}
+
+			return false;
+		};
+	}
+
+	for ( const auto& entity : std::views::filter( spriteView, filterFunc ) )
 	{
 		const auto& transform = spriteView.get<TransformComponent>( entity );
 		const auto& sprite = spriteView.get<SpriteComponent>( entity );
@@ -95,17 +124,4 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING:
 	spriteShader->Disable();
 }
 
-void RenderSystem::CreateRenderSystemLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& registry )
-{
-	auto& pCamera = registry.GetContext<std::shared_ptr<Camera2D>>();
-
-	SCION_ASSERT( pCamera && "A camera must exist in the current scene!" );
-
-	lua.new_usertype<RenderSystem>( "RenderSystem",
-									sol::call_constructor,
-									sol::constructors<RenderSystem()>(),
-									"update",
-									[ & ]( RenderSystem& system, Registry& reg ) { system.Update( reg, *pCamera ); } );
-}
-
-} // namespace SCION_CORE::Systems
+} // namespace SCION_EDITOR

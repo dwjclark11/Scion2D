@@ -52,6 +52,8 @@ class Scene
 	 */
 	int AddLayer( const std::string& sLayerName, bool bVisible );
 
+	int AddLayer( const SCION_UTIL::SpriteLayerParams& layerParam );
+
 	/*
 	 * @brief Checks to see if the layer already exists in the scene.
 	 * To be used when trying to adjust the name of the layer to prevent layers with duplicate names.

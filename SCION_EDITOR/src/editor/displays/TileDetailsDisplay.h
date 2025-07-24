@@ -19,8 +19,10 @@ class TileDetailsDisplay : public IDisplay
 {
   private:
 	int m_SelectedLayer;
+	int m_DeleteLayer;
 	std::string m_sRenameLayerBuf;
 	bool m_bRename;
+	bool m_bDeleteLayer;
 
   private:
 	void DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& sprite, SCION_CORE::Scene* pScene );

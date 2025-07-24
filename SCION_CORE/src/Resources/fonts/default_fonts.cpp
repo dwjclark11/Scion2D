@@ -14106,6 +14106,7 @@ unsigned int roboto_bold_size = 146900;
 // end roboto_bold
 } // namespace
 // clang-format on
+
 unsigned char* g_PixelFont = pixel_font;
 const size_t g_PixelFontSize = pixel_font_size;
 

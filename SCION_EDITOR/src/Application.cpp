@@ -42,12 +42,14 @@
 
 #include "Core/CoreUtilities/ProjectInfo.h"
 #include "editor/systems/GridSystem.h"
+#include "editor/systems/EditorRenderSystem.h"
 
 #include "editor/events/EditorEventTypes.h"
 #include "Core/Events/EventDispatcher.h"
 #include "Core/Events/EngineEventTypes.h"
 
 #include "ScionUtilities/ThreadPool.h"
+#include "ScionUtilities/HelperUtilities.h"
 #include "editor/hub/Hub.h"
 
 // IMGUI
@@ -233,6 +235,12 @@ bool Application::InitApp()
 	if ( !MAIN_REGISTRY().AddToContext<std::shared_ptr<GridSystem>>( std::make_shared<GridSystem>() ) )
 	{
 		SCION_ERROR( "Failed add the grid system registry context!" );
+		return false;
+	}
+
+	if ( !MAIN_REGISTRY().AddToContext<EditorRenderSystemPtr>( std::make_shared<EditorRenderSystem>() ) )
+	{
+		SCION_ERROR( "Failed add the editor render system registry context!" );
 		return false;
 	}
 
@@ -462,6 +470,12 @@ bool Application::LoadEditorTextures()
 	}
 
 	assetManager.GetTexture( "ZZ_S2D_default_player" )->SetIsEditorTexture( true );
+
+	if ( !assetManager.AddCursorFromMemory(
+			 "ZZ_S2D_PanningCursor", EditorTextures::g_PanningCursor, EditorTextures::g_PanningCursorSize ) )
+	{
+		return false;
+	}
 
 	return true;
 }

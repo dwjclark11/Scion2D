@@ -2,9 +2,10 @@
 #include "Logger/Logger.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/utilities/fonts/editor_fonts.h"
+#include "Core/Resources/fonts/default_fonts.h"
 #include <Windowing/Window/Window.h>
 
-// IMGUI 
+// IMGUI
 // ===================================
 #include "ImGuiUtils.h"
 #include "imgui.h"
@@ -37,7 +38,9 @@ bool Gui::InitImGui( SCION_WINDOWING::Window* pWindow )
 
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
-	io.Fonts->AddFontDefault();
+	ImFont* pDefaultFont = io.Fonts->AddFontDefault();
+	ImGui::AddFont( "default", pDefaultFont, 13.f );
+
 	float baseFontSize = 16.0f;
 	float iconFontSize = baseFontSize * 2.0f / 3.0f;
 
@@ -50,6 +53,16 @@ bool Gui::InitImGui( SCION_WINDOWING::Window* pWindow )
 	icons_config.GlyphOffset = ImVec2{ 0.f, 2.f };
 	io.Fonts->AddFontFromMemoryTTF(
 		EditorFonts::g_FaSolid900, EditorFonts::g_FaSolid900Size, baseFontSize, &icons_config, icons_ranges );
+
+	ImGui::AddFontFromMemory( "roboto-bold-14",
+							  SCION_RESOURCES::CoreFonts::g_RobotoBoldFont,
+							  SCION_RESOURCES::CoreFonts::g_RobotoBoldFontSize,
+							  14.f );
+
+	ImGui::AddFontFromMemory( "roboto-bold-24",
+							  SCION_RESOURCES::CoreFonts::g_RobotoBoldFont,
+							  SCION_RESOURCES::CoreFonts::g_RobotoBoldFontSize,
+							  24.f );
 
 	if ( !ImGui_ImplSDL2_InitForOpenGL( pWindow->GetWindow().get(), pWindow->GetGLContext() ) )
 	{

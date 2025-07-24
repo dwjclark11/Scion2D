@@ -20,6 +20,7 @@
 #include "Rendering/Essentials/PickingTexture.h"
 
 #include "editor/systems/GridSystem.h"
+#include "editor/systems/EditorRenderSystem.h"
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/EditorUtilities.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
@@ -60,7 +61,7 @@ void TilemapDisplay::RenderTilemap()
 	auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
 	auto& renderer = mainRegistry.GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
 
-	auto& renderSystem = mainRegistry.GetRenderSystem();
+	auto& renderSystem = mainRegistry.GetContext<EditorRenderSystemPtr>();
 	auto& renderUISystem = mainRegistry.GetRenderUISystem();
 	auto& renderShapeSystem = mainRegistry.GetRenderShapeSystem();
 
@@ -128,7 +129,7 @@ void TilemapDisplay::RenderTilemap()
 	auto& gridSystem = mainRegistry.GetContext<std::shared_ptr<GridSystem>>();
 	gridSystem->Update( *pCurrentScene, *m_pTilemapCam );
 
-	renderSystem.Update( pCurrentScene->GetRegistry(), *m_pTilemapCam, pCurrentScene->GetLayerParams() );
+	renderSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam, pCurrentScene->GetLayerParams() );
 
 	if ( CORE_GLOBALS().RenderCollidersEnabled() )
 	{
@@ -183,6 +184,14 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 	if ( !mouse.IsBtnJustPressed( SCION_MOUSE_MIDDLE ) && !mouse.IsBtnPressed( SCION_MOUSE_MIDDLE ) &&
 		 mouse.GetMouseWheelY() == 0 )
 	{
+		if ( auto* pCursor = ASSET_MANAGER().GetCursor( "default" ) )
+		{
+			if ( SDL_GetCursor() != pCursor )
+			{
+				SDL_SetCursor( pCursor );
+			}
+		}
+
 		return;
 	}
 
@@ -199,6 +208,11 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 	{
 		screenOffset += ( mousePos - startPosition );
 		bOffsetChanged = true;
+
+		if ( auto* pCursor = ASSET_MANAGER().GetCursor( "ZZ_S2D_PanningCursor" ) )
+		{
+			SDL_SetCursor( pCursor );
+		}
 	}
 
 	glm::vec2 currentWorldPos = m_pTilemapCam->ScreenCoordsToWorld( mousePos );

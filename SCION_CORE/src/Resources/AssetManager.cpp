@@ -14,7 +14,9 @@
 #include <Sounds/Essentials/SoundFX.h>
 
 #include <ScionUtilities/ScionUtilities.h>
+#include <ScionUtilities/SDL_Wrappers.h>
 #include <Logger/Logger.h>
+#include <SDL_image.h>
 
 namespace fs = std::filesystem;
 using namespace std::chrono_literals;
@@ -28,6 +30,11 @@ AssetManager::AssetManager( bool bEnableFilewatcher )
 	{
 		m_WatchThread = std::jthread( &AssetManager::FileWatcher, this );
 	}
+
+#ifdef IN_SCION_EDITOR
+	IMG_Init( IMG_INIT_PNG );
+	m_mapCursors.emplace( "default", MakeSharedFromSDLType<Cursor>( SDL_GetDefaultCursor() ) );
+#endif
 }
 
 AssetManager::~AssetManager()
@@ -538,6 +545,62 @@ std::shared_ptr<SCION_CORE::Prefab> AssetManager::GetPrefab( const std::string& 
 
 	return prefabItr->second;
 }
+
+#ifdef IN_SCION_EDITOR
+
+bool AssetManager::AddCursor( const std::string& sCursorName, const std::string& sCursorPath )
+{
+	return false;
+}
+
+bool AssetManager::AddCursorFromMemory( const std::string& sCursorName, unsigned char* cursorData, size_t dataSize )
+{
+	if( m_mapCursors.contains( sCursorName ) )
+	{
+		SCION_ERROR( "Failed to add Cursor [{}] - Already exists.", sCursorName );
+		return false;
+	}
+
+	SDL_RWops* rw = SDL_RWFromConstMem( cursorData, static_cast<int>( dataSize ) );
+	if ( !rw )
+	{
+		SCION_ERROR( "Failed to add cursor. [{}]", SDL_GetError() );
+		return false;
+	}
+
+	SDL_Surface* pSurface = IMG_Load_RW( rw, 1 ); // 1 = Automatically closes RWops
+	if ( !pSurface )
+	{
+		SCION_ERROR( "Failed to add cursor. [{}]", IMG_GetError() );
+		return false;
+	}
+
+	SDL_Cursor* pCursor = SDL_CreateColorCursor( pSurface, pSurface->w / 2, pSurface->h / 2 );
+
+	if ( !pCursor )
+	{
+		SCION_ERROR( "Failed to add cursor. [{}]", SDL_GetError() );
+		return false;
+	}
+
+	SDL_FreeSurface( pSurface );
+
+	return m_mapCursors.emplace( sCursorName, MakeSharedFromSDLType<Cursor>( pCursor ) ).second;
+}
+
+SDL_Cursor* AssetManager::GetCursor( const std::string& sCursorName )
+{
+	auto cursorItr = m_mapCursors.find( sCursorName );
+	if ( cursorItr == m_mapCursors.end() )
+	{
+		SCION_ERROR( "Failed to get Cursor [{}] -- Does Not exist!", sCursorName );
+		return nullptr;
+	}
+
+	return cursorItr->second.get();
+}
+
+#endif
 
 std::vector<std::string> AssetManager::GetAssetKeyNames( SCION_UTIL::AssetType eAssetType ) const
 {

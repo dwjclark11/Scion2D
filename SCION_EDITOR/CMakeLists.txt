@@ -112,7 +112,7 @@ add_executable(SCION_EDITOR
 	"src/editor/packaging/IconReplacer.cpp"
 	"src/editor/displays/ProjectSettingsDisplay.h"
 	"src/editor/displays/ProjectSettingsDisplay.cpp"
-)
+ "src/editor/systems/EditorRenderSystem.h" "src/editor/systems/EditorRenderSystem.cpp" "src/editor/commands/cmds/TileCmds.h" "src/editor/commands/cmds/TileCmds.cpp")
 
 target_sources(
 	SCION_EDITOR PRIVATE

@@ -29,6 +29,12 @@ struct SpriteLayerParams
 {
 	std::string sLayerName{ "NewLayer" };
 	bool bVisible{ true };
+	int layer{ -1 };
+
+	friend bool operator==(const SpriteLayerParams& a, const SpriteLayerParams& b)
+	{
+		return a.sLayerName == b.sLayerName && a.bVisible == b.bVisible && a.layer == b.layer;
+	}
 };
 
 } // namespace SCION_UTIL

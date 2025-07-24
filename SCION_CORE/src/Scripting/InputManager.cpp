@@ -222,10 +222,10 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 		} );
 
 /*
-* In order for this to work in the editor, we need to take into account
-* the imgui window position, to get the world position.
-* There is new bindings inside the editor that handles this.
-*/
+ * In order for this to work in the editor, we need to take into account
+ * the imgui window position, to get the world position.
+ * There is new bindings inside the editor that handles this.
+ */
 #ifndef IN_SCION_EDITOR
 	auto& mouse = inputManager.GetMouse();
 
@@ -331,8 +331,8 @@ bool InputManager::AddGamepad( Sint32 gamepadIndex )
 	std::shared_ptr<Gamepad> gamepad{ nullptr };
 	try
 	{
-		gamepad =
-			std::make_shared<Gamepad>( std::move( make_shared_controller( SDL_GameControllerOpen( gamepadIndex ) ) ) );
+		gamepad = std::make_shared<Gamepad>(
+			std::move( MakeSharedFromSDLType<Controller>( SDL_GameControllerOpen( gamepadIndex ) ) ) );
 	}
 	catch ( ... )
 	{

@@ -12,6 +12,8 @@
 #include <sol/sol.hpp>
 #include <SDL_mixer.h>
 
+using Cursor = std::shared_ptr<struct SDL_Cursor>;
+
 namespace SCION_UTIL
 {
 enum class AssetType;
@@ -163,14 +165,13 @@ class AssetManager
 	 */
 	std::shared_ptr<SCION_SOUNDS::Music> GetMusic( const std::string& musicName );
 
-
 	/*
-	* @brief Detects the audio format of an in-memory data buffer.
-	* @param audioData pointer to the beginning of the audio data in memory.
-	* @param dataSize Size of the audio data buffer in bytes.
-	* @return An enum representing the audio format. (e.g. MUS_WAV, MUS_MP3, MUS_OGG)
-	*/
-	Mix_MusicType DetectAudioFormat( const unsigned char* audioData, size_t dataSize ); 
+	 * @brief Detects the audio format of an in-memory data buffer.
+	 * @param audioData pointer to the beginning of the audio data in memory.
+	 * @param dataSize Size of the audio data buffer in bytes.
+	 * @return An enum representing the audio format. (e.g. MUS_WAV, MUS_MP3, MUS_OGG)
+	 */
+	Mix_MusicType DetectAudioFormat( const unsigned char* audioData, size_t dataSize );
 
 	/*
 	 * @brief Checks to see if the SoundFx exists, and if not, creates and loads the SoundFx into the
@@ -201,6 +202,13 @@ class AssetManager
 	bool AddPrefab( const std::string& sPrefabName, std::shared_ptr<SCION_CORE::Prefab> pPrefab );
 
 	std::shared_ptr<SCION_CORE::Prefab> GetPrefab( const std::string& sPrefabName );
+
+#ifdef IN_SCION_EDITOR
+	bool AddCursor( const std::string& sCursorName, const std::string& sCursorPath );
+	bool AddCursorFromMemory( const std::string& sCursorName, unsigned char* cursorData, size_t dataSize );
+
+	SDL_Cursor* GetCursor( const std::string& sCursorName );
+#endif
 
 	inline const std::map<std::string, std::shared_ptr<SCION_RENDERING::Texture>>& GetAllTextures() const
 	{
@@ -311,6 +319,10 @@ class AssetManager
 	std::map<std::string, std::shared_ptr<SCION_SOUNDS::Music>> m_mapMusic{};
 	std::map<std::string, std::shared_ptr<SCION_SOUNDS::SoundFX>> m_mapSoundFx{};
 	std::map<std::string, std::shared_ptr<SCION_CORE::Prefab>> m_mapPrefabs{};
+
+#ifdef IN_SCION_EDITOR
+	std::map<std::string, Cursor> m_mapCursors;
+#endif
 
 	std::vector<AssetWatchParams> m_FilewatchParams;
 

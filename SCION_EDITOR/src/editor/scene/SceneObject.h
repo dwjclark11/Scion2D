@@ -65,6 +65,11 @@ class SceneObject : public SCION_CORE::Scene
 	 */
 	void AddNewLayer();
 
+	/*
+	 * @brief Deletes the desired layer and removes all entities from the registry.
+	 */
+	bool DeleteLayer(int layer);
+
 	/**
 	 * @brief Adds a new game object to the scene with a unique name and a default TransformComponent.
 	 *

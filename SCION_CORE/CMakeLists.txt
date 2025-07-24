@@ -1,3 +1,5 @@
+find_package(SDL2_image REQUIRED)
+
 add_library(SCION_CORE
 	# Core Utilities
     "include/Core/CoreUtilities/CoreEngineData.h"
@@ -138,7 +140,8 @@ target_include_directories(
 target_link_libraries(SCION_CORE PUBLIC
     glm::glm EnTT::EnTT sol2::sol2 ${LUA_LIBRARIES}
     $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
-        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+	$<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
     SCION_LOGGER SCION_UTILITIES SCION_PHYSICS
 	SCION_RENDERING SCION_FILESYSTEM SCION_SOUNDS SCION_WINDOW)
 

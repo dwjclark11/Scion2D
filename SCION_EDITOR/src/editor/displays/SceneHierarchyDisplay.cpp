@@ -48,8 +48,8 @@ bool SceneHierarchyDisplay::OpenTreeNode( SCION_CORE::ECS::Entity& entity )
 		nodeFlags |= ImGuiTreeNodeFlags_Selected;
 
 	bool bTreeNodeOpen{ false };
-
-	bTreeNodeOpen = ImGui::TreeNodeEx( name.c_str(), nodeFlags );
+	
+	bTreeNodeOpen = ImGui::TreeNodeEx( fmt::format( "{} {}", ICON_FA_CUBE, name ).c_str(), nodeFlags );
 	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
 
 	if ( ImGui::IsItemClicked() )
