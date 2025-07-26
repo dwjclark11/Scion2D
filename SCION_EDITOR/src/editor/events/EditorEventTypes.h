@@ -82,4 +82,9 @@ struct AddComponentEvent
 EComponentType GetComponentTypeFromStr( const std::string& componentStr );
 std::string GetComponentStrFromType( EComponentType eType );
 
+struct EntityDeletedEvent
+{
+	std::string sGUID{};
+};
+
 } // namespace SCION_EDITOR::Events

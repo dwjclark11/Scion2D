@@ -24,4 +24,22 @@ entt::entity FindEntityByTag( Registry& registry, const std::string& sTag )
 	return entt::entity{ entt::null };
 }
 
+entt::entity FindEntityByGUID( Registry& registry, const std::string& sGUID )
+{
+	auto ids = registry.GetRegistry().view<Identification>( entt::exclude<TileComponent> );
+
+	auto parItr = std::ranges::find_if( ids, [ & ]( const auto& e ) {
+		Entity en{ registry, e };
+		auto* id = en.TryGetComponent<Identification>();
+		return id ? id->sGUID == sGUID : false;
+	} );
+
+	if ( parItr != ids.end() )
+	{
+		return *parItr;
+	}
+
+	return entt::entity{ entt::null };
+}
+
 } // namespace SCION_CORE::ECS

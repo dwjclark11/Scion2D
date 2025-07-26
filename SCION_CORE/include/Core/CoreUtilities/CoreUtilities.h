@@ -13,6 +13,7 @@ namespace SCION_CORE
 namespace ECS
 {
 class Registry;
+class Entity;
 }
 
 /**
@@ -97,5 +98,31 @@ constexpr double TARGET_FRAME_TIME = 1.0 / 60.0;
 constexpr float TARGET_FRAME_TIME_F = 1.0f / 60.0f;
 /* Used to prevent specific loops from looping forever. */
 constexpr int SANITY_LOOP_CHECK = 100;
+
+struct GameObjectRelationship
+{
+	std::string sSelf{};
+	std::string sParent{};
+	std::string sNextSibling{};
+	std::string sPrevSibling{};
+	std::string sFirstChild{};
+};
+
+struct GameObjectData
+{
+	std::optional<GameObjectRelationship> relationship{ std::nullopt };
+	std::optional<SCION_CORE::ECS::Identification> id{ std::nullopt };
+	std::optional<SCION_CORE::ECS::TransformComponent> transform{ std::nullopt };
+	std::optional<SCION_CORE::ECS::SpriteComponent> sprite{ std::nullopt };
+	std::optional<SCION_CORE::ECS::AnimationComponent> animation{ std::nullopt };
+	std::optional<SCION_CORE::ECS::BoxColliderComponent> boxCollider{ std::nullopt };
+	std::optional<SCION_CORE::ECS::CircleColliderComponent> circleCollider{ std::nullopt };
+	std::optional<SCION_CORE::ECS::PhysicsComponent> physics{ std::nullopt };
+	std::optional<SCION_CORE::ECS::TextComponent> text{ std::nullopt };
+	std::optional<SCION_CORE::ECS::UIComponent> ui{ std::nullopt };
+	std::optional<SCION_PHYSICS::ObjectData> objectData{ std::nullopt };
+};
+
+GameObjectData GetGameObejectDataFromEntity( SCION_CORE::ECS::Entity & entity );
 
 } // namespace SCION_CORE

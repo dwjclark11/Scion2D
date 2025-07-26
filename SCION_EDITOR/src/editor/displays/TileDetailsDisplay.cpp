@@ -287,6 +287,7 @@ void TileDetailsDisplay::Draw()
 			{
 				spriteLayer.bVisible = !spriteLayer.bVisible;
 			}
+			ImGui::ItemToolTip( "Hide Layer" );
 
 			ImGui::SameLine();
 
@@ -295,6 +296,7 @@ void TileDetailsDisplay::Draw()
 				m_bDeleteLayer = true;
 				m_DeleteLayer = n;
 			}
+			ImGui::ItemToolTip( "Delete Layer" );
 
 			ImGui::PopStyleColor( 2 );
 

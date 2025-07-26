@@ -7,6 +7,7 @@
 #include "Core/Events/EventDispatcher.h"
 
 #include "Core/CoreUtilities/ProjectInfo.h"
+#include "Core/CoreUtilities/CoreUtilities.h"
 #include "editor/events/EditorEventTypes.h"
 #include "editor/commands/CommandManager.h"
 
@@ -14,6 +15,10 @@
 #include "ScionFilesystem/Serializers/JSONSerializer.h"
 
 #include "editor/scene/SceneManager.h"
+
+#include "Core/Events/EventDispatcher.h"
+#include "Core/Events/EngineEventTypes.h"
+#include "editor/events/EditorEventTypes.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
@@ -24,6 +29,7 @@
 namespace fs = std::filesystem;
 
 using namespace SCION_FILESYSTEM;
+using namespace SCION_CORE;
 using namespace SCION_CORE::ECS;
 using namespace SCION_CORE::Loaders;
 using namespace entt::literals;
@@ -279,6 +285,14 @@ bool SceneObject::AddGameObject()
 	newObject.ChangeName( sTag );
 	m_mapTagToEntity.emplace( sTag, newObject.GetEntity() );
 
+	GameObjectData gameObjectData{ .id = newObject.GetComponent<Identification>(),
+								   .transform = newObject.GetComponent<TransformComponent>() };
+
+	auto addGameObjectCmd =
+		UndoableCommands{ AddGameObjectCmd{ .pSceneObject = this, .pGameObjectData = std::make_shared<GameObjectData>(gameObjectData) } };
+
+	COMMAND_MANAGER().Execute( addGameObjectCmd );
+
 	return true;
 }
 
@@ -352,15 +366,23 @@ bool SceneObject::DeleteGameObjectByTag( const std::string& sTag )
 		return false;
 	}
 
-	std::vector<std::string> removedEntities;
+	std::unordered_map<std::string, std::shared_ptr<GameObjectData>> mapEntitiesRemoved;
 	Entity ent{ m_Registry, objItr->second };
 
-	RelationshipUtils::RemoveAndDelete( ent, removedEntities );
+	const auto& id = ent.GetComponent<Identification>();
+	EVENT_DISPATCHER().EmitEvent( Events::EntityDeletedEvent{ .sGUID = id.sGUID } );
 
-	for ( const auto& sTag : removedEntities )
+	RelationshipUtils::RemoveAndDelete( ent, mapEntitiesRemoved );
+
+	for ( const auto& [sTag, gameObjectData] : mapEntitiesRemoved )
 	{
 		m_mapTagToEntity.erase( sTag );
 	}
+
+	auto deleteGameObjectCmd = UndoableCommands{ DeleteGameObjectCmd{
+		.pSceneObject = this, .mapTagToGameObjectData = mapEntitiesRemoved } };
+
+	COMMAND_MANAGER().Execute( deleteGameObjectCmd );
 
 	return true;
 }
@@ -381,17 +403,41 @@ bool SceneObject::DeleteGameObjectById( entt::entity entity )
 		return false;
 	}
 
-	std::vector<std::string> removedEntities;
+	std::unordered_map<std::string, std::shared_ptr<GameObjectData>> mapEntitiesRemoved;
 	Entity ent{ m_Registry, objItr->second };
 
-	RelationshipUtils::RemoveAndDelete( ent, removedEntities );
+	const auto& id = ent.GetComponent<Identification>();
+	EVENT_DISPATCHER().EmitEvent( Events::EntityDeletedEvent{ .sGUID = id.sGUID } );
 
-	for ( const auto& sTag : removedEntities )
+	RelationshipUtils::RemoveAndDelete( ent, mapEntitiesRemoved );
+
+	for ( const auto& pair : mapEntitiesRemoved )
 	{
-		m_mapTagToEntity.erase( sTag );
+		auto entItr = m_mapTagToEntity.find( pair.first );
+		if (entItr == m_mapTagToEntity.end())
+		{
+			// TODO: Error
+			SCION_ASSERT( false );
+		}
+
+		Entity ent{ m_Registry, entItr->second };
+		ent.Kill();
+		
+		m_mapTagToEntity.erase( entItr );
 	}
 
+	auto deleteGameObjectCmd =
+		UndoableCommands{ DeleteGameObjectCmd{ .pSceneObject = this, .mapTagToGameObjectData = mapEntitiesRemoved } };
+
+	COMMAND_MANAGER().Execute( deleteGameObjectCmd );
+
 	return true;
+}
+
+entt::entity SceneObject::GetGameObjectEntityByTag( const std::string& sTag )
+{
+	auto entItr = m_mapTagToEntity.find( sTag );
+	return entItr != m_mapTagToEntity.end() ? entItr->second : entt::null;
 }
 
 bool SceneObject::LoadScene()

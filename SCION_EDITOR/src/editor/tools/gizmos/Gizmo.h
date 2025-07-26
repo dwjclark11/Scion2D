@@ -28,6 +28,7 @@ namespace SCION_EDITOR
 namespace Events
 {
 struct AddComponentEvent;
+struct EntityDeletedEvent;
 }
 
 struct GizmoAxisParams;
@@ -78,5 +79,6 @@ class Gizmo : public AbstractTool
 
   private:
 	void OnAddComponent( const SCION_EDITOR::Events::AddComponentEvent& addCompEvent );
+	void OnEntityDeleted( const SCION_EDITOR::Events::EntityDeletedEvent& deleteEntityEvent );
 };
 } // namespace SCION_EDITOR

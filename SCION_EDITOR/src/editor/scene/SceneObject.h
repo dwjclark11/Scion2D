@@ -128,6 +128,8 @@ class SceneObject : public SCION_CORE::Scene
 	 */
 	bool DeleteGameObjectById( entt::entity entity );
 
+	entt::entity GetGameObjectEntityByTag( const std::string& sTag );
+
 	virtual bool LoadScene() override;
 	virtual bool UnloadScene( bool bSaveScene = true ) override;
 

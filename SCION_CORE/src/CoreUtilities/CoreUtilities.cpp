@@ -5,6 +5,7 @@
 #include "ScionUtilities/MathUtilities.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/ECS/Registry.h"
+#include "Core/ECS/Entity.h"
 
 #include <Rendering/Essentials/Font.h>
 
@@ -221,6 +222,87 @@ void UpdateDirtyEntities( SCION_CORE::ECS::Registry& registry )
 			text.bDirty = false;
 		}
 	}
+}
+
+GameObjectData GetGameObejectDataFromEntity( SCION_CORE::ECS::Entity& entity )
+{
+	GameObjectData gameObjectData{};
+
+	if (auto* transform = entity.TryGetComponent<TransformComponent>())
+	{
+		gameObjectData.transform = *transform;
+	}
+
+	if ( auto* sprite = entity.TryGetComponent<SpriteComponent>() )
+	{
+		gameObjectData.sprite = *sprite;
+	}
+
+	if ( auto* id = entity.TryGetComponent<Identification>() )
+	{
+		gameObjectData.id = *id;
+	}
+
+	if ( auto* animation = entity.TryGetComponent<AnimationComponent>() )
+	{
+		gameObjectData.animation = *animation;
+	}
+
+	if ( auto* boxCollider = entity.TryGetComponent<BoxColliderComponent>() )
+	{
+		gameObjectData.boxCollider = *boxCollider;
+	}
+
+	if ( auto* circleCollider = entity.TryGetComponent<CircleColliderComponent>() )
+	{
+		gameObjectData.circleCollider = *circleCollider;
+	}
+
+	if ( auto* physics = entity.TryGetComponent<PhysicsComponent>() )
+	{
+		gameObjectData.physics = *physics;
+	}
+
+	if ( auto* text = entity.TryGetComponent<TextComponent>() )
+	{
+		gameObjectData.text = *text;
+	}
+
+	if ( auto* ui = entity.TryGetComponent<UIComponent>() )
+	{
+		gameObjectData.ui = *ui;
+	}
+
+	if (auto* relationship = entity.TryGetComponent<Relationship>())
+	{
+		gameObjectData.relationship = GameObjectRelationship{};
+		auto& registry = entity.GetRegistry();
+		if (relationship->parent != entt::null)
+		{
+			Entity ent{ registry, relationship->parent };
+			gameObjectData.relationship->sParent = ent.GetName();
+		}
+
+		if ( relationship->firstChild != entt::null )
+		{
+			Entity ent{ registry, relationship->firstChild };
+			gameObjectData.relationship->sFirstChild = ent.GetName();
+		}
+
+		if ( relationship->nextSibling != entt::null )
+		{
+			Entity ent{ registry, relationship->nextSibling};
+			gameObjectData.relationship->sNextSibling = ent.GetName();
+		}
+
+		if ( relationship->prevSibling != entt::null )
+		{
+			Entity ent{ registry, relationship->prevSibling };
+			gameObjectData.relationship->sPrevSibling = ent.GetName();
+		}
+	}
+
+	return gameObjectData;
 }
 
 } // namespace SCION_CORE

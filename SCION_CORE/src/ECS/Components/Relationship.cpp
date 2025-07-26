@@ -1,5 +1,8 @@
 #include "Core/ECS/Components/Relationship.h"
 #include "Core/ECS/Entity.h"
+#include "Core/CoreUtilities/CoreUtilities.h"
+
+using namespace SCION_CORE;
 
 namespace SCION_CORE::ECS
 {
@@ -102,6 +105,74 @@ void RelationshipUtils::RemoveAndDelete( Entity& entityToRemove, std::vector<std
 	SCION_LOG( "JUST KILLED: {}", static_cast<std::uint32_t>( entityToRemove.GetEntity() ) );
 	entitiesRemoved.emplace_back( entityToRemove.GetName() );
 	entityToRemove.Kill();
+}
+
+void RelationshipUtils::RemoveAndDelete(
+	Entity& entityToRemove,
+	std::unordered_map<std::string, std::shared_ptr<SCION_CORE::GameObjectData>>& mapEntitiesRemoved )
+{
+	auto& registry = entityToRemove.GetEnttRegistry();
+	auto& Reg = entityToRemove.GetRegistry();
+	auto& relations = entityToRemove.GetComponent<Relationship>();
+
+	if ( !mapEntitiesRemoved.contains( entityToRemove.GetName() ) )
+	{
+		mapEntitiesRemoved.emplace(
+			entityToRemove.GetName(),
+			std::make_shared<GameObjectData>( GetGameObejectDataFromEntity( entityToRemove ) ) );
+	}
+
+	// First we need to delete all of the children
+	if ( relations.firstChild != entt::null )
+	{
+		std::vector<entt::entity> childrenToDelete{};
+		childrenToDelete.push_back( relations.firstChild );
+		auto childRelations = registry.get<Relationship>( relations.firstChild );
+		while ( childRelations.nextSibling != entt::null )
+		{
+			childrenToDelete.push_back( childRelations.nextSibling );
+			childRelations = registry.get<Relationship>( childRelations.nextSibling );
+		}
+
+		for ( auto entity : childrenToDelete )
+		{
+			Entity ent{ Reg, entity };
+			//mapEntitiesRemoved[ ent.GetName() ] =
+			//	std::make_shared<GameObjectData>( GetGameObejectDataFromEntity( ent ) );
+
+			RemoveAndDelete( ent, mapEntitiesRemoved );
+		}
+	}
+
+	// Now we need to fix any links to the entity
+	if ( relations.parent != entt::null )
+	{
+		auto& parent = registry.get<Relationship>( relations.parent );
+
+		// If the child is the first child, grab the next child and adjust links
+		if ( parent.firstChild == relations.self )
+		{
+			parent.firstChild = relations.nextSibling;
+		}
+		else
+		{
+			// Handle the child and its siblings.
+			if ( relations.prevSibling != entt::null )
+			{
+				auto& prev = registry.get<Relationship>( relations.prevSibling );
+				prev.nextSibling = relations.nextSibling;
+			}
+
+			if ( relations.nextSibling != entt::null )
+			{
+				auto& next = registry.get<Relationship>( relations.nextSibling );
+				next.prevSibling = relations.prevSibling;
+			}
+		}
+
+		relations.prevSibling = entt::null;
+		relations.nextSibling = entt::null;
+	}
 }
 
 void Relationship::CreateRelationshipLuaBind( sol::state& lua )

@@ -1,9 +1,11 @@
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/ECS/MetaUtilities.h"
+#include "Core/ECS/ECSUtils.h"
 
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Core/Scene/Scene.h"
+#include "ScionUtilities/ScionUtilities.h"
 
 using namespace SCION_CORE::Utils;
 
@@ -21,8 +23,10 @@ Entity::Entity( Registry& registry, const std::string& name, const std::string& 
 	, m_sName{ name }
 	, m_sGroup{ group }
 {
-	AddComponent<Identification>(
-		Identification{ .name = name, .group = group, .entity_id = static_cast<uint32_t>( m_Entity ) } );
+	AddComponent<Identification>( Identification{ .name = name,
+												  .group = group,
+												  .sGUID = SCION_UTIL::GenerateGUID(),
+												  .entity_id = static_cast<uint32_t>( m_Entity ) } );
 
 	/* Add Relationship component and set self to underlying entt::entity. */
 	AddComponent<Relationship>( Relationship{ .self = m_Entity } );
@@ -196,6 +200,22 @@ void Entity::ChangeName( const std::string& sName )
 	auto& id = GetComponent<Identification>();
 	id.name = sName;
 	m_sName = sName;
+}
+
+void Entity::ChangeGUID( const std::string& sGUID )
+{
+	entt::entity foundEnt{ FindEntityByGUID( m_Registry, sGUID ) };
+	SCION_ASSERT( foundEnt == entt::null && "Cannot change to a GUID that already is in registry." );
+	if (foundEnt != entt::null)
+	{
+		SCION_ERROR( "Failed to change entity GUID. GUID [{}] is already assigned.", sGUID );
+		return;
+	}
+
+	if ( auto* id = TryGetComponent<Identification>() )
+	{
+		id->sGUID = sGUID;
+	}
 }
 
 void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )

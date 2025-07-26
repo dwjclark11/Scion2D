@@ -51,6 +51,7 @@ Gizmo::Gizmo( const GizmoAxisParams& xAxisParams, const GizmoAxisParams& yAxisPa
 	, m_bUIComponent{ false }
 {
 	ADD_EVENT_HANDLER( SCION_EDITOR::Events::AddComponentEvent, &Gizmo::OnAddComponent, *this )
+	ADD_EVENT_HANDLER( SCION_EDITOR::Events::EntityDeletedEvent, &Gizmo::OnEntityDeleted, *this )
 
 	m_pXAxisParams = std::make_unique<GizmoAxisParams>( xAxisParams );
 
@@ -343,6 +344,20 @@ void Gizmo::OnAddComponent( const SCION_EDITOR::Events::AddComponentEvent& addCo
 	if ( addCompEvent.eType == Events::EComponentType::UI || addCompEvent.eType == Events::EComponentType::Text )
 	{
 		m_bUIComponent = true;
+	}
+}
+
+void Gizmo::OnEntityDeleted( const SCION_EDITOR::Events::EntityDeletedEvent& deleteEntityEvent )
+{
+	if ( !m_pRegistry || m_SelectedEntity == entt::null )
+		return;
+
+	Entity ent{ *m_pRegistry, m_SelectedEntity };
+	const auto& id = ent.GetComponent<Identification>();
+
+	if (deleteEntityEvent.sGUID == id.sGUID)
+	{
+		ResetSelectedEntity();
 	}
 }
 

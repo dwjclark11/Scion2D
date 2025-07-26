@@ -1,4 +1,8 @@
 #include "ScionUtilities/ScionUtilities.h"
+#include <random>
+#include <array>
+#include <sstream>
+#include <iomanip>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -75,6 +79,40 @@ std::wstring ConvertUtf8ToWide( const std::string& str )
 #else
 	return {};
 #endif
+}
+
+std::string GenerateGUID()
+{
+	// Use a secure random device as the seed source
+	std::random_device rd;
+	// Seed a Mersenne Twister 32-bit engine with the random device
+	std::mt19937 gen( rd() );
+	// Create distributions for different segment sizes of the UUID
+	std::uniform_int_distribution<uint32_t> dist32; // 8 hex digits
+	std::uniform_int_distribution<uint16_t> dist16;	// 4 hex digits
+	std::uniform_int_distribution<uint16_t> dist8( 0, 255 ); // 2 hex digits (used for final segment)
+
+	std::stringstream ss;
+	ss	<< std::hex << std::setfill( '0' )
+		// First Segment: 8 hex digits (32-bits)
+		<< std::setw( 8 ) << dist32( gen ) << '-'
+		// Second Segment: 4 hex digits (16-bits)
+		<< std::setw( 4 ) << dist16( gen ) << '-'
+		// Third Segment: 4 hex digits, version 4 UUID
+		// Force the first four bits to 0100 (UUID Version 4)
+		<< std::setw( 4 ) << ( dist16( gen ) & 0x0FFF | 0x4000 ) << '-'
+		// Fourth Segment: 4 hex digits, variant 1(10xx)
+		// Force the first 2 bits to 10 for variant 1 UUID
+		<< std::setw( 4 ) << ( dist16( gen ) & 0x3FFF | 0x8000 ) << '-';		  
+
+	// Final Segment: 12 hex digits (6 bytes, each digits)
+	for ( int i = 0; i < 6; ++i )
+	{
+		//ss << std::setw( 2 ) << std::hex << static_cast<int>( dist8( gen ) );
+		ss << std::setw( 2 ) << std::hex << std::setfill('0') << dist8( gen );
+	}
+
+	return ss.str();
 }
 
 } // namespace SCION_UTIL
