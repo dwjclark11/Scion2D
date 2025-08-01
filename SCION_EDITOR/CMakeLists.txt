@@ -47,11 +47,15 @@ add_executable(SCION_EDITOR
 	"src/editor/displays/ScriptDisplay.cpp"
 	"src/editor/displays/PackageDisplay.h"
 	"src/editor/displays/PackageDisplay.cpp"
-
+	"src/editor/displays/ProjectSettingsDisplay.h"
+	"src/editor/displays/ProjectSettingsDisplay.cpp"
+	
     # Editor Systems
     "src/editor/systems/GridSystem.h" 
     "src/editor/systems/GridSystem.cpp" 
-    
+    "src/editor/systems/EditorRenderSystem.h"
+	"src/editor/systems/EditorRenderSystem.cpp"
+	
     # Scenes
     "src/editor/scene/SceneObject.h" 
     "src/editor/scene/SceneObject.cpp" 
@@ -89,6 +93,8 @@ add_executable(SCION_EDITOR
 	"src/editor/commands/cmds/CreateTileToolCmds.cpp"
 	"src/editor/commands/cmds/RectToolCmds.h"
 	"src/editor/commands/cmds/RectToolCmds.cpp"
+	"src/editor/commands/cmds/TileCmds.h"
+	"src/editor/commands/cmds/TileCmds.cpp"
 	
 	# Events
 	"src/editor/events/EditorEventTypes.h"	
@@ -110,9 +116,9 @@ add_executable(SCION_EDITOR
 	"src/editor/packaging/ScriptCompiler.cpp"
 	"src/editor/packaging/IconReplacer.h"
 	"src/editor/packaging/IconReplacer.cpp"
-	"src/editor/displays/ProjectSettingsDisplay.h"
-	"src/editor/displays/ProjectSettingsDisplay.cpp"
- "src/editor/systems/EditorRenderSystem.h" "src/editor/systems/EditorRenderSystem.cpp" "src/editor/commands/cmds/TileCmds.h" "src/editor/commands/cmds/TileCmds.cpp")
+	"src/editor/packaging/AssetPackager.h"
+	"src/editor/packaging/AssetPackager.cpp"
+)
 
 target_sources(
 	SCION_EDITOR PRIVATE
@@ -138,6 +144,7 @@ target_include_directories(
 target_link_libraries(
 	SCION_EDITOR
 	PRIVATE SCION_CORE
+	libzippp::libzippp
 )
 
 add_resources(TARGET Assets IN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets OUT_DIR assets)

@@ -62,6 +62,7 @@ find_package(Lua REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
 find_package(tinyfiledialogs CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
+find_package(libzippp CONFIG REQUIRED)
 
 add_subdirectory(SCION_LOGGER)
 add_subdirectory(SCION_UTILITIES)

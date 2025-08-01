@@ -7,6 +7,27 @@
 
 namespace SCION_UTIL
 {
+std::string AssetTypeToStr( AssetType eAssetType )
+{
+	switch (eAssetType)
+	{
+	case AssetType::TEXTURE: return "TEXTURE";
+	case AssetType::FONT: return "FONT";
+	case AssetType::SOUNDFX: return "SOUNDFX";
+	case AssetType::MUSIC: return "MUSIC";
+	case AssetType::SCENE: return "SCENE";
+	case AssetType::SHADER: return "SHADER";
+	case AssetType::PREFAB: return "PREFAB";
+	case AssetType::NO_TYPE: return "NO_TYPE";
+	}
+	return { "NO_TYPE" };
+}
+
+AssetType StrToAssetType( const std::string& sAssetType )
+{
+	return AssetType();
+}
+
 std::string GetSubstring( std::string_view str, std::string_view find )
 {
 	if ( find.empty() )

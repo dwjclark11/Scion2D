@@ -153,6 +153,9 @@ bool IsBitSet( const T& x, const T& y )
 	return 0 != ( x & y );
 }
 
+std::string AssetTypeToStr( AssetType eAssetType );
+AssetType StrToAssetType( const std::string& sAssetType );
+
 std::string GetSubstring( std::string_view str, std::string_view find );
 
 std::string ConvertWideToANSI( const std::wstring& wstr );
