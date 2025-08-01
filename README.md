@@ -192,5 +192,6 @@ Check out these amazing open source projects that we are using in the engine. Ma
 -   **[stb](https://github.com/nothings/stb)** - Single-file public domain libraries.
 -   **[Lua](https://www.lua.org/)** - Powerful, efficient scripting language.
 -   **[tinyfiledialogs](https://github.com/native-toolkit/libtinyfiledialogs)** - Cross-Platform Native dialog library for WINDOWS MAC OSX GTK+ QT CONSOLE **[Official](https://sourceforge.net/projects/tinyfiledialogs/)**.
+-   **[Libzippp](https://github.com/ctabin/libzippp)** - C++ wrapper around the libzip library.
 
 _Thank you to all the contributors and maintainers of these projects!_ ❤️
