@@ -3,6 +3,7 @@
 #include "Core/ECS/Registry.h"
 #include "Core/ECS/Entity.h"
 #include "ScionFilesystem/Serializers/JSONSerializer.h"
+#include "ScionFilesystem/Serializers/LuaSerializer.h"
 #include "Logger/Logger.h"
 #include <rapidjson/error/en.h>
 #include <filesystem>
@@ -489,41 +490,454 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 	return true;
 }
 
-bool TilemapLoader::SaveTilemap( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON )
+bool TilemapLoader::SaveTilemapLua( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile )
 {
-	if ( bUseJSON )
-		return SaveTilemapJSON( registry, sTilemapFile );
+	std::unique_ptr<LuaSerializer> pSerializer{ nullptr };
 
-	return false;
-}
-bool TilemapLoader::LoadTilemap( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON )
-{
-	if ( bUseJSON )
+	try
 	{
-		return LoadTilemapJSON( registry, sTilemapFile );
+		pSerializer = std::make_unique<LuaSerializer>( sTilemapFile );
+	}
+	catch ( const std::exception& ex )
+	{
+		SCION_ERROR( "Failed to save tilemap [{}] - [{}]", sTilemapFile, ex.what() );
+		return false;
 	}
 
-	return false;
+	fs::path tilemapPath{ sTilemapFile };
+	if ( !fs::exists( tilemapPath ) )
+	{
+		SCION_ERROR( "Failed to save tilemap - Filepath does not exist [{}]", sTilemapFile );
+		return false;
+	}
+
+	pSerializer->StartNewTable( tilemapPath.stem().string() );
+	pSerializer->StartNewTable( "tilemap" );
+
+	auto tiles = registry.GetRegistry().view<TileComponent>();
+
+	for ( auto tile : tiles )
+	{
+		pSerializer->StartNewTable();
+		pSerializer->StartNewTable( "components" );
+		auto tileEnt{ Entity{ registry, tile } };
+
+		const auto& transform = tileEnt.GetComponent<TransformComponent>();
+		SERIALIZE_COMPONENT( *pSerializer, transform );
+
+		const auto& sprite = tileEnt.GetComponent<SpriteComponent>();
+		SERIALIZE_COMPONENT( *pSerializer, sprite );
+
+		if ( tileEnt.HasComponent<BoxColliderComponent>() )
+		{
+			const auto& boxCollider = tileEnt.GetComponent<BoxColliderComponent>();
+			SERIALIZE_COMPONENT( *pSerializer, boxCollider );
+		}
+
+		if ( tileEnt.HasComponent<CircleColliderComponent>() )
+		{
+			const auto& circleCollider = tileEnt.GetComponent<CircleColliderComponent>();
+			SERIALIZE_COMPONENT( *pSerializer, circleCollider );
+		}
+
+		if ( tileEnt.HasComponent<AnimationComponent>() )
+		{
+			const auto& animation = tileEnt.GetComponent<AnimationComponent>();
+			SERIALIZE_COMPONENT( *pSerializer, animation );
+		}
+
+		if ( tileEnt.HasComponent<PhysicsComponent>() )
+		{
+			const auto& physics = tileEnt.GetComponent<PhysicsComponent>();
+			SERIALIZE_COMPONENT( *pSerializer, physics );
+		}
+
+		pSerializer->EndTable(); // Components object
+		pSerializer->EndTable(); // tile object
+	}
+
+	pSerializer->EndTable(); // Tilemap array
+	pSerializer->EndTable(); // Scene Name
+	return pSerializer->FinishStream();
+}
+
+bool TilemapLoader::LoadTilemapLua( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile )
+{
+	sol::state lua;
+	try
+	{
+		lua.safe_script_file( sTilemapFile );
+	}
+	catch ( const sol::error& err )
+	{
+		SCION_ERROR( "Failed to load tilemap map file: [{}], {}", sTilemapFile, err.what() );
+		return false;
+	}
+
+	sol::optional<sol::table> maybeTiles = lua[ "tilemap" ];
+	if ( !maybeTiles )
+	{
+		SCION_ERROR( "Failed to load tilemap map file: \"tilemap\" table is missing or invalid." );
+		return false;
+	}
+
+	for ( const auto& [ key, value ] : *maybeTiles )
+	{
+		Entity newTile{ registry, "", "" };
+		const sol::optional<sol::table> components = value.as<sol::table>()[ "components" ];
+
+		if ( !components )
+		{
+			SCION_ERROR( "Failed to load object map file: \"components\" table is missing or invalid." );
+			return false;
+		}
+
+		// Transform
+		const sol::table luaTransform = ( *components )[ "transform" ];
+		auto& transform = newTile.AddComponent<TransformComponent>();
+		DESERIALIZE_COMPONENT( luaTransform, transform );
+
+		// Sprite
+		const sol::table luaSprite = ( *components )[ "sprite" ];
+		auto& sprite = newTile.AddComponent<SpriteComponent>();
+		DESERIALIZE_COMPONENT( luaSprite, sprite );
+
+		sol::optional<sol::table> luaBoxCollider = ( *components )[ "boxCollider" ];
+		if ( luaBoxCollider )
+		{
+			auto& boxCollider = newTile.AddComponent<BoxColliderComponent>();
+			DESERIALIZE_COMPONENT( *luaBoxCollider, boxCollider );
+		}
+
+		sol::optional<sol::table> luaCircleCollider = ( *components )[ "circleCollider" ];
+		if ( luaCircleCollider )
+		{
+			auto& circleCollider = newTile.AddComponent<CircleColliderComponent>();
+			DESERIALIZE_COMPONENT( *luaCircleCollider, circleCollider );
+		}
+
+		sol::optional<sol::table> luaAnimations = ( *components )[ "animation" ];
+		if ( luaAnimations )
+		{
+			auto& animation = newTile.AddComponent<AnimationComponent>();
+			DESERIALIZE_COMPONENT( *luaAnimations, animation );
+		}
+
+		sol::optional<sol::table> luaPhysics = ( *components )[ "physics" ];
+		if ( luaPhysics )
+		{
+			auto& physics = newTile.AddComponent<PhysicsComponent>();
+			DESERIALIZE_COMPONENT( *luaPhysics, physics );
+		}
+
+		newTile.AddComponent<TileComponent>( TileComponent{ .id = static_cast<uint32_t>( newTile.GetEntity() ) } );
+	}
+
+	return true;
+}
+
+bool TilemapLoader::SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile )
+{
+	std::unique_ptr<LuaSerializer> pSerializer{ nullptr };
+
+	try
+	{
+		pSerializer = std::make_unique<LuaSerializer>( sObjectMapFile );
+	}
+	catch ( const std::exception& ex )
+	{
+		SCION_ERROR( "Failed to save game objects[{}] - [{}]", sObjectMapFile, ex.what() );
+		return false;
+	}
+
+	fs::path objectPath{ sObjectMapFile };
+	if ( !fs::exists( objectPath ) )
+	{
+		SCION_ERROR( "Failed to save game objects - Filepath does not exist [{}]", sObjectMapFile );
+		return false;
+	}
+
+	pSerializer->StartNewTable( objectPath.stem().string() );
+	pSerializer->StartNewTable( "game_objects" );
+
+	auto gameObjects = registry.GetRegistry().view<entt::entity>( entt::exclude<TileComponent, UneditableComponent> );
+
+	for ( auto object : gameObjects )
+	{
+		pSerializer->StartNewTable();
+		pSerializer->StartNewTable( "components" );
+		auto objectEnt{ Entity{ registry, object } };
+
+		if ( const auto* id = objectEnt.TryGetComponent<Identification>() )
+		{
+			SERIALIZE_COMPONENT( *pSerializer, *id );
+		}
+
+		if ( const auto* transform = objectEnt.TryGetComponent<TransformComponent>() )
+		{
+			SERIALIZE_COMPONENT( *pSerializer, *transform );
+		}
+
+		if ( const auto* sprite = objectEnt.TryGetComponent<SpriteComponent>() )
+		{
+			SERIALIZE_COMPONENT( *pSerializer, *sprite );
+		}
+
+		if ( objectEnt.HasComponent<BoxColliderComponent>() )
+		{
+			const auto& boxCollider = objectEnt.GetComponent<BoxColliderComponent>();
+			SERIALIZE_COMPONENT( *pSerializer, boxCollider );
+		}
+
+		if ( objectEnt.HasComponent<CircleColliderComponent>() )
+		{
+			const auto& circleCollider = objectEnt.GetComponent<CircleColliderComponent>();
+			SERIALIZE_COMPONENT( *pSerializer, circleCollider );
+		}
+
+		if ( objectEnt.HasComponent<AnimationComponent>() )
+		{
+			const auto& animation = objectEnt.GetComponent<AnimationComponent>();
+			SERIALIZE_COMPONENT( *pSerializer, animation );
+		}
+
+		if ( objectEnt.HasComponent<PhysicsComponent>() )
+		{
+			const auto& physics = objectEnt.GetComponent<PhysicsComponent>();
+			SERIALIZE_COMPONENT( *pSerializer, physics );
+		}
+
+		if ( auto* ui = objectEnt.TryGetComponent<UIComponent>() )
+		{
+			SERIALIZE_COMPONENT( *pSerializer, *ui );
+		}
+
+		if ( auto* relations = objectEnt.TryGetComponent<Relationship>() )
+		{
+			pSerializer->StartNewTable( "relationship" );
+			if ( relations->parent != entt::null )
+			{
+				Entity parent{ registry, relations->parent };
+				pSerializer->AddKeyValuePair( "parent", parent.GetName(), false, false, false, true );
+			}
+			else
+			{
+				pSerializer->AddKeyValuePair( "parent", std::string{ "" }, false, false, false, true );
+			}
+
+			if ( relations->nextSibling != entt::null )
+			{
+				Entity nextSibling{ registry, relations->nextSibling };
+				pSerializer->AddKeyValuePair( "nextSibling", nextSibling.GetName(), false, false, false, true );
+			}
+			else
+			{
+				pSerializer->AddKeyValuePair( "nextSibling", std::string{ "" }, false, false, false, true );
+			}
+
+			if ( relations->prevSibling != entt::null )
+			{
+				Entity prevSibling{ registry, relations->prevSibling };
+				pSerializer->AddKeyValuePair( "prevSibling", prevSibling.GetName(), false, false, false, true );
+			}
+			else
+			{
+				pSerializer->AddKeyValuePair( "prevSibling", std::string{ "" }, false, false, false, true );
+			}
+
+			if ( relations->firstChild != entt::null )
+			{
+				Entity firstChild{ registry, relations->firstChild };
+				pSerializer->AddKeyValuePair( "firstChild", firstChild.GetName(), false, false, false, true );
+			}
+			else
+			{
+				pSerializer->AddKeyValuePair( "firstChild", std::string{ "" }, false, true, false, true );
+			}
+			pSerializer->EndTable(); // Relationship Object
+		}
+
+		pSerializer->EndTable(); // Components object
+		pSerializer->EndTable(); // End GameObject object
+	}
+
+	pSerializer->EndTable(); // GameObjects array
+	pSerializer->EndTable(); // Main table
+
+	return pSerializer->FinishStream();
+}
+
+bool TilemapLoader::LoadObjectMapLua( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile )
+{
+	sol::state lua;
+	try
+	{
+		lua.safe_script_file( sObjectMapFile );
+	}
+	catch ( const sol::error& err )
+	{
+		SCION_ERROR( "Failed to load object map file: [{}], {}", sObjectMapFile, err.what() );
+		return false;
+	}
+
+	// Map of entity to relationships
+	std::map<entt::entity, SaveRelationship> mapEntityToRelationship;
+
+	sol::optional<sol::table> maybeObjects = lua[ "game_objects" ];
+	if ( !maybeObjects )
+	{
+		SCION_ERROR( "Failed to load object map file: \"game_objects\" table is missing or invalid." );
+		return false;
+	}
+
+	for ( const auto& [ key, value ] : *maybeObjects )
+	{
+		Entity gameObject{ registry, "", "" };
+		const sol::optional<sol::table> components = value.as<sol::table>()[ "components" ];
+
+		if ( !components )
+		{
+			SCION_ERROR( "Failed to load object map file: \"components\" table is missing or invalid." );
+			return false;
+		}
+
+		// Transform
+		const sol::table luaTransform = ( *components )[ "transform" ];
+		auto& transform = gameObject.AddComponent<TransformComponent>();
+		DESERIALIZE_COMPONENT( luaTransform, transform );
+
+		// Sprite -- We cannot assume that all game objects have a sprite
+		const sol::optional<sol::table> luaSprite = ( *components )[ "transform" ];
+		if ( luaSprite )
+		{
+			auto& sprite = gameObject.AddComponent<SpriteComponent>();
+			DESERIALIZE_COMPONENT( *luaSprite, sprite );
+		}
+
+		const sol::optional<sol::table> luaBoxCollider = ( *components )[ "boxCollider" ];
+		if ( luaBoxCollider )
+		{
+			auto& boxCollider = gameObject.AddComponent<BoxColliderComponent>();
+			DESERIALIZE_COMPONENT( *luaBoxCollider, boxCollider );
+		}
+
+		const sol::optional<sol::table> luaCircleCollider = ( *components )[ "circleCollider" ];
+		if ( luaCircleCollider )
+		{
+			auto& circleCollider = gameObject.AddComponent<CircleColliderComponent>();
+			DESERIALIZE_COMPONENT( *luaCircleCollider, circleCollider );
+		}
+
+		const sol::optional<sol::table> luaAnimation = ( *components )[ "animation" ];
+		if ( luaAnimation )
+		{
+			auto& animation = gameObject.AddComponent<AnimationComponent>();
+			DESERIALIZE_COMPONENT( *luaAnimation, animation );
+		}
+
+		const sol::optional<sol::table> luaPhysics = ( *components )[ "physics" ];
+		if ( luaPhysics )
+		{
+			auto& physics = gameObject.AddComponent<PhysicsComponent>();
+			DESERIALIZE_COMPONENT( *luaPhysics, physics );
+		}
+
+		const sol::optional<sol::table> luaID = ( *components )[ "id" ];
+		if ( luaID )
+		{
+			auto& id = gameObject.GetComponent<Identification>();
+			DESERIALIZE_COMPONENT( *luaID, id );
+		}
+
+		const sol::optional<sol::table> luaUI = ( *components )[ "ui" ];
+		if ( luaUI )
+		{
+			auto& ui = gameObject.AddComponent<UIComponent>();
+			DESERIALIZE_COMPONENT( *luaUI, ui );
+		}
+
+		const sol::optional<sol::table> luaRelations = ( *components )[ "relationship" ];
+		if ( luaRelations )
+		{
+			SaveRelationship saveRelations{};
+			saveRelations.sParent = ( *luaRelations )[ "parent" ].get_or( std::string{ "" } );
+			saveRelations.sNextSibling = ( *luaRelations )[ "nextSibling" ].get_or( std::string{ "" } );
+			saveRelations.sPrevSibling = ( *luaRelations )[ "prevSibling" ].get_or( std::string{ "" } );
+			saveRelations.sFirstChild = ( *luaRelations )[ "firstChild" ].get_or( std::string{ "" } );
+
+			mapEntityToRelationship.emplace( gameObject.GetEntity(), saveRelations );
+		}
+	}
+
+	auto ids = registry.GetRegistry().view<Identification>( entt::exclude<TileComponent> );
+
+	auto findTag = [ & ]( const std::string& sTag ) {
+		auto parItr = std::ranges::find_if( ids, [ & ]( const auto& e ) {
+			Entity en{ registry, e };
+			return en.GetName() == sTag;
+		} );
+
+		if ( parItr != ids.end() )
+		{
+			return *parItr;
+		}
+
+		return entt::entity{ entt::null };
+	};
+
+	for ( auto& [ entity, saveRelations ] : mapEntityToRelationship )
+	{
+		Entity ent{ registry, entity };
+		auto& relations = ent.GetComponent<Relationship>();
+
+		// Find the parent
+		if ( !saveRelations.sParent.empty() )
+		{
+			relations.parent = findTag( saveRelations.sParent );
+		}
+
+		// Find the nextSibling
+		if ( !saveRelations.sNextSibling.empty() )
+		{
+			relations.nextSibling = findTag( saveRelations.sNextSibling );
+		}
+
+		// Find the prevSibling
+		if ( !saveRelations.sPrevSibling.empty() )
+		{
+			relations.prevSibling = findTag( saveRelations.sPrevSibling );
+		}
+
+		// Find the firstChild
+		if ( !saveRelations.sFirstChild.empty() )
+		{
+			relations.firstChild = findTag( saveRelations.sFirstChild );
+		}
+	}
+
+	return true;
+}
+
+bool TilemapLoader::SaveTilemap( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON )
+{
+	return bUseJSON ? SaveTilemapJSON( registry, sTilemapFile ) : SaveTilemapLua(registry, sTilemapFile);
+}
+
+bool TilemapLoader::LoadTilemap( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON )
+{
+	return bUseJSON ? LoadTilemapJSON( registry, sTilemapFile ) : LoadTilemapLua( registry, sTilemapFile );
 }
 
 bool TilemapLoader::LoadGameObjects( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile,
 									 bool bUseJSON )
 {
-	if ( bUseJSON )
-	{
-		return LoadObjectMapJSON( registry, sObjectMapFile );
-	}
-
-	return false;
+	return bUseJSON ? LoadObjectMapJSON( registry, sObjectMapFile ) : LoadObjectMapLua( registry, sObjectMapFile );
 }
 
 bool TilemapLoader::SaveGameObjects( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile,
 									 bool bUseJSON )
 {
-	if ( bUseJSON )
-		return SaveObjectMapJSON( registry, sObjectMapFile );
-
-	return false;
+	return bUseJSON ? SaveObjectMapJSON( registry, sObjectMapFile ) : SaveObjectMapLua( registry, sObjectMapFile );
 }
 
 } // namespace SCION_CORE::Loaders

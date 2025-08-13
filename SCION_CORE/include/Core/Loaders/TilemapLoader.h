@@ -114,7 +114,12 @@ class TilemapLoader
 	 */
 	bool LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile );
 
-	// TODO: Save and load functions for lua serializer
+	// Save and load functions for lua serializer
+	bool SaveTilemapLua( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile );
+	bool LoadTilemapLua( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile );
+
+	bool SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile );
+	bool LoadObjectMapLua( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile );
 };
 
 /*

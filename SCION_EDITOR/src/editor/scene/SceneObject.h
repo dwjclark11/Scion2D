@@ -131,6 +131,9 @@ class SceneObject : public SCION_CORE::Scene
 	virtual bool LoadScene() override;
 	virtual bool UnloadScene( bool bSaveScene = true ) override;
 
+	std::pair<std::string, std::string> ExportSceneToLua( const std::string& sSceneName, const std::string& sExportPath,
+														  SCION_CORE::ECS::Registry& registry );
+
 	/**
 	 * @brief Checks whether a tag name already exists in the scene.
 	 *

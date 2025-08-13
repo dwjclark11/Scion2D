@@ -48,7 +48,7 @@ void AssetPackager::PackageAssets( const rapidjson::Value& assets )
 }
 
 void AssetPackager::ConvertAssetToLuaTable( SCION_FILESYSTEM::LuaSerializer& luaSerializer,
-											const std::string& sAssetNum, const std::string& sInAssetFile,
+											const std::string& sAssetName, const std::string& sInAssetFile,
 											SCION_UTIL::AssetType eType )
 {
 	std::fstream in{ sInAssetFile, std::ios::in | std::ios::binary };
@@ -63,8 +63,8 @@ void AssetPackager::ConvertAssetToLuaTable( SCION_FILESYSTEM::LuaSerializer& lua
 
 	try
 	{
-		luaSerializer.StartNewTable( sAssetNum )
-			.AddKeyValuePair( "assetName", assetPath.stem().string(), true, false, false, true )
+		luaSerializer.StartNewTable( )
+			.AddKeyValuePair( "assetName", sAssetName, true, false, false, true )
 			.AddKeyValuePair( "assetExt", assetPath.extension().string(), true, false, false, true )
 			.AddKeyValuePair( "assetType", SCION_UTIL::AssetTypeToStr( eType ), true, false, false, true );
 
@@ -93,7 +93,7 @@ void AssetPackager::ConvertAssetToLuaTable( SCION_FILESYSTEM::LuaSerializer& lua
 	catch ( const std::exception& ex )
 	{
 		throw std::runtime_error( fmt::format(
-			"Failed to write [{}] at path [{}] to asset file. Error: {}", sAssetNum, sInAssetFile, ex.what() ) );
+			"Failed to write [{}] at path [{}] to asset file. Error: {}", sAssetName, sInAssetFile, ex.what() ) );
 	}
 }
 

@@ -24,6 +24,7 @@
 namespace fs = std::filesystem;
 
 using namespace SCION_FILESYSTEM;
+using namespace SCION_CORE;
 using namespace SCION_CORE::ECS;
 using namespace SCION_CORE::Loaders;
 using namespace entt::literals;
@@ -414,6 +415,132 @@ bool SceneObject::UnloadScene( bool bSaveScene )
 	bool bSuccess = Scene::UnloadScene( bSaveScene );
 	m_mapTagToEntity.clear();
 	return bSuccess;
+}
+
+std::pair<std::string, std::string> SceneObject::ExportSceneToLua( const std::string& sSceneName,
+																   const std::string& sExportPath,
+																   SCION_CORE::ECS::Registry& registry )
+{
+	// Get the scene data and load the scene into a separate registry
+	if ( !fs::exists( m_sSceneDataPath ) )
+	{
+		SCION_ERROR( "Failed to export scene. Scene data does not exist." );
+		return {};
+	}
+
+	std::ifstream sceneDataFile;
+	sceneDataFile.open( m_sSceneDataPath );
+
+	if ( !sceneDataFile.is_open() )
+	{
+		SCION_ERROR( "Failed to open scene data file. [{}]", m_sSceneDataPath );
+		return {};
+	}
+
+	if ( sceneDataFile.peek() == std::ifstream::traits_type::eof() )
+	{
+		return {};
+	}
+
+	std::stringstream ss;
+	ss << sceneDataFile.rdbuf();
+	std::string contents = ss.str();
+
+	rapidjson::StringStream jsonStr{ contents.c_str() };
+
+	rapidjson::Document doc;
+	doc.ParseStream( jsonStr );
+
+	if ( doc.HasParseError() || !doc.IsObject() )
+	{
+		SCION_ERROR( "Failed to export scene data. File: [{}] is not valid json. - {} - {}",
+					 m_sSceneDataPath,
+					 rapidjson::GetParseError_En( doc.GetParseError() ),
+					 doc.GetErrorOffset() );
+
+		return {};
+	}
+
+	SCION_ASSERT( doc.HasMember( "scene_data" ) && "scene_data member is necessary." );
+
+	const rapidjson::Value& sceneData = doc[ "scene_data" ];
+
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<ProjectInfoPtr>();
+	auto optScenesPath = pProjectInfo->TryGetFolderPath( EProjectFolderType::Scenes );
+
+	SCION_ASSERT( optScenesPath && "Scenes folder must exist." );
+
+	if ( m_sTilemapPath.empty() )
+	{
+		m_sTilemapPath = fs::path{ *optScenesPath / sceneData[ "tilemapPath" ].GetString() }.string();
+	}
+
+	if ( m_sObjectPath.empty() )
+	{
+		m_sObjectPath = fs::path{ *optScenesPath / sceneData[ "objectmapPath" ].GetString() }.string();
+	}
+
+	if ( sceneData.HasMember( "canvas" ) )
+	{
+		const rapidjson::Value& canvas = sceneData[ "canvas" ];
+		m_Canvas.width = canvas[ "width" ].GetInt();
+		m_Canvas.height = canvas[ "height" ].GetInt();
+		m_Canvas.tileWidth = canvas[ "tileWidth" ].GetInt();
+		m_Canvas.tileHeight = canvas[ "tileHeight" ].GetInt();
+	}
+
+	if (sceneData.HasMember("mapType"))
+	{
+		std::string sMapType = sceneData[ "mapType" ].GetString();
+		if (sMapType == "grid")
+		{
+			m_eMapType = SCION_CORE::EMapType::Grid;
+		}
+		else if ( sMapType == "iso" )
+		{
+			m_eMapType = SCION_CORE::EMapType::IsoGrid;
+		}
+	}
+
+	auto pTilemapLoader = std::make_unique<TilemapLoader>();
+	if (!pTilemapLoader->LoadTilemap(registry, m_sTilemapPath, true))
+	{
+		SCION_ERROR( "Failed to load tilemap [{}]", m_sTilemapPath );
+		return {};
+	}
+
+	if ( !pTilemapLoader->LoadGameObjects( registry, m_sObjectPath, true ) )
+	{
+		SCION_ERROR( "Failed to load game object map [{}]", m_sObjectPath );
+		return {};
+	}
+
+	fs::path exportPath{ sExportPath };
+	if (!fs::exists(exportPath))
+	{
+		SCION_ERROR( "Failed to export scene [{}] to lua. Export path [{}] does not exist.", sSceneName, sExportPath );
+		return {};
+	}
+
+	fs::path tilemapLua{ exportPath };
+	tilemapLua /= sSceneName + "_tilemap.lua";
+
+	if (!pTilemapLoader->SaveTilemap(registry, tilemapLua.string(), false))
+	{
+		SCION_ERROR( "Failed to export scene [{}] to lua.", sSceneName );
+		return {};
+	}
+
+	fs::path objectLua{ exportPath };
+	objectLua /= sSceneName + "_objects.lua";
+
+	if ( !pTilemapLoader->SaveGameObjects( registry, objectLua.string(), false ) )
+	{
+		SCION_ERROR( "Failed to export scene [{}] to lua.", sSceneName );
+		return {};
+	}
+
+	return std::make_pair( tilemapLua.string(), objectLua.string() );
 }
 
 bool SceneObject::CheckTagName( const std::string& sTagName )

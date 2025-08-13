@@ -33,7 +33,7 @@ class AssetPackager
 	void PackageAssets( const rapidjson::Value& assets );
 
   private:
-	void ConvertAssetToLuaTable( SCION_FILESYSTEM::LuaSerializer& luaSerializer, const std::string& sAssetNum,
+	void ConvertAssetToLuaTable( SCION_FILESYSTEM::LuaSerializer& luaSerializer, const std::string& sAssetName,
 								 const std::string& sInAssetFile, SCION_UTIL::AssetType eType );
 
 	void CreateLuaAssetFiles( const std::string& sProjectPath, const rapidjson::Value& assets );

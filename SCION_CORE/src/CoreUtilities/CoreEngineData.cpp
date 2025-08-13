@@ -27,9 +27,9 @@ static std::unordered_map<EGameType, std::string> g_mapGameTypeToStr
 static std::unordered_map< std::string, EGameType > g_mapStrToGameType
 {
 	{ "Top Down",				EGameType::TopDown },
-	{ "Platformer" ,			EGameType::Platformer},
-	{"Fighting",				EGameType::Fighting },
-	{ "Puzzle",					EGameType::Puzzle},
+	{ "Platformer" ,			EGameType::Platformer },
+	{ "Fighting",				EGameType::Fighting },
+	{ "Puzzle",					EGameType::Puzzle },
 	{ "Rougelike",				EGameType::Rougelike },
 	{ "No Type",				EGameType::NoType }
 };

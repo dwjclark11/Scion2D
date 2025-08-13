@@ -118,7 +118,7 @@ add_executable(SCION_EDITOR
 	"src/editor/packaging/IconReplacer.cpp"
 	"src/editor/packaging/AssetPackager.h"
 	"src/editor/packaging/AssetPackager.cpp"
-)
+ "src/editor/packaging/Packager.h" "src/editor/packaging/Packager.cpp")
 
 target_sources(
 	SCION_EDITOR PRIVATE
