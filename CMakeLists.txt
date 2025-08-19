@@ -35,6 +35,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib") # .lib, .a
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib") # .dll, .so
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin") # .exe
 
+# Precompiled header location
+set(PCH_DIR ${CMAKE_SOURCE_DIR}/shared_pch/pch)
+
 if(WIN32)
     add_definitions(-DNOMINMAX)
 	set(APP_ICON_RESOURCE "${CMAKE_CURRENT_SOURCE_DIR}/resources/scion2d.rc")
@@ -63,6 +66,10 @@ find_package(sol2 CONFIG REQUIRED)
 find_package(tinyfiledialogs CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
 find_package(libzippp CONFIG REQUIRED)
+
+add_subdirectory(shared_pch)
+# Register pch.hpp as a precompiled header
+target_precompile_headers(PCH PUBLIC ${PCH_DIR}/pch.hpp)
 
 add_subdirectory(SCION_LOGGER)
 add_subdirectory(SCION_UTILITIES)

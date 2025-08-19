@@ -4,10 +4,13 @@
 #include "Rendering/Core/Camera2D.h"
 #include "editor/utilities/EditorUtilities.h"
 #include "Logger/Logger.h"
+#include "Windowing/Inputs/Mouse.h"
 
 #include <glm/glm.hpp>
 #include <imgui.h>
 #include <cmath>
+
+using namespace SCION_WINDOWING::Inputs;
 
 namespace SCION_EDITOR
 {

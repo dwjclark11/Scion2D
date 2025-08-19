@@ -13,3 +13,5 @@ target_link_libraries( SCION_LOGGER PUBLIC fmt::fmt)
 
 target_compile_options( 
     SCION_LOGGER PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)
+
+target_precompile_headers(SCION_LOGGER REUSE_FROM PCH)

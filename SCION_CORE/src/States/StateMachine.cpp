@@ -1,4 +1,5 @@
 #include "Core/States/StateMachine.h"
+#include "Core/States/State.h"
 #include "Logger/Logger.h"
 
 namespace SCION_CORE

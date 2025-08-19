@@ -155,3 +155,5 @@ set_target_properties(SCION_EDITOR PROPERTIES
 
 target_compile_options(
     SCION_EDITOR PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)
+
+target_precompile_headers(SCION_EDITOR REUSE_FROM PCH)

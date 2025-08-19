@@ -1,9 +1,11 @@
 #pragma once
 #include <vector>
-#include "State.h"
+#include <sol/sol.hpp>
 
 namespace SCION_CORE
 {
+struct State;
+
 class StateStack
 {
   public:

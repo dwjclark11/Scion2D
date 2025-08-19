@@ -40,6 +40,10 @@
 
 #include "Core/Scripting/InputManager.h"
 #include "Windowing/Inputs/Mouse.h"
+#include "Windowing/Inputs/Keyboard.h"
+
+using namespace SCION_WINDOWING::Inputs;
+
 
 #include "Logger/Logger.h"
 #include <imgui.h>

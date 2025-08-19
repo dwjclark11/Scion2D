@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 #include "ScionUtilities/HelperUtilities.h"
 
 namespace SCION_CORE::ECS

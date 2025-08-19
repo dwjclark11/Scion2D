@@ -20,3 +20,5 @@ target_link_libraries(SCION_PHYSICS
 
 target_compile_options(
     SCION_PHYSICS PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)
+
+target_precompile_headers(SCION_PHYSICS REUSE_FROM PCH)

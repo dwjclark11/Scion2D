@@ -1,14 +1,4 @@
 #pragma once
-#include <map>
-#include <unordered_map>
-#include <filesystem>
-#include <memory>
-#include <string>
-#include <mutex>
-#include <shared_mutex>
-#include <atomic>
-#include <thread>
-
 #include <sol/sol.hpp>
 #include <SDL_mixer.h>
 

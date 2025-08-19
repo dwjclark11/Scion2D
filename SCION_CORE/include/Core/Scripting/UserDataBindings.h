@@ -1,6 +1,10 @@
 #pragma once
 #include <sol/sol.hpp>
-#include <Physics/UserData.h>
+
+namespace SCION_PHYSICS
+{
+struct UserData;
+}
 
 namespace SCION_CORE::Scripting
 {

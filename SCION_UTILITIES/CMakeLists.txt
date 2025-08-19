@@ -21,3 +21,5 @@ target_link_libraries(SCION_UTILITIES PUBLIC SCION_LOGGER SDL2::SDL2)
 
 target_compile_options(
     SCION_UTILITIES PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)
+
+target_precompile_headers(SCION_UTILITIES REUSE_FROM PCH)

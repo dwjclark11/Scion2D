@@ -1,5 +1,6 @@
 #include "Core/States/StateStack.h"
 #include <Logger/Logger.h>
+#include "Core/States/State.h"
 
 namespace SCION_CORE
 {

@@ -21,3 +21,5 @@ target_link_libraries(SCION_WINDOW PUBLIC SCION_UTILITIES)
 
 target_compile_options(
     SCION_WINDOW PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)
+
+target_precompile_headers(SCION_WINDOW REUSE_FROM PCH)

@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include "Core/ECS/Registry.h"
 
 #define MAIN_REGISTRY() SCION_CORE::ECS::MainRegistry::GetInstance()

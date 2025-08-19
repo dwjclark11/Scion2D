@@ -1,8 +1,4 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <map>
-#include <memory>
 #include <sol/sol.hpp>
 
 namespace SCION_CORE

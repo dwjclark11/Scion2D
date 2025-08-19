@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 
 namespace SCION_CORE::ECS
 {

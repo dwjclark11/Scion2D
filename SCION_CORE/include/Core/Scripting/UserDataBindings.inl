@@ -1,5 +1,6 @@
 #include "Core/Scripting/UserDataBindings.h"
 #include <entt/entt.hpp>
+#include <Physics/UserData.h>
 
 using namespace SCION_PHYSICS;
 

@@ -1,12 +1,15 @@
 #pragma once
-#include <Windowing/Inputs/Keyboard.h>
-#include <Windowing/Inputs/Mouse.h>
-#include <Windowing/Inputs/Gamepad.h>
-#include <memory>
 #include <sol/sol.hpp>
 #include "Core/ECS/Registry.h"
+#include <SDL2/SDL.h>
 
-using namespace SCION_WINDOWING::Inputs;
+namespace SCION_WINDOWING::Inputs
+{
+class Gamepad;
+class Keyboard;
+class Mouse;
+}
+
 constexpr int MAX_CONTROLLERS = 4;
 
 #define INPUT_MANAGER() SCION_CORE::InputManager::GetInstance()
@@ -20,9 +23,9 @@ namespace SCION_CORE
 class InputManager
 {
   private:
-	std::unique_ptr<Keyboard> m_pKeyboard;
-	std::unique_ptr<Mouse> m_pMouse;
-	std::map<int, std::shared_ptr<Gamepad>> m_mapGameControllers;
+	std::unique_ptr<SCION_WINDOWING::Inputs::Keyboard> m_pKeyboard;
+	std::unique_ptr<SCION_WINDOWING::Inputs::Mouse> m_pMouse;
+	std::map<int, std::shared_ptr<SCION_WINDOWING::Inputs::Gamepad>> m_mapGameControllers;
 
   private:
 	InputManager();
@@ -39,10 +42,10 @@ class InputManager
 	static InputManager& GetInstance();
 	static void CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Registry& registry );
 
-	inline Keyboard& GetKeyboard() { return *m_pKeyboard; }
-	inline Mouse& GetMouse() { return *m_pMouse; }
+	inline SCION_WINDOWING::Inputs::Keyboard& GetKeyboard() { return *m_pKeyboard; }
+	inline SCION_WINDOWING::Inputs::Mouse& GetMouse() { return *m_pMouse; }
 
-	inline std::map<int, std::shared_ptr<Gamepad>>& GetControllers() { return m_mapGameControllers; }
+	inline std::map<int, std::shared_ptr<SCION_WINDOWING::Inputs::Gamepad>>& GetControllers() { return m_mapGameControllers; }
 
 	/*
 	 * @brief Get the controller at a desired index.
@@ -50,7 +53,7 @@ class InputManager
 	 * @return Returns a shared_ptr of the gamepad at the index
 	 * if exists, else returns nullptr;
 	 */
-	std::shared_ptr<Gamepad> GetController( int index );
+	std::shared_ptr<SCION_WINDOWING::Inputs::Gamepad> GetController( int index );
 
 	/*
 	 * @brief Adds a new gamepad to the map at the given index.

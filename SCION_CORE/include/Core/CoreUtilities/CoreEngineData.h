@@ -1,6 +1,4 @@
 #pragma once
-#include <chrono>
-#include <unordered_map>
 
 #define CORE_GLOBALS() SCION_CORE::CoreEngineData::GetInstance()
 

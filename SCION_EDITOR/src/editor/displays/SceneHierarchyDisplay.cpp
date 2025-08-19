@@ -20,6 +20,11 @@
 #include "Core/CoreUtilities/Prefab.h"
 #include "Core/Resources/AssetManager.h"
 
+#include "Windowing/Inputs/Mouse.h"
+#include "Windowing/Inputs/Keyboard.h"
+
+using namespace SCION_WINDOWING::Inputs;
+
 #include <imgui.h>
 
 using namespace SCION_CORE::Events;

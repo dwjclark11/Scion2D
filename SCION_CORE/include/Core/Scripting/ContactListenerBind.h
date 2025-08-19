@@ -1,7 +1,11 @@
 #pragma once
 #include <sol/sol.hpp>
-#include <Physics/ContactListener.h>
 #include <entt/entt.hpp>
+
+namespace SCION_PHYSICS 
+{
+class ContactListener;
+}
 
 namespace SCION_CORE::Scripting
 {

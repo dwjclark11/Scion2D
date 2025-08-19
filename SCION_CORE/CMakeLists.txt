@@ -137,6 +137,8 @@ target_include_directories(
 	PRIVATE ${SOL2_INCLUDE_DIRS}
 )
 
+target_precompile_headers(SCION_CORE REUSE_FROM PCH)
+
 target_link_libraries(SCION_CORE PUBLIC
     glm::glm EnTT::EnTT sol2::sol2 ${LUA_LIBRARIES}
     $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>

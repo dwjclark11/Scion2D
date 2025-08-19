@@ -1,10 +1,10 @@
 #pragma once
-#include "State.h"
-
-#include <map>
+#include <sol/sol.hpp>
 
 namespace SCION_CORE
 {
+struct State;
+
 class StateMachine
 {
   public:

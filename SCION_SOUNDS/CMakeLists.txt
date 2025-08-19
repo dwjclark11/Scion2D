@@ -20,3 +20,5 @@ target_link_libraries(SCION_SOUNDS
 
 target_compile_options(
     SCION_SOUNDS PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)
+
+target_precompile_headers(SCION_SOUNDS REUSE_FROM PCH)

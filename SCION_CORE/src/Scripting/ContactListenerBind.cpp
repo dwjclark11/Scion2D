@@ -1,4 +1,5 @@
 #include "Core/Scripting/ContactListenerBind.h"
+#include <Physics/ContactListener.h>
 #include "Core/ECS/MetaUtilities.h"
 #include <Physics/UserData.h>
 #include <Logger/Logger.h>

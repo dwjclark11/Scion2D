@@ -1,10 +1,15 @@
 #include "Core/Scripting/InputManager.h"
-#include "Core/Scripting/InputManager.h"
+#include <Windowing/Inputs/Keyboard.h>
+#include <Windowing/Inputs/Mouse.h>
+#include <Windowing/Inputs/Gamepad.h>
+
 #include <Logger/Logger.h>
 #include <ScionUtilities/SDL_Wrappers.h>
 #include <glm/glm.hpp>
 
 #include <Rendering/Core/Camera2D.h>
+
+using namespace SCION_WINDOWING::Inputs;
 
 namespace SCION_CORE
 {

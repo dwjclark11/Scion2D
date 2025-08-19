@@ -51,3 +51,5 @@ target_link_libraries(SCION_RENDERING
 
 target_compile_options(
     SCION_RENDERING PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)
+
+target_precompile_headers(SCION_RENDERING REUSE_FROM PCH)
