@@ -92,3 +92,4 @@ set_target_properties(
 
 include(cmake/AddResources.cmake)
 add_subdirectory(SCION_EDITOR)
+add_subdirectory(crash_reporter)

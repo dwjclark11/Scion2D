@@ -26,6 +26,20 @@ namespace fs = std::filesystem;
 
 namespace SCION_LOGGER
 {
+
+#ifdef _WIN32
+LONG CALLBACK VectoredCrashHandler( PEXCEPTION_POINTERS ExceptionInfo )
+{
+	if ( ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_BREAKPOINT )
+	{
+		CrashLogger::CrashHandler( -1 );
+		return EXCEPTION_EXECUTE_HANDLER;
+	}
+
+	return EXCEPTION_CONTINUE_SEARCH;
+}
+#endif
+
 CrashLogger& CrashLogger::GetInstance()
 {
 	static CrashLogger instance;
@@ -43,6 +57,10 @@ void CrashLogger::Initialize()
 	std::signal( SIGSEGV, CrashHandler );
 	// Abnormal termination (abort)
 	std::signal( SIGABRT, CrashHandler );
+
+#ifdef _WIN32
+	AddVectoredExceptionHandler( 1, VectoredCrashHandler );
+#endif
 
 	m_bInitialized = true;
 
@@ -106,6 +124,84 @@ void CrashLogger::LogLuaStackTrace( std::ofstream& outFile )
 	outFile << lua_tostring( m_pLuaState, -1 ) << "\n";
 	outFile << "------------------------------------------------------------\n";
 	lua_pop( m_pLuaState, 1 );
+}
+
+void CrashLogger::LaunchCrashReporter( const std::string& sFilename )
+{
+#ifdef _WIN32
+	// Launch crash reporter executable
+	STARTUPINFOA si = { sizeof( si ) };
+	PROCESS_INFORMATION pi;
+
+	CreateProcessA(
+		"SCION_CRASH_REPORTER.exe",															  // Path to crash reporter
+		const_cast<char*>( fmt::format( "SCION_CRASH_REPORTER.exe {}", sFilename ).c_str() ), // Command line args
+		nullptr,
+		nullptr,
+		FALSE,
+		0,
+		nullptr,
+		nullptr,
+		&si,
+		&pi );
+
+	// Optionally wait, or just let it continue
+	CloseHandle( pi.hProcess );
+	CloseHandle( pi.hThread );
+#elif __linux__
+	pid_t pid = fork();
+
+	if ( pid == 0 )
+	{
+		// Child process
+		if ( setsid() < 0 )
+		{
+			perror( "setsid failed" );
+			_exit( 1 );
+		}
+
+		pit_t pid2 = fork();
+		if ( pid2 < 0 )
+		{
+			perror( "second fork failed." );
+			_exit( 1 );
+		}
+
+		if ( pid2 > 0 )
+		{
+			// First child exits, leaving grandchild orphaned (now owned but init)
+			_exit( 0 );
+		}
+
+		// Grandchild: fully detached
+		std::string executable = "./SCION_CRASH_REPORTER";
+		std::string arg0 = "SCION_CRASH_REPORTER";
+		std::string arg1 = sFilename;
+
+		char* argv[] = { const_cast<char*>( arg0.c_str() ), const_cast<char*>( arg1.c_str() ), nullptr };
+
+		// Redirect std::streams to /dev/null
+		int fd = open( "/dev/null", O_RDWR );
+		if ( fd > 0 )
+		{
+			dup2( fd, STDIN_FILENO );
+			dup2( fd, STDOUT_FILENO );
+			dup2( fd, STDERR_FILENO );
+			if ( fd > 2 )
+				close( fd );
+		}
+
+		execv( executable.c_str(), argv );
+
+		// If execv returns, there was an error
+		perror( "execv failed" );
+		_exit( 1 ); // Exit child immediately.
+	}
+	else
+	{
+	}
+
+#endif
 }
 
 std::string CrashLogger::GetCurrentTimestamp()
@@ -272,51 +368,59 @@ void CrashLogger::PrintHighlightedSourceLine( std::ofstream& outFile )
 
 void CrashLogger::CrashHandler( int signal )
 {
-	ExtractCrashLocation();
-	std::string sTimestamp{ GetCurrentTimestamp() };
+	std::string sFilename{ "" };
 
-	std::ostringstream ss;
-
-	ss << "\n============================================================\n";
-	ss << "[CRITICAL] Program crashed! Signal: " << signal << " (" << sTimestamp << ")" << "\n";
-	ss << "============================================================\n";
-	ss << "\nCrash Detected:\n------------------------------------------------------------\n";
-	ss << "File: " << sCrashFile << "\n";
-	ss << "Line: " << CrashLine << "\n";
-
-	std::cerr << ss.str();
-
-	PrintHighlightedSourceLine( std::cerr );
-
-	auto& crashLogger = GetInstance();
-	std::unique_ptr<std::ofstream> pLogFile{ nullptr };
-	const std::string sProjectPath{ crashLogger.GetProjectPath() };
-	if ( !sProjectPath.empty() )
 	{
-		// We want to open the file as an append, so we add new logs
-		pLogFile = std::make_unique<std::ofstream>( sProjectPath + PATH_SEPARATOR + "crash_log.txt", std::ios::app );
-	}
-	else // Create the log in the program folder.
-	{
-		pLogFile = std::make_unique<std::ofstream>( "crash_log.txt", std::ios::app );
-	}
+		ExtractCrashLocation();
+		std::string sTimestamp{ GetCurrentTimestamp() };
 
-	SCION_ASSERT( pLogFile && "Log File was not successfully created and opened." );
+		std::ostringstream ss;
 
-	// There is no file to log to, finish log write to console and exit
-	if ( !pLogFile )
-	{
-		SCION_ERROR( "Failed to write to crash log file" );
+		ss << "\n============================================================\n";
+		ss << "[CRITICAL] Program crashed! Signal: " << signal << " (" << sTimestamp << ")" << "\n";
+		ss << "============================================================\n";
+		ss << "\nCrash Detected:\n------------------------------------------------------------\n";
+		ss << "File: " << sCrashFile << "\n";
+		ss << "Line: " << CrashLine << "\n";
+
+		std::cerr << ss.str();
+
+		PrintHighlightedSourceLine( std::cerr );
+
+		auto& crashLogger = GetInstance();
+		std::unique_ptr<std::ofstream> pLogFile{ nullptr };
+		const std::string sProjectPath{ crashLogger.GetProjectPath() };
+		if ( !sProjectPath.empty() )
+		{
+			sFilename = sProjectPath + PATH_SEPARATOR + "crash_log.txt";
+			// We want to open the file as an append, so we add new logs
+			pLogFile = std::make_unique<std::ofstream>( sFilename, std::ios::app );
+		}
+		else // Create the log in the program folder.
+		{
+			sFilename = "crash_log.txt";
+			pLogFile = std::make_unique<std::ofstream>( sFilename, std::ios::app );
+		}
+
+		SCION_ASSERT( pLogFile && "Log File was not successfully created and opened." );
+
+		// There is no file to log to, finish log write to console and exit
+		if ( !pLogFile )
+		{
+			SCION_ERROR( "Failed to write to crash log file" );
+			crashLogger.LogLuaStackTrace( std::cerr );
+			std::exit( signal );
+			return;
+		}
+
+		*pLogFile << ss.str();
+		PrintHighlightedSourceLine( *pLogFile );
+
 		crashLogger.LogLuaStackTrace( std::cerr );
-		std::exit( signal );
-		return;
+		crashLogger.LogLuaStackTrace( *pLogFile );
 	}
 
-	*pLogFile << ss.str();
-	PrintHighlightedSourceLine( *pLogFile );
-
-	crashLogger.LogLuaStackTrace( std::cerr );
-	crashLogger.LogLuaStackTrace( *pLogFile );
+	LaunchCrashReporter( sFilename );
 
 	std::exit( signal );
 }
