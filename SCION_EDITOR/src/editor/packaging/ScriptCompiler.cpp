@@ -62,7 +62,7 @@ bool ScriptCompiler::AddScripts( const std::string& sScriptList )
 			return false;
 		}
 
-		const std::string sContentPath = fmt::format( "{}content{}", CORE_GLOBALS().GetProjectPath(), PATH_SEPARATOR );
+		const std::string sContentPath = fmt::format( "{}{}content{}", CORE_GLOBALS().GetProjectPath(), PATH_SEPARATOR, PATH_SEPARATOR );
 
 		for ( const auto& [ _, script ] : *optScriptList )
 		{

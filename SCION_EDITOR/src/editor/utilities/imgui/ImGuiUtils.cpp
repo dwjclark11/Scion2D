@@ -2,6 +2,7 @@
 #include "Logger/Logger.h"
 #include <imgui_stdlib.h>
 #include <unordered_map>
+#include "imgui_internal.h"
 
 namespace ImGui
 {
@@ -132,6 +133,38 @@ void DisabledImageButton( const char* buttonId, ImTextureID textureID, ImVec2 si
 
 	ImGui::EndDisabled();
 }
+
+void LoadingSpinner( const char* label, float radius, float thickness, const ImU32& color )
+{
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	if ( window->SkipItems )
+		return;
+
+	ImGuiContext& g = *ImGui::GetCurrentContext();
+	const ImGuiID id = window->GetID( label );
+	const ImVec2 pos = ImGui::GetCursorScreenPos();
+	const float size = ( radius + thickness ) * 2.f;
+	const ImRect bb( pos, ImVec2{ pos.x + size, pos.y + size } );
+	ImGui::ItemSize( bb );
+	if ( !ImGui::ItemAdd( bb, id ) )
+		return;
+
+	const float time = static_cast<float>( ImGui::GetTime() );
+	const int numSegments = 30;
+	const float startAngle = time * 4.f;
+	const float angleOffset = 2.0f * IM_PI / numSegments;
+
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+	drawList->PathClear();
+	for ( int i = 0; i < numSegments; ++i )
+	{
+		const float a = startAngle + i * angleOffset;
+		drawList->PathLineTo(
+			ImVec2{ pos.x + radius + std::cos( a ) * radius, pos.y + radius + std::sin( a ) * radius } );
+	}
+	drawList->PathStroke( color, false, thickness );
+}
+
 void InputTextReadOnly( const std::string& sLabel, std::string* sInputText )
 {
 	ImVec4 textDisabled = ImGui::GetStyle().Colors[ ImGuiCol_TextDisabled ];

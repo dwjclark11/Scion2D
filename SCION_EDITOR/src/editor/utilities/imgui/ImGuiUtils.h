@@ -118,6 +118,18 @@ void DisabledImageButton( const char* buttonId, ImTextureID textureID, ImVec2 si
 						  const std::string& disabledMsg = "" );
 
 /**
+ * @brief Displays a spinning loading indicator.
+ *
+ * Draws a circular animated spinner at the current cursor position.
+ *
+ * @param label Unique label for the spinner (used for ImGui ID).
+ * @param radius Radius of the spinner.
+ * @param thickness Line thickness of the spinner.
+ * @param color Color of the spinner lines.
+ */
+void LoadingSpinner( const char* label, float radius, float thickness, const ImU32& color );
+
+/**
  * @brief Displays a read-only input text field with dimmed styling.
  *
  * Visually indicates the field is non-editable.

@@ -3,9 +3,12 @@
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/ECS/MainRegistry.h"
 #include "ScionUtilities/HelperUtilities.h"
+#include "ScionUtilities/ThreadPool.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/EditorUtilities.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
+#include "editor/loaders/ProjectLoader.h"
+#include "editor/packaging/Packager.h"
 #include "editor/scene/SceneManager.h"
 #include "ScionFilesystem/Dialogs/FileDialog.h"
 #include "Logger/Logger.h"
@@ -15,11 +18,13 @@
 #include <filesystem>
 
 namespace fs = std::filesystem;
+using namespace SCION_FILESYSTEM;
 
 namespace SCION_EDITOR
 {
 PackageGameDisplay::PackageGameDisplay()
 	: m_pGameConfig{ std::make_unique<SCION_CORE::GameConfig>() }
+	, m_pPackager{ nullptr }
 	, m_sDestinationPath{}
 	, m_sScriptListPath{}
 	, m_sFileIconPath{}
@@ -28,6 +33,7 @@ PackageGameDisplay::PackageGameDisplay()
 	, m_bFullScreen{ false }
 	, m_bTitlebar{ false }
 	, m_bScriptListExists{ false }
+	, m_bPackageHasErrors{ false }
 {
 	const auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
 	auto optScriptListPath = pProjectInfo->GetScriptListPath();
@@ -41,7 +47,19 @@ PackageGameDisplay::~PackageGameDisplay() = default;
 
 void PackageGameDisplay::Update()
 {
-	// TODO: Handle Packager
+	if ( !m_pPackager )
+		return;
+	if ( m_pPackager->Completed() )
+	{
+		m_pPackager.reset( nullptr );
+		return;
+	}
+
+	if ( m_pPackager->HasError() )
+	{
+		m_bPackageHasErrors = true;
+		m_pPackager.reset( nullptr );
+	}
 }
 
 void PackageGameDisplay::Draw()
@@ -182,6 +200,7 @@ void PackageGameDisplay::Draw()
 
 		ImGui::PushItemWidth( 256.f );
 
+		ImGui::InlineLabel( "Startup Scene" );
 		if ( ImGui::BeginCombo( "##start_up_scenes", m_pGameConfig->sStartupScene.c_str() ) )
 		{
 			for ( const auto& sSceneName : SCENE_MANAGER().GetSceneNames() )
@@ -203,11 +222,95 @@ void PackageGameDisplay::Draw()
 
 	ImGui::AddSpaces( 3 );
 
-	if ( ImGui::Button( "Package Game" ) )
+	if ( CanPackageGame() )
 	{
+		if ( m_pPackager && !m_pPackager->Completed() )
+		{
+			ImGui::LoadingSpinner( "##packaging", 10.f, 3.f, IM_COL32( 32, 175, 32, 255 ) );
+			ImGui::SameLine( 0.f, 16.f );
+			const auto packageProgress = m_pPackager->GetProgress();
+			if ( auto pFont = ImGui::GetFont( "roboto-bold-24" ) )
+			{
+				ImGui::PushFont( pFont );
+				ImGui::TextColored(
+					m_bPackageHasErrors ? ImVec4{ 1.f, 0.f, 0.f, 1.f } : ImVec4{ 0.f, 1.f, 0.f, 1.f },
+					fmt::format( "{}%% - {}", packageProgress.percent, packageProgress.sMessage ).c_str() );
+				ImGui::PopFont();
+			}
+		}
+		else if ( ImGui::Button( "Package Game" ) )
+		{
+			// We want to ensure we are packaging the most current data.
+			// Save all files, before packaging.
+			auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+			SCION_ASSERT( pProjectInfo && "Project Info must exist!" );
+			// Save entire project
+			ProjectLoader pl{};
+			if ( !pl.SaveLoadedProject( *pProjectInfo ) )
+			{
+				auto optProjectFilePath = pProjectInfo->GetProjectFilePath();
+				SCION_ASSERT( optProjectFilePath && "Project file path not set correctly in project info." );
+
+				SCION_ERROR( "Failed to save project [{}] at file [{}].",
+							 pProjectInfo->GetProjectName(),
+							 optProjectFilePath->string() );
+
+				return;
+			}
+
+			const auto& coreGlobals = CORE_GLOBALS();
+
+			// Set Physics data
+			m_pGameConfig->bPhysicsEnabled = coreGlobals.IsPhysicsEnabled();
+			m_pGameConfig->positionIterations = coreGlobals.GetPositionIterations();
+			m_pGameConfig->velocityIterations = coreGlobals.GetVelocityIterations();
+			m_pGameConfig->gravity = coreGlobals.GetGravity();
+			m_pGameConfig->sGameName = pProjectInfo->GetProjectName();
+
+			// Set window flags
+			uint32_t flags{ 0 };
+
+			if ( m_bBorderless && !m_bTitlebar )
+				flags |= SDL_WINDOW_BORDERLESS;
+			if ( m_bFullScreen )
+				flags |= SDL_WINDOW_FULLSCREEN;
+			if ( m_bResizable )
+				flags |= SDL_WINDOW_RESIZABLE;
+
+			m_pGameConfig->windowFlags = flags;
+
+			std::string sFullDestination =
+				fmt::format( "{}{}{}", m_sDestinationPath, PATH_SEPARATOR, m_pGameConfig->sGameName );
+
+			auto pPackageData = std::make_unique<PackageData>();
+			pPackageData->pProjectInfo = std::make_unique<SCION_CORE::ProjectInfo>( *pProjectInfo );
+			pPackageData->pGameConfig = std::make_unique<SCION_CORE::GameConfig>( *m_pGameConfig );
+			pPackageData->sTempDataPath = fs::path{ pProjectInfo->GetProjectPath() / "tempData" }.string();
+			pPackageData->sFinalDestination = sFullDestination;
+			pPackageData->sAssetFilepath = pPackageData->sTempDataPath + PATH_SEPARATOR + "assetDefs.lua";
+
+			auto& pThreadPool = MAIN_REGISTRY().GetContext<SharedThreadPool>();
+			SCION_ASSERT( pThreadPool && "Thread pool must exist and be valid." );
+
+			m_pPackager = std::make_unique<Packager>( std::move( pPackageData ), pThreadPool );
+
+			ImGui::End();
+
+			return;
+		}
+	}
+	else if ( !m_bScriptListExists )
+	{
+		ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f }, "Unable to package game. Script List does not exist." );
 	}
 
 	ImGui::End();
+}
+
+bool PackageGameDisplay::CanPackageGame() const
+{
+	return m_bScriptListExists && !m_sDestinationPath.empty() && !m_pGameConfig->sStartupScene.empty() &&
+		   fs::exists( fs::path{ m_sDestinationPath } ) && !m_sDestinationPath.empty();
 }
 
 } // namespace SCION_EDITOR
