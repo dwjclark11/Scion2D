@@ -526,7 +526,7 @@ bool RuntimeApp::LoadZip()
 				if ( !assetManager.AddFontFromMemory(
 						 pFontAsset->sName, pFontAsset->assetData.data(), pFontAsset->assetSize ) )
 				{
-					SCION_ERROR( "Failed to add music [{}] from memory.", pFontAsset->sName );
+					SCION_ERROR( "Failed to add font [{}] from memory.", pFontAsset->sName );
 				}
 			}
 			break;

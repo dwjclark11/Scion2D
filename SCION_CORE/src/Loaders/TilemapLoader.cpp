@@ -1047,9 +1047,12 @@ bool TilemapLoader::LoadGameObjectsFromLuaTable( SCION_CORE::ECS::Registry& regi
 		DESERIALIZE_COMPONENT( luaTransform, transform );
 
 		// Sprite
-		const sol::table luaSprite = ( *components )[ "sprite" ];
-		auto& sprite = newTile.AddComponent<SpriteComponent>();
-		DESERIALIZE_COMPONENT( luaSprite, sprite );
+		sol::optional<sol::table> optLuaSprite = ( *components )[ "sprite" ];
+		if ( optLuaSprite )
+		{
+			auto& sprite = newTile.AddComponent<SpriteComponent>();
+			DESERIALIZE_COMPONENT( *optLuaSprite, sprite );
+		}
 
 		sol::optional<sol::table> luaID = ( *components )[ "id" ];
 		if ( luaID )
