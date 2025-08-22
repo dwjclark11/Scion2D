@@ -171,6 +171,11 @@ void RuntimeApp::Initialize()
 		throw std::runtime_error( "Failed to initialize the Main Registry." );
 	}
 
+	if ( !mainRegistry.GetAssetManager().CreateDefaultFonts() )
+	{
+		throw std::runtime_error( "Failed to create default fonts." );
+	}
+
 	mainRegistry.AddToContext<std::shared_ptr<sol::state>>( std::move( pLuaState ) );
 
 	if ( !LoadShaders() )
@@ -639,12 +644,12 @@ void RuntimeApp::Update()
 	mainRegistry.GetAnimationSystem().Update( *registry, *camera );
 
 #ifdef _DEBUG
-	if (INPUT_MANAGER().GetKeyboard().IsKeyJustPressed(SCION_KEY_F2))
+	if ( INPUT_MANAGER().GetKeyboard().IsKeyJustPressed( SCION_KEY_F2 ) )
 	{
 		coreGlobals.ToggleRenderCollisions();
 	}
 #endif
-		
+
 	INPUT_MANAGER().UpdateInputs();
 	camera->Update();
 }

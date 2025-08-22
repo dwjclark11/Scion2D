@@ -717,6 +717,11 @@ bool TilemapLoader::SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 			SERIALIZE_COMPONENT( *pSerializer, *ui );
 		}
 
+		if (auto* text = objectEnt.TryGetComponent<TextComponent>())
+		{
+			SERIALIZE_COMPONENT( *pSerializer, *text );
+		}
+
 		if ( auto* relations = objectEnt.TryGetComponent<Relationship>() )
 		{
 			pSerializer->StartNewTable( "relationship" );
@@ -1088,6 +1093,20 @@ bool TilemapLoader::LoadGameObjectsFromLuaTable( SCION_CORE::ECS::Registry& regi
 		{
 			auto& physics = newTile.AddComponent<PhysicsComponent>();
 			DESERIALIZE_COMPONENT( *luaPhysics, physics );
+		}
+
+		sol::optional<sol::table> optLuaText = ( *components )[ "text" ];
+		if ( optLuaText )
+		{
+			auto& text = newTile.AddComponent<TextComponent>();
+			DESERIALIZE_COMPONENT( *optLuaText, text);
+		}
+
+		sol::optional<sol::table> optUI = ( *components )[ "ui" ];
+		if ( optUI )
+		{
+			auto& ui = newTile.AddComponent<UIComponent>();
+			DESERIALIZE_COMPONENT( *optUI, ui );
 		}
 	}
 
