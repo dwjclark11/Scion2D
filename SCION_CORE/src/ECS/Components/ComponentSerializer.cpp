@@ -348,18 +348,18 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.AddKeyValuePair( "v", sprite.uvs.v, false )
 		.AddKeyValuePair( "uv_width", sprite.uvs.uv_width, false )
 		.AddKeyValuePair( "uv_height", sprite.uvs.uv_height, false, true )
-		.EndTable( false )
+		.EndTable( false ) // UVS
 		.StartNewTable( "color" )
 		.AddKeyValuePair( "r", static_cast<int>( sprite.color.r ), false )
 		.AddKeyValuePair( "g", static_cast<int>( sprite.color.g ), false )
 		.AddKeyValuePair( "b", static_cast<int>( sprite.color.b ), false )
 		.AddKeyValuePair( "a", static_cast<int>( sprite.color.a ), false, true )
-		.EndTable( false )
+		.EndTable( false ) // COLOR
 		.AddKeyValuePair( "bHidden", sprite.bHidden, true )
 		.AddKeyValuePair( "bIsoMetric", sprite.bIsoMetric, false )
 		.AddKeyValuePair( "isoCellX", sprite.isoCellX, false )
 		.AddKeyValuePair( "isoCellY", sprite.isoCellY, false, true )
-		.EndTable();
+		.EndTable(); // SPRITE
 }
 
 void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
@@ -434,19 +434,19 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.StartNewTable( "position" )
 		.AddKeyValuePair( "x", attributes.position.x, false )
 		.AddKeyValuePair( "y", attributes.position.y, false )
-		.EndTable( false )
+		.EndTable( false ) // Position
 		.StartNewTable( "scale" )
 		.AddKeyValuePair( "x", attributes.scale.x, false )
 		.AddKeyValuePair( "y", attributes.scale.y, false, true )
-		.EndTable( false )
+		.EndTable( false ) // Scale
 		.StartNewTable( "boxSize" )
 		.AddKeyValuePair( "x", attributes.boxSize.x, false )
 		.AddKeyValuePair( "y", attributes.boxSize.y, false, true )
-		.EndTable( false )
+		.EndTable( false ) // BoxSize
 		.StartNewTable( "offset" )
 		.AddKeyValuePair( "x", attributes.offset.x, false )
 		.AddKeyValuePair( "y", attributes.offset.y, false, true )
-		.EndTable( false )
+		.EndTable( false ) // Offset
 		.AddKeyValuePair( "bCircle", attributes.bCircle, false )
 		.AddKeyValuePair( "bBoxShape", attributes.bBoxShape, false )
 		.AddKeyValuePair( "bFixedRotation", attributes.bFixedRotation, false )
@@ -460,9 +460,9 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.AddKeyValuePair( "bCollider", attributes.objectData.bCollider, false )
 		.AddKeyValuePair( "bTrigger", attributes.objectData.bTrigger, false )
 		.AddKeyValuePair( "bIsFriendly", attributes.objectData.bIsFriendly, false, true )
-		.EndTable( false )
-		.EndTable()
-		.EndTable();
+		.EndTable( false ) // ObjectData
+		.EndTable() // Attributes
+		.EndTable(); // Physics
 }
 
 void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
@@ -513,7 +513,7 @@ void ComponentSerializer::DeserializeComponent( const sol::table& table, SpriteC
 	sprite.start_y = table[ "startY" ].get_or( 0 );
 	sprite.layer = table[ "layer" ].get_or( 0 );
 	sprite.bHidden = table[ "bHidden" ].get_or( false );
-	sprite.sTextureName = table[ "sTexture" ].get_or( std::string{ "" } );
+	sprite.sTextureName = table[ "sTexture" ].get_or( std::string{ } );
 
 	// Check if sprite should be isometic
 	if ( table[ "bIsoMetric" ].valid() )

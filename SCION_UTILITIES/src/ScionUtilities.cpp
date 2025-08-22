@@ -25,7 +25,22 @@ std::string AssetTypeToStr( AssetType eAssetType )
 
 AssetType StrToAssetType( const std::string& sAssetType )
 {
-	return AssetType();
+	if ( sAssetType == "TEXTURE" )
+		return AssetType::TEXTURE;
+	else if ( sAssetType == "FONT" )
+		return AssetType::FONT;
+	else if ( sAssetType == "SOUNDFX" )
+		return AssetType::SOUNDFX;
+	else if ( sAssetType == "MUSIC" )
+		return AssetType::MUSIC;
+	else if ( sAssetType == "SCENE" )
+		return AssetType::SCENE;
+	else if ( sAssetType == "SHADER" )
+		return AssetType::SHADER;
+	else if ( sAssetType == "PREFAB" )
+		return AssetType::PREFAB;
+
+	return AssetType::NO_TYPE;
 }
 
 std::string GetSubstring( std::string_view str, std::string_view find )

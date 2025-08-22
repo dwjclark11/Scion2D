@@ -185,7 +185,7 @@ ImFont* GetFont( const std::string& sFontName )
 	auto fontItr = g_mapImGuiFonts.find( sFontName );
 	if ( fontItr == g_mapImGuiFonts.end() )
 	{
-		SCION_ERROR( "Failed to get font [{}] - Does not exist." );
+		SCION_ERROR( "Failed to get font [{}] - Does not exist.", sFontName );
 		ImFont* pFont = ImGui::GetIO().Fonts->Fonts[ 0 ];
 		return pFont;
 	}

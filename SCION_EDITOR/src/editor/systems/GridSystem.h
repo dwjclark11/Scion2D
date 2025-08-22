@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 namespace SCION_RENDERING
 {
 class RectBatchRenderer;

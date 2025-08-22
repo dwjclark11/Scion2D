@@ -6,8 +6,6 @@
 #include "ScionFilesystem/Serializers/LuaSerializer.h"
 #include "ScriptCompiler.h"
 #include "Logger/Logger.h"
-#include <vector>
-#include <fmt/format.h>
 #include <libzippp/libzippp.h>
 
 using namespace SCION_FILESYSTEM;
@@ -315,7 +313,7 @@ AssetPackager::AssetPackageStatus AssetPackager::SerializeAssetsByType( const ra
 			for (const auto& jsonValue : assetArray.GetArray())
 			{
 				std::string sPath{ sContentPath + PATH_SEPARATOR + jsonValue[ "path" ].GetString() };
-				ConvertAssetToLuaTable( *pLuaSerializer, {}, sPath, eAssetType );
+				ConvertAssetToLuaTable( *pLuaSerializer, jsonValue[ "name" ].GetString(), sPath, eAssetType );
 			}
 		}
 		catch (const std::exception& ex)

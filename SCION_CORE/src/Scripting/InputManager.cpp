@@ -209,13 +209,13 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 	lua.new_usertype<Keyboard>(
 		"Keyboard",
 		sol::no_constructor,
-		"just_pressed",
+		"justPressed",
 		[ & ]( int key ) { return keyboard.IsKeyJustPressed( key ); },
-		"just_released",
+		"justReleased",
 		[ & ]( int key ) { return keyboard.IsKeyJustReleased( key ); },
 		"pressed",
 		[ & ]( int key ) { return keyboard.IsKeyPressed( key ); },
-		"pressed_keys",
+		"pressedKeys",
 		[ & ]() {
 			std::vector<int> keys;
 			for ( const auto& [ key, button ] : keyboard.GetButtonMap() )
@@ -237,32 +237,32 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 	lua.new_usertype<Mouse>(
 		"Mouse",
 		sol::no_constructor,
-		"just_pressed",
+		"justPressed",
 		[ & ]( int btn ) { return mouse.IsBtnJustPressed( btn ); },
-		"just_released",
+		"justReleased",
 		[ & ]( int btn ) { return mouse.IsBtnJustReleased( btn ); },
 		"pressed",
 		[ & ]( int btn ) { return mouse.IsBtnPressed( btn ); },
-		"screen_position",
+		"screenPosition",
 		[ & ]() {
 			auto [ x, y ] = mouse.GetMouseScreenPosition();
 			return glm::vec2{ x, y };
 		},
-		"world_position",
+		"worldPosition",
 		[ & ]() {
 			auto [ x, y ] = mouse.GetMouseScreenPosition();
 			return camera->ScreenCoordsToWorld( glm::vec2{ x, y } );
 		},
-		"wheel_x",
+		"wheelX",
 		[ & ]() { return mouse.GetMouseWheelX(); },
-		"wheel_y",
+		"wheelY",
 		[ & ]() { return mouse.GetMouseWheelY(); } );
 #endif // IN_SCION_EDITOR
 
 	lua.new_usertype<Gamepad>(
 		"Gamepad",
 		sol::no_constructor,
-		"just_pressed",
+		"justPressed",
 		[ & ]( int index, int btn ) {
 			auto gamepad = inputManager.GetController( index );
 			if ( !gamepad )
@@ -272,7 +272,7 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 			}
 			return gamepad->IsBtnJustPressed( btn );
 		},
-		"just_released",
+		"justReleased",
 		[ & ]( int index, int btn ) {
 			auto gamepad = inputManager.GetController( index );
 			if ( !gamepad )
@@ -292,7 +292,7 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 			}
 			return gamepad->IsBtnPressed( btn );
 		},
-		"get_axis_position",
+		"getAxisPosition",
 		[ & ]( int index, int axis ) {
 			auto gamepad = inputManager.GetController( index );
 			if ( !gamepad )
@@ -302,7 +302,7 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 			}
 			return gamepad->GetAxisPosition( axis );
 		},
-		"get_hat_value",
+		"getHatValue",
 		[ & ]( int index ) {
 			auto gamepad = inputManager.GetController( index );
 			if ( !gamepad )
@@ -313,6 +313,14 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 			return gamepad->GetJoystickHatValue();
 		} );
 }
+
+void InputManager::UpdateInputs()
+{
+	m_pKeyboard->Update();
+	m_pMouse->Update();
+	UpdateGamepads();
+}
+
 std::shared_ptr<Gamepad> InputManager::GetController( int index )
 {
 	auto gamepadItr = m_mapGameControllers.find( index );

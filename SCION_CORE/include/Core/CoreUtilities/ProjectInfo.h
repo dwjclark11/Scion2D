@@ -168,8 +168,8 @@ class ProjectInfo
 	std::optional<fs::path> m_ScriptListPath{ std::nullopt };
 	/** @brief Name of the project. */
 	std::string m_sProjectName{};
-	/** @brief Semantic version string of the project (e.g., 1.0.0). */
-	std::string m_sProjectVersion{ "1.0.0" };
+	/** @brief Semantic version string of the project (e.g., 1.0.0.0). */
+	std::string m_sProjectVersion{ "1.0.0.0" };
 	/** @brief Human-readable description of the project. */
 	std::string m_sProjectDescription{};
 	/** @brief Copyright or license notice. */

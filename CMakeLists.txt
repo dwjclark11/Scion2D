@@ -43,8 +43,6 @@ if(WIN32)
 	set(APP_ICON_RESOURCE "${CMAKE_CURRENT_SOURCE_DIR}/resources/scion2d.rc")
 endif()
 
-add_compile_definitions(IN_SCION_EDITOR)
-
 add_compile_definitions(SOL_ALL_SAFETIES_ON=1)
 add_compile_definitions(SOL_EXCEPTIONS_ALWAYS_UNSAFE=1)
 
@@ -92,4 +90,6 @@ set_target_properties(
 
 include(cmake/AddResources.cmake)
 add_subdirectory(SCION_EDITOR)
+add_subdirectory(SCION_ENGINE)
 add_subdirectory(crash_reporter)
+

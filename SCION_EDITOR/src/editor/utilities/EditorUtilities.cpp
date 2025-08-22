@@ -1,10 +1,7 @@
 #include "EditorUtilities.h"
-#include <filesystem>
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
-
-namespace fs = std::filesystem;
 
 // clang-format off
 #ifdef _WIN32

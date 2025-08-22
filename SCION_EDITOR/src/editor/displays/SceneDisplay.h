@@ -1,6 +1,5 @@
 #pragma once
 #include "IDisplay.h"
-#include <Core/ECS/Registry.h>
 
 namespace SCION_CORE::Events
 {

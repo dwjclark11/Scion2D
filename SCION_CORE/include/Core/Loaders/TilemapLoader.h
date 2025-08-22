@@ -1,4 +1,5 @@
 #pragma once
+#include <sol/sol.hpp>
 
 namespace SCION_CORE::ECS
 {
@@ -63,6 +64,9 @@ class TilemapLoader
 	 */
 	bool SaveGameObjects( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile,
 						  bool bUseJSON = false );
+
+	bool LoadTilemapFromLuaTable( SCION_CORE::ECS::Registry& registry, const sol::table& sTilemapTable );
+	bool LoadGameObjectsFromLuaTable( SCION_CORE::ECS::Registry& registry, const sol::table& sObjectTable );
 
   private:
 	/**

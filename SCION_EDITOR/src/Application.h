@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include <SDL.h>
 
 namespace SCION_WINDOWING

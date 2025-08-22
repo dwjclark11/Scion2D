@@ -1,7 +1,6 @@
 #include "editor/displays/LogDisplay.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "Logger/Logger.h"
-#include <ranges>
 #include <imgui_stdlib.h>
 
 namespace SCION_EDITOR

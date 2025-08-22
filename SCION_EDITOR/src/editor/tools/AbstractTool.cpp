@@ -6,6 +6,7 @@
 #include "editor/utilities/EditorUtilities.h"
 #include "editor/scene/SceneObject.h"
 #include "Windowing/Inputs/Mouse.h"
+
 using namespace SCION_CORE;
 
 namespace SCION_EDITOR

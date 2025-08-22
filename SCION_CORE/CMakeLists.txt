@@ -1,6 +1,6 @@
 find_package(SDL2_image REQUIRED)
 
-add_library(SCION_CORE
+set(COMMON_CORE_SRC
 	# Core Utilities
     "include/Core/CoreUtilities/CoreEngineData.h"
     "src/CoreUtilities/CoreEngineData.cpp"
@@ -132,6 +132,8 @@ add_library(SCION_CORE
 	"src/Scene/SceneManager.cpp"	
 )
 
+add_library( SCION_CORE ${COMMON_CORE_SRC} )
+
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 	PRIVATE ${SOL2_INCLUDE_DIRS}
@@ -143,9 +145,32 @@ target_link_libraries(SCION_CORE PUBLIC
     glm::glm EnTT::EnTT sol2::sol2 ${LUA_LIBRARIES}
     $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
     $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
-	$<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
     SCION_LOGGER SCION_UTILITIES SCION_PHYSICS
 	SCION_RENDERING SCION_FILESYSTEM SCION_SOUNDS SCION_WINDOW)
 
 target_compile_options(
     SCION_CORE PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)
+
+
+## SCION_CORE_EDITOR - Editor Compile Flag is set
+add_library( SCION_CORE_EDITOR ${COMMON_CORE_SRC} )
+
+target_compile_definitions(SCION_CORE_EDITOR PUBLIC IN_SCION_EDITOR)
+
+target_include_directories(
+    SCION_CORE_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+	PRIVATE ${SOL2_INCLUDE_DIRS}
+)
+
+target_precompile_headers(SCION_CORE_EDITOR REUSE_FROM PCH)
+
+target_link_libraries(SCION_CORE_EDITOR PUBLIC
+    glm::glm EnTT::EnTT sol2::sol2 ${LUA_LIBRARIES}
+    $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+	$<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
+    SCION_LOGGER SCION_UTILITIES SCION_PHYSICS
+	SCION_RENDERING SCION_FILESYSTEM SCION_SOUNDS SCION_WINDOW)
+
+target_compile_options(
+    SCION_CORE_EDITOR PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)

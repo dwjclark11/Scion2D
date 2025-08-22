@@ -1,10 +1,5 @@
 #pragma once
 #include <rapidjson/document.h>
-#include <memory>
-#include <string>
-#include <thread>
-#include <shared_mutex>
-#include <vector>
 
 namespace SCION_CORE
 {

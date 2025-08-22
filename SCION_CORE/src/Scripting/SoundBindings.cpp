@@ -44,9 +44,9 @@ void SCION_CORE::Scripting::SoundBinder::CreateSoundBind( sol::state& lua )
 		[ & ]() { musicPlayer.Pause(); },
 		"resume",
 		[ & ]() { musicPlayer.Resume(); },
-		"set_volume",
+		"setVolume",
 		[ & ]( int volume ) { musicPlayer.SetVolume( volume ); },
-		"is_playing",
+		"isPlaying",
 		[ & ]() { return musicPlayer.IsPlaying(); } );
 
 	// Create the SoundFxPlayer Bindings
@@ -79,8 +79,8 @@ void SCION_CORE::Scripting::SoundBinder::CreateSoundBind( sol::state& lua )
 			} ),
 		"stop",
 		[ & ]( int channel ) { soundFxPlayer.Stop( channel ); },
-		"set_volume",
+		"setVolume",
 		[ & ]( int channel, int volume ) { soundFxPlayer.SetVolume( channel, volume ); },
-		"is_playing",
+		"isPlaying",
 		[ & ]( int channel ) { return soundFxPlayer.IsPlaying( channel ); } );
 }

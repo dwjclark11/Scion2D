@@ -1,5 +1,4 @@
 #include "EditorEventTypes.h"
-#include <map>
 
 namespace SCION_EDITOR::Events
 {

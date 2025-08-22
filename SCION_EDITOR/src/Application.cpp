@@ -1,5 +1,6 @@
 #include "Application.h"
 #include <glad/glad.h>
+
 #include <Rendering/Utils/OpenGLDebugger.h>
 #include <Rendering/Core/Renderer.h>
 #include <Rendering/Essentials/PickingTexture.h>

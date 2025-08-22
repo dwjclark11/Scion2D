@@ -1,6 +1,5 @@
 #pragma once
 #include "Rendering/Buffers/Framebuffer.h"
-#include <map>
 
 namespace SCION_EDITOR
 {

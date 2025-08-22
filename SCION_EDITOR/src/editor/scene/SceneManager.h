@@ -1,10 +1,5 @@
 #pragma once
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
 #include <sol/sol.hpp>
-
 #include "Core/Scene/SceneManager.h"
 
 #define SCENE_MANAGER() SCION_EDITOR::EditorSceneManager::GetInstance()

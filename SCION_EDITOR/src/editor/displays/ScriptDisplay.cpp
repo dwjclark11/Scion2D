@@ -11,8 +11,6 @@
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "Logger/Logger.h"
 
-#include <filesystem>
-#include <fstream>
 #include <imgui.h>
 
 namespace fs = std::filesystem;

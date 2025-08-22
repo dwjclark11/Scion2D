@@ -1,7 +1,4 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <optional>
 
 namespace SCION_EDITOR
 {

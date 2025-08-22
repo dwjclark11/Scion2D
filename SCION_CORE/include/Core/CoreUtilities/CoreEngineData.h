@@ -37,24 +37,30 @@ class CoreEngineData
 	inline void EnableColliderRender() { m_bRenderColliders = true; }
 	inline void DisableColliderRender() { m_bRenderColliders = false; }
 	inline bool RenderCollidersEnabled() const { return m_bRenderColliders; }
+	inline void ToggleRenderCollisions() { m_bRenderColliders = !m_bRenderColliders; }
 
 	inline void EnableAnimationRender() { m_bRenderAnimations = true; }
 	inline void DisableAnimationRender() { m_bRenderAnimations = false; }
 	inline bool AnimationRenderEnabled() const { return m_bRenderAnimations; }
+	inline void ToggleRenderAnimations() { m_bRenderAnimations = !m_bRenderAnimations; }
 
 	inline float ScaledWidth() const { return m_ScaledWidth; }
 	inline float ScaledHeight() const { return m_ScaledHeight; }
 
+	// Physics 
 	inline int32_t GetVelocityIterations() const { return m_VelocityIterations; }
 	inline int32_t GetPositionIterations() const { return m_PositionIterations; }
 	inline void SetVelocityIterations( int32_t velocityIterations ) { m_VelocityIterations = velocityIterations; }
 	inline void SetPositionIterations( int32_t positionIterations ) { m_PositionIterations = positionIterations; }
 	inline float GetGravity() const { return m_Gravity; }
 	inline void SetGravity( float gravity ) { m_Gravity = gravity; }
+
 	inline void EnablePhysics() { m_bPhysicsEnabled = true; }
 	inline void DisablePhysics() { m_bPhysicsEnabled = false; }
+
 	inline void PausePhysics() { m_bPhysicsPaused = true; }
 	inline void UnPausePhysics() { m_bPhysicsPaused = false; }
+
 	inline const bool IsPhysicsEnabled() const { return m_bPhysicsEnabled; }
 	inline const bool IsPhysicsPaused() const { return m_bPhysicsPaused; }
 

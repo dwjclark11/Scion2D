@@ -21,6 +21,11 @@ namespace SCION_CORE::Events
 class EventDispatcher;
 }
 
+namespace SCION_RENDERING
+{
+class Renderer;
+}
+
 namespace SCION_CORE::Systems
 {
 class RenderSystem;
@@ -42,6 +47,7 @@ class MainRegistry
 	SCION_RESOURCES::AssetManager& GetAssetManager();
 	SCION_SOUNDS::MusicPlayer& GetMusicPlayer();
 	SCION_SOUNDS::SoundFxPlayer& GetSoundPlayer();
+	SCION_RENDERING::Renderer& GetRenderer();
 
 	template <typename TContext>
 	TContext AddToContext( TContext context )
@@ -60,6 +66,7 @@ class MainRegistry
 	SCION_CORE::Systems::RenderShapeSystem& GetRenderShapeSystem();
 	SCION_CORE::Systems::AnimationSystem& GetAnimationSystem();
 	SCION_CORE::Systems::PhysicsSystem& GetPhysicsSystem();
+	Registry* GetRegistry();
 
   private:
 	MainRegistry() = default;

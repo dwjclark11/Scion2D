@@ -1,7 +1,4 @@
 #pragma once
-#include <map>
-#include <memory>
-#include <string>
 #include <entt/entt.hpp>
 
 namespace SCION_RENDERING

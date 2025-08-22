@@ -1,7 +1,5 @@
 #pragma once
 #include "IDisplay.h"
-#include <memory>
-#include <string>
 
 namespace SCION_CORE
 {

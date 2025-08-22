@@ -24,8 +24,6 @@ using namespace SCION_FILESYSTEM;
 
 namespace fs = std::filesystem;
 
-
-
 namespace SCION_EDITOR
 {
 ContentDisplay::ContentDisplay()
@@ -286,7 +284,7 @@ void ContentDisplay::DrawToolbar()
 			for ( size_t j = 0; j <= i; j++ )
 			{
 				// We don't want to add the content folder to the path.
-				if (rebuildPath.empty() && dir[ j ] == CONTENT_FOLDER )
+				if ( rebuildPath.empty() && dir[ j ] == CONTENT_FOLDER )
 				{
 					continue;
 				}
@@ -647,14 +645,21 @@ void ContentDisplay::OpenCreateLuaClassPopup()
 			}
 			else
 			{
+				auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+				std::string sCopyrightNotice{};
+				if ( pProjectInfo )
+				{
+					sCopyrightNotice = pProjectInfo->GetCopyRightNotice();
+				}
+
 				LuaSerializer lw{ filename };
 
-				lw.AddWords( className + " = {}" )
-					.AddWords( className + ".__index = " + className, true )
-					.AddWords( "function " + className + ":Create(params)", true )
-					.AddWords( "local this = {}", true, true )
-					.AddWords( "setmetatable(this, self)", true, true )
-					.AddWords( "return this", true, true )
+				lw.AddBlockComment( !sCopyrightNotice.empty() ? sCopyrightNotice : "Add Copyright notice here." );
+				lw.AddWords( className + std::format( " = S2D_Class(\"{}\")", className ) )
+					.AddWords( "function " + className + ":Init(params)", true )
+					.AddWords( "params = params or {}", true, true )
+					.AddWords( "-- TODO: Add necessary params.", true, true )
+					.AddWords( "-- EX: self.health = params.health or 10", true, true )
 					.AddWords( "end", true );
 
 				errorText.clear();

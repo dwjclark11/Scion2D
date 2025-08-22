@@ -22,10 +22,6 @@
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
 
-#include <filesystem>
-
-namespace fs = std::filesystem;
-
 using namespace SCION_FILESYSTEM;
 
 // clang-format off

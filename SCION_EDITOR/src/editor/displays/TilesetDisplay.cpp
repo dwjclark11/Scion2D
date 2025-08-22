@@ -12,7 +12,6 @@
 
 #include <Rendering/Essentials/Texture.h>
 
-#include <algorithm>
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -153,6 +152,8 @@ void TilesetDisplay::Draw()
 						auto& tileData = pActiveTool->GetTileData();
 						tileData.sprite.width = ( std::abs( maxCol - minCol ) + 1 ) * tileWidth;
 						tileData.sprite.height = ( std::abs( maxRow - minRow ) + 1 ) * tileHeight;
+						tileData.sprite.start_x = minCol;
+						tileData.sprite.start_y = minRow;
 
 						// We only want to do this when the selection changes!!
 						SCION_CORE::GenerateUVsExt( tileData.sprite,

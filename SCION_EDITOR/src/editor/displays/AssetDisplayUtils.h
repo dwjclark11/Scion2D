@@ -1,6 +1,4 @@
 #pragma once
-#include <string>
-#include <vector>
 
 namespace SCION_UTIL
 {

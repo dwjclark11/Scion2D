@@ -1,6 +1,4 @@
 #pragma once
-#include <string>
-#include <memory>
 
 namespace SCION_EDITOR
 {

@@ -1,6 +1,5 @@
 #pragma once
 #include "editor/tools/AbstractTool.h"
-#include <memory>
 #include <entt/entt.hpp>
 
 namespace SCION_CORE

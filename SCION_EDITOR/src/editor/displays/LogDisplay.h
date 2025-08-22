@@ -1,7 +1,6 @@
 #pragma once
 #include "IDisplay.h"
 #include <imgui.h>
-#include <string>
 
 namespace SCION_EDITOR
 {

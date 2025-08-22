@@ -1,6 +1,5 @@
 #pragma once
 #include "IDisplay.h"
-#include <string>
 #include <glm/glm.hpp>
 
 namespace SCION_RENDERING

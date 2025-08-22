@@ -1,7 +1,5 @@
 #pragma once
 #include <rapidjson/document.h>
-#include <string>
-#include <filesystem>
 
 namespace SCION_UTIL
 {

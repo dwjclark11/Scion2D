@@ -14,8 +14,6 @@
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 
-#include <map>
-
 using namespace SCION_UTIL;
 using namespace SCION_PHYSICS;
 using namespace SCION_CORE::ECS;

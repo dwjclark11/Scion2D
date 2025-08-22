@@ -1,10 +1,6 @@
 #pragma once
 #include "IDisplay.h"
 
-#include <vector>
-#include <string>
-#include <filesystem>
-
 namespace SCION_FILESYSTEM
 {
 class DirectoryWatcher;

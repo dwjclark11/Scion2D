@@ -19,7 +19,6 @@
 #include "Logger/Logger.h"
 
 #include <imgui.h>
-#include <ranges>
 
 using namespace SCION_CORE::ECS;
 

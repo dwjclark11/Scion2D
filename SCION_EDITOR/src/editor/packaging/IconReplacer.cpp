@@ -1,7 +1,4 @@
 #include "IconReplacer.h"
-#include <fstream>
-#include <vector>
-
 #include "Logger/Logger.h"
 
 #ifdef _WIN32

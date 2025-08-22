@@ -46,11 +46,13 @@ bool MainRegistry::Initialize( bool bEnableFilewatcher )
 
 	// Enable Alpha Blending
 	renderer->SetCapability( SCION_RENDERING::Renderer::GLCapability::BLEND, true );
-	renderer->SetCapability( SCION_RENDERING::Renderer::GLCapability::DEPTH_TEST, true );
 	renderer->SetBlendCapability( SCION_RENDERING::Renderer::BlendingFactors::SRC_ALPHA,
 								  SCION_RENDERING::Renderer::BlendingFactors::ONE_MINUS_SRC_ALPHA );
 
-	renderer->SetLineWidth( 4.f );
+	// Currently we only need the depth test in the editor.
+#ifdef IN_SCION_EDITOR
+	renderer->SetCapability( SCION_RENDERING::Renderer::GLCapability::DEPTH_TEST, true );
+#endif
 
 	if ( !AddToContext<std::shared_ptr<SCION_RENDERING::Renderer>>( renderer ) )
 	{
@@ -146,6 +148,12 @@ SCION_SOUNDS::SoundFxPlayer& MainRegistry::GetSoundPlayer()
 	return *m_pMainRegistry->GetContext<std::shared_ptr<SCION_SOUNDS::SoundFxPlayer>>();
 }
 
+SCION_RENDERING::Renderer& MainRegistry::GetRenderer()
+{
+	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
+	return *m_pMainRegistry->GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
+}
+
 SCION_CORE::Systems::RenderSystem& MainRegistry::GetRenderSystem()
 {
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
@@ -175,5 +183,14 @@ SCION_CORE::Systems::PhysicsSystem& MainRegistry::GetPhysicsSystem()
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
 	return *m_pMainRegistry->GetContext<std::shared_ptr<SCION_CORE::Systems::PhysicsSystem>>();
 }
+
+Registry* MainRegistry::GetRegistry()
+{
+	if ( !m_pMainRegistry )
+		m_pMainRegistry = std::make_unique<Registry>();
+
+	return m_pMainRegistry.get();
+}
+
 
 } // namespace SCION_CORE::ECS

@@ -1,7 +1,5 @@
 #pragma once
 #include "IDisplay.h"
-#include <string>
-#include <filesystem>
 
 namespace SCION_EDITOR::Events
 {

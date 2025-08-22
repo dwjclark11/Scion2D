@@ -120,6 +120,8 @@ add_executable(SCION_EDITOR
 	"src/editor/packaging/AssetPackager.cpp"
  "src/editor/packaging/Packager.h" "src/editor/packaging/Packager.cpp")
 
+target_compile_definitions(SCION_EDITOR PUBLIC IN_SCION_EDITOR)
+
 target_sources(
 	SCION_EDITOR PRIVATE
 	../thirdparty/imgui/imgui.cpp
@@ -143,12 +145,9 @@ target_include_directories(
 
 target_link_libraries(
 	SCION_EDITOR
-	PRIVATE SCION_CORE
+	PRIVATE SCION_CORE_EDITOR
 	libzippp::libzippp
 )
-
-add_resources(TARGET Assets IN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets OUT_DIR assets)
-add_dependencies(SCION_EDITOR Copy-Assets)
 
 set_target_properties(SCION_EDITOR PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/")

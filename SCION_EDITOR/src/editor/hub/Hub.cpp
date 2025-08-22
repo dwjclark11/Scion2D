@@ -23,10 +23,6 @@
 #include <SDL_opengl.h>
 // ===================================
 
-#include <filesystem>
-
-namespace fs = std::filesystem;
-
 constexpr ImVec2 BUTTON_SIZE = ImVec2{ 100.f, 20.f };
 
 namespace SCION_EDITOR

@@ -22,25 +22,11 @@ namespace SCION_CORE
  */
 class InputManager
 {
-  private:
-	std::unique_ptr<SCION_WINDOWING::Inputs::Keyboard> m_pKeyboard;
-	std::unique_ptr<SCION_WINDOWING::Inputs::Mouse> m_pMouse;
-	std::map<int, std::shared_ptr<SCION_WINDOWING::Inputs::Gamepad>> m_mapGameControllers;
-
-  private:
-	InputManager();
-	~InputManager() = default;
-	InputManager( const InputManager& ) = delete;
-	InputManager& operator=( const InputManager& ) = delete;
-
-  private:
-	static void RegisterLuaKeyNames( sol::state& lua );
-	static void RegisterMouseBtnNames( sol::state& lua );
-	static void RegisterGamepadBtnNames( sol::state& lua );
-
   public:
 	static InputManager& GetInstance();
 	static void CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Registry& registry );
+
+	void UpdateInputs();
 
 	inline SCION_WINDOWING::Inputs::Keyboard& GetKeyboard() { return *m_pKeyboard; }
 	inline SCION_WINDOWING::Inputs::Mouse& GetMouse() { return *m_pMouse; }
@@ -102,5 +88,21 @@ class InputManager
 	 * @brief Updates all active gamepads
 	 */
 	void UpdateGamepads();
+
+  private:
+	InputManager();
+	~InputManager() = default;
+	InputManager( const InputManager& ) = delete;
+	InputManager& operator=( const InputManager& ) = delete;
+
+  private:
+	static void RegisterLuaKeyNames( sol::state& lua );
+	static void RegisterMouseBtnNames( sol::state& lua );
+	static void RegisterGamepadBtnNames( sol::state& lua );
+
+  private:
+	std::unique_ptr<SCION_WINDOWING::Inputs::Keyboard> m_pKeyboard;
+	std::unique_ptr<SCION_WINDOWING::Inputs::Mouse> m_pMouse;
+	std::map<int, std::shared_ptr<SCION_WINDOWING::Inputs::Gamepad>> m_mapGameControllers;
 };
 } // namespace SCION_CORE

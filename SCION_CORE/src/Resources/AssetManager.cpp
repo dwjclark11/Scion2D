@@ -117,7 +117,7 @@ bool AssetManager::AddTextureFromMemory( const std::string& textureName, const u
 		return false;
 	}
 
-	auto pTexture = SCION_RENDERING::TextureLoader::CreateFromMemory( imageData, length, pixelArt, bTileset );
+	auto pTexture = SCION_RENDERING::TextureLoader::CreateFromMemory( imageData, length, !pixelArt, bTileset );
 
 	// Load the texture
 	if ( !pTexture )
@@ -763,7 +763,7 @@ void AssetManager::CreateLuaAssetManager( sol::state& lua )
 	lua.new_usertype<AssetManager>(
 		"AssetManager",
 		sol::no_constructor,
-		"add_texture",
+		"addTexture",
 		sol::overload(
 			[ & ]( const std::string& assetName, const std::string& filepath, bool pixel_art ) {
 				return asset_manager.AddTexture( assetName, filepath, pixel_art, false );
@@ -771,15 +771,15 @@ void AssetManager::CreateLuaAssetManager( sol::state& lua )
 			[ & ]( const std::string& assetName, const std::string& filepath, bool pixel_art, bool bTileset ) {
 				return asset_manager.AddTexture( assetName, filepath, pixel_art, bTileset );
 			} ),
-		"add_music",
+		"addMusic",
 		[ & ]( const std::string& musicName, const std::string& filepath ) {
 			return asset_manager.AddMusic( musicName, filepath );
 		},
-		"add_soundfx",
+		"addSoundfx",
 		[ & ]( const std::string& soundFxName, const std::string& filepath ) {
 			return asset_manager.AddSoundFx( soundFxName, filepath );
 		},
-		"add_font",
+		"addFont",
 		[ & ]( const std::string& fontName, const std::string& fontPath, float fontSize ) {
 			return asset_manager.AddFont( fontName, fontPath, fontSize );
 		} );

@@ -15,10 +15,6 @@
 
 #include "Logger/Logger.h"
 
-#include <filesystem>
-
-namespace fs = std::filesystem;
-
 using namespace SCION_CORE::ECS;
 
 namespace SCION_EDITOR

@@ -8,7 +8,6 @@
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "Logger/Logger.h"
 #include <imgui.h>
-#include <filesystem>
 
 namespace fs = std::filesystem;
 
