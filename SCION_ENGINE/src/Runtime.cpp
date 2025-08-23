@@ -597,6 +597,15 @@ void RuntimeApp::Update()
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto* registry = mainRegistry.GetRegistry();
 
+	double dt = coreGlobals.GetDeltaTime();
+	coreGlobals.UpdateDeltaTime();
+
+	// Clamp delta time to the target frame rate
+	if ( dt < SCION_CORE::TARGET_FRAME_TIME )
+	{
+		std::this_thread::sleep_for( std::chrono::duration<double>( SCION_CORE::TARGET_FRAME_TIME - dt ) );
+	}
+
 	auto& scriptSystem = mainRegistry.GetContext<std::shared_ptr<ScriptingSystem>>();
 	scriptSystem->Update( *registry );
 
