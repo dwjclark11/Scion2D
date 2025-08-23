@@ -60,7 +60,7 @@ void TilesetDisplay::DrawToolbar()
 
 void TilesetDisplay::Draw()
 {
-	if ( !ImGui::Begin( "Tileset" ) )
+	if ( !ImGui::Begin( ICON_FA_TH " Tileset" ) )
 	{
 		ImGui::End();
 		return;

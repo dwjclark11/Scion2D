@@ -5,6 +5,7 @@
 #include "ScionUtilities/HelperUtilities.h"
 #include "ScionFilesystem/Dialogs/FileDialog.h"
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/utilities/EditorState.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "Logger/Logger.h"
@@ -50,6 +51,14 @@ void ContentDisplay::Update()
 
 void ContentDisplay::Draw()
 {
+	if ( auto& pEditorState = MAIN_REGISTRY().GetContext<EditorStatePtr>() )
+	{
+		if ( !pEditorState->IsDisplayOpen( EDisplay::ContentBrowser ) )
+		{
+			return;
+		}
+	}
+
 	if ( !ImGui::Begin( ICON_FA_FOLDER " Content Browser" ) )
 	{
 		ImGui::End();

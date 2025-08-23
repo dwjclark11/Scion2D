@@ -6,6 +6,7 @@
 #include "ScionUtilities/ThreadPool.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/utilities/EditorState.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/loaders/ProjectLoader.h"
 #include "editor/packaging/Packager.h"
@@ -63,6 +64,14 @@ void PackageGameDisplay::Update()
 
 void PackageGameDisplay::Draw()
 {
+	if ( auto& pEditorState = MAIN_REGISTRY().GetContext<EditorStatePtr>() )
+	{
+		if ( !pEditorState->IsDisplayOpen( EDisplay::PackagerView ) )
+		{
+			return;
+		}
+	}
+
 	if ( !ImGui::Begin( ICON_FA_ARCHIVE " Package Game" ) )
 	{
 		ImGui::End();

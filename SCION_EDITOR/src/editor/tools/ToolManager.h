@@ -85,6 +85,7 @@ class ToolManager
 	inline EToolType GetActiveToolType() const { return m_eActiveToolType; }
 	inline EGizmoType GetActiveGizmoType() const { return m_eActiveGizmoType; }
 
+	const bool IsGridSnapEnabled();
 	void SetSelectedEntity( entt::entity entity );
 	void EnableGridSnap( bool bEnable );
 

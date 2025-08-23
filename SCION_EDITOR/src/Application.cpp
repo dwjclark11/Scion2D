@@ -37,6 +37,7 @@
 #include "editor/scene/SceneManager.h"
 
 #include "editor/utilities/editor_textures.h"
+#include "editor/utilities/EditorState.h"
 #include "editor/utilities/EditorFramebuffers.h"
 #include "editor/utilities/DrawComponentUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
@@ -188,6 +189,7 @@ bool Application::Initialize()
 	}
 
 	mainRegistry.AddToContext<SCION_CORE::ProjectInfoPtr>( std::make_shared<SCION_CORE::ProjectInfo>() );
+	mainRegistry.AddToContext<EditorStatePtr>( std::make_shared<EditorState>() );
 	m_pHub = std::make_unique<Hub>( *m_pWindow );
 
 	return true;
@@ -581,6 +583,14 @@ void Application::Render()
 
 void Application::CleanUp()
 {
+	// Save the editor state.
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pEditorState = MAIN_REGISTRY().GetContext<EditorStatePtr>();
+	pEditorState->Save( *pProjectInfo );
+
+	SDL_GL_DeleteContext( m_pWindow->GetGLContext() );
+	SDL_DestroyWindow( m_pWindow->GetWindow().get() );
+
 	SDL_Quit();
 }
 
@@ -711,14 +721,15 @@ void Application::InitDisplays()
 
 		auto TileLayerId = ImGui::DockBuilderSplitNode( RightNodeId, ImGuiDir_Down, 0.4f, nullptr, &RightNodeId );
 
-		ImGui::DockBuilderDockWindow( "Object Details", RightNodeId );
-		ImGui::DockBuilderDockWindow( "Tileset", RightNodeId );
-		ImGui::DockBuilderDockWindow( "Tile Details", RightNodeId );
+		ImGui::DockBuilderDockWindow( ICON_FA_LIST " Object Details", RightNodeId );
+		ImGui::DockBuilderDockWindow( ICON_FA_TH " Tileset", RightNodeId );
+		ImGui::DockBuilderDockWindow( ICON_FA_CLIPBOARD_LIST " Tile Details", RightNodeId );
 		ImGui::DockBuilderDockWindow( ICON_FA_LAYER_GROUP " Tile Layers", TileLayerId );
 		ImGui::DockBuilderDockWindow( ICON_FA_SITEMAP " Scene Hierarchy", leftNodeId );
 		ImGui::DockBuilderDockWindow( ICON_FA_IMAGE " Scene", centerNodeId );
 		ImGui::DockBuilderDockWindow( ICON_FA_CODE " Script List", centerNodeId );
 		ImGui::DockBuilderDockWindow( ICON_FA_ARCHIVE " Package Game", centerNodeId );
+		ImGui::DockBuilderDockWindow( ICON_FA_COG " Project Settings", centerNodeId );
 		ImGui::DockBuilderDockWindow( ICON_FA_MAP " Tilemap Editor", centerNodeId );
 		ImGui::DockBuilderDockWindow( ICON_FA_FILE_ALT " Assets", LogNodeId );
 		ImGui::DockBuilderDockWindow( ICON_FA_TERMINAL " Logs", LogNodeId );

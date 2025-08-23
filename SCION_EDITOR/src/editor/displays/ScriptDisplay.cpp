@@ -9,6 +9,7 @@
 #include "ScionFilesystem/Utilities/DirectoryWatcher.h"
 
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
+#include "editor/utilities/EditorState.h"
 #include "Logger/Logger.h"
 
 #include <imgui.h>
@@ -65,6 +66,14 @@ ScriptDisplay::~ScriptDisplay() = default;
 
 void ScriptDisplay::Draw()
 {
+	if ( auto& pEditorState = MAIN_REGISTRY().GetContext<EditorStatePtr>() )
+	{
+		if ( !pEditorState->IsDisplayOpen( EDisplay::ScriptListView ) )
+		{
+			return;
+		}
+	}
+
 	if ( !ImGui::Begin( ICON_FA_CODE " Script List" ) )
 	{
 		ImGui::End();

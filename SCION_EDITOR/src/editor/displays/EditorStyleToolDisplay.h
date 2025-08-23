@@ -6,14 +6,14 @@ namespace SCION_EDITOR
 
 class EditorStyleToolDisplay : public IDisplay
 {
-  private:
-	void DrawSizePicker();
-	void DrawColorPicker();
-
   public:
 	EditorStyleToolDisplay();
 	virtual ~EditorStyleToolDisplay() = default;
 
 	virtual void Draw() override;
+
+private:
+	void DrawSizePicker();
+	void DrawColorPicker();
 };
 } // namespace SCION_EDITOR

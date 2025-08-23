@@ -26,9 +26,15 @@ namespace SCION_EDITOR
 {
 class TilemapDisplay : public IDisplay
 {
-  private:
-	std::unique_ptr<SCION_RENDERING::Camera2D> m_pTilemapCam;
-	bool m_bWindowActive;
+  public:
+	TilemapDisplay();
+	virtual ~TilemapDisplay();
+
+	virtual void Draw() override;
+	virtual void Update() override;
+
+  protected:
+	virtual void DrawToolbar() override;
 
   private:
 	void RenderTilemap();
@@ -36,17 +42,10 @@ class TilemapDisplay : public IDisplay
 	void PanZoomCamera( const glm::vec2& mousePos );
 
 	void HandleKeyPressedEvent( const SCION_CORE::Events::KeyEvent& keyEvent );
-
 	void AddPrefabbedEntityToScene( const SCION_CORE::PrefabbedEntity& prefabbed );
 
-  protected:
-	virtual void DrawToolbar() override;
-
-  public:
-	TilemapDisplay();
-	virtual ~TilemapDisplay();
-
-	virtual void Draw() override;
-	virtual void Update() override;
+  private:
+	std::unique_ptr<SCION_RENDERING::Camera2D> m_pTilemapCam;
+	bool m_bWindowActive;
 };
 } // namespace SCION_EDITOR

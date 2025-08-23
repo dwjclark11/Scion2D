@@ -12,6 +12,7 @@
 #include "editor/tools/ToolManager.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
+#include "editor/utilities/EditorState.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
 #include "editor/loaders/ProjectLoader.h"
 
@@ -72,33 +73,24 @@ void MenuDisplay::Draw()
 		if ( ImGui::BeginMenu( ICON_FA_EDIT " Edit" ) )
 		{
 			auto& coreGlobals = CORE_GLOBALS();
+			auto& toolManager = TOOL_MANAGER();
 
-			static bool bGridSnap{ true };
+			bool bGridSnap{ toolManager.IsGridSnapEnabled() };
 			if ( ImGui::Checkbox( "Enable Gridsnap", &bGridSnap ) )
 			{
-				SCENE_MANAGER().GetToolManager().EnableGridSnap( bGridSnap );
+				toolManager.EnableGridSnap( bGridSnap );
 			}
 
-			static bool bShowCollision{ coreGlobals.RenderCollidersEnabled() };
+			bool bShowCollision{ coreGlobals.RenderCollidersEnabled() };
 			if ( ImGui::Checkbox( "Show Collision", &bShowCollision ) )
 			{
-				if ( bShowCollision )
-					coreGlobals.EnableColliderRender();
-				else
-					coreGlobals.DisableColliderRender();
+				bShowCollision ? coreGlobals.EnableColliderRender() : coreGlobals.DisableColliderRender();
 			}
 
-			static bool bShowAnimations{ coreGlobals.AnimationRenderEnabled() };
+			bool bShowAnimations{ coreGlobals.AnimationRenderEnabled() };
 			if ( ImGui::Checkbox( "Show Animations", &bShowAnimations ) )
 			{
-				if ( bShowAnimations )
-				{
-					coreGlobals.EnableAnimationRender();
-				}
-				else
-				{
-					coreGlobals.DisableAnimationRender();
-				}
+				bShowAnimations ? coreGlobals.EnableAnimationRender() : coreGlobals.DisableAnimationRender();
 			}
 
 			ImGui::EndMenu();
@@ -106,7 +98,13 @@ void MenuDisplay::Draw()
 
 		if ( ImGui::BeginMenu( ICON_FA_WINDOW_MAXIMIZE " Displays" ) )
 		{
-			// TODO: Open and close specific displays
+			auto& pEditorState = MAIN_REGISTRY().GetContext<EditorStatePtr>();
+			DrawDisplayItem( *pEditorState, ICON_FA_FILE_ALT " Asset Browser", EDisplay::AssetBrowser );
+			DrawDisplayItem( *pEditorState, ICON_FA_FOLDER " Content Browser", EDisplay::ContentBrowser );
+			DrawDisplayItem( *pEditorState, ICON_FA_CODE " Script List", EDisplay::ScriptListView );
+			DrawDisplayItem( *pEditorState, ICON_FA_ARCHIVE " Packager Game", EDisplay::PackagerView );
+			DrawDisplayItem( *pEditorState, ICON_FA_TERMINAL " Console Logger", EDisplay::Console );
+			DrawDisplayItem( *pEditorState, ICON_FA_COG " Project Settings", EDisplay::GameSettingsView );
 
 			ImGui::EndMenu();
 		}
@@ -271,4 +269,22 @@ void MenuDisplay::Draw()
 		ImGui::EndMainMenuBar();
 	}
 }
+
+void MenuDisplay::DrawDisplayItem( EditorState& editorState, const std::string& sDisplayName, const EDisplay eDisplay )
+{
+	bool bDisplayEnabled{ editorState.IsDisplayOpen( eDisplay ) };
+	if ( ImGui::Selectable( sDisplayName.c_str(), false, ImGuiSelectableFlags_DontClosePopups ) )
+	{
+		bDisplayEnabled = !bDisplayEnabled;
+		editorState.SetDisplay( eDisplay, bDisplayEnabled );
+	}
+
+	if ( bDisplayEnabled )
+	{
+		ImGui::SameLine();
+		ImGui::SetCursorPosX( 150.f );
+		ImGui::Text( ICON_FA_CHECK );
+	}
+}
+
 } // namespace SCION_EDITOR

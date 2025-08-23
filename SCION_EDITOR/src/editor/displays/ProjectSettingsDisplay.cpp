@@ -8,6 +8,7 @@
 #include "Logger/Logger.h"
 
 #include "editor/utilities/imgui/ImGuiUtils.h"
+#include "editor/utilities/EditorState.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 
 #include <imgui.h>
@@ -32,6 +33,14 @@ void ProjectSettingsDisplay::Update()
 }
 void ProjectSettingsDisplay::Draw()
 {
+	if ( auto& pEditorState = MAIN_REGISTRY().GetContext<EditorStatePtr>() )
+	{
+		if ( !pEditorState->IsDisplayOpen( EDisplay::GameSettingsView ) )
+		{
+			return;
+		}
+	}
+
 	ImGui::Begin( ICON_FA_COG " Project Settings" );
 	const float leftWidth = 250.0f;
 

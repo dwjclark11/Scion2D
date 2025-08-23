@@ -83,6 +83,7 @@ class TileTool : public AbstractTool
 
 	inline void EnableGridSnap() { m_bGridSnap = true; }
 	inline void DisableGridSnap() { m_bGridSnap = false; }
+	inline const bool IsGridSnapEnabled() const { return m_bGridSnap; }
 
 	inline Tile& GetTileData() { return *m_pMouseTile; }
 };

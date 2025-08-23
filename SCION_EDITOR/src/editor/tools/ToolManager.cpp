@@ -150,6 +150,12 @@ void ToolManager::SetTileToolStartCoords( int x, int y )
 	}
 }
 
+const bool ToolManager::IsGridSnapEnabled()
+{
+	const auto* tool = GetActiveTool();
+	return tool ? tool->IsGridSnapEnabled() : false;
+}
+
 void ToolManager::SetSelectedEntity( entt::entity entity )
 {
 	for (auto& [eGizmo, pGizmo] : m_mapGizmos)

@@ -18,6 +18,8 @@ add_executable(SCION_EDITOR
 	"src/editor/utilities/fonts/IconsFontAwesome5.h"
 	"src/editor/utilities/imgui/Gui.h"
 	"src/editor/utilities/imgui/Gui.cpp"
+	"src/editor/utilities/EditorState.h"
+	"src/editor/utilities/EditorState.cpp"
 
     # Editor Displays
     "src/editor/displays/IDisplay.h"
@@ -118,7 +120,9 @@ add_executable(SCION_EDITOR
 	"src/editor/packaging/IconReplacer.cpp"
 	"src/editor/packaging/AssetPackager.h"
 	"src/editor/packaging/AssetPackager.cpp"
- "src/editor/packaging/Packager.h" "src/editor/packaging/Packager.cpp")
+	"src/editor/packaging/Packager.h"
+	"src/editor/packaging/Packager.cpp"
+)
 
 target_compile_definitions(SCION_EDITOR PUBLIC IN_SCION_EDITOR)
 

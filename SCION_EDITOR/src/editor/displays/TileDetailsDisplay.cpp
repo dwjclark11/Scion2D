@@ -126,7 +126,7 @@ void TileDetailsDisplay::Draw()
 	if ( !pActiveTool )
 		return;
 
-	if ( !ImGui::Begin( "Tile Details" ) || !pCurrentScene )
+	if ( !ImGui::Begin( ICON_FA_CLIPBOARD_LIST " Tile Details" ) || !pCurrentScene )
 	{
 		ImGui::End();
 		return;

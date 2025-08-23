@@ -7,6 +7,7 @@
 #include "Logger/Logger.h"
 
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/utilities/EditorState.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/scene/SceneManager.h"
@@ -409,6 +410,14 @@ AssetDisplay::AssetDisplay()
 
 void AssetDisplay::Draw()
 {
+	if ( auto& pEditorState = MAIN_REGISTRY().GetContext<EditorStatePtr>() )
+	{
+		if ( !pEditorState->IsDisplayOpen( EDisplay::AssetBrowser ) )
+		{
+			return;
+		}
+	}
+
 	if ( !ImGui::Begin( ICON_FA_FILE_ALT " Assets" ) )
 	{
 		ImGui::End();

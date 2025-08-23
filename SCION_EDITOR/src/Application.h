@@ -15,12 +15,9 @@ namespace SCION_EDITOR
 {
 class Application
 {
-  private:
-	std::unique_ptr<SCION_WINDOWING::Window> m_pWindow;
-	std::unique_ptr<class Hub> m_pHub;
-
-	SDL_Event m_Event;
-	bool m_bIsRunning;
+  public:
+	static Application& GetInstance();
+	void Run();
 
   private:
 	bool Initialize();
@@ -48,9 +45,11 @@ class Application
 	Application( const Application& ) = delete;
 	Application& operator=( const Application& ) = delete;
 
-  public:
-	static Application& GetInstance();
+  private:
+	std::unique_ptr<SCION_WINDOWING::Window> m_pWindow;
+	std::unique_ptr<class Hub> m_pHub;
 
-	void Run();
+	SDL_Event m_Event;
+	bool m_bIsRunning;
 };
 } // namespace SCION_EDITOR

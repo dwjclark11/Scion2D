@@ -6,6 +6,7 @@
 #include "Core/CoreUtilities/Prefab.h"
 
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/utilities/EditorState.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 #include "Logger/Logger.h"
@@ -437,6 +438,13 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		coreGlobals.SetGravity( physics[ "gravity" ].GetFloat() );
 		coreGlobals.SetVelocityIterations( physics[ "velocityIterations" ].GetInt() );
 		coreGlobals.SetPositionIterations( physics[ "positionIterations" ].GetInt() );
+	}
+
+	auto& pEditorState = mainRegistry.GetContext<EditorStatePtr>();
+	if ( !pEditorState->Load( *pProjectInfo ) )
+	{
+		SCION_ERROR( "Failed to load editor state." );
+		return false;
 	}
 
 	return true;

@@ -226,7 +226,7 @@ void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool*
 
 void SceneHierarchyDisplay::DrawGameObjectDetails()
 {
-	if ( !ImGui::Begin( "Object Details" ) )
+	if ( !ImGui::Begin( ICON_FA_LIST " Object Details" ) )
 	{
 		ImGui::End();
 		return;
