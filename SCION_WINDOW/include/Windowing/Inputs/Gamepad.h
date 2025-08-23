@@ -2,8 +2,6 @@
 #include "GPButtons.h"
 #include "Button.h"
 #include <ScionUtilities/SDL_Wrappers.h>
-#include <map>
-#include <string>
 
 namespace SCION_WINDOWING::Inputs
 {

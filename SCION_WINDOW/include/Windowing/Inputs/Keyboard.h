@@ -1,7 +1,6 @@
 #pragma once
 #include "Keys.h"
 #include "Button.h"
-#include <map>
 
 namespace SCION_WINDOWING::Inputs
 {

@@ -1,24 +1,10 @@
 #pragma once
 #include <ScionUtilities/SDL_Wrappers.h>
-#include <string>
 
 namespace SCION_WINDOWING
 {
 class Window
 {
-  private:
-	WindowPtr m_pWindow;
-	SDL_GLContext m_GLContext;
-	std::string m_sTitle;
-	int m_Width;
-	int m_Height;
-	int m_XPos;
-	int m_YPos;
-	Uint32 m_WindowFlags;
-
-  private:
-	void CreateNewWindow( Uint32 flags );
-
   public:
 	Window();
 	Window( const std::string title, int width, int height, int x_pos, int y_pos, bool v_sync = true,
@@ -40,5 +26,18 @@ class Window
 	inline const int GetHeight() const { return m_Height; }
 
 	void SetWindowName( const std::string& name );
+
+  private:
+	void CreateNewWindow( Uint32 flags );
+
+  private:
+	WindowPtr m_pWindow;
+	SDL_GLContext m_GLContext;
+	std::string m_sTitle;
+	int m_Width;
+	int m_Height;
+	int m_XPos;
+	int m_YPos;
+	Uint32 m_WindowFlags;
 };
 } // namespace SCION_WINDOWING

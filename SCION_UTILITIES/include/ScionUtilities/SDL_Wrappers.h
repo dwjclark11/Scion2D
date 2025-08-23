@@ -1,7 +1,6 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_mixer.h>
-#include <memory>
 
 namespace SCION_UTIL
 {
