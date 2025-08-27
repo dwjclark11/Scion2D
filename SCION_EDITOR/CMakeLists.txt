@@ -122,7 +122,7 @@ add_executable(SCION_EDITOR
 	"src/editor/packaging/AssetPackager.cpp"
 	"src/editor/packaging/Packager.h"
 	"src/editor/packaging/Packager.cpp"
-)
+ "src/editor/loaders/TiledMapImporter.h" "src/editor/loaders/TiledMapImporter.cpp")
 
 target_compile_definitions(SCION_EDITOR PUBLIC IN_SCION_EDITOR)
 

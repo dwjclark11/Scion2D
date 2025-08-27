@@ -5,13 +5,15 @@
 namespace SCION_RENDERING
 {
 
-Font::Font( GLuint fontAtlasID, int width, int height, float fontSize, void* data, float fontAscent )
+Font::Font( GLuint fontAtlasID, int width, int height, float fontSize, void* data, float fontAscent,
+			const std::string& sFilename )
 	: m_FontAtlasID{ fontAtlasID }
 	, m_Width{ width }
 	, m_Height{ height }
 	, m_FontSize{ fontSize }
 	, m_FontAscent{ fontAscent }
 	, m_pData{ std::move( data ) }
+	, m_sFilename{ sFilename }
 {
 	float x{ 0.f }, y{ 0.f };
 

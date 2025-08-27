@@ -65,7 +65,7 @@ std::shared_ptr<Font> FontLoader::Create( const std::string& fontPath, float fon
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
-	return std::make_shared<Font>( fontId, width, height, fontSize, data, fontAscent );
+	return std::make_shared<Font>( fontId, width, height, fontSize, data, fontAscent, fontPath );
 }
 
 std::shared_ptr<Font> FontLoader::CreateFromMemory( const unsigned char* fontData, float fontSize, int width,

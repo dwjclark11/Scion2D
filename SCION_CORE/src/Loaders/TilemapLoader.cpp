@@ -143,10 +143,6 @@ bool TilemapLoader::LoadTilemapJSON( SCION_CORE::ECS::Registry& registry, const 
 		auto& sprite = newTile.AddComponent<SpriteComponent>();
 		DESERIALIZE_COMPONENT( jsonSprite, sprite );
 
-		if ( sprite.start_x != 0 || sprite.start_y != 0 )
-		{
-			int x{};
-		}
 		if ( components.HasMember( "boxCollider" ) )
 		{
 			const auto& jsonBoxCollider = components[ "boxCollider" ];
@@ -259,7 +255,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			SERIALIZE_COMPONENT( *pSerializer, text );
 		}
 
-		if (objectEnt.HasComponent<UIComponent>())
+		if ( objectEnt.HasComponent<UIComponent>() )
 		{
 			const auto& ui = objectEnt.GetComponent<UIComponent>();
 			SERIALIZE_COMPONENT( *pSerializer, ui );
@@ -424,7 +420,7 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			DESERIALIZE_COMPONENT( jsonText, text );
 		}
 
-		if (components.HasMember("ui"))
+		if ( components.HasMember( "ui" ) )
 		{
 			const auto& jsonUI = components[ "ui" ];
 			auto& ui = gameObject.AddComponent<UIComponent>();
@@ -717,7 +713,7 @@ bool TilemapLoader::SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 			SERIALIZE_COMPONENT( *pSerializer, *ui );
 		}
 
-		if (auto* text = objectEnt.TryGetComponent<TextComponent>())
+		if ( auto* text = objectEnt.TryGetComponent<TextComponent>() )
 		{
 			SERIALIZE_COMPONENT( *pSerializer, *text );
 		}
@@ -930,7 +926,7 @@ bool TilemapLoader::LoadObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 
 bool TilemapLoader::SaveTilemap( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON )
 {
-	return bUseJSON ? SaveTilemapJSON( registry, sTilemapFile ) : SaveTilemapLua(registry, sTilemapFile);
+	return bUseJSON ? SaveTilemapJSON( registry, sTilemapFile ) : SaveTilemapLua( registry, sTilemapFile );
 }
 
 bool TilemapLoader::LoadTilemap( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON )
@@ -1099,7 +1095,7 @@ bool TilemapLoader::LoadGameObjectsFromLuaTable( SCION_CORE::ECS::Registry& regi
 		if ( optLuaText )
 		{
 			auto& text = newTile.AddComponent<TextComponent>();
-			DESERIALIZE_COMPONENT( *optLuaText, text);
+			DESERIALIZE_COMPONENT( *optLuaText, text );
 		}
 
 		sol::optional<sol::table> optUI = ( *components )[ "ui" ];

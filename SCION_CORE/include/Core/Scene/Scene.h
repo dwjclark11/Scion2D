@@ -67,7 +67,7 @@ class Scene
 	 * because it does not set the loaded flag or clear the registry.
 	 * @return Returns true if successful, false otherwise.
 	 */
-	bool SaveScene() { return SaveSceneData(); }
+	bool SaveScene( bool bOverride = false ) { return SaveSceneData( bOverride ); }
 
 	inline const std::string& GetDefaultMusicName() const { return m_sDefaultMusic; }
 	inline void SetDefaultMusic( const std::string& sDefaultMusic ) { m_sDefaultMusic = sDefaultMusic; }

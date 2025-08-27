@@ -21,7 +21,8 @@ struct PaddingInfo
 class Font
 {
   public:
-	Font( GLuint fontAtlasID, int width, int height, float fontSize, void* data, float fontAscent = 0.f );
+	Font( GLuint fontAtlasID, int width, int height, float fontSize, void* data, float fontAscent = 0.f,
+		  const std::string& sFilename = "" );
 	~Font();
 
 	FontGlyph GetGlyph( char c, glm::vec2& pos );
@@ -30,7 +31,8 @@ class Font
 
 	inline const GLuint GetFontAtlasID() const { return m_FontAtlasID; }
 	inline const float GetFontSize() const { return m_FontSize; }
-	const PaddingInfo& AveragePaddingInfo() const { return m_AveragePadding; }
+	inline const PaddingInfo& AveragePaddingInfo() const { return m_AveragePadding; }
+	inline const std::string& GetFilename() const { return m_sFilename; }
 
   private:
 	/* Opengl texture Id */
@@ -49,5 +51,7 @@ class Font
 	PaddingInfo m_AveragePadding;
 	/* Map of each character and their padding info. */
 	std::map<char, PaddingInfo> m_mapPaddingInfo;
+	/* Filename of font if loaded from a file. */
+	std::string m_sFilename;
 };
 } // namespace SCION_RENDERING

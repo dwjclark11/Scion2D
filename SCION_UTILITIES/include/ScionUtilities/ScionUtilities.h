@@ -43,6 +43,10 @@ struct S2DAsset
 	AssetType eType{ AssetType::NO_TYPE };
 	/* The underlying hex data of the asset. */
 	std::vector<unsigned char> assetData;
+	/* Optional parameter if asset is font. */
+	std::optional<float> optFontSize{ std::nullopt };
+	/* Optional parameter if asset is a texture. */
+	std::optional<bool> optPixelArt{ std::nullopt };
 };
 
 

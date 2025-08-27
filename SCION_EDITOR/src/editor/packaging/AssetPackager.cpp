@@ -46,14 +46,13 @@ void AssetPackager::PackageAssets( const rapidjson::Value& assets )
 }
 
 void AssetPackager::ConvertAssetToLuaTable( SCION_FILESYSTEM::LuaSerializer& luaSerializer,
-											const std::string& sAssetName, const std::string& sInAssetFile,
-											SCION_UTIL::AssetType eType )
+											const AssetConversionData& conversionData )
 {
-	std::fstream in{ sInAssetFile, std::ios::in | std::ios::binary };
+	std::fstream in{ conversionData.sInAssetFile, std::ios::in | std::ios::binary };
 	if ( !in.is_open() )
-		throw std::runtime_error( fmt::format( "Failed to open file [{}].", sInAssetFile ) );
+		throw std::runtime_error( fmt::format( "Failed to open file [{}].", conversionData.sInAssetFile ) );
 
-	fs::path assetPath{ sInAssetFile };
+	fs::path assetPath{ conversionData.sInAssetFile };
 
 	int readByte{ 0 };
 	std::size_t i{ 0U };
@@ -61,10 +60,22 @@ void AssetPackager::ConvertAssetToLuaTable( SCION_FILESYSTEM::LuaSerializer& lua
 
 	try
 	{
-		luaSerializer.StartNewTable( )
-			.AddKeyValuePair( "assetName", sAssetName, true, false, false, true )
+		luaSerializer.StartNewTable()
+			.AddKeyValuePair( "assetName", conversionData.sAssetName, true, false, false, true )
 			.AddKeyValuePair( "assetExt", assetPath.extension().string(), true, false, false, true )
-			.AddKeyValuePair( "assetType", SCION_UTIL::AssetTypeToStr( eType ), true, false, false, true );
+			.AddKeyValuePair(
+				"assetType", SCION_UTIL::AssetTypeToStr( conversionData.eType ), true, false, false, true );
+
+		if ( conversionData.eType == SCION_UTIL::AssetType::FONT )
+		{
+			luaSerializer.AddKeyValuePair( "fontSize",
+										   conversionData.optFontSize ? *conversionData.optFontSize : 32.f );
+		}
+		else if ( conversionData.eType == SCION_UTIL::AssetType::TEXTURE )
+		{
+			luaSerializer.AddKeyValuePair( "bPixelArt",
+										   conversionData.optPixelArt ? *conversionData.optPixelArt : true );
+		}
 
 		luaSerializer.StartNewTable( "data" );
 
@@ -90,8 +101,10 @@ void AssetPackager::ConvertAssetToLuaTable( SCION_FILESYSTEM::LuaSerializer& lua
 	}
 	catch ( const std::exception& ex )
 	{
-		throw std::runtime_error( fmt::format(
-			"Failed to write [{}] at path [{}] to asset file. Error: {}", sAssetName, sInAssetFile, ex.what() ) );
+		throw std::runtime_error( fmt::format( "Failed to write [{}] at path [{}] to asset file. Error: {}",
+											   conversionData.sAssetName,
+											   conversionData.sInAssetFile,
+											   ex.what() ) );
 	}
 }
 
@@ -310,13 +323,26 @@ AssetPackager::AssetPackageStatus AssetPackager::SerializeAssetsByType( const ra
 
 		try
 		{
-			for (const auto& jsonValue : assetArray.GetArray())
+			for ( const auto& jsonValue : assetArray.GetArray() )
 			{
 				std::string sPath{ sContentPath + PATH_SEPARATOR + jsonValue[ "path" ].GetString() };
-				ConvertAssetToLuaTable( *pLuaSerializer, jsonValue[ "name" ].GetString(), sPath, eAssetType );
+
+				AssetConversionData conversionData{
+					.sInAssetFile = sPath, .sAssetName = jsonValue[ "name" ].GetString(), .eType = eAssetType };
+
+				if (eAssetType == SCION_UTIL::AssetType::FONT && jsonValue.HasMember("fontSize"))
+				{
+					conversionData.optFontSize = jsonValue[ "fontSize" ].GetFloat();
+				}
+				else if (eAssetType == SCION_UTIL::AssetType::TEXTURE && jsonValue.HasMember("bPixelArt"))
+				{
+					conversionData.optPixelArt = jsonValue[ "bPixelArt" ].GetBool();
+				}
+
+				ConvertAssetToLuaTable( *pLuaSerializer, conversionData);
 			}
 		}
-		catch (const std::exception& ex)
+		catch ( const std::exception& ex )
 		{
 			std::string sError{ fmt::format( "Failed to convert asset to lua table. {}", ex.what() ) };
 			return { .sError = sError, .bSuccess = false };

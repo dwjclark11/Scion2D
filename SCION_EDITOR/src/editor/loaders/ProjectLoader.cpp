@@ -79,7 +79,7 @@ bool ProjectLoader::CreateNewProject( const std::string& sProjectName, const std
 
 	pProjectInfo->SetProjectName( sProjectName );
 	pProjectInfo->SetProjectPath( gameFilepath );
-	
+
 	return CreateProjectFile( sProjectName, gameFilepath.string() );
 }
 
@@ -224,7 +224,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 	SCION_ASSERT( optGameConfigPath && "Game Config folder path has not been setup correctly in project info." );
 
 	fs::path scriptListPath = *optGameConfigPath / "script_list.lua";
-	if (!fs::exists(scriptListPath))
+	if ( !fs::exists( scriptListPath ) )
 	{
 		SCION_ERROR( "Failed to load project. ScriptList was not found at path [{}]", scriptListPath.string() );
 		return false;
@@ -239,7 +239,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		coreGlobals.SetGameType( coreGlobals.GetGameTypeFromStr( projectData[ "game_type" ].GetString() ) );
 	}
 
-	if (projectData.HasMember("copyright"))
+	if ( projectData.HasMember( "copyright" ) )
 	{
 		std::string sCopyRight = projectData[ "copyright" ].GetString();
 		pProjectInfo->SetCopyRightNotice( sCopyRight );
@@ -306,8 +306,8 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 			std::string sSoundFxName{ jsonSoundFx[ "name" ].GetString() };
 			std::string sJsonSoundFxPath = jsonSoundFx[ "path" ].GetString();
 			fs::path soundFxPath = *optContentFolderPath / sJsonSoundFxPath;
-			
-			if ( !assetManager.AddSoundFx( sSoundFxName, soundFxPath.string()) )
+
+			if ( !assetManager.AddSoundFx( sSoundFxName, soundFxPath.string() ) )
 			{
 				SCION_ERROR( "Failed to load soundfx [{}] at path [{}]", sSoundFxName, soundFxPath.string() );
 				// Should we stop loading or finish??
@@ -329,7 +329,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		for ( const auto& jsonMusic : music.GetArray() )
 		{
 			std::string sMusicName{ jsonMusic[ "name" ].GetString() };
-			std::string sJsonMusicPath = jsonMusic[ "path" ].GetString(); 
+			std::string sJsonMusicPath = jsonMusic[ "path" ].GetString();
 			fs::path musicPath = *optContentFolderPath / sJsonMusicPath;
 
 			if ( !assetManager.AddMusic( sMusicName, musicPath.string() ) )
@@ -354,9 +354,9 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		for ( const auto& jsonFonts : fonts.GetArray() )
 		{
 			std::string sFontName{ jsonFonts[ "name" ].GetString() };
-			std::string sJsonFontPath = jsonFonts[ "path" ].GetString(); 
+			std::string sJsonFontPath = jsonFonts[ "path" ].GetString();
 			fs::path fontPath = *optContentFolderPath / sJsonFontPath;
-			
+
 			if ( !assetManager.AddFont( sFontName, fontPath.string(), jsonFonts[ "fontSize" ].GetFloat() ) )
 			{
 				SCION_ERROR( "Failed to load fonts [{}] at path [{}]", sFontName, fontPath.string() );
@@ -407,7 +407,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 			std::string sName{ jsonPrefab[ "name" ].GetString() };
 			std::string sJsonPrefabPath = jsonPrefab[ "path" ].GetString();
 			fs::path prefabPath = *optContentFolderPath / sJsonPrefabPath;
-			
+
 			if ( auto pPrefab = SCION_CORE::PrefabCreator::CreatePrefab( prefabPath.string() ) )
 			{
 				if ( !assetManager.AddPrefab( sName, std::move( pPrefab ) ) )
@@ -495,7 +495,7 @@ bool ProjectLoader::SaveLoadedProject( const SCION_CORE::ProjectInfo& projectInf
 
 	std::string sFileIconPath{};
 	auto optGameFileIcon = projectInfo.GetFileIconPath();
-	if (optGameFileIcon)
+	if ( optGameFileIcon )
 	{
 		std::string sGameFileIcon{ optGameFileIcon->string() };
 		sFileIconPath = sGameFileIcon.substr( sGameFileIcon.find( CONTENT_FOLDER ) + CONTENT_FOLDER.size() + 1 );
@@ -551,6 +551,23 @@ bool ProjectLoader::SaveLoadedProject( const SCION_CORE::ProjectInfo& projectInf
 			.EndObject();
 	}
 	pSerializer->EndArray(); // Music
+
+	pSerializer->StartNewArray( "fonts" );
+	for ( const auto& [ sName, pFont ] : assetManager.GetAllFonts() )
+	{
+		std::string sFilename{ pFont->GetFilename() };
+		// If the filename is empty, it must have been loaded from memory
+		if ( sFilename.empty() )
+			continue;
+
+		std::string sFontPath = sFilename.substr( sFilename.find( ASSETS ) );
+		pSerializer->StartNewObject()
+			.AddKeyValuePair( "name", sName )
+			.AddKeyValuePair( "path", sFontPath )
+			.AddKeyValuePair( "fontSize", pFont->GetFontSize() )
+			.EndObject();
+	}
+	pSerializer->EndArray(); // Fonts
 
 	pSerializer->StartNewArray( "scenes" );
 

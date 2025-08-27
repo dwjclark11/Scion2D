@@ -164,8 +164,6 @@ void Packager::RunPackager()
 			return;
 		}
 
-		std::this_thread::sleep_for( 1s );
-
 		UpdateProgress( 10.f, "Creating temp data." );
 		if ( !fs::exists( fs::path{ m_pPackageData->sTempDataPath } ) )
 		{
@@ -177,8 +175,6 @@ void Packager::RunPackager()
 				return;
 			}
 		}
-
-		std::this_thread::sleep_for( 1s );
 
 		UpdateProgress( 25.f, "Adding game lua scripts." );
 		auto pScriptCompiler = std::make_unique<ScriptCompiler>();

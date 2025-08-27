@@ -48,6 +48,7 @@ bool EditorSceneManager::AddSceneObject( const std::string& sSceneName, const st
 
 	auto [ itr, bSuccess ] =
 		m_mapScenes.emplace( sSceneName, std::move( std::make_shared<SceneObject>( sSceneName, sSceneData ) ) );
+
 	return bSuccess;
 }
 

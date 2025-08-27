@@ -421,7 +421,6 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Reg
 	SCION_CORE::Scripting::SoundBinder::CreateSoundBind( lua );
 	SCION_CORE::Scripting::RendererBinder::CreateRenderingBind( lua, registry );
 	SCION_CORE::Scripting::UserDataBinder::CreateLuaUserData( lua );
-	SCION_CORE::Scripting::ContactListenerBinder::CreateLuaContactListener( lua, registry.GetRegistry() );
 	SCION_CORE::Scripting::LuaFilesystem::CreateLuaFileSystemBind( lua );
 	SCION_CORE::Scripting::ScriptingHelpers::CreateLuaHelpers( lua );
 
@@ -443,10 +442,15 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Reg
 	AnimationComponent::CreateAnimationLuaBind( lua );
 	BoxColliderComponent::CreateLuaBoxColliderBind( lua );
 	CircleColliderComponent::CreateLuaCircleColliderBind( lua );
-	PhysicsComponent::CreatePhysicsLuaBind( lua, registry.GetRegistry() );
 	TextComponent::CreateLuaTextBindings( lua );
 	RigidBodyComponent::CreateRigidBodyBind( lua );
 	UIComponent::CreateLuaBind( lua );
+
+	if ( CORE_GLOBALS().IsPhysicsEnabled() )
+	{
+		SCION_CORE::Scripting::ContactListenerBinder::CreateLuaContactListener( lua, registry.GetRegistry() );
+		PhysicsComponent::CreatePhysicsLuaBind( lua, registry.GetRegistry() );
+	}
 }
 
 void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Registry& registry )

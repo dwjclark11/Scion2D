@@ -1,7 +1,6 @@
 #include "MenuDisplay.h"
 #include "Logger/Logger.h"
 #include "ScionFilesystem/Dialogs/FileDialog.h"
-#include "Core/Loaders/TilemapLoader.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/CoreUtilities/Prefab.h"
 #include "Core/Resources/AssetManager.h"
@@ -15,6 +14,7 @@
 #include "editor/utilities/EditorState.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
 #include "editor/loaders/ProjectLoader.h"
+#include "editor/loaders/TiledMapImporter.h"
 
 #include "Core/Events/EventDispatcher.h"
 #include "editor/events/EditorEventTypes.h"
@@ -28,10 +28,12 @@ namespace SCION_EDITOR
 {
 void MenuDisplay::Draw()
 {
+	auto& sceneManager = SCENE_MANAGER();
 	if ( ImGui::BeginMainMenuBar() )
 	{
 		if ( ImGui::BeginMenu( ICON_FA_FILE " File" ) )
 		{
+			ImGui::SeparatorText( "Project" );
 			ImGui::InlineLabel( ICON_FA_FILE_ALT, 32.f );
 			if ( ImGui::MenuItem( "New", "Ctrl + N" ) )
 			{
@@ -44,7 +46,7 @@ void MenuDisplay::Draw()
 				SCION_ERROR( "Open -- Not Implemented" );
 			}
 			ImGui::InlineLabel( ICON_FA_SAVE, 32.f );
-			if ( ImGui::MenuItem( "Save", "Ctrl + S" ) )
+			if ( ImGui::MenuItem( "Save All", "Ctrl + S" ) )
 			{
 				auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
 				SCION_ASSERT( pProjectInfo && "Project Info must exist!" );
@@ -60,7 +62,37 @@ void MenuDisplay::Draw()
 								 optProjectFilePath->string() );
 				}
 			}
+			ImGui::ItemToolTip( "Saves entire project to disk." );
 
+			ImGui::SeparatorText( "Scenes" );
+
+			if (auto pCurrentScene = sceneManager.GetCurrentScene())
+			{
+				ImGui::InlineLabel( ICON_FA_SAVE, 32.f );
+				if (ImGui::MenuItem("Save Current Scene As..."))
+				{
+					// TODO: Save a copy of the scene and all of it's entities under a new name.
+				}
+			}
+
+			ImGui::SeparatorText( "Import" );
+			ImGui::InlineLabel( ICON_FA_FILE_IMPORT, 32.f );
+			if ( ImGui::MenuItem( "Import Tiled Map" ) )
+			{
+				SCION_FILESYSTEM::FileDialog fd{};
+				const auto sFilepath = fd.OpenFileDialog( "Import Tiled Map", BASE_PATH, { "*.lua" } );
+				if ( !sFilepath.empty() )
+				{
+					if (!TiledMapImporter::ImportTilemapFromTiled(&SCENE_MANAGER(), sFilepath ) )
+					{
+						SCION_ERROR( "Failed to import tiled map as new scene." );
+					}
+				}
+			}
+
+			ImGui::ItemToolTip( "Import a map from the Tiled Map Editor. **Must be a lua export**" );
+
+			ImGui::SeparatorText( "Exit" );
 			ImGui::InlineLabel( ICON_FA_WINDOW_CLOSE, 32.f );
 			if ( ImGui::MenuItem( "Exit" ) )
 			{
@@ -72,6 +104,8 @@ void MenuDisplay::Draw()
 
 		if ( ImGui::BeginMenu( ICON_FA_EDIT " Edit" ) )
 		{
+			ImGui::SeparatorText( "Configuration" );
+
 			auto& coreGlobals = CORE_GLOBALS();
 			auto& toolManager = TOOL_MANAGER();
 
@@ -98,6 +132,8 @@ void MenuDisplay::Draw()
 
 		if ( ImGui::BeginMenu( ICON_FA_WINDOW_MAXIMIZE " Displays" ) )
 		{
+			ImGui::SeparatorText( "Displays" );
+
 			auto& pEditorState = MAIN_REGISTRY().GetContext<EditorStatePtr>();
 			DrawDisplayItem( *pEditorState, ICON_FA_FILE_ALT " Asset Browser", EDisplay::AssetBrowser );
 			DrawDisplayItem( *pEditorState, ICON_FA_FOLDER " Content Browser", EDisplay::ContentBrowser );
@@ -106,6 +142,7 @@ void MenuDisplay::Draw()
 			DrawDisplayItem( *pEditorState, ICON_FA_TERMINAL " Console Logger", EDisplay::Console );
 			DrawDisplayItem( *pEditorState, ICON_FA_COG " Project Settings", EDisplay::GameSettingsView );
 
+			ImGui::Separator();
 			ImGui::EndMenu();
 		}
 
@@ -256,7 +293,8 @@ void MenuDisplay::Draw()
 							 "Programming." );
 				ImGui::Text( "By Dustin Clark and all contributors." );
 				ImGui::AddSpaces( 2 );
-				ImGui::Text( "Helpful Links: " );
+
+				ImGui::SeparatorText( "Helpful Links: " );
 				ImGui::TextLinkOpenURL( "Github", "https://github.com/dwjclark11/Scion2D" );
 				ImGui::TextLinkOpenURL( "YouTube", "https://www.youtube.com/@JADE-iteGames" );
 				ImGui::TextLinkOpenURL( "Documentation", "https://dwjclark11.github.io/Scion2D_Docs/" );

@@ -587,6 +587,21 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TextComponent& tex
 			textComponent.bDirty = true;
 		}
 
+		// Color picker
+		ImVec4 col = { textComponent.color.r / 255.f,
+					   textComponent.color.g / 255.f,
+					   textComponent.color.b / 255.f,
+					   textComponent.color.a / 255.f };
+		ImGui::InlineLabel( "color" );
+		ImGui::ItemToolTip( "Text Color Override." );
+		if ( ImGui::ColorEdit4( "##color", &col.x, IMGUI_COLOR_PICKER_FLAGS ) )
+		{
+			textComponent.color.r = static_cast<GLubyte>( col.x * 255.f );
+			textComponent.color.g = static_cast<GLubyte>( col.y * 255.f );
+			textComponent.color.b = static_cast<GLubyte>( col.z * 255.f );
+			textComponent.color.a = static_cast<GLubyte>( col.w * 255.f );
+		}
+
 		ImGui::PopItemWidth();
 		ImGui::PopItemWidth();
 		ImGui::TreePop();

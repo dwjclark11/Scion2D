@@ -475,6 +475,15 @@ bool RuntimeApp::LoadZip()
 				pS2DAsset->assetSize = asset[ "dataSize" ].get_or( 0U );
 				pS2DAsset->assetEnd = asset[ "dataEnd" ].get_or( 0U );
 
+				if ( pS2DAsset->eType == SCION_UTIL::AssetType::FONT )
+				{
+					pS2DAsset->optFontSize = asset[ "fontSize" ].get_or( 32.f );
+				}
+				else if ( pS2DAsset->eType == SCION_UTIL::AssetType::TEXTURE )
+				{
+					pS2DAsset->optPixelArt = asset[ "bPixelArt" ].get_or( false );
+				}
+
 				// Get the asset data
 				sol::table dataTable = asset[ "data" ];
 				for ( const auto& [ _, data ] : dataTable )
@@ -495,8 +504,10 @@ bool RuntimeApp::LoadZip()
 		case AssetType::TEXTURE: {
 			for ( const auto& pTexAsset : assets )
 			{
-				if ( !assetManager.AddTextureFromMemory(
-						 pTexAsset->sName, pTexAsset->assetData.data(), pTexAsset->assetSize ) )
+				if ( !assetManager.AddTextureFromMemory( pTexAsset->sName,
+														 pTexAsset->assetData.data(),
+														 pTexAsset->assetSize,
+														 ( pTexAsset->optPixelArt ? *pTexAsset->optPixelArt : true ) ) )
 				{
 					SCION_ERROR( "Failed to add texture [{}] from memory.", pTexAsset->sName );
 				}
@@ -528,8 +539,9 @@ bool RuntimeApp::LoadZip()
 		case AssetType::FONT: {
 			for ( const auto& pFontAsset : assets )
 			{
-				if ( !assetManager.AddFontFromMemory(
-						 pFontAsset->sName, pFontAsset->assetData.data(), pFontAsset->assetSize ) )
+				if ( !assetManager.AddFontFromMemory( pFontAsset->sName,
+													  pFontAsset->assetData.data(),
+													  ( pFontAsset->optFontSize ? *pFontAsset->optFontSize : 32.f ) ) )
 				{
 					SCION_ERROR( "Failed to add font [{}] from memory.", pFontAsset->sName );
 				}

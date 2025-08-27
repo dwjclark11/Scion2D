@@ -1,10 +1,13 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_CORE::ECS
+namespace SCION_CORE
+{
+namespace ECS
 {
 class Registry;
 }
+} // namespace SCION_CORE
 
 namespace SCION_CORE::Loaders
 {
