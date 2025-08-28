@@ -1,3 +1,5 @@
+find_package(tinyxml2 CONFIG REQUIRED)
+
 add_executable(SCION_EDITOR
     "src/Application.cpp"
     "src/Application.h"
@@ -151,6 +153,7 @@ target_link_libraries(
 	SCION_EDITOR
 	PRIVATE SCION_CORE_EDITOR
 	libzippp::libzippp
+	tinyxml2::tinyxml2
 )
 
 set_target_properties(SCION_EDITOR PROPERTIES

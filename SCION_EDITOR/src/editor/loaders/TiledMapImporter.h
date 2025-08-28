@@ -11,7 +11,7 @@ class TiledMapImporter
   public:
 	TiledMapImporter() = delete;
 
-		/*
+	/*
 	 * @brief Imports tilemaps made in the Tiled Map Editor and converts
 	 * them to a new Scion Map and Scene.
 	 * @param pSceneManager a pointer to the scene manager to create a new scene.
@@ -19,6 +19,12 @@ class TiledMapImporter
 	 * @return Returns true if successful, false otherwise.
 	 */
 	static bool ImportTilemapFromTiled( EditorSceneManager* pSceneManager, const std::string sTiledMapFile );
+
+  private:
+	struct Tileset;
+	static bool ImportFromTMXFile( EditorSceneManager* pSceneManager, const std::string sTiledMapFile );
+	static bool ImportFromLuaFile( EditorSceneManager* pSceneManager, const std::string sTiledMapFile );
+	static Tileset* GetTileset( std::vector<Tileset>& tilesets, int id );
 
   private:
 	struct TileObject

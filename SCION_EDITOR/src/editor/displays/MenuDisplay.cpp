@@ -80,7 +80,7 @@ void MenuDisplay::Draw()
 			if ( ImGui::MenuItem( "Import Tiled Map" ) )
 			{
 				SCION_FILESYSTEM::FileDialog fd{};
-				const auto sFilepath = fd.OpenFileDialog( "Import Tiled Map", BASE_PATH, { "*.lua" } );
+				const auto sFilepath = fd.OpenFileDialog( "Import Tiled Map", BASE_PATH, { "*.lua", "*.tmx" } );
 				if ( !sFilepath.empty() )
 				{
 					if (!TiledMapImporter::ImportTilemapFromTiled(&SCENE_MANAGER(), sFilepath ) )
@@ -90,7 +90,7 @@ void MenuDisplay::Draw()
 				}
 			}
 
-			ImGui::ItemToolTip( "Import a map from the Tiled Map Editor. **Must be a lua export**" );
+			ImGui::ItemToolTip( "Import a map from the Tiled Map Editor. Supports tmx and lua map files." );
 
 			ImGui::SeparatorText( "Exit" );
 			ImGui::InlineLabel( ICON_FA_WINDOW_CLOSE, 32.f );
