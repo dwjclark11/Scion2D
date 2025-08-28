@@ -94,7 +94,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 ## Install dependencies 
 - Windows
 	```
-	vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer[mpg123] lua sol2 stb tinyfiledialogs rapidjson libzippp
+	vcpkg install fmt glm entt glad soil2 sdl2 sdl2-mixer[mpg123] lua sol2 stb tinyfiledialogs rapidjson libzippp tinyxml2
 	```
 - Linux[debian based]
 	```
@@ -113,7 +113,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 		sudo apt install build-essential
 		```
 	```
-	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer[mpg123] lua sol2 stb tinyfiledialogs rapidjson libzippp
+	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer[mpg123] lua sol2 stb tinyfiledialogs rapidjson libzippp tinyxml2
 	```
 - ImGui Docking and SDL2-Binding
   * It seems like the ```ImGui[sdl2-binding]``` no longer exists in vcpkg. Also the current ```Imgui[docking-experimental]``` does not seem to be up to date either.
@@ -193,5 +193,6 @@ Check out these amazing open source projects that we are using in the engine. Ma
 -   **[Lua](https://www.lua.org/)** - Powerful, efficient scripting language.
 -   **[tinyfiledialogs](https://github.com/native-toolkit/libtinyfiledialogs)** - Cross-Platform Native dialog library for WINDOWS MAC OSX GTK+ QT CONSOLE **[Official](https://sourceforge.net/projects/tinyfiledialogs/)**.
 -   **[Libzippp](https://github.com/ctabin/libzippp)** - C++ wrapper around the libzip library.
+-   **[tinyxml2](https://github.com/leethomason/tinyxml2)** - TinyXML2 is a simple, small, efficient, C++ XML parser that can be easily integrated into other programs.
 
 _Thank you to all the contributors and maintainers of these projects!_ ❤️
