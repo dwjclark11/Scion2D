@@ -45,4 +45,41 @@ bool FileProcessor::OpenApplicationFromFile( const std::string& sFilename, std::
 	return true;
 }
 
+bool FileProcessor::OpenFileLocation( const std::string& sFilename )
+{
+	if (!fs::exists(fs::path{ sFilename }))
+	{
+		SCION_ERROR( "Failed to open file location [{}]. File does not exist.", sFilename );
+		return false;
+	}
+
+	std::wstring sCommand{ std::format( L"explorer /select, \"{}\"", ConvertUtf8ToWide( sFilename ) ) };
+
+	STARTUPINFOW si{};
+	PROCESS_INFORMATION pi{};
+	si.cb = sizeof( si );
+
+	if (CreateProcessW(
+		nullptr, sCommand.data(),
+		nullptr,
+		nullptr,
+		FALSE,
+		CREATE_NO_WINDOW | DETACHED_PROCESS,
+		nullptr,
+		nullptr,
+		&si,
+		&pi
+	))
+	{
+		CloseHandle( pi.hThread );
+		CloseHandle( pi.hProcess );
+		return true;
+	}
+
+	DWORD error{ GetLastError() };
+	SCION_ERROR( "Failed to open file location [{}]. {}", sFilename, error );
+
+	return false;
+}
+
 } // namespace SCION_FILESYSTEM

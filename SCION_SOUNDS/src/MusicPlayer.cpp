@@ -77,4 +77,9 @@ bool MusicPlayer::IsPlaying()
 	return Mix_PlayingMusic();
 }
 
+bool MusicPlayer::IsPaused()
+{
+	return Mix_PausedMusic();
+}
+
 } // namespace SCION_SOUNDS

@@ -53,5 +53,10 @@ class MusicPlayer
 	 * @brief Returns true if the music channel is currently playing
 	 */
 	bool IsPlaying();
+
+	/*
+	 * @brief Returns true if the music is currently paused
+	 */
+	bool IsPaused();
 };
 } // namespace SCION_SOUNDS

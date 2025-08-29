@@ -47,7 +47,9 @@ void SCION_CORE::Scripting::SoundBinder::CreateSoundBind( sol::state& lua )
 		"setVolume",
 		[ & ]( int volume ) { musicPlayer.SetVolume( volume ); },
 		"isPlaying",
-		[ & ]() { return musicPlayer.IsPlaying(); } );
+		[ & ]() { return musicPlayer.IsPlaying(); },
+		"isPaused",
+		[ & ]() { return musicPlayer.IsPaused(); } );
 
 	// Create the SoundFxPlayer Bindings
 	auto& soundFxPlayer = mainRegistry.GetSoundPlayer();

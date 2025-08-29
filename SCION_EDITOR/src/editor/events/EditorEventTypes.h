@@ -36,9 +36,15 @@ struct SwitchEntityEvent
 
 enum class EContentCreateAction
 {
+	/* Create a new folder. */
 	Folder,
+	/* Create a new lua file with S2D_Class */
 	LuaClass,
+	/* Create a new lua file with an empty lua table. TableName = {} */
 	LuaTable,
+	/* Create a new lua file with S2D_Class that has a Scion State class implementation. */
+	LuaStateClass,
+	/* Create an empty lua file.*/
 	EmptyLuaFile,
 
 	NoAction

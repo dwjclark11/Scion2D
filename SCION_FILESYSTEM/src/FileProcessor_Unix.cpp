@@ -48,4 +48,10 @@ bool FileProcessor::OpenApplicationFromFile( const std::string& sFilename, std::
 	return bSuccess;
 }
 
+bool FileProcessor::OpenFileLocation(const std::string& sFilename)
+{
+	SCION_ERROR( "Not Implemented" );
+	return false;
+}
+
 } // namespace SCION_FILESYSTEM
