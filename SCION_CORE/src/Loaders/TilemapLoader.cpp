@@ -125,7 +125,7 @@ bool TilemapLoader::LoadTilemapJSON( SCION_CORE::ECS::Registry& registry, const 
 	if ( !tilemap.IsArray() || tilemap.Size() < 1 )
 	{
 		SCION_WARN( "Failed to load tilemap: File: [{}] - There needs to be at least 1 tile.", sTilemapFile );
-		return false;
+		return true;
 	}
 
 	for ( const auto& tile : tilemap.GetArray() )
@@ -354,7 +354,7 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 	if ( !gameObjects.IsArray() || gameObjects.Size() < 1 )
 	{
 		SCION_WARN( "Failed to load Game Objects: File: [{}] - There needs to be at least 1 tile.", sObjectMapFile );
-		return false;
+		return true;
 	}
 
 	// Map of entity to relationships

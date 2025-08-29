@@ -10,6 +10,7 @@
 #include "Core/Events/EngineEventTypes.h"
 #include "Core/Scripting/InputManager.h"
 #include "Core/Scripting/CrashLoggerTestBindings.h"
+#include "Core/Scripting/ScriptingUtilities.h"
 
 #include "Core/Systems/AnimationSystem.h"
 #include "Core/Systems/PhysicsSystem.h"
@@ -177,7 +178,7 @@ void RuntimeApp::Initialize()
 	}
 
 	mainRegistry.AddToContext<std::shared_ptr<sol::state>>( std::move( pLuaState ) );
-
+	auto mainScript = mainRegistry.AddToContext<MainScriptPtr>( std::make_shared<SCION_CORE::Scripting::MainScriptFunctions>() );
 	if ( !LoadShaders() )
 	{
 		throw std::runtime_error( "Failed to Load game shaders." );
@@ -202,6 +203,14 @@ void RuntimeApp::Initialize()
 	tl.LoadTilemapFromLuaTable( *mainRegistry.GetRegistry(), ( *lua )[ m_pGameConfig->sStartupScene + "_tilemap" ] );
 	tl.LoadGameObjectsFromLuaTable( *mainRegistry.GetRegistry(),
 									( *lua )[ m_pGameConfig->sStartupScene + "_objects" ] );
+
+	if ( !mainScript->init.valid() )
+	{
+		throw std::runtime_error( "Failed to initialize main script. init() function is invalid." );
+	}
+
+	mainScript->init();
+
 	if ( coreGlobals.IsPhysicsEnabled() )
 	{
 		LoadPhysics();

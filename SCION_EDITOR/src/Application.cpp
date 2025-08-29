@@ -138,9 +138,7 @@ bool Application::Initialize()
 	// Initialize Glad
 	if ( gladLoadGLLoader( SDL_GL_GetProcAddress ) == 0 )
 	{
-		std::cout << "Failed to Initialize Glad" << std::endl;
-
-		SCION_ERROR( "Failed to LoadGL --> GLAD" );
+		SCION_ERROR( "Failed to Initialize Glad" );
 		return false;
 	}
 

@@ -609,7 +609,7 @@ std::string Packager::CreateAssetDefsFile( const std::string& sTempFilepath, con
 						print("Failed to load font ["..v[i].name.."]")
 					end
 				elseif k == "soundfx" then
-					if not AssetManager.addSoundFx(v[i].name, v[i].path) then
+					if not AssetManager.addSoundfx(v[i].name, v[i].path) then
 						print("Failed to load soundfx ["..v[i].name.."]")
 					end
 				elseif k == "music" then

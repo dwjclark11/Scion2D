@@ -8,7 +8,7 @@ void ScriptingHelpers::CreateLuaHelpers( sol::state& lua )
 	// clang-format off
 	
 	std::string sLuaClassCode = R"(
-		function S2D_Class(base)
+		function S2D_Class(className, base)
 			-- Create a new table that will represent our class
 			local cls = {}
 			-- Set the __index metamethod so method lookups refer to the class

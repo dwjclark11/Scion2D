@@ -16,6 +16,7 @@
 #include "Logger/CrashLogger.h"
 
 #include "Core/Scripting/CrashLoggerTestBindings.h"
+#include "Core/Scripting/ScriptingUtilities.h"
 
 #include "Sounds/MusicPlayer/MusicPlayer.h"
 #include "Sounds/SoundPlayer/SoundFxPlayer.h"
@@ -157,12 +158,21 @@ void SceneDisplay::LoadScene()
 	}
 
 	// Get the main script path
+	auto mainScript = runtimeRegistry.AddToContext<MainScriptPtr>( std::make_shared<SCION_CORE::Scripting::MainScriptFunctions>() );
 	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
 	if ( !scriptSystem->LoadMainScript( *pProjectInfo, runtimeRegistry, *lua ) )
 	{
 		SCION_ERROR( "Failed to load the main lua script!" );
 		return;
 	}
+
+	if (!mainScript->init.valid())
+	{
+		SCION_ERROR( "Failed to initialize main script. init() function is invalid." );
+		return;
+	}
+
+	mainScript->init();
 
 	// Setup Crash Tests
 	SCION_CORE::Scripting::CrashLoggerTests::CreateLuaBind( *lua );
@@ -191,6 +201,7 @@ void SceneDisplay::UnloadScene()
 	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<ScriptingSystem>>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>();
+	runtimeRegistry.RemoveContext<MainScriptPtr>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<sol::state>>();
 
 	auto& mainRegistry = MAIN_REGISTRY();

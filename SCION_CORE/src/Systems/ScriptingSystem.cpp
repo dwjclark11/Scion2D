@@ -80,30 +80,41 @@ bool ScriptingSystem::LoadMainScript( const std::string& sMainLuaFile, SCION_COR
 	}
 
 	sol::table main_lua = lua[ "main" ];
-	sol::optional<sol::table> bUpdateExists = main_lua[ 1 ];
+
+	sol::optional<sol::table> bInitExists = main_lua[ 1 ];
+	if ( bInitExists == sol::nullopt )
+	{
+		SCION_ERROR( "There is no init function in main.lua" );
+		return false;
+	}
+
+	sol::table init_script = main_lua[ 1 ];
+	sol::function init = init_script[ "init" ];
+
+	sol::optional<sol::table> bUpdateExists = main_lua[ 2 ];
 	if ( bUpdateExists == sol::nullopt )
 	{
 		SCION_ERROR( "There is no update function in main.lua" );
 		return false;
 	}
 
-	sol::table update_script = main_lua[ 1 ];
+	sol::table update_script = main_lua[ 2 ];
 	sol::function update = update_script[ "update" ];
 
-	sol::optional<sol::table> bRenderExists = main_lua[ 2 ];
+	sol::optional<sol::table> bRenderExists = main_lua[ 3 ];
 	if ( bRenderExists == sol::nullopt )
 	{
 		SCION_ERROR( "There is no render function in main.lua" );
 		return false;
 	}
 
-	sol::table render_script = main_lua[ 2 ];
+	sol::table render_script = main_lua[ 3 ];
 	sol::function render = render_script[ "render" ];
 
-	SCION_CORE::ECS::Entity mainLuaScript{ registry, "main_script", "" };
-	mainLuaScript.AddComponent<SCION_CORE::ECS::ScriptComponent>(
-		SCION_CORE::ECS::ScriptComponent{ .update = update, .render = render } );
-
+	auto& pMainScript = registry.GetContext<MainScriptPtr>();
+	pMainScript->init = init;
+	pMainScript->update = update;
+	pMainScript->render = render;
 	m_bMainLoaded = true;
 	return true;
 }
@@ -177,23 +188,12 @@ void ScriptingSystem::Update( SCION_CORE::ECS::Registry& registry )
 		return;
 	}
 
-	auto mainScript = FindEntityByTag( registry, "main_script" );
-	if ( mainScript == entt::null )
+	auto& pMainScript = registry.GetContext<MainScriptPtr>();
+	auto error = pMainScript->update();
+	if ( !error.valid() )
 	{
-		SCION_ERROR( "Failed to run main Update script. Entity does not exist." );
-		return;
-	}
-
-	Entity scriptEnt{ registry, mainScript };
-
-	if ( auto* pScript = scriptEnt.TryGetComponent<ScriptComponent>() )
-	{
-		auto error = pScript->update();
-		if ( !error.valid() )
-		{
-			sol::error err = error;
-			SCION_ERROR( "Error running the Update script: {0}", err.what() );
-		}
+		sol::error err = error;
+		SCION_ERROR( "Error running the Update script: {0}", err.what() );
 	}
 
 	if ( auto* pLua = registry.TryGetContext<std::shared_ptr<sol::state>>() )
@@ -210,23 +210,12 @@ void ScriptingSystem::Render( SCION_CORE::ECS::Registry& registry )
 		return;
 	}
 
-	auto mainScript = FindEntityByTag( registry, "main_script" );
-	if ( mainScript == entt::null )
+	auto& pMainScript = registry.GetContext<MainScriptPtr>();
+	auto error = pMainScript->render();
+	if ( !error.valid() )
 	{
-		SCION_ERROR( "Failed to run main render script. Entity does not exist." );
-		return;
-	}
-
-	Entity scriptEnt{ registry, mainScript };
-
-	if ( auto* pScript = scriptEnt.TryGetComponent<ScriptComponent>() )
-	{
-		auto error = pScript->render();
-		if ( !error.valid() )
-		{
-			sol::error err = error;
-			SCION_ERROR( "Error running the Render script: {0}", err.what() );
-		}
+		sol::error err = error;
+		SCION_ERROR( "Error running the Render script: {0}", err.what() );
 	}
 
 	if ( auto* pLua = registry.TryGetContext<std::shared_ptr<sol::state>>() )
