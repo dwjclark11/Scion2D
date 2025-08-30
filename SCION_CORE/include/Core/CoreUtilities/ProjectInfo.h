@@ -143,6 +143,10 @@ class ProjectInfo
 	inline void SetCopyRightNotice( const std::string& sCopyRightNotice ) { m_sCopyRightNotice = sCopyRightNotice; }
 	/** @brief Gets the copyright notice. */
 	inline const std::string& GetCopyRightNotice() const { return m_sCopyRightNotice; }
+	/** @brief Gets the default scene name. */
+	inline const std::string& GetDefaultScene() const { return m_sDefaultScene;  }
+	/** @brief Sets the default scene name. */
+	inline void SetDefaultScene( const std::string& sDefaultScene ) { m_sDefaultScene = sDefaultScene; }
 
 	/**
 	 * @brief Gets all project folder mappings.
@@ -166,6 +170,8 @@ class ProjectInfo
 	std::optional<fs::path> m_FileIconPath{ std::nullopt };
 	/** @brief List of Lua scripts used in the project. */
 	std::optional<fs::path> m_ScriptListPath{ std::nullopt };
+	/** @brief Default scene to load when the project first loads. */
+	std::string m_sDefaultScene{};
 	/** @brief Name of the project. */
 	std::string m_sProjectName{};
 	/** @brief Semantic version string of the project (e.g., 1.0.0.0). */

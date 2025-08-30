@@ -257,6 +257,12 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		pProjectInfo->SetProjectDescription( sDescription );
 	}
 
+	if (projectData.HasMember("default_scene"))
+	{
+		std::string sDefaultScene = projectData[ "default_scene" ].GetString();
+		pProjectInfo->SetDefaultScene( sDefaultScene );
+	}
+
 	const rapidjson::Value& assets = projectData[ "assets" ];
 	auto& assetManager = ASSET_MANAGER();
 
@@ -422,6 +428,15 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		}
 	}
 
+	if (!pProjectInfo->GetDefaultScene().empty())
+	{
+		SCENE_MANAGER().SetCurrentScene( pProjectInfo->GetDefaultScene() );
+		if (!SCENE_MANAGER().LoadCurrentScene())
+		{
+			SCION_ERROR( "Failed to load default scene [{}]", pProjectInfo->GetDefaultScene() );
+		}
+	}
+
 	if ( projectData.HasMember( "physics" ) )
 	{
 		const rapidjson::Value& physics = projectData[ "physics" ];
@@ -509,6 +524,7 @@ bool ProjectLoader::SaveLoadedProject( const SCION_CORE::ProjectInfo& projectInf
 		.AddKeyValuePair( "copyright", projectInfo.GetCopyRightNotice() )
 		.AddKeyValuePair( "version", projectInfo.GetProjectVersion() )
 		.AddKeyValuePair( "description", projectInfo.GetProjectDescription() )
+		.AddKeyValuePair( "default_scene", projectInfo.GetDefaultScene() )
 		.StartNewObject( "assets" );
 
 	pSerializer->StartNewArray( "textures" );

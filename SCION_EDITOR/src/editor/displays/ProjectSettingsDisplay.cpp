@@ -10,6 +10,7 @@
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/EditorState.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
+#include "editor/scene/SceneManager.h"
 
 #include <imgui.h>
 #include <imgui_stdlib.h>
@@ -255,6 +256,26 @@ ProjectSettingsDisplay::SettingCategory ProjectSettingsDisplay::CreateGeneralSet
 							{
 								sGameType = sTypeStr;
 								coreGlobals.SetGameType( eType );
+							}
+						}
+
+						ImGui::EndCombo();
+					}
+				}
+			},
+			{ "Default Scene",
+				[ & ]() {
+					std::string sDefaultScene{ projectInfo.GetDefaultScene() };
+					ImGui::InlineLabel( ICON_FA_IMAGE " Default Scene" );
+					ImGui::ItemToolTip( "The default scene to be loaded when the project is loaded." );
+					if ( ImGui::BeginCombo( "##default_scene", sDefaultScene.c_str() ) )
+					{
+						for ( const auto& sSceneName : SCENE_MANAGER().GetSceneNames())
+						{
+							if ( ImGui::Selectable( sSceneName.c_str(), sSceneName == sDefaultScene ) )
+							{
+								sDefaultScene = sSceneName;
+								projectInfo.SetDefaultScene(sDefaultScene);
 							}
 						}
 
