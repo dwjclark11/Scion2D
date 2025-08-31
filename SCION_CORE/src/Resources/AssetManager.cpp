@@ -510,6 +510,35 @@ bool AssetManager::AddSoundFxFromMemory( const std::string& soundFxName, const u
 	return bSuccess;
 }
 
+std::string AssetManager::GetAssetFilepath( const std::string& sAssetName, SCION_UTIL::AssetType eAssetType )
+{
+	switch ( eAssetType )
+	{
+	case SCION_UTIL::AssetType::TEXTURE: {
+		auto itr = m_mapTextures.find( sAssetName );
+		return itr != m_mapTextures.end() ? itr->second->GetPath() : std::string{};
+	}
+	case SCION_UTIL::AssetType::FONT: {
+		auto itr = m_mapFonts.find( sAssetName );
+		return itr != m_mapFonts.end() ? itr->second->GetFilename() : std::string{};
+	}
+	case SCION_UTIL::AssetType::SOUNDFX: {
+		auto itr = m_mapSoundFx.find( sAssetName );
+		return itr != m_mapSoundFx.end() ? itr->second->GetFilename() : std::string{};
+	}
+	case SCION_UTIL::AssetType::MUSIC: {
+		auto itr = m_mapMusic.find( sAssetName );
+		return itr != m_mapMusic.end() ? itr->second->GetFilename() : std::string{};
+	}
+	case SCION_UTIL::AssetType::PREFAB: {
+		auto itr = m_mapPrefabs.find( sAssetName );
+		return itr != m_mapPrefabs.end() ? itr->second->GetFilepath() : std::string{};
+	}
+	}
+
+	return {};
+}
+
 std::shared_ptr<SCION_SOUNDS::SoundFX> AssetManager::GetSoundFx( const std::string& soundFxName )
 {
 	auto soundItr = m_mapSoundFx.find( soundFxName );
@@ -555,7 +584,7 @@ bool AssetManager::AddCursor( const std::string& sCursorName, const std::string&
 
 bool AssetManager::AddCursorFromMemory( const std::string& sCursorName, unsigned char* cursorData, size_t dataSize )
 {
-	if( m_mapCursors.contains( sCursorName ) )
+	if ( m_mapCursors.contains( sCursorName ) )
 	{
 		SCION_ERROR( "Failed to add Cursor [{}] - Already exists.", sCursorName );
 		return false;

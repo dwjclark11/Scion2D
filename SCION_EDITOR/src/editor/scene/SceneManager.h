@@ -44,6 +44,8 @@ class EditorSceneManager : public SCION_CORE::SceneManager
 
 	void UpdateScenes();
 
+	std::string GetSceneFilepath( const std::string& sSceneName );
+
 	inline const std::map<std::string, std::shared_ptr<SCION_CORE::Scene>>& GetAllScenes() const { return m_mapScenes; }
 
 	inline const std::string& GetCurrentTileset() const { return m_sCurrentTileset; }

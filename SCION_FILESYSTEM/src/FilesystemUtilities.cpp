@@ -30,4 +30,10 @@ std::string SCION_FILESYSTEM::ExecCmdWithErrorOutput( const std::string& sCmd )
 
 	return sResult;
 }
+
+std::string NormalizePath( const std::string& sPath )
+{
+	fs::path path{ sPath };
+	return path.make_preferred().string();
+}
 } // namespace SCION_FILESYSTEM

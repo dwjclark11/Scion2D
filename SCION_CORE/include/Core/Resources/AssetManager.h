@@ -182,6 +182,8 @@ class AssetManager
 	 */
 	bool AddSoundFxFromMemory( const std::string& soundFxName, const unsigned char* soundFxData, size_t dataSize );
 
+	std::string GetAssetFilepath( const std::string& sAssetName, SCION_UTIL::AssetType eAssetType );
+
 	/*
 	 * @brief Checks to see if the soundFx exists based on the name and returns shared_ptr<SoundFX>.
 	 * @param An std::string for the SoundFx name to lookup.

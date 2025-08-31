@@ -22,6 +22,9 @@
 #include <Sounds/Essentials/Music.h>
 #include <Sounds/Essentials/SoundFX.h>
 
+#include <ScionFilesystem/Process/FileProcessor.h>
+#include <ScionFilesystem/Utilities/FilesystemUtilities.h>
+
 #include <imgui.h>
 
 constexpr float DEFAULT_ASSET_SIZE = 64.f;
@@ -225,7 +228,30 @@ void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 	ImGui::SeparatorText( "File Explorer" );
 	if ( ImGui::Selectable( ICON_FA_FILE_ALT " Open File Location" ) )
 	{
-
+		if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
+		{
+			std::string sScenePath = SCENE_MANAGER().GetSceneFilepath( sAssetName );
+			if ( !sScenePath.empty() )
+			{
+				SCION_FILESYSTEM::FileProcessor fp{};
+				if ( !fp.OpenFileLocation( SCION_FILESYSTEM::NormalizePath( sScenePath ) ) )
+				{
+					SCION_ERROR( "Failed to open file location [{}]", sScenePath );
+				}
+			}
+		}
+		else
+		{
+			std::string sAssetPath = ASSET_MANAGER().GetAssetFilepath( sAssetName, m_eSelectedType );
+			if ( !sAssetPath.empty() )
+			{
+				SCION_FILESYSTEM::FileProcessor fp{};
+				if ( !fp.OpenFileLocation( SCION_FILESYSTEM::NormalizePath( sAssetPath ) ) )
+				{
+					SCION_ERROR( "Failed to open file location [{}]", sAssetPath );
+				}
+			}
+		}
 	}
 }
 
@@ -302,7 +328,6 @@ void AssetDisplay::DrawSelectedAssets()
 												ImVec2{ m_AssetSize, m_AssetSize },
 												ImVec2{ sprite->uvs.u, sprite->uvs.v },
 												ImVec2{ sprite->uvs.uv_width, sprite->uvs.uv_height } );
-							
 						}
 						else
 						{

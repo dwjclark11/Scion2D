@@ -147,7 +147,7 @@ class SceneObject : public SCION_CORE::Scene
 	inline const std::string& GetName() { return m_sSceneName; }
 	inline SceneRuntimeData* GetRuntimeData() { return m_pRuntimeData.get(); }
 	inline SCION_CORE::ECS::Registry& GetRuntimeRegistry() { return m_RuntimeRegistry; }
-
+	
   private:
 	void OnEntityNameChanges( SCION_EDITOR::Events::NameChangeEvent& nameChange );
 

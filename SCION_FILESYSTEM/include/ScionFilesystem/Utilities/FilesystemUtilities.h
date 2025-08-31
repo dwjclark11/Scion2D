@@ -14,4 +14,15 @@ namespace SCION_FILESYSTEM
  * @throws std::runtime_error if the command execution fails.
  */
 std::string ExecCmdWithErrorOutput( const std::string& sCmd );
+
+/**
+* @brief Takes an input path string that may contain mixed direcory separators
+* and returns a new string using the preffered directory separator for the
+* current operating system.
+*
+* @param sPath A path string that my contain mixed or non-preferred separators.
+* @return std::string The normalized path string with OS-preferred separators.
+*/
+std::string NormalizePath( const std::string& sPath );
+
 } // namespace SCION_FILESYSTEM

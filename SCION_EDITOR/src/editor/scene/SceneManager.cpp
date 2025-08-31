@@ -198,6 +198,12 @@ void EditorSceneManager::UpdateScenes()
 	}
 }
 
+std::string EditorSceneManager::GetSceneFilepath( const std::string& sSceneName )
+{
+	auto itr = m_mapScenes.find( sSceneName );
+	return itr != m_mapScenes.end() ? itr->second->GetFilepath() : std::string{};
+}
+
 EditorSceneManager::EditorSceneManager()
 	: SCION_CORE::SceneManager()
 {
