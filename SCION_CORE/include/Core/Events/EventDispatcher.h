@@ -112,7 +112,7 @@ struct LuaHandler
 		if (connection && callback.valid() )
 			callback( ev ); 
 	}
-	~LuaHandler() { SCION_LOG( "Destroyed!" ); }
+	~LuaHandler() { }
 
 	void ReleaseConnection()
 	{

@@ -12,6 +12,8 @@
 #include "Core/Scripting/CrashLoggerTestBindings.h"
 #include "Core/Scripting/ScriptingUtilities.h"
 
+#include "Core/Scene/SceneManager.h"
+
 #include "Core/Systems/AnimationSystem.h"
 #include "Core/Systems/PhysicsSystem.h"
 #include "Core/Systems/ScriptingSystem.h"
@@ -198,11 +200,16 @@ void RuntimeApp::Initialize()
 		throw std::runtime_error( "Failed to load game scripts. " );
 	}
 
+	auto pSceneManagerData = mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::SceneManagerData>>(
+		std::make_shared<SCION_CORE::SceneManagerData>() );
+
 	SCION_CORE::Loaders::TilemapLoader tl{};
 	auto& lua = mainRegistry.GetContext<std::shared_ptr<sol::state>>();
 	tl.LoadTilemapFromLuaTable( *mainRegistry.GetRegistry(), ( *lua )[ m_pGameConfig->sStartupScene + "_tilemap" ] );
 	tl.LoadGameObjectsFromLuaTable( *mainRegistry.GetRegistry(),
 									( *lua )[ m_pGameConfig->sStartupScene + "_objects" ] );
+
+	pSceneManagerData->sSceneName = m_pGameConfig->sStartupScene;
 
 	if ( !mainScript->init.valid() )
 	{
@@ -357,11 +364,13 @@ void RuntimeApp::LoadBindings()
 
 	auto& pLuaState = mainRegistry.GetContext<std::shared_ptr<sol::state>>();
 	auto* pRegistry = mainRegistry.GetRegistry();
-
+	
 	ScriptingSystem::RegisterLuaBindings( *pLuaState, *pRegistry );
 	ScriptingSystem::RegisterLuaFunctions( *pLuaState, *pRegistry );
 	ScriptingSystem::RegisterLuaEvents( *pLuaState, *pRegistry );
 	ScriptingSystem::RegisterLuaSystems( *pLuaState, *pRegistry );
+
+	SCION_CORE::SceneManager::CreateLuaBind( *pLuaState, *pRegistry );
 }
 
 bool RuntimeApp::LoadScripts()

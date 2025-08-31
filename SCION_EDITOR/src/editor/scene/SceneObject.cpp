@@ -12,6 +12,7 @@
 
 #include "ScionUtilities/ScionUtilities.h"
 #include "ScionFilesystem/Serializers/JSONSerializer.h"
+#include "ScionFilesystem/Serializers/LuaSerializer.h"
 
 #include "editor/scene/SceneManager.h"
 
@@ -414,9 +415,8 @@ bool SceneObject::UnloadScene( bool bSaveScene )
 	return bSuccess;
 }
 
-std::pair<std::string, std::string> SceneObject::ExportSceneToLua( const std::string& sSceneName,
-																   const std::string& sExportPath,
-																   SCION_CORE::ECS::Registry& registry )
+SceneExportFiles SceneObject::ExportSceneToLua( const std::string& sSceneName, const std::string& sExportPath,
+												SCION_CORE::ECS::Registry& registry )
 {
 	// Get the scene data and load the scene into a separate registry
 	if ( !fs::exists( m_sSceneDataPath ) )
@@ -486,10 +486,10 @@ std::pair<std::string, std::string> SceneObject::ExportSceneToLua( const std::st
 		m_Canvas.tileHeight = canvas[ "tileHeight" ].GetInt();
 	}
 
-	if (sceneData.HasMember("mapType"))
+	if ( sceneData.HasMember( "mapType" ) )
 	{
 		std::string sMapType = sceneData[ "mapType" ].GetString();
-		if (sMapType == "grid")
+		if ( sMapType == "grid" )
 		{
 			m_eMapType = SCION_CORE::EMapType::Grid;
 		}
@@ -500,7 +500,7 @@ std::pair<std::string, std::string> SceneObject::ExportSceneToLua( const std::st
 	}
 
 	auto pTilemapLoader = std::make_unique<TilemapLoader>();
-	if (!pTilemapLoader->LoadTilemap(registry, m_sTilemapPath, true))
+	if ( !pTilemapLoader->LoadTilemap( registry, m_sTilemapPath, true ) )
 	{
 		SCION_ERROR( "Failed to load tilemap [{}]", m_sTilemapPath );
 		return {};
@@ -512,8 +512,13 @@ std::pair<std::string, std::string> SceneObject::ExportSceneToLua( const std::st
 		return {};
 	}
 
+	if ( IsPlayerStartEnabled() )
+	{
+		CopyPlayerStartToRuntimeRegistry( registry );
+	}
+
 	fs::path exportPath{ sExportPath };
-	if (!fs::exists(exportPath))
+	if ( !fs::exists( exportPath ) )
 	{
 		SCION_ERROR( "Failed to export scene [{}] to lua. Export path [{}] does not exist.", sSceneName, sExportPath );
 		return {};
@@ -522,7 +527,7 @@ std::pair<std::string, std::string> SceneObject::ExportSceneToLua( const std::st
 	fs::path tilemapLua{ exportPath };
 	tilemapLua /= sSceneName + "_tilemap.lua";
 
-	if (!pTilemapLoader->SaveTilemap(registry, tilemapLua.string(), false))
+	if ( !pTilemapLoader->SaveTilemap( registry, tilemapLua.string(), false ) )
 	{
 		SCION_ERROR( "Failed to export scene [{}] to lua.", sSceneName );
 		return {};
@@ -537,7 +542,40 @@ std::pair<std::string, std::string> SceneObject::ExportSceneToLua( const std::st
 		return {};
 	}
 
-	return std::make_pair( tilemapLua.string(), objectLua.string() );
+	// Export Scene Data
+	std::unique_ptr<SCION_FILESYSTEM::LuaSerializer> pSerializer{ nullptr };
+
+	fs::path sceneDataPath{ exportPath };
+	sceneDataPath /= sSceneName + "_data.lua";
+
+	try
+	{
+		pSerializer = std::make_unique<LuaSerializer>( sceneDataPath.string() );
+	}
+	catch ( const std::exception& ex )
+	{
+		SCION_ERROR( "Failed to save tilemap [{}] - [{}]", sceneDataPath.string(), ex.what() );
+		return {};
+	}
+
+	if ( m_sDefaultMusic.empty() && sceneData.HasMember( "defaultMusic" ) )
+	{
+		m_sDefaultMusic = sceneData[ "defaultMusic" ].GetString();
+	}
+
+	pSerializer->StartNewTable( sSceneName + "_data" )
+		.AddKeyValuePair( "default_music", m_sDefaultMusic, true, false, false, true )
+		.AddKeyValuePair( "scene_name", m_sSceneName, true, false, false, true )
+		.StartNewTable( "canvas" )
+		.AddKeyValuePair( "width", m_Canvas.width )
+		.AddKeyValuePair( "height", m_Canvas.height )
+		.AddKeyValuePair( "tileWidth", m_Canvas.tileWidth )
+		.AddKeyValuePair( "tileHeight", m_Canvas.tileHeight, true, true )
+		.EndTable()	 // canvas
+		.EndTable(); // _data
+	pSerializer->FinishStream();
+
+	return { tilemapLua.string(), objectLua.string(), sceneDataPath.string() };
 }
 
 bool SceneObject::CheckTagName( const std::string& sTagName )

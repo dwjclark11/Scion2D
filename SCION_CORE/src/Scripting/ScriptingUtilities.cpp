@@ -75,11 +75,24 @@ void ScriptingHelpers::CreateLuaHelpers( sol::state& lua )
 		end
 	)";
 
+	std::string sLuaInsertUnique = R"(
+		function S2D_InsertUnique(tbl, value)
+			for _, v in pairs(tbl) do 
+				if v == value then 
+					return -- Already in table
+				end 
+			end 
+	
+			table.insert(tbl, value)
+		end
+	)";
+
 	try
 	{
 		auto result = lua.safe_script(sLuaClassCode);
 		result = lua.safe_script(sLuaDeepClone);
 		result = lua.safe_script(sLuaShallowCopy);
+		result = lua.safe_script(sLuaInsertUnique);
 	}
 	catch (const sol::error& err)
 	{

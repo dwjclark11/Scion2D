@@ -6,6 +6,17 @@ namespace SCION_CORE
 
 enum class EMapType;
 class Scene;
+namespace ECS
+{
+class Registry;
+}
+
+struct SceneManagerData
+{
+	std::string sSceneName{};
+	std::string sDefaultMusic{};
+	// TODO: Add different stuff
+};
 
 class SceneManager
 {
@@ -52,7 +63,7 @@ class SceneManager
 	inline void SetCurrentScene( const std::string& sSceneName ) { m_sCurrentScene = sSceneName; }
 	inline const std::string& GetCurrentSceneName() const { return m_sCurrentScene; }
 
-	static void CreateLuaBind( sol::state& lua, SceneManager& sceneManager );
+	static void CreateLuaBind( sol::state& lua, ECS::Registry& registry );
 
   protected:
 	std::map<std::string, std::shared_ptr<Scene>> m_mapScenes;

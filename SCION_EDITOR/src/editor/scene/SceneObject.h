@@ -11,18 +11,31 @@ namespace SCION_EDITOR
 {
 
 /**
-* SceneRuntimeData
-*
-* When running the scenes in the editor,
-* we don't actually change scenes, we change the data.
-*
-* Represents the accessible data for the currently loaded scene.
-*/
+ * SceneRuntimeData
+ *
+ * When running the scenes in the editor,
+ * we don't actually change scenes, we change the data.
+ *
+ * Represents the accessible data for the currently loaded scene.
+ */
 struct SceneRuntimeData
 {
 	std::string sSceneName;
 	std::string sDefaultMusic;
 	SCION_CORE::Canvas canvas;
+};
+
+struct SceneExportFiles
+{
+	std::string sTilemapFile{};
+	std::string sObjectFile{};
+	std::string sDataFile{};
+
+	bool IsValid() const
+	{
+		return !sTilemapFile.empty() && !sObjectFile.empty() && !sDataFile.empty() && fs::exists( sTilemapFile ) &&
+			   fs::exists( sObjectFile ) && fs::exists( sDataFile );
+	}
 };
 
 class SceneObject : public SCION_CORE::Scene
@@ -46,12 +59,12 @@ class SceneObject : public SCION_CORE::Scene
 	void CopySceneToRuntime( SceneObject& sceneToCopy );
 
 	/*
-	* @brief Each scene might have it's own player start. So when changing the
-	* scenes while the scene is running, we need to copy to the current scenes
-	* runtime. We don't want to actually change the scenes. This will copy the
-	* player start from the desired scene to the current scenes registry.
-	* @param runtimeRegistry - The desired registry to copy the player start to.
-	*/
+	 * @brief Each scene might have it's own player start. So when changing the
+	 * scenes while the scene is running, we need to copy to the current scenes
+	 * runtime. We don't want to actually change the scenes. This will copy the
+	 * player start from the desired scene to the current scenes registry.
+	 * @param runtimeRegistry - The desired registry to copy the player start to.
+	 */
 	void CopyPlayerStartToRuntimeRegistry( SCION_CORE::ECS::Registry& runtimeRegistry );
 
 	/*
@@ -68,7 +81,7 @@ class SceneObject : public SCION_CORE::Scene
 	/*
 	 * @brief Deletes the desired layer and removes all entities from the registry.
 	 */
-	bool DeleteLayer(int layer);
+	bool DeleteLayer( int layer );
 
 	/**
 	 * @brief Adds a new game object to the scene with a unique name and a default TransformComponent.
@@ -131,8 +144,8 @@ class SceneObject : public SCION_CORE::Scene
 	virtual bool LoadScene() override;
 	virtual bool UnloadScene( bool bSaveScene = true ) override;
 
-	std::pair<std::string, std::string> ExportSceneToLua( const std::string& sSceneName, const std::string& sExportPath,
-														  SCION_CORE::ECS::Registry& registry );
+	SceneExportFiles ExportSceneToLua( const std::string& sSceneName, const std::string& sExportPath,
+									   SCION_CORE::ECS::Registry& registry );
 
 	/**
 	 * @brief Checks whether a tag name already exists in the scene.
@@ -147,7 +160,7 @@ class SceneObject : public SCION_CORE::Scene
 	inline const std::string& GetName() { return m_sSceneName; }
 	inline SceneRuntimeData* GetRuntimeData() { return m_pRuntimeData.get(); }
 	inline SCION_CORE::ECS::Registry& GetRuntimeRegistry() { return m_RuntimeRegistry; }
-	
+
   private:
 	void OnEntityNameChanges( SCION_EDITOR::Events::NameChangeEvent& nameChange );
 
@@ -155,7 +168,7 @@ class SceneObject : public SCION_CORE::Scene
 	/* The runtime registry. This registry starts with the current scene's data;
 	however, different scenes can be loaded via lua scripts. */
 	SCION_CORE::ECS::Registry m_RuntimeRegistry;
-	
+
 	std::unique_ptr<SceneRuntimeData> m_pRuntimeData;
 	std::map<std::string, entt::entity> m_mapTagToEntity;
 };

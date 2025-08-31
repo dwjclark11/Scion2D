@@ -371,7 +371,7 @@ void AssetDisplay::DrawSelectedAssets()
 				}
 
 				if ( !m_bRename || !bSelectedAsset )
-					ImGui::Text( sAssetName );
+					ImGui::TextWrapped( sAssetName );
 
 				if ( m_bRename && bSelectedAsset )
 				{

@@ -653,17 +653,18 @@ std::vector<std::string> Packager::CreateSceneFiles( const std::string& sTempFil
 		fs::path sceneDataPath = *optContentPath / sSceneDataPath;
 		SCION_CORE::ECS::Registry registry;
 		auto pSceneObject = std::make_unique<SceneObject>( sSceneName, sceneDataPath.string() );
-		auto [ sTilemap, sObjectMap ] =
+		auto sceneExportFiles =
 			pSceneObject->ExportSceneToLua( sSceneName, m_pPackageData->sTempDataPath, registry );
 
-		if ( !fs::exists( fs::path{ sTilemap } ) || !fs::exists( fs::path{ sObjectMap } ) )
+		if ( !sceneExportFiles.IsValid() )
 		{
 			SCION_ERROR( "Failed to create scene files for scene [{}]", sSceneName );
 			return {};
 		}
 
-		sceneFiles.push_back( sTilemap );
-		sceneFiles.push_back( sObjectMap );
+		sceneFiles.push_back( sceneExportFiles.sTilemapFile);
+		sceneFiles.push_back( sceneExportFiles.sObjectFile);
+		sceneFiles.push_back( sceneExportFiles.sDataFile);
 	}
 
 	return sceneFiles;
