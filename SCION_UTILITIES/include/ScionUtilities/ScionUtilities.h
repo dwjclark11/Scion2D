@@ -34,7 +34,7 @@ enum class AssetType
 struct S2DAsset
 {
 	/* The name of the asset. */
-	std::string sName{ };
+	std::string sName{};
 	/* The size of the asset data. Based on a char array. */
 	size_t assetSize{ 0 };
 	/* The end position of the asset data. */
@@ -48,7 +48,6 @@ struct S2DAsset
 	/* Optional parameter if asset is a texture. */
 	std::optional<bool> optPixelArt{ std::nullopt };
 };
-
 
 /* Ensure the types that are passed in are associative map types. */
 template <typename T>
@@ -180,6 +179,8 @@ bool IsBitSet( const T& x, const T& y )
 std::string AssetTypeToStr( AssetType eAssetType );
 AssetType StrToAssetType( const std::string& sAssetType );
 
+namespace StringUtils
+{
 std::string GetSubstring( std::string_view str, std::string_view find );
 
 std::string ConvertWideToANSI( const std::wstring& wstr );
@@ -187,6 +188,62 @@ std::wstring ConvertAnsiToWide( const std::string& str );
 std::string ConvertWideToUtf8( const std::wstring& wstr );
 std::wstring ConvertUtf8ToWide( const std::string& str );
 
+template <typename CharT, typename Traits, typename Alloc>
+inline void RemoveSuffixIfPresent( std::basic_string<CharT, Traits, Alloc>& str,
+								   std::basic_string_view<CharT, Traits> suffix )
+{
+	if ( str.ends_with( suffix ) )
+	{
+		str.erase( str.size() - suffix.size() );
+	}
+}
+
+template <typename CharT, typename Traits, typename Alloc>
+inline void RemovePrefixIfPresent( std::basic_string<CharT, Traits, Alloc>& str,
+								   std::basic_string_view<CharT, Traits> prefix )
+{
+	if ( str.starts_with( prefix ) )
+	{
+		str.erase( 0, prefix.size() );
+	}
+}
+
+// Return a copy with suffix removed (if present)
+template <typename CharT, typename Traits, typename Alloc>
+[[nodiscard]] inline std::basic_string<CharT, Traits, Alloc> RemoveSuffixCopy(
+	std::basic_string<CharT, Traits, Alloc> str, std::basic_string_view<CharT, Traits> suffix )
+{
+	RemoveSuffixIfPresent( str, suffix );
+	return str;
+}
+
+// Overload for suffix (string literal)
+template <typename CharT, typename Traits, typename Alloc, size_t N>
+[[nodiscard]] inline std::basic_string<CharT, Traits, Alloc> RemoveSuffixCopy(
+	std::basic_string<CharT, Traits, Alloc> str, const CharT ( &suffix )[ N ] )
+{
+	RemoveSuffixIfPresent( str, std::basic_string_view<CharT>( suffix, N - 1 ) );
+	return str;
+}
+
+// Return a copy with prefix removed (if present)
+template <typename CharT, typename Traits, typename Alloc>
+[[nodiscard]] inline std::basic_string<CharT, Traits, Alloc> RemovePrefixCopy(
+	std::basic_string<CharT, Traits, Alloc> str, std::basic_string_view<CharT, Traits> prefix )
+{
+	RemovePrefixIfPresent( str, prefix );
+	return str;
+}
+
+// Overload for prefix (string literal)
+template <typename CharT, typename Traits, typename Alloc, size_t N>
+[[nodiscard]] inline std::basic_string<CharT, Traits, Alloc> RemovePrefixCopy(
+	std::basic_string<CharT, Traits, Alloc> str, const CharT ( &prefix )[ N ] )
+{
+	RemovePrefixIfPresent( str, std::basic_string_view<CharT>( prefix, N - 1 ) );
+	return str;
+}
+} // namespace StringUtils
 } // namespace SCION_UTIL
 
-#define GET_SUBSTRING( str, find ) SCION_UTIL::GetSubstring( str, find )
+#define GET_SUBSTRING( str, find ) SCION_UTIL::StringUtils::GetSubstring( str, find )

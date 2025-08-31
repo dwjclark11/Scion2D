@@ -1,6 +1,7 @@
 #include "Core/CoreUtilities/Prefab.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/ECS/Entity.h"
+#include "Core/ECS/ECSUtils.h"
 #include "Core/ECS/Components/ComponentSerializer.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
@@ -26,6 +27,8 @@ namespace fs = std::filesystem;
 
 using namespace SCION_FILESYSTEM;
 using namespace SCION_CORE::ECS;
+
+using namespace SCION_UTIL::StringUtils;
 
 namespace SCION_CORE
 {
@@ -451,7 +454,23 @@ std::shared_ptr<SCION_CORE::ECS::Entity> PrefabCreator::AddPrefabToScene( const 
 																		  SCION_CORE::ECS::Registry& registry )
 {
 	const auto& prefabbed = prefab.GetPrefabbedEntity();
-	auto newEnt = std::make_shared<SCION_CORE::ECS::Entity>( registry, prefabbed.id->name, prefabbed.id->group );
+
+	// Remove the _pfab from the prefabbed id
+	std::string sTag{ RemoveSuffixCopy( prefabbed.id->name, "_pfab" ) };
+	std::string sCheckTag{ sTag };
+	int current{ 0 };
+
+	entt::entity hasEntity = FindEntityByTag( registry, sTag );
+	while (hasEntity != entt::null)
+	{
+		sCheckTag = sTag + std::to_string( current );
+		hasEntity = FindEntityByTag( registry, sTag );
+		++current;
+	}
+
+	sTag = sCheckTag;
+
+	auto newEnt = std::make_shared<SCION_CORE::ECS::Entity>( registry, sTag, prefabbed.id->group );
 
 	newEnt->AddComponent<TransformComponent>( prefabbed.transform );
 	if ( prefabbed.sprite )

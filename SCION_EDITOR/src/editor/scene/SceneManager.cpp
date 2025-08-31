@@ -235,7 +235,6 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 				return false;
 			}
 
-			pCurrentScene->GetRuntimeRegistry().DestroyEntities<ScriptComponent>();
 			if ( !pScene->IsLoaded() )
 			{
 				pScene->LoadScene();

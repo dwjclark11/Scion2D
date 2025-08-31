@@ -182,7 +182,7 @@ void ContentDisplay::Draw()
 						}
 					}
 
-					if (ImGui::Selectable("Rename"))
+					if ( ImGui::Selectable( ICON_FA_PEN " Rename" ) )
 					{
 						// TODO: Rename file
 					}
@@ -218,13 +218,14 @@ void ContentDisplay::Draw()
 
 		if ( popID == 0 )
 		{
-			if ( ImGui::BeginPopupContextWindow( ) )
+			if ( ImGui::BeginPopupContextWindow() )
 			{
 				if ( m_bItemCut && !m_sFilepathToAction.empty() )
 				{
 					if ( ImGui::Selectable( ICON_FA_PASTE " Paste" ) )
 					{
-						m_pFileDispatcher->EnqueueEvent( FileEvent{ .eAction = EFileAction::Paste } );
+						m_pFileDispatcher->EnqueueEvent(
+							FileEvent{ .eAction = EFileAction::Paste, .sFilepath = m_sFilepathToAction } );
 					}
 				}
 				else
@@ -727,7 +728,7 @@ void ContentDisplay::OpenCreateLuaStateClassPopup()
 	if ( m_eCreateAction != EContentCreateAction::LuaStateClass )
 		return;
 
-		ImGui::OpenPopup( "Create Lua State Class" );
+	ImGui::OpenPopup( "Create Lua State Class" );
 
 	if ( ImGui::BeginPopupModal( "Create Lua State Class" ) )
 	{
@@ -759,7 +760,7 @@ void ContentDisplay::OpenCreateLuaStateClassPopup()
 		}
 
 		static std::string errorText{};
-		
+
 		if ( bClassNameEntered && bStateNameEntered && !className.empty() && !stateName.empty() )
 		{
 			std::string filename = m_sFilepathToAction + PATH_SEPARATOR + className + ".lua";
@@ -794,7 +795,7 @@ void ContentDisplay::OpenCreateLuaStateClassPopup()
 					.AddWords( "self.state:setOnRender( function(dt) self:OnRender(dt) end )", true, true )
 					.AddWords( "self.state:setHandleInputs( function() self:HandleInputs() end )", true, true )
 					.AddWords( "end\n", true, false )
-					.AddWords( std::format("function {}:GetState()", className), true, false )
+					.AddWords( std::format( "function {}:GetState()", className ), true, false )
 					.AddWords( "return self.state", true, true )
 					.AddWords( "end\n", true, false )
 					.AddWords( std::format( "function {}:OnEnter()", className ), true, false )

@@ -9,7 +9,7 @@ namespace SCION_UTIL
 {
 std::string AssetTypeToStr( AssetType eAssetType )
 {
-	switch (eAssetType)
+	switch ( eAssetType )
 	{
 	case AssetType::TEXTURE: return "TEXTURE";
 	case AssetType::FONT: return "FONT";
@@ -43,8 +43,12 @@ AssetType StrToAssetType( const std::string& sAssetType )
 	return AssetType::NO_TYPE;
 }
 
+namespace StringUtils
+{
+
 std::string GetSubstring( std::string_view str, std::string_view find )
 {
+
 	if ( find.empty() )
 		return {};
 
@@ -112,5 +116,6 @@ std::wstring ConvertUtf8ToWide( const std::string& str )
 	return {};
 #endif
 }
+} // namespace StringUtils
 
 } // namespace SCION_UTIL

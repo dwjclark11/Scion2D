@@ -173,12 +173,13 @@ void AssetDisplay::CheckRename( const std::string& sCheckName ) const
 
 void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 {
-	if ( ImGui::Selectable( "rename" ) )
+	ImGui::SeparatorText( "Edit" );
+	if ( ImGui::Selectable( ICON_FA_PEN " Rename" ) )
 	{
 		m_bRename = true;
 	}
 
-	if ( ImGui::Selectable( "delete" ) )
+	if ( ImGui::Selectable( ICON_FA_TRASH " Delete" ) )
 	{
 		bool bSuccess{ false };
 		if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
@@ -219,6 +220,12 @@ void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 							 sAssetName );
 			}
 		}
+	}
+
+	ImGui::SeparatorText( "File Explorer" );
+	if ( ImGui::Selectable( ICON_FA_FILE_ALT " Open File Location" ) )
+	{
+
 	}
 }
 

@@ -209,8 +209,7 @@ void TileDetailsDisplay::Draw()
 		ImGui::AddSpaces( 2 );
 
 		float itemWidth{ ImGui::GetWindowWidth() - 96.f };
-		SCION_ASSERT( itemWidth > 0 && "Item width must not be less than zero." );
-
+		
 		auto rView = spriteLayers | std::ranges::views::reverse;
 
 		for ( auto rit = rView.begin(); rit != rView.end(); rit++ )
