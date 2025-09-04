@@ -50,7 +50,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TransformComponent
 		ImGui::InlineLabel( "scale" );
 		ImGui::ColoredLabel( "x##scl_x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
-		if ( ImGui::InputFloat( "##scale_x", &transform.scale.x, 1.f, 1.f, "%.1f" ) )
+		if ( ImGui::InputFloat( "##scale_x", &transform.scale.x, 1.f, 1.f, "%.3f" ) )
 		{
 			transform.scale.x = std::clamp( transform.scale.x, 0.1f, 150.f );
 			transform.bDirty = true;
@@ -58,7 +58,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TransformComponent
 		ImGui::SameLine();
 		ImGui::ColoredLabel( "y##scl_y", LABEL_SINGLE_SIZE, LABEL_GREEN );
 		ImGui::SameLine();
-		if ( ImGui::InputFloat( "##scale_y", &transform.scale.y, 1.f, 1.f, "%.1f" ) )
+		if ( ImGui::InputFloat( "##scale_y", &transform.scale.y, 1.f, 1.f, "%.3f" ) )
 		{
 			transform.scale.y = std::clamp( transform.scale.y, 0.1f, 150.f );
 			transform.bDirty = true;
@@ -142,7 +142,11 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 		ImGui::ItemToolTip( "The width of the sprite. This is used in UV calculations." );
 		if ( ImGui::InputFloat( "##width", &sprite.width, 8.f, 8.f ) )
 		{
-			sprite.width = std::clamp( sprite.width, 8.f, 1366.f );
+			if ( sprite.width < 8.f )
+			{
+				sprite.width = 8.f;
+			}
+		
 			bChanged = true;
 		}
 
@@ -150,7 +154,11 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 		ImGui::ItemToolTip( "The height of the sprite. This is used in UV calculations." );
 		if ( ImGui::InputFloat( "##height", &sprite.height, 8.f, 8.f ) )
 		{
-			sprite.height = std::clamp( sprite.height, 8.f, 768.f );
+			if ( sprite.height < 8.f )
+			{
+				sprite.height = 8.f;
+			}
+
 			bChanged = true;
 		}
 

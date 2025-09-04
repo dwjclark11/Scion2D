@@ -99,8 +99,10 @@ void SceneDisplay::LoadScene()
 
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaBindings( *lua, runtimeRegistry );
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaFunctions( *lua, runtimeRegistry );
-	SCION_CORE::Systems::ScriptingSystem::RegisterLuaEvents( *lua, runtimeRegistry );
 	SCION_CORE::Systems::ScriptingSystem::RegisterLuaSystems( *lua, runtimeRegistry );
+	// We need to be able to get the editor events from lua. Pass in the main registry to get the main
+	// event dispatcher.
+	SCION_CORE::Systems::ScriptingSystem::RegisterLuaEvents( *lua, *MAIN_REGISTRY().GetRegistry() );
 	LuaCoreBinder::CreateLuaBind( *lua, runtimeRegistry );
 
 	EditorSceneManager::CreateSceneManagerLuaBind( *lua );

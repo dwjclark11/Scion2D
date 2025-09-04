@@ -604,8 +604,27 @@ void RuntimeApp::ProcessEvents()
 		case SDL_MOUSEMOTION: mouse.SetMouseMoving( true ); break;
 		case SDL_CONTROLLERBUTTONDOWN: inputManager.GamepadBtnPressed( m_Event ); break;
 		case SDL_CONTROLLERBUTTONUP: inputManager.GamepadBtnReleased( m_Event ); break;
-		case SDL_CONTROLLERDEVICEADDED: inputManager.AddGamepad( m_Event.jdevice.which ); break;
-		case SDL_CONTROLLERDEVICEREMOVED: inputManager.RemoveGamepad( m_Event.jdevice.which ); break;
+		case SDL_CONTROLLERDEVICEADDED: {
+			int index = inputManager.AddGamepad( m_Event.jdevice.which );
+			if ( index > 0 )
+			{
+				EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::GamepadConnectEvent{
+					.eConnectType = SCION_CORE::Events::EGamepadConnectType::Connected, .index = index } );
+			}
+
+			break;
+		}
+		case SDL_CONTROLLERDEVICEREMOVED: {
+			int index = inputManager.RemoveGamepad( m_Event.jdevice.which );
+
+			if ( index > 0 )
+			{
+				EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::GamepadConnectEvent{
+					.eConnectType = SCION_CORE::Events::EGamepadConnectType::Disconnected, .index = index } );
+			}
+
+			break;
+		}
 		case SDL_JOYAXISMOTION: inputManager.GamepadAxisValues( m_Event ); break;
 		case SDL_JOYHATMOTION: inputManager.GamepadHatValues( m_Event ); break;
 		case SDL_WINDOWEVENT: {

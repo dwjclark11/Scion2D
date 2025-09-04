@@ -167,7 +167,6 @@ void ScriptDisplay::Update()
 	if ( m_bFilesChanged.exchange( false, std::memory_order_acquire ) )
 	{
 		m_bListScripts = true;
-		SCION_LOG( "File was changed or added to scripts directory." );
 	}
 
 	if ( m_bListScripts )

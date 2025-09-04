@@ -18,6 +18,35 @@ InputManager::InputManager()
 	: m_pKeyboard{ std::make_unique<Keyboard>() }
 	, m_pMouse{ std::make_unique<Mouse>() }
 {
+	// Load already connected devices
+	for (int i = 0; i < SDL_NumJoysticks(); ++i)
+	{
+		SDL_GameController* pController = SDL_GameControllerOpen( i );
+		if (pController)
+		{
+			std::shared_ptr<Gamepad> gamepad{ nullptr };
+			try
+			{
+				gamepad = std::make_shared<Gamepad>( std::move( MakeSharedFromSDLType<Controller>( pController ) ) );
+			}
+			catch ( ... )
+			{
+				std::string error{ SDL_GetError() };
+				SCION_ERROR( "Failed to Open gamepad device -- {}", error );
+				continue;
+			}
+
+			for ( int j = 1; j <= MAX_CONTROLLERS; j++ )
+			{
+				if ( m_mapGameControllers.contains( j ) )
+					continue;
+
+				m_mapGameControllers.emplace( j, std::move( gamepad ) );
+				SCION_LOG( "Gamepad [{}] was added at index [{}]", i, j );
+				break;
+			}
+		}
+	}
 }
 
 void InputManager::RegisterLuaKeyNames( sol::state& lua )
@@ -262,6 +291,10 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 	lua.new_usertype<Gamepad>(
 		"Gamepad",
 		sol::no_constructor,
+		"anyConnected",
+		[ & ] { return inputManager.GamepadConnected(); },
+		"connected",
+		[ & ]( int index ) { return inputManager.GamepadConnected( index ); },
 		"justPressed",
 		[ & ]( int index, int btn ) {
 			auto gamepad = inputManager.GetController( index );
@@ -321,6 +354,17 @@ void InputManager::UpdateInputs()
 	UpdateGamepads();
 }
 
+bool InputManager::GamepadConnected() const
+{
+	return std::ranges::any_of( m_mapGameControllers, []( const auto& pair ) { return pair.second != nullptr; } );
+}
+
+bool InputManager::GamepadConnected( int location ) const
+{
+	auto gamepadItr = m_mapGameControllers.find( location );
+	return gamepadItr != m_mapGameControllers.end() && gamepadItr->second != nullptr;
+}
+
 std::shared_ptr<Gamepad> InputManager::GetController( int index )
 {
 	auto gamepadItr = m_mapGameControllers.find( index );
@@ -333,12 +377,20 @@ std::shared_ptr<Gamepad> InputManager::GetController( int index )
 	return gamepadItr->second;
 }
 
-bool InputManager::AddGamepad( Sint32 gamepadIndex )
+int InputManager::AddGamepad( Sint32 gamepadIndex )
 {
+	// Trying to add a controller with the same id.
+	if (std::ranges::any_of(m_mapGameControllers,
+		[&gamepadIndex](const auto& pair) { return pair.second->CheckJoystickID(gamepadIndex); }))
+	{
+		SCION_WARN( "Trying to add a controller that is already mapped. Gamepad ID: {}", gamepadIndex );
+		return -1;
+	}
+
 	if ( m_mapGameControllers.size() >= MAX_CONTROLLERS )
 	{
-		SCION_ERROR( "Trying to add too many controllers! Max Controllers allowed = {}", MAX_CONTROLLERS );
-		return false;
+		SCION_WARN( "Trying to add too many controllers! Max Controllers allowed = {}", MAX_CONTROLLERS );
+		return -1;
 	}
 
 	std::shared_ptr<Gamepad> gamepad{ nullptr };
@@ -351,7 +403,7 @@ bool InputManager::AddGamepad( Sint32 gamepadIndex )
 	{
 		std::string error{ SDL_GetError() };
 		SCION_ERROR( "Failed to Open gamepad device -- {}", error );
-		return false;
+		return -1;
 	}
 
 	for ( int i = 1; i <= MAX_CONTROLLERS; i++ )
@@ -361,28 +413,31 @@ bool InputManager::AddGamepad( Sint32 gamepadIndex )
 
 		m_mapGameControllers.emplace( i, std::move( gamepad ) );
 		SCION_LOG( "Gamepad [{}] was added at index [{}]", gamepadIndex, i );
-		return true;
+		return i;
 	}
 
 	SCION_ASSERT( false && "Failed to add the new controller!" );
 	SCION_ERROR( "Failed to add the new controller!" );
-	return false;
+	return -1;
 }
 
-bool InputManager::RemoveGamepad( Sint32 gamepadID )
+int InputManager::RemoveGamepad( Sint32 gamepadID )
 {
-	auto gamepadRemoved = std::erase_if(
-		m_mapGameControllers, [ & ]( auto& gamepad ) { return gamepad.second->CheckJoystickID( gamepadID ); } );
+	auto gamepadItr = std::ranges::find_if(
+		m_mapGameControllers, [ & ]( const auto& gamepad ) { return gamepad.second->CheckJoystickID( gamepadID ); } );
 
-	if ( gamepadRemoved > 0 )
+	int index{ -1 };
+	if (gamepadItr == m_mapGameControllers.end())
 	{
-		SCION_LOG( "Gamepad Removed -- [{}]", gamepadID );
-		return true;
+		SCION_ASSERT( false && "Failed to remove Gamepad must not have been mapped correctly." );
+		SCION_ERROR( "Failed to remove Gamepad ID [{}] must not have been mapped correctly.", gamepadID );
+		return index;	
 	}
 
-	SCION_ASSERT( false && "Failed to remove Gamepad must not have been mapped!" );
-	SCION_ERROR( "Failed to remove Gamepad [{}] must not have been mapped!", gamepadID );
-	return false;
+	index = gamepadItr->first;
+	m_mapGameControllers.erase( gamepadItr );
+	SCION_LOG( "Gamepad ID [{}] at index [{}] was removed", gamepadID, index );
+	return index;
 }
 
 void InputManager::GamepadBtnPressed( const SDL_Event& event )

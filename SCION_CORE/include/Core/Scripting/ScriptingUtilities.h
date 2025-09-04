@@ -14,13 +14,13 @@ struct MainScriptFunctions
 	sol::protected_function render{ sol::lua_nil };
 };
 
-	/*
-	* @brief Helper function to create and bind ReadOnly tables in lua.
-	* All keys and values must be of the same type.
-	* @tparam TKey type of the key in the table.
-	* @tparam TValue type of the value
-	* @return Returns the created readonly sol::table
-	*/
+/*
+ * @brief Helper function to create and bind ReadOnly tables in lua.
+ * All keys and values must be of the same type.
+ * @tparam TKey type of the key in the table.
+ * @tparam TValue type of the value
+ * @return Returns the created readonly sol::table
+ */
 template <typename TKey, typename TValue>
 sol::table MakeReadOnlyTable( sol::state_view lua, std::initializer_list<std::pair<TKey, TValue>> entries )
 {

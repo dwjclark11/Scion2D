@@ -115,7 +115,9 @@ void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
 	auto& registry = sceneToCopy.GetRegistry();
 	auto& registryToCopy = registry.GetRegistry();
 
-	for ( auto entityToCopy : registryToCopy.view<entt::entity>( entt::exclude<ScriptComponent, UneditableComponent> ) )
+	m_RuntimeRegistry.DestroyEntities();
+
+	for ( auto entityToCopy : registryToCopy.view<entt::entity>( entt::exclude<UneditableComponent> ) )
 	{
 		entt::entity newEntity = m_RuntimeRegistry.CreateEntity();
 

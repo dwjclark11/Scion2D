@@ -570,6 +570,7 @@ void ScriptingSystem::RegisterLuaEvents( sol::state& lua, SCION_CORE::ECS::Regis
 	EventDispatcher::RegisterMetaEventFuncs<ContactEvent>();
 	EventDispatcher::RegisterMetaEventFuncs<KeyEvent>();
 	EventDispatcher::RegisterMetaEventFuncs<LuaEvent>();
+	EventDispatcher::RegisterMetaEventFuncs<GamepadConnectEvent>();
 	EventDispatcher::CreateEventDispatcherLuaBind( lua, **pDispatcher );
 }
 

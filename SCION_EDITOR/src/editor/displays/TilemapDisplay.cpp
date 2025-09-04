@@ -11,6 +11,7 @@
 
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/CoreUtilities/Prefab.h"
+#include "Core/CoreUtilities/ProjectInfo.h"
 
 #include "Core/Events/EventDispatcher.h"
 #include "Core/Events/EngineEventTypes.h"
@@ -504,6 +505,15 @@ TilemapDisplay::TilemapDisplay()
 	, m_bWindowActive{ false }
 {
 	ADD_EVENT_HANDLER( SCION_CORE::Events::KeyEvent, &TilemapDisplay::HandleKeyPressedEvent, *this );
+
+	if (auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>())
+	{
+		if (!pProjectInfo->GetDefaultScene().empty() && SCENE_MANAGER().GetCurrentScene())
+		{
+			LoadNewScene();
+		}
+	}
+
 }
 
 TilemapDisplay::~TilemapDisplay()

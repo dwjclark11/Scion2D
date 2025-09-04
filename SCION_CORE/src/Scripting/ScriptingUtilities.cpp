@@ -87,12 +87,80 @@ void ScriptingHelpers::CreateLuaHelpers( sol::state& lua )
 		end
 	)";
 
+	std::string sLuaMakeReadOnlyTable = R"(
+		function S2D_MakeReadOnlyTable(name, entries)
+			-- Create a new table (the "public" table users see)
+			local tbl = {}
+
+			-- Create the metatable that holds the actual values
+			local metaTbl = {}
+
+			-- Copy the entries into the metatable
+			for k, v in pairs(entries) do
+				metaTbl[k] = v
+			end
+
+			-- prevent modification of the table
+			metaTbl.__newindex = function(_, _)
+				error("Attempt to modify read-only table: " ..tostring(name), 2)
+			end
+
+			-- Custom index lookup: return value if found, otherwise error
+			metaTbl.__index = function(_, key)
+				local val = rawget(metaTbl, key)
+				if val ~= nil then
+					return val
+				end
+
+				error("Key [" ..tostring(key) .."] was not found in read-only table: " ..tostring(name), 2)
+			end
+
+			-- Protect the metatable from tampering
+			metaTbl.__metatable = "This metatable is locked."
+
+			-- Attach the metatable to the table
+			setmetatable(tbl, metaTbl)
+
+			return tbl			
+		end
+	)";
+
+	std::string sLuaSwitchStatement = R"(
+		-- Switch helper function
+		function S2D_switch(value, cases, default)
+			-- Validate all entries for cases
+			for k, v in pairs(cases) do
+				if type(v) ~= "function" then
+					error("Invalid case for key ['" ..tostring(k) .."'] must be a function, got " ..type(v), 2)
+				end
+			end
+
+			-- Lookup the function for this case
+			local case = cases[value]
+
+			if case then
+				-- If the case is valid, run the function
+				return case()
+			elseif default then
+
+				if type(default) ~= "function" then
+					error("Invalid default: must be a function, got " .. type(default), 2)
+				end
+
+				-- If no case matched, run the default function (if provided)
+				return default()
+			end			
+		end
+	)";
+
 	try
 	{
 		auto result = lua.safe_script(sLuaClassCode);
 		result = lua.safe_script(sLuaDeepClone);
 		result = lua.safe_script(sLuaShallowCopy);
 		result = lua.safe_script(sLuaInsertUnique);
+		result = lua.safe_script(sLuaMakeReadOnlyTable);
+		result = lua.safe_script(sLuaSwitchStatement);
 	}
 	catch (const sol::error& err)
 	{

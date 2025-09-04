@@ -27,11 +27,15 @@ class InputManager
 	static void CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Registry& registry );
 
 	void UpdateInputs();
+	bool GamepadConnected() const;
+	bool GamepadConnected(int location) const;
 
 	inline SCION_WINDOWING::Inputs::Keyboard& GetKeyboard() { return *m_pKeyboard; }
 	inline SCION_WINDOWING::Inputs::Mouse& GetMouse() { return *m_pMouse; }
 
 	inline std::map<int, std::shared_ptr<SCION_WINDOWING::Inputs::Gamepad>>& GetControllers() { return m_mapGameControllers; }
+
+	
 
 	/*
 	 * @brief Get the controller at a desired index.
@@ -46,14 +50,14 @@ class InputManager
 	 * @param Takes in a Sint32 for the desired index.
 	 * @return Returns true if successfully added, false otherwise.
 	 */
-	bool AddGamepad( Sint32 gamepadIndex );
+	int AddGamepad( Sint32 gamepadIndex );
 
 	/*
 	 * @brief Removes the gamepad based on the given ID
 	 * @param Takes in a Sin32 for the gamepadID
 	 * @return Returns true if the gamepad was removed successfully, false otherwise.
 	 */
-	bool RemoveGamepad( Sint32 gamepadID );
+	int RemoveGamepad( Sint32 gamepadID );
 
 	/*
 	 * @brief Finds the Gamepad based on the values provided from the SDL_Event

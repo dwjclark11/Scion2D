@@ -23,6 +23,19 @@ struct KeyEvent
 	EKeyEventType eType{ EKeyEventType::NoType };
 };
 
+enum class EGamepadConnectType
+{
+	Connected,
+	Disconnected,
+	NotConnected
+};
+
+struct GamepadConnectEvent
+{
+	EGamepadConnectType eConnectType{ EGamepadConnectType::NotConnected };
+	int index{ 1 };
+};
+
 struct LuaEvent
 {
 	sol::object data{ sol::lua_nil };
