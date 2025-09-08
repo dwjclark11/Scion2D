@@ -3,6 +3,40 @@
 
 namespace SCION_CORE::Scripting
 {
+
+namespace
+{
+const std::string PRIVATE_KEY = "Scion2DPrivateEncryptionKey_1234321";
+
+std::string XorCipher( const std::string& sData, const std::string& sKey )
+{
+	std::string sResult{};
+	sResult.reserve( sData.size() );
+
+	for (size_t i = 0; i < sData.size(); ++i)
+	{
+		unsigned char c = static_cast<unsigned char>( sData[ i ] );
+		unsigned char k = static_cast<unsigned char>( sKey[ i % sKey.size() ] );
+		sResult.push_back( static_cast<char>( c ^ k ) );
+	}
+
+	return sResult;
+}
+
+std::string SimpleEncrypt(const std::string& sStr)
+{
+	return XorCipher( sStr, PRIVATE_KEY );
+}
+
+std::string SimpleDecrypt( const std::string& sStr )
+{
+	return XorCipher( sStr, PRIVATE_KEY );
+}
+
+}
+
+
+
 void ScriptingHelpers::CreateLuaHelpers( sol::state& lua )
 {
 	// clang-format off
@@ -161,6 +195,9 @@ void ScriptingHelpers::CreateLuaHelpers( sol::state& lua )
 		result = lua.safe_script(sLuaInsertUnique);
 		result = lua.safe_script(sLuaMakeReadOnlyTable);
 		result = lua.safe_script(sLuaSwitchStatement);
+
+		lua.set_function("S2D_Encrypt", &SimpleEncrypt);
+		lua.set_function("S2D_Decrypt", &SimpleDecrypt);
 	}
 	catch (const sol::error& err)
 	{

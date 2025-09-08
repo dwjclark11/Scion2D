@@ -189,6 +189,9 @@ void SceneDisplay::LoadScene()
 
 void SceneDisplay::UnloadScene()
 {
+	EVENT_DISPATCHER().ClearHandlers<SCION_CORE::Events::GamepadConnectEvent>();
+	EVENT_DISPATCHER().ClearHandlers<SCION_CORE::Events::LuaEvent>();
+
 	m_bPlayScene = false;
 	m_bSceneLoaded = false;
 	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();

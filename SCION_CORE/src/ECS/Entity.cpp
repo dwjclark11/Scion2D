@@ -42,7 +42,7 @@ Entity::Entity( Registry& registry, const entt::entity& entity )
 	}
 }
 
-bool Entity::AddChild( entt::entity child )
+bool Entity::AddChild( entt::entity child, bool bSetLocal )
 {
 	auto& registry = m_Registry.GetRegistry();
 	auto& relations = registry.get<Relationship>( m_Entity );
@@ -96,10 +96,11 @@ bool Entity::AddChild( entt::entity child )
 
 		// Set the childs local position
 		auto& childTransform = childEntity.GetComponent<TransformComponent>();
-		if ( relations.parent != entt::null )
+		if ( relations.parent != entt::null && bSetLocal )
 		{
 			childTransform.localPosition =
 				childTransform.position - registry.get<TransformComponent>( relations.parent ).position;
+			childTransform.localRotation = childTransform.rotation;
 		}
 
 		return true;
@@ -147,7 +148,11 @@ bool Entity::AddChild( entt::entity child )
 
 	// Set the childs local position
 	auto& childTransform = childEntity.GetComponent<TransformComponent>();
-	childTransform.localPosition = childTransform.position - GetComponent<TransformComponent>().position;
+	if ( bSetLocal )
+	{
+		childTransform.localPosition = childTransform.position - GetComponent<TransformComponent>().position;
+		childTransform.localRotation = childTransform.rotation;
+	}
 
 	// Check to see if the parent has any children
 	// Parent has no children, add as the first child
@@ -170,13 +175,14 @@ void Entity::UpdateTransform()
 	auto& relations = GetComponent<Relationship>();
 	auto& transform = GetComponent<TransformComponent>();
 
-	glm::vec2 parentPosition{ 0.f };
+	//glm::vec2 parentPosition{ 0.f };
 	auto parent = relations.parent;
 	if ( parent != entt::null )
 	{
 		Entity ent{ m_Registry, parent };
-		parentPosition = ent.GetComponent<TransformComponent>().position;
-		transform.position = parentPosition + transform.localPosition;
+		const auto& parentTransform = ent.GetComponent<TransformComponent>();
+		transform.position = parentTransform.position + transform.localPosition;
+		transform.rotation = parentTransform.rotation + transform.localRotation; 
 	}
 
 	if ( relations.firstChild == entt::null )
@@ -196,6 +202,17 @@ void Entity::ChangeName( const std::string& sName )
 	auto& id = GetComponent<Identification>();
 	id.name = sName;
 	m_sName = sName;
+}
+
+std::uint32_t Entity::Kill()
+{
+	if ( !m_Registry.IsValid( m_Entity ) )
+	{
+		SCION_ERROR( "Failed t destroy entity. Entity ID [{}] is not valid.", static_cast<std::uint32_t>( m_Entity ) );
+		return static_cast<std::uint32_t>(entt::null);
+	}
+
+	return m_Registry.GetRegistry().destroy( m_Entity );
 }
 
 void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )

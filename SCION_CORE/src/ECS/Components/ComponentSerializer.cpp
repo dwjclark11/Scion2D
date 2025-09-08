@@ -15,12 +15,17 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.StartNewObject( "position" )
 		.AddKeyValuePair( "x", transform.position.x )
 		.AddKeyValuePair( "y", transform.position.y )
-		.EndObject()
+		.EndObject() // position
+		.StartNewObject( "localPosition" )
+		.AddKeyValuePair( "x", transform.localPosition.x )
+		.AddKeyValuePair( "y", transform.localPosition.y )
+		.EndObject() // localPosition
 		.StartNewObject( "scale" )
 		.AddKeyValuePair( "x", transform.scale.x )
 		.AddKeyValuePair( "y", transform.scale.y )
-		.EndObject()
+		.EndObject() // scale
 		.AddKeyValuePair( "rotation", transform.rotation )
+		.AddKeyValuePair( "localRotation", transform.localRotation )
 		.EndObject();
 }
 
@@ -190,8 +195,19 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 	transform.position =
 		glm::vec2{ jsonValue[ "position" ][ "x" ].GetFloat(), jsonValue[ "position" ][ "y" ].GetFloat() };
 
+	if ( jsonValue.HasMember( "localPosition" ) )
+	{
+		transform.localPosition =
+			glm::vec2{ jsonValue[ "localPosition" ][ "x" ].GetFloat(), jsonValue[ "localPosition" ][ "y" ].GetFloat() };
+	}
+
 	transform.scale = glm::vec2{ jsonValue[ "scale" ][ "x" ].GetFloat(), jsonValue[ "scale" ][ "y" ].GetFloat() };
 	transform.rotation = jsonValue[ "rotation" ].GetFloat();
+
+	if ( jsonValue.HasMember( "localRotation" ) )
+	{
+		transform.localRotation = jsonValue[ "localRotation" ].GetFloat();
+	}
 }
 
 void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, SpriteComponent& sprite )
@@ -210,10 +226,10 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 	sprite.sTextureName = jsonValue[ "sTexture" ].GetString();
 
 	// Check if sprite should be isometic
-	if (jsonValue.HasMember("bIsoMetric"))
+	if ( jsonValue.HasMember( "bIsoMetric" ) )
 	{
 		sprite.bIsoMetric = jsonValue[ "bIsoMetric" ].GetBool();
-		if (jsonValue.HasMember("isoCellX"))
+		if ( jsonValue.HasMember( "isoCellX" ) )
 		{
 			sprite.isoCellX = jsonValue[ "isoCellX" ].GetInt();
 		}
@@ -221,6 +237,14 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 		{
 			sprite.isoCellY = jsonValue[ "isoCellY" ].GetInt();
 		}
+	}
+
+	if (jsonValue.HasMember("color"))
+	{
+		sprite.color.r = jsonValue[ "color" ][ "r" ].GetUint();
+		sprite.color.g = jsonValue[ "color" ][ "g" ].GetUint();
+		sprite.color.b = jsonValue[ "color" ][ "b" ].GetUint();
+		sprite.color.a = jsonValue[ "color" ][ "a" ].GetUint();
 	}
 }
 
@@ -290,8 +314,7 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 									  attr[ "objectData" ][ "group" ].GetString(),
 									  attr[ "objectData" ][ "bCollider" ].GetBool(),
 									  attr[ "objectData" ][ "bTrigger" ].GetBool(),
-									  attr[ "objectData" ][ "bIsFriendly" ].GetBool() }
-		};
+									  attr[ "objectData" ][ "bIsFriendly" ].GetBool() } };
 
 		physics.GetChangableAttributes() = attributes;
 	}
@@ -325,11 +348,16 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.AddKeyValuePair( "x", transform.position.x, false )
 		.AddKeyValuePair( "y", transform.position.y, false, true )
 		.EndTable( false )
+		.StartNewTable( "localPosition", true )
+		.AddKeyValuePair( "x", transform.localPosition.x, false )
+		.AddKeyValuePair( "y", transform.localPosition.y, false, true )
+		.EndTable( false )
 		.StartNewTable( "scale" )
 		.AddKeyValuePair( "x", transform.scale.x, false )
 		.AddKeyValuePair( "y", transform.scale.y, false, true )
 		.EndTable( false )
-		.AddKeyValuePair( "rotation", transform.rotation, false, true )
+		.AddKeyValuePair( "rotation", transform.rotation, false )
+		.AddKeyValuePair( "localRotation", transform.localRotation, false, true )
 		.EndTable();
 }
 
@@ -461,8 +489,8 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.AddKeyValuePair( "bTrigger", attributes.objectData.bTrigger, false )
 		.AddKeyValuePair( "bIsFriendly", attributes.objectData.bIsFriendly, false, true )
 		.EndTable( false ) // ObjectData
-		.EndTable() // Attributes
-		.EndTable(); // Physics
+		.EndTable()		   // Attributes
+		.EndTable();	   // Physics
 }
 
 void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
@@ -488,15 +516,20 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 
 void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const UIComponent& ui )
 {
-	
+	serializer.StartNewTable( "ui" ).EndTable();
 }
 
 void ComponentSerializer::DeserializeComponent( const sol::table& table, TransformComponent& transform )
 {
 	transform.position =
 		glm::vec2{ table[ "position" ][ "x" ].get_or( 0.f ), table[ "position" ][ "y" ].get_or( 0.f ) };
+
+	transform.localPosition =
+		glm::vec2{ table[ "localPosition" ][ "x" ].get_or( 0.f ), table[ "localPosition" ][ "y" ].get_or( 0.f ) };
+
 	transform.scale = glm::vec2{ table[ "scale" ][ "x" ].get_or( 0.f ), table[ "scale" ][ "y" ].get_or( 0.f ) };
 	transform.rotation = table[ "rotation" ].get_or( 0.f );
+	transform.localRotation = table[ "localRotation" ].get_or( 0.f );
 }
 
 void ComponentSerializer::DeserializeComponent( const sol::table& table, SpriteComponent& sprite )
@@ -513,7 +546,7 @@ void ComponentSerializer::DeserializeComponent( const sol::table& table, SpriteC
 	sprite.start_y = table[ "startY" ].get_or( 0 );
 	sprite.layer = table[ "layer" ].get_or( 0 );
 	sprite.bHidden = table[ "bHidden" ].get_or( false );
-	sprite.sTextureName = table[ "sTexture" ].get_or( std::string{ } );
+	sprite.sTextureName = table[ "sTexture" ].get_or( std::string{} );
 
 	// Check if sprite should be isometic
 	if ( table[ "bIsoMetric" ].valid() )
@@ -614,8 +647,6 @@ void ComponentSerializer::DeserializeComponent( const sol::table& table, Identif
 
 void ComponentSerializer::DeserializeComponent( const sol::table& table, UIComponent& ui )
 {
-	
 }
-
 
 } // namespace SCION_CORE::ECS

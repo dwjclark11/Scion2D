@@ -173,4 +173,12 @@ void Gamepad::SetAxisPositionValue( Uint8 axis, Sint16 value )
 
 	axisItr->second = value;
 }
+
+void Gamepad::RumbleController( Uint16 lowFrequencyRumble, Uint16 highFrequencyRumble, Uint32 durationMs )
+{
+	if (SDL_GameControllerRumble(m_pController.get(), lowFrequencyRumble, highFrequencyRumble, durationMs) == -1)
+	{
+		SCION_WARN( "Rumble not supported for controller [{}] - Error: {}", m_InstanceID, SDL_GetError() );
+	}
+}
 } // namespace SCION_WINDOWING::Inputs

@@ -14,6 +14,8 @@ struct TransformComponent
 	glm::vec2 scale{ 1.f };
 	/* The rotation of the entity in degrees. */
 	float rotation{ 0.f };
+	/* The rotation of the entity local to the parent's rotation in degrees. */
+	float localRotation{ 0.f };
 	/* Flag to use if there are any changes. */
 	bool bDirty{ true };
 

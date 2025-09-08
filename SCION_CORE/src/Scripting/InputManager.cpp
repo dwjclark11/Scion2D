@@ -19,10 +19,10 @@ InputManager::InputManager()
 	, m_pMouse{ std::make_unique<Mouse>() }
 {
 	// Load already connected devices
-	for (int i = 0; i < SDL_NumJoysticks(); ++i)
+	for ( int i = 0; i < SDL_NumJoysticks(); ++i )
 	{
 		SDL_GameController* pController = SDL_GameControllerOpen( i );
-		if (pController)
+		if ( pController )
 		{
 			std::shared_ptr<Gamepad> gamepad{ nullptr };
 			try
@@ -344,6 +344,17 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 				return Uint8{ 0 };
 			}
 			return gamepad->GetJoystickHatValue();
+		},
+		"rumble",
+		[ & ]( int index, Uint16 lowFrequency, Uint16 highFrequency, Uint32 durationMs ) {
+			auto gamepad = inputManager.GetController( index );
+			if ( !gamepad )
+			{
+				SCION_ERROR( "Invalid Gamepad index [{}] provided or gamepad is not plugged in!", index );
+				return;
+			}
+
+			gamepad->RumbleController( lowFrequency, highFrequency, durationMs );
 		} );
 }
 
@@ -380,8 +391,9 @@ std::shared_ptr<Gamepad> InputManager::GetController( int index )
 int InputManager::AddGamepad( Sint32 gamepadIndex )
 {
 	// Trying to add a controller with the same id.
-	if (std::ranges::any_of(m_mapGameControllers,
-		[&gamepadIndex](const auto& pair) { return pair.second->CheckJoystickID(gamepadIndex); }))
+	if ( std::ranges::any_of( m_mapGameControllers, [ &gamepadIndex ]( const auto& pair ) {
+			 return pair.second->CheckJoystickID( gamepadIndex );
+		 } ) )
 	{
 		SCION_WARN( "Trying to add a controller that is already mapped. Gamepad ID: {}", gamepadIndex );
 		return -1;
@@ -427,11 +439,11 @@ int InputManager::RemoveGamepad( Sint32 gamepadID )
 		m_mapGameControllers, [ & ]( const auto& gamepad ) { return gamepad.second->CheckJoystickID( gamepadID ); } );
 
 	int index{ -1 };
-	if (gamepadItr == m_mapGameControllers.end())
+	if ( gamepadItr == m_mapGameControllers.end() )
 	{
 		SCION_ASSERT( false && "Failed to remove Gamepad must not have been mapped correctly." );
 		SCION_ERROR( "Failed to remove Gamepad ID [{}] must not have been mapped correctly.", gamepadID );
-		return index;	
+		return index;
 	}
 
 	index = gamepadItr->first;

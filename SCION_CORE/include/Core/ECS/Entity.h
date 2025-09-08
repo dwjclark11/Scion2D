@@ -26,7 +26,7 @@ class Entity
 	 * @brief Adds a new child to the entity.
 	 * @param underlying entity of the child to add.
 	 */
-	bool AddChild( entt::entity child );
+	bool AddChild( entt::entity child, bool bSetLocal = true );
 
 	/*
 	 * @brief Updates the position of the entity. If the entity
@@ -44,8 +44,8 @@ class Entity
 	 * this Entity, trying to access an entity that does not exist can cause problems.
 	 * @return Returns the std::uint32_t id of the destroyed entity.
 	 */
-	inline std::uint32_t Kill() { return m_Registry.GetRegistry().destroy( m_Entity ); }
-
+	std::uint32_t Kill();
+	
 	/*
 	 * @brief Gets the actual entity.
 	 * @return Returns the underlying entt::entity.

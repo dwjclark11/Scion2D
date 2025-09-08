@@ -687,7 +687,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 		ImGui::InlineLabel( "scale" );
 		ImGui::ColoredLabel( "x##scl_x", LABEL_SINGLE_SIZE, LABEL_RED );
 		ImGui::SameLine();
-		if ( ImGui::InputFloat( "##scale_x", &transform.scale.x, 1.f, 1.f, "%.1f" ) )
+		if ( ImGui::InputFloat( "##scale_x", &transform.scale.x, 1.f, 1.f, "%.3f" ) )
 		{
 			transform.scale.x = std::clamp( transform.scale.x, 0.1f, 150.f );
 			transform.bDirty = true;
@@ -695,7 +695,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 		ImGui::SameLine();
 		ImGui::ColoredLabel( "y##scl_y", LABEL_SINGLE_SIZE, LABEL_GREEN );
 		ImGui::SameLine();
-		if ( ImGui::InputFloat( "##scale_y", &transform.scale.y, 1.f, 1.f, "%.1f" ) )
+		if ( ImGui::InputFloat( "##scale_y", &transform.scale.y, 1.f, 1.f, "%.3f" ) )
 		{
 			transform.scale.y = std::clamp( transform.scale.y, 0.1f, 150.f );
 			transform.bDirty = true;
