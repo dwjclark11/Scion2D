@@ -28,7 +28,7 @@ void RectToolAddTilesCmd::undo()
 
 		for ( auto entity : tileView )
 		{
-			Entity checkedTile{ *pRegistry, entity };
+			Entity checkedTile{ pRegistry, entity };
 			const auto& transform = checkedTile.GetComponent<TransformComponent>();
 			const auto& sprite = checkedTile.GetComponent<SpriteComponent>();
 
@@ -60,7 +60,7 @@ void RectToolAddTilesCmd::redo()
 
 	for ( const auto& tile : tiles )
 	{
-		Entity addedTile{ *pRegistry, "", "" };
+		Entity addedTile{ pRegistry, "", "" };
 
 		addedTile.AddComponent<TransformComponent>( tile.transform );
 		addedTile.AddComponent<SpriteComponent>( tile.sprite );
@@ -100,7 +100,7 @@ void RectToolRemoveTilesCmd::undo()
 
 	for ( const auto& tile : tiles )
 	{
-		Entity addedTile{ *pRegistry, "", "" };
+		Entity addedTile{ pRegistry, "", "" };
 
 		addedTile.AddComponent<TransformComponent>( tile.transform );
 		addedTile.AddComponent<SpriteComponent>( tile.sprite );
@@ -146,7 +146,7 @@ void RectToolRemoveTilesCmd::redo()
 
 		for ( auto entity : tileView )
 		{
-			Entity checkedTile{ *pRegistry, entity };
+			Entity checkedTile{ pRegistry, entity };
 			const auto& transform = checkedTile.GetComponent<TransformComponent>();
 			const auto& sprite = checkedTile.GetComponent<SpriteComponent>();
 

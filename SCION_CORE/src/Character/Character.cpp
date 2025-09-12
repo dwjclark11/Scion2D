@@ -16,7 +16,7 @@ namespace SCION_CORE
 {
 
 Character::Character( SCION_CORE::ECS::Registry& registry, const CharacterParams& params )
-	: Entity{ registry, params.sName, params.sGroup }
+	: Entity{ &registry, params.sName, params.sGroup }
 {
 	AddComponent<TransformComponent>( TransformComponent{} );
 
@@ -74,7 +74,7 @@ Character::Character( SCION_CORE::ECS::Registry& registry, const CharacterParams
 }
 
 Character::Character( SCION_CORE::ECS::Registry& registry, entt::entity entity )
-	: Entity{ registry, entity }
+	: Entity{ &registry, entity }
 {
 	// TODO: verify that it has all default components
 }
@@ -224,7 +224,7 @@ void Character::CreateCharacterLuaBind( sol::state& lua, SCION_CORE::ECS::Regist
 		"group",
 		&Character::GetGroup,
 		"kill",
-		&Character::Kill,
+		&Character::Destroy,
 		"addChild",
 		[]( Character& character, Entity& child ) { character.AddChild( child.GetEntity() ); },
 		"updateTransform",

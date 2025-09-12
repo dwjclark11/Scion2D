@@ -173,7 +173,7 @@ bool TiledMapImporter::ImportFromTMXFile( EditorSceneManager* pSceneManager, con
 
 				if ( auto* pTileset = GetTileset( tilesets, id ) )
 				{
-					Entity newTile{ newScene.GetRegistry(), "", "" };
+					Entity newTile{ newScene.GetRegistryPtr(), "", "" };
 					auto& transform = newTile.AddComponent<TransformComponent>();
 					transform.position = glm::vec2{ ( col - 1 ) * pTileset->tileWidth, row * pTileset->tileHeight };
 
@@ -365,7 +365,7 @@ bool TiledMapImporter::ImportFromLuaFile( EditorSceneManager* pSceneManager, con
 
 					if ( auto* pTileset = GetTileset(tilesets, id ) )
 					{
-						Entity newTile{ newScene.GetRegistry(), "", "" };
+						Entity newTile{ newScene.GetRegistryPtr(), "", "" };
 						auto& transform = newTile.AddComponent<TransformComponent>();
 						transform.position = glm::vec2{ ( col - 1 ) * pTileset->tileWidth, row * pTileset->tileHeight };
 

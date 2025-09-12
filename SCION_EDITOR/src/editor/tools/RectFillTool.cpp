@@ -154,7 +154,7 @@ void RectFillTool::RemoveTiles()
 			removedTile.bPhysics = true;
 		}
 
-		tileToRemove.Kill();
+		tileToRemove.Destroy();
 		removedTiles.push_back( removedTile );
 	}
 

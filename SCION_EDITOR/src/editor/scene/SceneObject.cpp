@@ -90,7 +90,7 @@ void SceneObject::CopySceneToRuntime()
 				continue;
 
 			SCION_CORE::Utils::InvokeMetaFunction(
-				id, "copy_component"_hs, Entity{ m_Registry, entityToCopy }, Entity{ m_RuntimeRegistry, newEntity } );
+				id, "copy_component"_hs, Entity{ &m_Registry, entityToCopy }, Entity{ &m_RuntimeRegistry, newEntity } );
 		}
 	}
 
@@ -128,7 +128,7 @@ void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
 				continue;
 
 			SCION_CORE::Utils::InvokeMetaFunction(
-				id, "copy_component"_hs, Entity{ registry, entityToCopy }, Entity{ m_RuntimeRegistry, newEntity } );
+				id, "copy_component"_hs, Entity{ &registry, entityToCopy }, Entity{ &m_RuntimeRegistry, newEntity } );
 		}
 	}
 
@@ -208,7 +208,7 @@ bool SceneObject::DeleteLayer( int layer )
 	auto view = m_Registry.GetRegistry().view<TileComponent, SpriteComponent>();
 	for ( auto entity : view )
 	{
-		Entity ent{ m_Registry, entity };
+		Entity ent{ &m_Registry, entity };
 		auto& sprite = ent.GetComponent<SpriteComponent>();
 		if ( sprite.layer == layer )
 		{
@@ -240,7 +240,7 @@ bool SceneObject::DeleteLayer( int layer )
 				removedTile.physics = *physics;
 			}
 
-			ent.Kill();
+			ent.Destroy();
 			removedTiles.push_back( removedTile );
 		}
 		else if ( sprite.layer > layer ) // Drop the layer down if greater.
@@ -259,7 +259,7 @@ bool SceneObject::DeleteLayer( int layer )
 
 bool SceneObject::AddGameObject()
 {
-	Entity newObject{ m_Registry, "", "" };
+	Entity newObject{ &m_Registry, "", "" };
 	newObject.AddComponent<TransformComponent>();
 	std::string sTag{ "GameObject" };
 
@@ -325,7 +325,7 @@ bool SceneObject::DuplicateGameObject( entt::entity entity )
 			continue;
 
 		SCION_CORE::Utils::InvokeMetaFunction(
-			id, "copy_component"_hs, Entity{ m_Registry, entity }, Entity{ m_Registry, newEntity } );
+			id, "copy_component"_hs, Entity{ &m_Registry, entity }, Entity{ &m_Registry, newEntity } );
 	}
 
 	// Now we need to set the tag for the entity
@@ -336,7 +336,7 @@ bool SceneObject::DuplicateGameObject( entt::entity entity )
 		++tagNum;
 	}
 
-	Entity newEnt{ m_Registry, newEntity };
+	Entity newEnt{ &m_Registry, newEntity };
 	newEnt.ChangeName( fmt::format( "{}_{}", objItr->first, tagNum ) );
 
 	m_mapTagToEntity.emplace( newEnt.GetName(), newEntity );
@@ -354,7 +354,7 @@ bool SceneObject::DeleteGameObjectByTag( const std::string& sTag )
 	}
 
 	std::vector<std::string> removedEntities;
-	Entity ent{ m_Registry, objItr->second };
+	Entity ent{ &m_Registry, objItr->second };
 
 	RelationshipUtils::RemoveAndDelete( ent, removedEntities );
 
@@ -383,7 +383,7 @@ bool SceneObject::DeleteGameObjectById( entt::entity entity )
 	}
 
 	std::vector<std::string> removedEntities;
-	Entity ent{ m_Registry, objItr->second };
+	Entity ent{ &m_Registry, objItr->second };
 
 	RelationshipUtils::RemoveAndDelete( ent, removedEntities );
 
@@ -403,7 +403,7 @@ bool SceneObject::LoadScene()
 	auto view = m_Registry.GetRegistry().view<entt::entity>( entt::exclude<TileComponent> );
 	for ( auto entity : view )
 	{
-		Entity ent{ m_Registry, entity };
+		Entity ent{ &m_Registry, entity };
 		AddGameObjectByTag( ent.GetName(), entity );
 	}
 

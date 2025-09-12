@@ -36,7 +36,7 @@ void SCION_EDITOR::RotateGizmo::Update( SCION_CORE::Canvas& canvas )
 
 	Show();
 
-	Entity selectedEntity{ *m_pRegistry, m_SelectedEntity };
+	Entity selectedEntity{ m_pRegistry, m_SelectedEntity };
 	auto& selectedTransform = selectedEntity.GetComponent<TransformComponent>();
 
 	float deltaX{ GetDeltaX() };

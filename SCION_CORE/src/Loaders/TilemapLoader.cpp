@@ -45,7 +45,7 @@ bool TilemapLoader::SaveTilemapJSON( SCION_CORE::ECS::Registry& registry, const 
 	{
 		pSerializer->StartNewObject();
 		pSerializer->StartNewObject( "components" );
-		auto tileEnt{ Entity{ registry, tile } };
+		auto tileEnt{ Entity{ &registry, tile } };
 
 		const auto& transform = tileEnt.GetComponent<TransformComponent>();
 		SERIALIZE_COMPONENT( *pSerializer, transform );
@@ -130,7 +130,7 @@ bool TilemapLoader::LoadTilemapJSON( SCION_CORE::ECS::Registry& registry, const 
 
 	for ( const auto& tile : tilemap.GetArray() )
 	{
-		Entity newTile{ registry, "", "" };
+		Entity newTile{ &registry, "", "" };
 		const auto& components = tile[ "components" ];
 
 		// Transform
@@ -208,7 +208,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 	{
 		pSerializer->StartNewObject();
 		pSerializer->StartNewObject( "components" );
-		auto objectEnt{ Entity{ registry, object } };
+		auto objectEnt{ Entity{ &registry, object } };
 
 		if ( const auto* id = objectEnt.TryGetComponent<Identification>() )
 		{
@@ -266,7 +266,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 			pSerializer->StartNewObject( "relationship" );
 			if ( relations->parent != entt::null )
 			{
-				Entity parent{ registry, relations->parent };
+				Entity parent{ &registry, relations->parent };
 				pSerializer->AddKeyValuePair( "parent", parent.GetName() );
 			}
 			else
@@ -276,7 +276,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 
 			if ( relations->nextSibling != entt::null )
 			{
-				Entity nextSibling{ registry, relations->nextSibling };
+				Entity nextSibling{ &registry, relations->nextSibling };
 				pSerializer->AddKeyValuePair( "nextSibling", nextSibling.GetName() );
 			}
 			else
@@ -286,7 +286,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 
 			if ( relations->prevSibling != entt::null )
 			{
-				Entity prevSibling{ registry, relations->prevSibling };
+				Entity prevSibling{ &registry, relations->prevSibling };
 				pSerializer->AddKeyValuePair( "prevSibling", prevSibling.GetName() );
 			}
 			else
@@ -296,7 +296,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 
 			if ( relations->firstChild != entt::null )
 			{
-				Entity firstChild{ registry, relations->firstChild };
+				Entity firstChild{ &registry, relations->firstChild };
 				pSerializer->AddKeyValuePair( "firstChild", firstChild.GetName() );
 			}
 			else
@@ -362,7 +362,7 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 
 	for ( const auto& object : gameObjects.GetArray() )
 	{
-		Entity gameObject{ registry, "", "" };
+		Entity gameObject{ &registry, "", "" };
 		const auto& components = object[ "components" ];
 
 		// Transform
@@ -444,7 +444,7 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 
 	auto findTag = [ & ]( const std::string& sTag ) {
 		auto parItr = std::ranges::find_if( ids, [ & ]( const auto& e ) {
-			Entity en{ registry, e };
+			Entity en{ &registry, e };
 			return en.GetName() == sTag;
 		} );
 
@@ -458,7 +458,7 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 
 	for ( auto& [ entity, saveRelations ] : mapEntityToRelationship )
 	{
-		Entity ent{ registry, entity };
+		Entity ent{ &registry, entity };
 		auto& relations = ent.GetComponent<Relationship>();
 
 		// Find the parent
@@ -520,7 +520,7 @@ bool TilemapLoader::SaveTilemapLua( SCION_CORE::ECS::Registry& registry, const s
 	{
 		pSerializer->StartNewTable();
 		pSerializer->StartNewTable( "components" );
-		auto tileEnt{ Entity{ registry, tile } };
+		auto tileEnt{ Entity{ &registry, tile } };
 
 		const auto& transform = tileEnt.GetComponent<TransformComponent>();
 		SERIALIZE_COMPONENT( *pSerializer, transform );
@@ -584,7 +584,7 @@ bool TilemapLoader::LoadTilemapLua( SCION_CORE::ECS::Registry& registry, const s
 
 	for ( const auto& [ key, value ] : *maybeTiles )
 	{
-		Entity newTile{ registry, "", "" };
+		Entity newTile{ &registry, "", "" };
 		const sol::optional<sol::table> components = value.as<sol::table>()[ "components" ];
 
 		if ( !components )
@@ -667,7 +667,7 @@ bool TilemapLoader::SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 	{
 		pSerializer->StartNewTable();
 		pSerializer->StartNewTable( "components" );
-		auto objectEnt{ Entity{ registry, object } };
+		auto objectEnt{ Entity{ &registry, object } };
 
 		if ( const auto* id = objectEnt.TryGetComponent<Identification>() )
 		{
@@ -723,7 +723,7 @@ bool TilemapLoader::SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 			pSerializer->StartNewTable( "relationship" );
 			if ( relations->parent != entt::null )
 			{
-				Entity parent{ registry, relations->parent };
+				Entity parent{ &registry, relations->parent };
 				pSerializer->AddKeyValuePair( "parent", parent.GetName(), false, false, false, true );
 			}
 			else
@@ -733,7 +733,7 @@ bool TilemapLoader::SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 
 			if ( relations->nextSibling != entt::null )
 			{
-				Entity nextSibling{ registry, relations->nextSibling };
+				Entity nextSibling{ &registry, relations->nextSibling };
 				pSerializer->AddKeyValuePair( "nextSibling", nextSibling.GetName(), false, false, false, true );
 			}
 			else
@@ -743,7 +743,7 @@ bool TilemapLoader::SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 
 			if ( relations->prevSibling != entt::null )
 			{
-				Entity prevSibling{ registry, relations->prevSibling };
+				Entity prevSibling{ &registry, relations->prevSibling };
 				pSerializer->AddKeyValuePair( "prevSibling", prevSibling.GetName(), false, false, false, true );
 			}
 			else
@@ -753,7 +753,7 @@ bool TilemapLoader::SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 
 			if ( relations->firstChild != entt::null )
 			{
-				Entity firstChild{ registry, relations->firstChild };
+				Entity firstChild{ &registry, relations->firstChild };
 				pSerializer->AddKeyValuePair( "firstChild", firstChild.GetName(), false, false, false, true );
 			}
 			else
@@ -798,7 +798,7 @@ bool TilemapLoader::LoadObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 
 	for ( const auto& [ key, value ] : *maybeObjects )
 	{
-		Entity gameObject{ registry, "", "" };
+		Entity gameObject{ &registry, "", "" };
 		const sol::optional<sol::table> components = value.as<sol::table>()[ "components" ];
 
 		if ( !components )
@@ -879,7 +879,7 @@ bool TilemapLoader::LoadObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 
 	auto findTag = [ & ]( const std::string& sTag ) {
 		auto parItr = std::ranges::find_if( ids, [ & ]( const auto& e ) {
-			Entity en{ registry, e };
+			Entity en{ &registry, e };
 			return en.GetName() == sTag;
 		} );
 
@@ -893,7 +893,7 @@ bool TilemapLoader::LoadObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 
 	for ( auto& [ entity, saveRelations ] : mapEntityToRelationship )
 	{
-		Entity ent{ registry, entity };
+		Entity ent{ &registry, entity };
 		auto& relations = ent.GetComponent<Relationship>();
 
 		// Find the parent
@@ -963,7 +963,7 @@ bool TilemapLoader::LoadTilemapFromLuaTable( SCION_CORE::ECS::Registry& registry
 
 	for ( const auto& [ key, value ] : *maybeTiles )
 	{
-		Entity newTile{ registry, "", "" };
+		Entity newTile{ &registry, "", "" };
 		const sol::optional<sol::table> components = value.as<sol::table>()[ "components" ];
 
 		if ( !components )
@@ -1033,7 +1033,7 @@ bool TilemapLoader::LoadGameObjectsFromLuaTable( SCION_CORE::ECS::Registry& regi
 
 	for ( const auto& [ key, value ] : *maybeObjects )
 	{
-		Entity newTile{ registry, "", "" };
+		Entity newTile{ &registry, "", "" };
 		const sol::optional<sol::table> components = value.as<sol::table>()[ "components" ];
 
 		if ( !components )

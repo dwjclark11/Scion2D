@@ -76,7 +76,7 @@ void Gizmo::SetSelectedEntity( entt::entity entity )
 
 	if ( m_SelectedEntity != entt::null && m_pRegistry )
 	{
-		Entity ent{ *m_pRegistry, entity };
+		Entity ent{ m_pRegistry, entity };
 		SetGizmoPosition( ent );
 		GetDispatcher().EmitEvent( Events::SwitchEntityEvent{ .pEntity = &ent } );
 		m_bUIComponent = ent.HasComponent<UIComponent>();

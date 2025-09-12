@@ -31,7 +31,7 @@ void SCION_CORE::ECS::Registry::CreateLuaRegistryBind( sol::state& lua, Registry
 
 				for ( auto entity : view )
 				{
-					Entity ent{ registry, entity };
+					Entity ent{ &registry, entity };
 					callback( ent );
 				}
 			},
@@ -41,7 +41,7 @@ void SCION_CORE::ECS::Registry::CreateLuaRegistryBind( sol::state& lua, Registry
 
 				for ( auto entity : view )
 				{
-					Entity ent{ reg, entity };
+					Entity ent{ &reg, entity };
 					callback( ent );
 				}
 			} ),
@@ -99,12 +99,12 @@ void SCION_CORE::ECS::Registry::CreateLuaRegistryBind( sol::state& lua, Registry
 		[ & ]( Registry& reg, const std::string& sTag, sol::this_state s ) {
 			auto entity = SCION_CORE::ECS::FindEntityByTag( reg, sTag );
 
-			return entity == entt::null ? sol::lua_nil_t{} : sol::make_reference( s, Entity{ reg, entity } );
+			return entity == entt::null ? sol::lua_nil_t{} : sol::make_reference( s, Entity{ &reg, entity } );
 		},
 		"createEntity",
-		sol::overload( []( Registry& reg ) { return Entity{ reg, "", "" }; },
+		sol::overload( []( Registry& reg ) { return Entity{ &reg, "", "" }; },
 					   []( Registry& reg, const std::string& sName, const std::string sGroup ) {
-						   return Entity{ reg, sName, sGroup };
+						   return Entity{ &reg, sName, sGroup };
 					   } ),
 		"clear",
 		[ & ]( Registry& reg ) { reg.GetRegistry().clear(); } );

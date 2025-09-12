@@ -45,7 +45,7 @@ void RemoveTileLayerCmd::undo()
 	auto tileView = pRegistry->GetRegistry().view<TileComponent, SpriteComponent>();
 	for ( auto entity : tileView )
 	{
-		Entity ent{ *pRegistry, entity };
+		Entity ent{ pRegistry, entity };
 		if ( auto* pSprite = ent.TryGetComponent<SpriteComponent>() )
 		{
 			if ( pSprite->layer >= spriteLayerParams.layer )
@@ -58,7 +58,7 @@ void RemoveTileLayerCmd::undo()
 	// Add the tiles back into the registry
 	for ( const auto& tile : tilesRemoved )
 	{
-		Entity ent{ *pRegistry, "", "" };
+		Entity ent{ pRegistry, "", "" };
 		ent.AddComponent<TransformComponent>( tile.transform );
 		ent.AddComponent<SpriteComponent>( tile.sprite );
 		ent.AddComponent<TileComponent>( static_cast<std::uint32_t>( ent.GetEntity() ) );
@@ -118,11 +118,11 @@ void RemoveTileLayerCmd::redo()
 	auto view = pRegistry->GetRegistry().view<TileComponent, SpriteComponent>();
 	for ( auto entity : view )
 	{
-		Entity ent{ *pRegistry, entity };
+		Entity ent{ pRegistry, entity };
 		auto& sprite = ent.GetComponent<SpriteComponent>();
 		if ( sprite.layer == spriteLayerParams.layer )
 		{
-			ent.Kill();
+			ent.Destroy();
 		}
 		else if ( sprite.layer > spriteLayerParams.layer ) // Drop the layer down if greater.
 		{
@@ -188,7 +188,7 @@ void MoveTileLayerCmd::undo()
 	auto tileView = pRegistry->GetRegistry().view<TileComponent, SpriteComponent>();
 	for ( auto entity : tileView )
 	{
-		Entity ent{ *pRegistry, entity };
+		Entity ent{ pRegistry, entity };
 		if ( auto* sprite = ent.TryGetComponent<SpriteComponent>() )
 		{
 			if ( sprite->layer == to )
@@ -226,7 +226,7 @@ void MoveTileLayerCmd::redo()
 	auto tileView = pRegistry->GetRegistry().view<TileComponent, SpriteComponent>();
 	for ( auto entity : tileView )
 	{
-		Entity ent{ *pRegistry, entity };
+		Entity ent{ pRegistry, entity };
 		if ( auto* sprite = ent.TryGetComponent<SpriteComponent>() )
 		{
 			if ( sprite->layer == to )

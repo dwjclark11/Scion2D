@@ -63,7 +63,7 @@ void RelationshipUtils::RemoveAndDelete( Entity& entityToRemove, std::vector<std
 
 		for ( auto entity : childrenToDelete )
 		{
-			Entity ent{ Reg, entity };
+			Entity ent{ &Reg, entity };
 			RemoveAndDelete( ent, entitiesRemoved );
 		}
 	}
@@ -99,9 +99,9 @@ void RelationshipUtils::RemoveAndDelete( Entity& entityToRemove, std::vector<std
 	}
 
 	// Now that the links have been adjusted, we can delete the entity
-	SCION_LOG( "JUST KILLED: {}", static_cast<std::uint32_t>( entityToRemove.GetEntity() ) );
+	//SCION_LOG( "JUST Destroyed: {}", static_cast<std::uint32_t>( entityToRemove.GetEntity() ) );
 	entitiesRemoved.emplace_back( entityToRemove.GetName() );
-	entityToRemove.Kill();
+	entityToRemove.Destroy();
 }
 
 void Relationship::CreateRelationshipLuaBind( sol::state& lua )

@@ -7,21 +7,18 @@ namespace SCION_CORE::ECS
 class Entity
 {
   public:
-	Entity( Registry& registry );
-	Entity( Registry& registry, const std::string& name = "", const std::string& group = "" );
+	Entity( Registry* registry );
+	Entity( Registry* registry, const std::string& name = "", const std::string& group = "" );
+	Entity( Registry* registry, const entt::entity& entity );
 
-	Entity( Registry& registry, const entt::entity& entity );
-	Entity& operator=( const Entity& other )
-	{
-		this->m_Entity = other.m_Entity;
-		this->m_sName = other.m_sName;
-		this->m_sGroup = other.m_sGroup;
+	Entity( const Entity& other );
+	Entity& operator=( const Entity& other );
 
-		return *this;
-	}
+	Entity( Entity&& other ) noexcept;
+	Entity& operator=( Entity&& other ) noexcept;
 
-	virtual ~Entity() = default;
-
+	virtual ~Entity();
+	
 	/*
 	 * @brief Adds a new child to the entity.
 	 * @param underlying entity of the child to add.
@@ -44,7 +41,7 @@ class Entity
 	 * this Entity, trying to access an entity that does not exist can cause problems.
 	 * @return Returns the std::uint32_t id of the destroyed entity.
 	 */
-	std::uint32_t Kill();
+	std::uint32_t Destroy();
 	
 	/*
 	 * @brief Gets the actual entity.
@@ -56,9 +53,9 @@ class Entity
 	 * @brief All entities have a reference to the registry that they were created in.
 	 * @return Returns the actual underlying entt::registry as a reference.
 	 */
-	inline entt::registry& GetEnttRegistry() { return m_Registry.GetRegistry(); }
+	inline entt::registry& GetEnttRegistry() { return m_Registry->GetRegistry(); }
 
-	inline Registry& GetRegistry() { return m_Registry; }
+	inline Registry& GetRegistry() { return *m_Registry; }
 
 	static void CreateLuaEntityBind( sol::state& lua, Registry& registry );
 
@@ -106,8 +103,8 @@ class Entity
 	auto RemoveComponent();
 
   private:
-	/* Reference to the registry this entity belongs to. */
-	Registry& m_Registry;
+	/* Pointer to the registry this entity belongs to. */
+	Registry* m_Registry;
 	/* Underlying entity. */
 	entt::entity m_Entity;
 	/* Entities specific name. Eventually they will be unique names. */

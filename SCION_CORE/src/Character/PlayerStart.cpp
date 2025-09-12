@@ -57,7 +57,7 @@ void PlayerStart::CreatePlayer( SCION_CORE::ECS::Registry& registry )
 	}
 	else
 	{
-		Entity characterEnt{ registry, "Player", "" };
+		Entity characterEnt{ &registry, "Player", "" };
 		auto& transform =
 			characterEnt.AddComponent<TransformComponent>( m_pVisualEntity->GetComponent<TransformComponent>() );
 		transform.scale = glm::vec2{ 1.f }; // Should the scale be changed here?
@@ -148,7 +148,7 @@ void PlayerStart::Unload()
 		return;
 
 	// We want to reset the entity to entt::null
-	m_pVisualEntity->Kill();
+	m_pVisualEntity->Destroy();
 	m_pVisualEntity.reset();
 	m_bVisualEntityCreated = false;
 
@@ -169,7 +169,7 @@ void PlayerStart::LoadVisualEntity()
 	if ( !m_pVisualEntity)
 	{
 		m_pVisualEntity =
-			std::make_shared<Entity>( Entity{ m_SceneRef.GetRegistry(), std::string{ PlayerStartTag }, "" } );
+			std::make_shared<Entity>( Entity{ m_SceneRef.GetRegistryPtr(), std::string{ PlayerStartTag }, "" } );
 	}
 
 	m_pVisualEntity->AddComponent<TransformComponent>( TransformComponent{} );

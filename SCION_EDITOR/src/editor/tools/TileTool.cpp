@@ -28,7 +28,7 @@ uint32_t TileTool::CheckForTile( const glm::vec2& position )
 
 	for ( auto entity : tileView )
 	{
-		Entity tile{ *m_pRegistry, entity };
+		Entity tile{ m_pRegistry, entity };
 		const auto& transform = tile.GetComponent<TransformComponent>();
 		const auto& sprite = tile.GetComponent<SpriteComponent>();
 
@@ -67,13 +67,13 @@ uint32_t TileTool::CheckForTile( const glm::vec2& position )
 SCION_CORE::ECS::Entity TileTool::CreateEntity()
 {
 	SCION_ASSERT( m_pRegistry && "The registry must be valid to create an entity." );
-	return SCION_CORE::ECS::Entity{ *m_pRegistry, "", "" };
+	return SCION_CORE::ECS::Entity{ m_pRegistry, "", "" };
 }
 
 SCION_CORE::ECS::Entity TileTool::CreateEntity( uint32_t id )
 {
 	SCION_ASSERT( m_pRegistry && "The registry must be valid to create an entity." );
-	return SCION_CORE::ECS::Entity{ *m_pRegistry, static_cast<entt::entity>( id ) };
+	return SCION_CORE::ECS::Entity{ m_pRegistry, static_cast<entt::entity>( id ) };
 }
 
 void TileTool::DrawMouseSprite()

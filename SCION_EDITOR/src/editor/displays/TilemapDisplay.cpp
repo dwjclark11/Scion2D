@@ -101,7 +101,7 @@ void TilemapDisplay::RenderTilemap()
 				}
 				else
 				{
-					SCION_CORE::ECS::Entity checkedEntity{ pCurrentScene->GetRegistry(),
+					SCION_CORE::ECS::Entity checkedEntity{ pCurrentScene->GetRegistryPtr(),
 														   static_cast<entt::entity>( id ) };
 					if ( checkedEntity.HasComponent<SCION_CORE::ECS::TileComponent>() )
 					{
@@ -302,7 +302,7 @@ void TilemapDisplay::AddPrefabbedEntityToScene( const SCION_CORE::PrefabbedEntit
 		++count;
 	}
 
-	SCION_CORE::ECS::Entity newEnt{ pCurrentScene->GetRegistry(), sTag, prefabbed.id->group };
+	SCION_CORE::ECS::Entity newEnt{ pCurrentScene->GetRegistryPtr(), sTag, prefabbed.id->group };
 
 	newEnt.AddComponent<TransformComponent>( prefabbed.transform );
 	if ( prefabbed.sprite )

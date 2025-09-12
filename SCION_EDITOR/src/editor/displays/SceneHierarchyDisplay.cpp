@@ -59,7 +59,7 @@ bool SceneHierarchyDisplay::OpenTreeNode( SCION_CORE::ECS::Entity& entity )
 
 	if ( ImGui::IsItemClicked() )
 	{
-		m_pSelectedEntity = std::make_shared<Entity>( pCurrentScene->GetRegistry(), entity.GetEntity() );
+		m_pSelectedEntity = std::make_shared<Entity>( pCurrentScene->GetRegistryPtr(), entity.GetEntity() );
 		TOOL_MANAGER().SetSelectedEntity( entity.GetEntity() );
 	}
 
@@ -89,7 +89,7 @@ bool SceneHierarchyDisplay::OpenTreeNode( SCION_CORE::ECS::Entity& entity )
 
 	while ( curr != entt::null && bTreeNodeOpen )
 	{
-		Entity ent{ pCurrentScene->GetRegistry(), curr };
+		Entity ent{ pCurrentScene->GetRegistryPtr(), curr };
 		if ( OpenTreeNode( ent ) )
 			ImGui::TreePop();
 
@@ -391,7 +391,7 @@ void SceneHierarchyDisplay::OnEntityChanged( SCION_EDITOR::Events::SwitchEntityE
 	}
 
 	m_pSelectedEntity =
-		std::make_shared<SCION_CORE::ECS::Entity>( pCurrentScene->GetRegistry(), swEntEvent.pEntity->GetEntity() );
+		std::make_shared<SCION_CORE::ECS::Entity>( pCurrentScene->GetRegistryPtr(), swEntEvent.pEntity->GetEntity() );
 
 	SCION_ASSERT( m_pSelectedEntity && "Entity must be valid here!" );
 }
@@ -532,7 +532,7 @@ void SceneHierarchyDisplay::Draw()
 
 	for ( auto entity : sceneEntities )
 	{
-		Entity ent{ registry, entity };
+		Entity ent{ &registry, entity };
 		if ( !m_TextFilter.PassFilter( ent.GetName().c_str() ) )
 			continue;
 

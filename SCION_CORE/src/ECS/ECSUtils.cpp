@@ -12,7 +12,7 @@ entt::entity FindEntityByTag( Registry& registry, const std::string& sTag )
 	auto ids = registry.GetRegistry().view<Identification>( entt::exclude<TileComponent> );
 
 	auto parItr = std::ranges::find_if( ids, [ & ]( const auto& e ) {
-		Entity en{ registry, e };
+		Entity en{ &registry, e };
 		return en.GetName() == sTag;
 	} );
 

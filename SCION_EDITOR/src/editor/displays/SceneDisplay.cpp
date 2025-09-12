@@ -111,7 +111,7 @@ void SceneDisplay::LoadScene()
 	auto physicsEntities = runtimeRegistry.GetRegistry().view<PhysicsComponent>();
 	for ( auto entity : physicsEntities )
 	{
-		Entity ent{ runtimeRegistry, entity };
+		Entity ent{ &runtimeRegistry, entity };
 
 		bool bBoxCollider{ ent.HasComponent<BoxColliderComponent>() };
 		bool bCircleCollider{ ent.HasComponent<CircleColliderComponent>() };

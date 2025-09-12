@@ -470,7 +470,7 @@ std::shared_ptr<SCION_CORE::ECS::Entity> PrefabCreator::AddPrefabToScene( const 
 
 	sTag = sCheckTag;
 
-	auto newEnt = std::make_shared<SCION_CORE::ECS::Entity>( registry, sTag, prefabbed.id->group );
+	auto newEnt = std::make_shared<SCION_CORE::ECS::Entity>( &registry, sTag, prefabbed.id->group );
 
 	newEnt->AddComponent<TransformComponent>( prefabbed.transform );
 	if ( prefabbed.sprite )

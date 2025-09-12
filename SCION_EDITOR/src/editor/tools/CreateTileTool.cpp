@@ -105,7 +105,7 @@ void CreateTileTool::RemoveTile()
 			removedTile.physics = tileToRemove.GetComponent<PhysicsComponent>();
 		}
 
-		tileToRemove.Kill();
+		tileToRemove.Destroy();
 
 		auto createToolRemoveCmd =
 			UndoableCommands{ CreateTileToolRemoveCmd{ .pRegistry = SCENE_MANAGER().GetCurrentScene()->GetRegistryPtr(),

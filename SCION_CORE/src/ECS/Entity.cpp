@@ -10,14 +10,14 @@ using namespace SCION_CORE::Utils;
 namespace SCION_CORE::ECS
 {
 
-Entity::Entity( Registry& registry )
+Entity::Entity( Registry* registry )
 	: Entity( registry, "GameObject", "" )
 {
 }
 
-Entity::Entity( Registry& registry, const std::string& name, const std::string& group )
-	: m_Registry( registry )
-	, m_Entity{ registry.CreateEntity() }
+Entity::Entity( Registry* registry, const std::string& name, const std::string& group )
+	: m_Registry{ registry }
+	, m_Entity{ registry->CreateEntity() }
 	, m_sName{ name }
 	, m_sGroup{ group }
 {
@@ -28,9 +28,9 @@ Entity::Entity( Registry& registry, const std::string& name, const std::string& 
 	AddComponent<Relationship>( Relationship{ .self = m_Entity } );
 }
 
-Entity::Entity( Registry& registry, const entt::entity& entity )
-	: m_Registry( registry )
-	, m_Entity( entity )
+Entity::Entity( Registry* registry, const entt::entity& entity )
+	: m_Registry{ registry }
+	, m_Entity{ entity }
 	, m_sName{}
 	, m_sGroup{}
 {
@@ -42,9 +42,57 @@ Entity::Entity( Registry& registry, const entt::entity& entity )
 	}
 }
 
+Entity::Entity( const Entity& other )
+	: m_Registry{ other.m_Registry }
+	, m_Entity{ other.m_Entity }
+	, m_sName{ other.m_sName }
+	, m_sGroup{ other.m_sGroup }
+{
+
+}
+
+Entity& Entity::operator=( const Entity& other )
+{
+	if (this != &other)
+	{
+		this->m_Registry = other.m_Registry;
+		this->m_Entity = other.m_Entity;
+		this->m_sName = other.m_sName;
+		this->m_sGroup = other.m_sGroup;
+	}
+
+	return *this;
+}
+
+Entity::Entity( Entity&& other ) noexcept
+	: m_Registry{ other.m_Registry }
+	, m_Entity{ other.m_Entity }
+	, m_sName{ std::move(other.m_sName) }
+	, m_sGroup{ std::move(other.m_sGroup)}
+{
+	other.m_Registry = nullptr;
+	other.m_Entity = entt::null;
+	other.m_sName.clear();
+	other.m_sGroup.clear();
+}
+
+Entity& Entity::operator=( Entity&& other ) noexcept
+{
+	if (this != &other)
+	{
+
+	}
+
+	return *this;
+}
+
+Entity::~Entity() {
+
+}
+
 bool Entity::AddChild( entt::entity child, bool bSetLocal )
 {
-	auto& registry = m_Registry.GetRegistry();
+	auto& registry = m_Registry->GetRegistry();
 	auto& relations = registry.get<Relationship>( m_Entity );
 
 	Entity childEntity{ m_Registry, child };
@@ -204,15 +252,15 @@ void Entity::ChangeName( const std::string& sName )
 	m_sName = sName;
 }
 
-std::uint32_t Entity::Kill()
+std::uint32_t Entity::Destroy()
 {
-	if ( !m_Registry.IsValid( m_Entity ) )
+	if ( !m_Registry->IsValid( m_Entity ) )
 	{
 		SCION_ERROR( "Failed t destroy entity. Entity ID [{}] is not valid.", static_cast<std::uint32_t>( m_Entity ) );
 		return static_cast<std::uint32_t>(entt::null);
 	}
 
-	return m_Registry.GetRegistry().destroy( m_Entity );
+	return m_Registry->GetRegistry().destroy( m_Entity );
 }
 
 void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
@@ -223,10 +271,10 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 		sol::call_constructor,
 		sol::factories(
 			[ & ]( Registry& reg, const std::string& sName, const std::string& sGroup ) {
-				return Entity{ reg, sName, sGroup };
+				return Entity{ &reg, sName, sGroup };
 			},
-			[ & ]( const std::string& name, const std::string& group ) { return Entity{ registry, name, group }; },
-			[ & ]( std::uint32_t id ) { return Entity{ registry, static_cast<entt::entity>( id ) }; } ),
+			[ & ]( const std::string& name, const std::string& group ) { return Entity{ &registry, name, group }; },
+			[ & ]( std::uint32_t id ) { return Entity{ &registry, static_cast<entt::entity>( id ) }; } ),
 		"addComponent",
 		[]( Entity& entity, const sol::table& comp, sol::this_state s ) -> sol::object {
 			if ( !comp.valid() )
@@ -259,7 +307,7 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 		"group",
 		&Entity::GetGroup,
 		"kill",
-		&Entity::Kill,
+		&Entity::Destroy,
 		"addChild",
 		[]( Entity& entity, Entity& child ) { entity.AddChild( child.GetEntity() ); },
 		"updateTransform",
