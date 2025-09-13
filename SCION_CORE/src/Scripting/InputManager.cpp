@@ -355,7 +355,19 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 			}
 
 			gamepad->RumbleController( lowFrequency, highFrequency, durationMs );
-		} );
+		},
+		"isRumbleSupported",
+		[ & ]( int index) {
+			auto gamepad = inputManager.GetController( index );
+			if ( !gamepad )
+			{
+				SCION_ERROR( "Invalid Gamepad index [{}] provided or gamepad is not plugged in!", index );
+				return false;
+			}
+
+			return gamepad->IsRumbleSupported( );
+		}
+	);
 }
 
 void InputManager::UpdateInputs()

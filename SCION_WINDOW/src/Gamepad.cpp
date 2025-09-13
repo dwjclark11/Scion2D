@@ -150,6 +150,11 @@ const bool Gamepad::IsGamepadPresent() const
 	return m_pController != nullptr && SDL_NumJoysticks() > 0;
 }
 
+const bool Gamepad::IsRumbleSupported() const
+{
+	return m_pController != nullptr ? SDL_GameControllerHasRumble( m_pController.get() ) : false;
+}
+
 const Sint16 Gamepad::GetAxisPosition( Uint8 axis )
 {
 	auto axisItr = m_mapAxisValues.find( axis );
