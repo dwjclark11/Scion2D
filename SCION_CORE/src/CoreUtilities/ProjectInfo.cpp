@@ -1,8 +1,8 @@
 #include "Core/CoreUtilities/ProjectInfo.h"
 #include "Rendering/Essentials/Texture.h"
 #include "Rendering/Essentials/TextureLoader.h"
-
 #include "Logger/Logger.h"
+#include <SDL_mixer.h>
 
 using namespace SCION_RENDERING;
 
@@ -94,4 +94,76 @@ std::optional<fs::path> ProjectInfo::TryGetFolderPath( EProjectFolderType eFolde
 
 	return std::nullopt;
 }
+
+
+bool AudioConfigInfo::UpdateSoundChannels( int numChannels )
+{
+	if ( allocatedSoundChannels + numChannels > 64)
+	{
+		SCION_ERROR( "Failed to update sound channels. Max 64 channels are supported." );
+		return false;
+	}
+	else if (allocatedSoundChannels + numChannels < 8)
+	{
+		SCION_ERROR( "Failed to update sound channels. There must be at least 8 sound channels." );
+		return false;
+	}
+
+	if ( numChannels > 0 )
+		AddChannels( numChannels );
+	else if ( numChannels < 0 )
+		RemoveChannels( -numChannels );
+
+	Mix_AllocateChannels( allocatedSoundChannels );
+
+	return true;
+}
+
+bool AudioConfigInfo::EnableChannelOverride( int channel, bool bEnable )
+{
+	auto channelItr = mapSoundChannelVolume.find( channel );
+	if (channelItr == mapSoundChannelVolume.end())
+	{
+		SCION_ERROR( "Failed to change sound channel override. Channel[{}] is invalid.", channel );
+		return false;
+	}
+
+	channelItr->second.first = bEnable;
+	return true;
+}
+
+bool AudioConfigInfo::SetChannelVolume( int channel, int volume )
+{
+	auto channelItr = mapSoundChannelVolume.find( channel );
+	if ( channelItr == mapSoundChannelVolume.end() )
+	{
+		SCION_ERROR( "Failed to set sound channel volume. Channel[{}] is invalid.", channel );
+		return false;
+	}
+
+	channelItr->second.second = volume;
+	return true;
+}
+
+void AudioConfigInfo::AddChannels( int numChannels )
+{
+	for (int i = 0; i < numChannels; ++i)
+	{
+		int channelID{ allocatedSoundChannels + i };
+		mapSoundChannelVolume.emplace( channelID, std::make_pair( false, 100 ) );
+	}
+
+	allocatedSoundChannels += numChannels;
+}
+
+void AudioConfigInfo::RemoveChannels( int numChannels )
+{
+	for (int i = 0; i < numChannels && allocatedSoundChannels > 0; ++i)
+	{
+		int channelID{ allocatedSoundChannels - 1 };
+		mapSoundChannelVolume.erase( channelID );
+		--allocatedSoundChannels;
+	}
+}
+
 } // namespace SCION_CORE

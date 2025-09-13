@@ -257,7 +257,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		pProjectInfo->SetProjectDescription( sDescription );
 	}
 
-	if (projectData.HasMember("default_scene"))
+	if ( projectData.HasMember( "default_scene" ) )
 	{
 		std::string sDefaultScene = projectData[ "default_scene" ].GetString();
 		pProjectInfo->SetDefaultScene( sDefaultScene );
@@ -428,10 +428,10 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		}
 	}
 
-	if (!pProjectInfo->GetDefaultScene().empty())
+	if ( !pProjectInfo->GetDefaultScene().empty() )
 	{
 		SCENE_MANAGER().SetCurrentScene( pProjectInfo->GetDefaultScene() );
-		if (!SCENE_MANAGER().LoadCurrentScene())
+		if ( !SCENE_MANAGER().LoadCurrentScene() )
 		{
 			SCION_ERROR( "Failed to load default scene [{}]", pProjectInfo->GetDefaultScene() );
 		}
@@ -453,6 +453,43 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		coreGlobals.SetGravity( physics[ "gravity" ].GetFloat() );
 		coreGlobals.SetVelocityIterations( physics[ "velocityIterations" ].GetInt() );
 		coreGlobals.SetPositionIterations( physics[ "positionIterations" ].GetInt() );
+	}
+
+	if (projectData.HasMember("audio_config"))
+	{
+		auto& audioConfig = pProjectInfo->GetAudioConfig();
+		const rapidjson::Value& jsonAudioConfig = projectData[ "audio_config" ];
+		audioConfig.bGlobalOverrideEnabled = jsonAudioConfig[ "bGlobalEnabled" ].GetBool();
+		audioConfig.globalVolumeOverride = jsonAudioConfig[ "globalVolume" ].GetInt();
+		audioConfig.bMusicVolumeOverrideEnabled = jsonAudioConfig[ "bMusicOverrideEnabled" ].GetBool();
+		audioConfig.musicVolumeOverride = jsonAudioConfig[ "musicVolume" ].GetInt();
+		int allocatedChannels = jsonAudioConfig[ "allocatedChannels" ].GetInt();
+		int channelDelta = allocatedChannels - audioConfig.GetAllocatedChannelCount();
+		if (channelDelta > 0)
+		{
+			audioConfig.UpdateSoundChannels(channelDelta);
+		}
+
+		if (jsonAudioConfig.HasMember("sound_channel_data") && jsonAudioConfig["sound_channel_data"].IsArray())
+		{
+			const rapidjson::Value& jsonChannelDataArray = jsonAudioConfig[ "sound_channel_data" ];
+			for (const auto& channelData : jsonChannelDataArray.GetArray())
+			{
+				int channelID = channelData[ "channelID" ].GetInt();
+				bool bEnabled = channelData[ "bEnabled" ].GetBool();
+				int volume = channelData[ "volume" ].GetInt();
+
+				if (!audioConfig.EnableChannelOverride(channelID, bEnabled))
+				{
+					SCION_ERROR( "Failed to enable sound channel override. Channel [{}] is invalid.", channelID );
+				}
+
+				if (!audioConfig.SetChannelVolume(channelID, volume))
+				{
+					SCION_ERROR( "Failed to set sound channel volume override. Channel [{}] is invalid.", channelID );
+				}
+			}
+		}
 	}
 
 	auto& pEditorState = mainRegistry.GetContext<EditorStatePtr>();
@@ -613,7 +650,32 @@ bool ProjectLoader::SaveLoadedProject( const SCION_CORE::ProjectInfo& projectInf
 		.AddKeyValuePair( "gravity", coreGlobals.GetGravity() )
 		.AddKeyValuePair( "velocityIterations", coreGlobals.GetVelocityIterations() )
 		.AddKeyValuePair( "positionIterations", coreGlobals.GetPositionIterations() )
-		.EndObject();		  // Physics
+		.EndObject(); // Physics
+
+	const auto& audioConfig = projectInfo.GetAudioConfig();
+
+	pSerializer->StartNewObject( "audio_config" )
+		.AddKeyValuePair( "bGlobalEnabled", audioConfig.bGlobalOverrideEnabled )
+		.AddKeyValuePair( "globalVolume", audioConfig.globalVolumeOverride )
+		.AddKeyValuePair( "bMusicOverrideEnabled", audioConfig.bMusicVolumeOverrideEnabled )
+		.AddKeyValuePair( "musicVolume", audioConfig.musicVolumeOverride )
+		.AddKeyValuePair( "allocatedChannels", audioConfig.GetAllocatedChannelCount() );
+
+	pSerializer->StartNewArray( "sound_channel_data" );
+
+	for ( const auto& [ channelID, state ] : audioConfig.GetSoundChannelMap() )
+	{
+		pSerializer->StartNewObject()
+			.AddKeyValuePair( "channelID", channelID )
+			.AddKeyValuePair( "bEnabled", state.first )
+			.AddKeyValuePair( "volume", state.second )
+			.EndObject();
+	}
+
+	pSerializer
+		->EndArray()  // Sound Channel Data
+		.EndObject(); // Audio Config
+
 	pSerializer->EndObject(); // Project Data
 
 	return pSerializer->EndDocument();
@@ -721,7 +783,7 @@ bool ProjectLoader::CreateMainLuaScript( const std::string& sProjectName, const 
 		.EndTable() // update function
 		.StartNewTable( "3", true, true )
 		.AddKeyValuePair( "render", "function() --[[ Main Lua Render function ]] end", true, true )
-		.EndTable() // render function
+		.EndTable()	 // render function
 		.EndTable(); // main table
 
 	return pLuaSerializer->FinishStream();

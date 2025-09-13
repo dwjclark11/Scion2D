@@ -11,6 +11,48 @@ namespace SCION_CORE
 {
 
 // clang-format off
+struct AudioConfigInfo
+{
+	using SoundChannelMap = std::map<int, std::pair<bool, int>>;
+
+	/* Overrides all sound and music channels. */
+	bool bGlobalOverrideEnabled{ false };
+	/* The amount to override all channels. Percentage [0 - 100]. */
+	int globalVolumeOverride{ 100 };
+	/* Overrides the music channel. This is overridden if global override is enabled. */
+	bool bMusicVolumeOverrideEnabled{ false };
+	/* The amount to override the music channel. Percentage [0 - 100]. */
+	int musicVolumeOverride{ 100 };
+	/* The number of sound channels that have been allocated. */
+	/* */
+	bool UpdateSoundChannels(int numChannels);
+	bool EnableChannelOverride(int channel, bool bEnable);
+	bool SetChannelVolume(int channel, int volume);
+
+	const SoundChannelMap& GetSoundChannelMap() const { return mapSoundChannelVolume; }
+	const int GetAllocatedChannelCount() const { return allocatedSoundChannels; }
+
+private:
+	/* @brief Adds more channels to the channel map. */
+	void AddChannels(int numChannels);
+	void RemoveChannels(int numChannels);
+
+private:
+	int allocatedSoundChannels{ 8 };
+
+	/* Map of the allocated channels. Channel to enabled/volume override. */
+	SoundChannelMap mapSoundChannelVolume{
+		{ 0, { false, 100 } },
+		{ 1, { false, 100 } },
+		{ 2, { false, 100 } },
+		{ 3, { false, 100 } },
+		{ 4, { false, 100 } },
+		{ 5, { false, 100 } },
+		{ 6, { false, 100 } },
+		{ 7, { false, 100 } }
+	};
+};
+
 /*
 * @brief Enum class defining the different folder types within a project
 */
@@ -33,11 +75,11 @@ enum class EProjectFolderType
 // clang-format on
 
 /*
-* @brief ProjectInfo - Class holding all metadata and state related to a single project.
-*
-* Holds the core project structure, including file paths, metadata, and configuration
-* used by the Scion2D game engine editor.
-*/
+ * @brief ProjectInfo - Class holding all metadata and state related to a single project.
+ *
+ * Holds the core project structure, including file paths, metadata, and configuration
+ * used by the Scion2D game engine editor.
+ */
 class ProjectInfo
 {
   public:
@@ -144,9 +186,11 @@ class ProjectInfo
 	/** @brief Gets the copyright notice. */
 	inline const std::string& GetCopyRightNotice() const { return m_sCopyRightNotice; }
 	/** @brief Gets the default scene name. */
-	inline const std::string& GetDefaultScene() const { return m_sDefaultScene;  }
+	inline const std::string& GetDefaultScene() const { return m_sDefaultScene; }
 	/** @brief Sets the default scene name. */
 	inline void SetDefaultScene( const std::string& sDefaultScene ) { m_sDefaultScene = sDefaultScene; }
+	inline AudioConfigInfo& GetAudioConfig() { return m_AudioConfig; }
+	inline const AudioConfigInfo& GetAudioConfig() const{ return m_AudioConfig; }
 
 	/**
 	 * @brief Gets all project folder mappings.
@@ -182,6 +226,8 @@ class ProjectInfo
 	std::string m_sCopyRightNotice{};
 	/** @brief Shared texture pointer for the icon. */
 	std::shared_ptr<SCION_RENDERING::Texture> m_pIconTexture{ nullptr };
+
+	AudioConfigInfo m_AudioConfig{};
 
 	/** @brief Whether vertical sync is enabled in the game window. */
 	bool m_bUseVSync{ true };
