@@ -394,7 +394,7 @@ bool RuntimeApp::LoadPhysics()
 	auto physicsEntities = pRegistry->GetRegistry().view<PhysicsComponent>();
 	for ( auto entity : physicsEntities )
 	{
-		Entity ent{ *pRegistry, entity };
+		Entity ent{ pRegistry, entity };
 
 		bool bBoxCollider{ ent.HasComponent<BoxColliderComponent>() };
 		bool bCircleCollider{ ent.HasComponent<CircleColliderComponent>() };
