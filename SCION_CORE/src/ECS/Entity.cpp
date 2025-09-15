@@ -306,7 +306,7 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 		&Entity::GetName,
 		"group",
 		&Entity::GetGroup,
-		"kill",
+		"destroy",
 		&Entity::Destroy,
 		"addChild",
 		[]( Entity& entity, Entity& child ) { entity.AddChild( child.GetEntity() ); },
