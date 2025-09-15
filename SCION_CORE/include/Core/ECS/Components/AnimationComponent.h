@@ -10,8 +10,6 @@ struct AnimationComponent
 	int numFrames{ 1 };
 	/* The speed that the animation will run at. Frames per second. */
 	int frameRate{ 1 };
-	/* The position offset on the sprite sheet to start the animation. */
-	int frameOffset{ 0 };
 	/* The current frame the animation is at. */
 	int currentFrame{ 0 };
 	/* Uses an offset of the ticks to run the frames. This is the start time. */

@@ -64,7 +64,6 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 	serializer.StartNewObject( "animation" )
 		.AddKeyValuePair( "numFrames", animation.numFrames )
 		.AddKeyValuePair( "frameRate", animation.frameRate )
-		.AddKeyValuePair( "frameOffset", animation.frameOffset )
 		.AddKeyValuePair( "bVertical", animation.bVertical )
 		.AddKeyValuePair( "bLooped", animation.bLooped )
 		.EndObject();
@@ -252,7 +251,6 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 {
 	animation.numFrames = jsonValue[ "numFrames" ].GetInt();
 	animation.frameRate = jsonValue[ "frameRate" ].GetInt();
-	animation.frameOffset = jsonValue[ "frameOffset" ].GetInt();
 	animation.bVertical = jsonValue[ "bVertical" ].GetBool();
 	animation.bLooped = jsonValue[ "bLooped" ].GetBool();
 }
@@ -396,7 +394,6 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 	serializer.StartNewTable( "animation" )
 		.AddKeyValuePair( "numFrames", animation.numFrames, false )
 		.AddKeyValuePair( "frameRate", animation.frameRate, false )
-		.AddKeyValuePair( "frameOffset", animation.frameOffset, false )
 		.AddKeyValuePair( "bVertical", animation.bVertical, false )
 		.AddKeyValuePair( "bLooped", animation.bLooped, false, true )
 		.EndTable( false );
@@ -567,7 +564,6 @@ void ComponentSerializer::DeserializeComponent( const sol::table& table, Animati
 {
 	animation.numFrames = table[ "numFrames" ].get_or( 0 );
 	animation.frameRate = table[ "frameRate" ].get_or( 0 );
-	animation.frameOffset = table[ "frameOffset" ].get_or( 0 );
 	animation.bVertical = table[ "bVertical" ].get_or( false );
 	animation.bLooped = table[ "bLooped" ].get_or( false );
 }

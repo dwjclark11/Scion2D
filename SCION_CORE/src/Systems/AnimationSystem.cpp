@@ -46,13 +46,13 @@ void AnimationSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERI
 
 		if ( animation.bVertical )
 		{
-			sprite.uvs.v = animation.currentFrame * sprite.uvs.uv_height;
-			sprite.uvs.u = animation.frameOffset * sprite.uvs.uv_width;
+			sprite.uvs.v = (animation.currentFrame + sprite.start_y) * sprite.uvs.uv_height;
+			sprite.uvs.u = sprite.start_x * sprite.uvs.uv_width;
 		}
 		else
 		{
-			sprite.uvs.u =
-				( animation.currentFrame * sprite.uvs.uv_width ) + ( animation.frameOffset * sprite.uvs.uv_width );
+			sprite.uvs.u = ( ( animation.currentFrame + sprite.start_x ) * sprite.uvs.uv_width );
+			sprite.uvs.v = sprite.start_y * sprite.uvs.uv_height;
 		}
 	}
 }

@@ -8,7 +8,6 @@ std::string SCION_CORE::ECS::AnimationComponent::to_string() const
 	ss << "==== Animation Component ==== \n"
 	   << std::boolalpha << "Num Frames: " << numFrames << "\n"
 	   << "Frame Rate: " << frameRate << "\n"
-	   << "Frame Offset: " << frameOffset << "\n"
 	   << "bVertical: " << bVertical << "\n"
 	   << "bLooped: " << bLooped << "\n";
 
@@ -22,10 +21,9 @@ void SCION_CORE::ECS::AnimationComponent::CreateAnimationLuaBind( sol::state& lu
 		"type_id",
 		&entt::type_hash<AnimationComponent>::value,
 		sol::call_constructor,
-		sol::factories( []( int numFrames, int frameRate, int frameOffset, bool bVertical, bool bLooped ) {
+		sol::factories( []( int numFrames, int frameRate, bool bVertical, bool bLooped ) {
 			return AnimationComponent{ .numFrames = numFrames,
 									   .frameRate = frameRate,
-									   .frameOffset = frameOffset,
 									   .bVertical = bVertical,
 									   .bLooped = bLooped };
 		} ),
@@ -33,8 +31,6 @@ void SCION_CORE::ECS::AnimationComponent::CreateAnimationLuaBind( sol::state& lu
 		&AnimationComponent::numFrames,
 		"frameRate",
 		&AnimationComponent::frameRate,
-		"frameOffset",
-		&AnimationComponent::frameOffset,
 		"currentFrame",
 		&AnimationComponent::currentFrame,
 		"startTime",
