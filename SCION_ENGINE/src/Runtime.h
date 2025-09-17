@@ -55,5 +55,13 @@ class RuntimeApp
 	std::unordered_map<SCION_UTIL::AssetType, std::vector<std::unique_ptr<SCION_UTIL::S2DAsset>>> m_mapS2DAssets;
 	SDL_Event m_Event;
 	bool m_bRunning;
+	/*
+	   Hack to deal with a change in allocated channels.
+	   The channels are automatically allocated in the music player in
+	   the main registry; however, the game config could have more or less
+	   channels to allocate. This needs to be done after the config and registry
+	   have already been initialized.
+	*/
+	int m_DeltaAllocatedChannels;
 };
 } // namespace SCION_ENGINE

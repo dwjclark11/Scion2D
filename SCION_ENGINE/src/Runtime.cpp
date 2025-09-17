@@ -174,6 +174,12 @@ void RuntimeApp::Initialize()
 		throw std::runtime_error( "Failed to initialize the Main Registry." );
 	}
 
+	// Allocate SDL_Mixer channels
+	if ( m_DeltaAllocatedChannels != 0 && !m_pGameConfig->audioConfig.UpdateSoundChannels( m_DeltaAllocatedChannels ) )
+	{
+		throw std::runtime_error( "Failed to allocated new channels" );
+	}
+
 	if ( !mainRegistry.GetAssetManager().CreateDefaultFonts() )
 	{
 		throw std::runtime_error( "Failed to create default fonts." );
@@ -329,6 +335,17 @@ bool RuntimeApp::LoadConfig( sol::state& lua )
 	// TODO: Flags, etc
 
 	m_pGameConfig->bPackageAssets = ( *maybeConfig )[ "bPackageAssets" ].get_or( false );
+
+	sol::optional<sol::table> maybeAudio = ( *maybeConfig )[ "AudioParams" ];
+	if (maybeAudio)
+	{
+		if ((*maybeAudio)["allocatedChannels"].valid())
+		{
+			int allocatedChannels = m_pGameConfig->audioConfig.GetAllocatedChannelCount();
+			int newAllocatedChannels = ( *maybeAudio )[ "allocatedChannels" ].get_or( 0 );
+			m_DeltaAllocatedChannels = newAllocatedChannels - allocatedChannels;
+		}
+	}
 
 	return true;
 }

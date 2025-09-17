@@ -263,6 +263,8 @@ struct GameConfig
 
 	bool bPackageAssets{ false };
 
+	AudioConfigInfo audioConfig{};
+
 	void Reset()
 	{
 		sGameName.clear();
@@ -280,6 +282,8 @@ struct GameConfig
 		positionIterations = 8;
 		velocityIterations = 8;
 		gravity = 9.8f;
+
+		audioConfig = {};
 
 		bPackageAssets = false;
 	}

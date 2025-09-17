@@ -441,6 +441,13 @@ std::string Packager::CreateConfigFile( const std::string& sTempFilepath )
 		.AddKeyValuePair( "velocityIterations", m_pPackageData->pGameConfig->velocityIterations )
 		.AddKeyValuePair( "gravity", m_pPackageData->pGameConfig->gravity )
 		.EndTable() // PhysicsParams
+		.StartNewTable( "AudioParams" )
+		.AddKeyValuePair( "bGlobalEnabled", m_pPackageData->pGameConfig->audioConfig.bGlobalOverrideEnabled )
+		.AddKeyValuePair( "globalVolume", m_pPackageData->pGameConfig->audioConfig.globalVolumeOverride )
+		.AddKeyValuePair( "bMusicOverrideEnabled", m_pPackageData->pGameConfig->audioConfig.bMusicVolumeOverrideEnabled )
+		.AddKeyValuePair( "musicVolume", m_pPackageData->pGameConfig->audioConfig.musicVolumeOverride )
+		.AddKeyValuePair( "allocatedChannels", m_pPackageData->pGameConfig->audioConfig.GetAllocatedChannelCount() )
+		.EndTable() // AudioParams
 		.EndTable() // GameConfig
 		.FinishStream();
 

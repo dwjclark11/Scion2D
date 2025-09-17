@@ -274,6 +274,7 @@ void PackageGameDisplay::Draw()
 			m_pGameConfig->velocityIterations = coreGlobals.GetVelocityIterations();
 			m_pGameConfig->gravity = coreGlobals.GetGravity();
 			m_pGameConfig->sGameName = pProjectInfo->GetProjectName();
+			m_pGameConfig->audioConfig = pProjectInfo->GetAudioConfig();
 
 			// Set window flags
 			uint32_t flags{ 0 };
