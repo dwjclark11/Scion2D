@@ -1,0 +1,28 @@
+All assets used in this game were obtained from Open Game Art from some wonderful creators.
+We Highly appreciate your work.
+
+Attributions:
+SoundFx:
+	* SwissArcadeGameEntertainment
+		- https://opengameart.org/content/sfx-the-ultimate-2017-8-bit-mini-pack
+	* StumpyStrust
+		- https://opengameart.org/content/ui-sounds
+
+Music:
+	* Chance de la Soul
+		- https://opengameart.org/content/8-bit-space-theme-aka-ljn
+	* Sudocolon
+		- https://opengameart.org/content/icy-game-over
+Art:
+	* Kenney.nl
+		- https://opengameart.org/content/space-shooter-art
+		- https://opengameart.org/content/space-shooter-redux
+	* Jetrel
+		- https://opengameart.org/content/explosion-animations
+	* Lige
+		- https://opengameart.org/content/ui-resource-bars
+Fonts:
+	* Kenney.nl
+		- https://opengameart.org/content/space-shooter-redux
+		- https://opengameart.org/content/kenney-fonts
+

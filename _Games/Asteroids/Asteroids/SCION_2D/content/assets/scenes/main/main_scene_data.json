@@ -1,0 +1,29 @@
+{
+    "scene_data": {
+        "name": "main",
+        "tilemapPath": "main\\main_tilemap.json",
+        "objectmapPath": "main\\main_objects.json",
+        "defaultMusic": "space",
+        "canvas": {
+            "width": 640,
+            "height": 480,
+            "tileWidth": 16,
+            "tileHeight": 16
+        },
+        "mapType": "grid",
+        "playerStart": {
+            "enabled": true,
+            "character": "PlayerShip_pfab",
+            "position": {
+                "x": 304.0,
+                "y": 182.0
+            }
+        },
+        "sprite_layers": [
+            {
+                "layerName": "background",
+                "bVisible": true
+            }
+        ]
+    }
+}

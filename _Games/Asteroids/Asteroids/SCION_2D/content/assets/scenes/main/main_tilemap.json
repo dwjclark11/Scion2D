@@ -1,0 +1,268 @@
+{
+    "tilemap": [
+        {
+            "components": {
+                "transform": {
+                    "position": {
+                        "x": 512.0,
+                        "y": 256.0
+                    },
+                    "localPosition": {
+                        "x": 0.0,
+                        "y": 256.0
+                    },
+                    "scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "rotation": 0.0,
+                    "localRotation": 0.0
+                },
+                "sprite": {
+                    "width": 128.0,
+                    "height": 224.0,
+                    "startX": 0,
+                    "startY": 0,
+                    "layer": 0,
+                    "sTexture": "dark_purple_bg",
+                    "uvs": {
+                        "u": 0.0,
+                        "v": 0.0,
+                        "uv_width": 0.5,
+                        "uv_height": 0.875
+                    },
+                    "color": {
+                        "r": 255,
+                        "g": 255,
+                        "b": 255,
+                        "a": 255
+                    },
+                    "bHidden": false,
+                    "bIsoMetric": false,
+                    "isoCellX": 0,
+                    "isoCellY": 0
+                }
+            }
+        },
+        {
+            "components": {
+                "transform": {
+                    "position": {
+                        "x": 512.0,
+                        "y": 0.0
+                    },
+                    "localPosition": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "rotation": 0.0,
+                    "localRotation": 0.0
+                },
+                "sprite": {
+                    "width": 128.0,
+                    "height": 256.0,
+                    "startX": 0,
+                    "startY": 0,
+                    "layer": 0,
+                    "sTexture": "dark_purple_bg",
+                    "uvs": {
+                        "u": 0.0,
+                        "v": 0.0,
+                        "uv_width": 0.5,
+                        "uv_height": 1.0
+                    },
+                    "color": {
+                        "r": 255,
+                        "g": 255,
+                        "b": 255,
+                        "a": 255
+                    },
+                    "bHidden": false,
+                    "bIsoMetric": false,
+                    "isoCellX": 0,
+                    "isoCellY": 0
+                }
+            }
+        },
+        {
+            "components": {
+                "transform": {
+                    "position": {
+                        "x": 256.0,
+                        "y": 256.0
+                    },
+                    "localPosition": {
+                        "x": 0.0,
+                        "y": 256.0
+                    },
+                    "scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "rotation": 0.0,
+                    "localRotation": 0.0
+                },
+                "sprite": {
+                    "width": 256.0,
+                    "height": 224.0,
+                    "startX": 0,
+                    "startY": 0,
+                    "layer": 0,
+                    "sTexture": "dark_purple_bg",
+                    "uvs": {
+                        "u": 0.0,
+                        "v": 0.0,
+                        "uv_width": 1.0,
+                        "uv_height": 0.875
+                    },
+                    "color": {
+                        "r": 255,
+                        "g": 255,
+                        "b": 255,
+                        "a": 255
+                    },
+                    "bHidden": false,
+                    "bIsoMetric": false,
+                    "isoCellX": 0,
+                    "isoCellY": 0
+                }
+            }
+        },
+        {
+            "components": {
+                "transform": {
+                    "position": {
+                        "x": 0.0,
+                        "y": 256.0
+                    },
+                    "localPosition": {
+                        "x": 0.0,
+                        "y": 256.0
+                    },
+                    "scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "rotation": 0.0,
+                    "localRotation": 0.0
+                },
+                "sprite": {
+                    "width": 256.0,
+                    "height": 224.0,
+                    "startX": 0,
+                    "startY": 0,
+                    "layer": 0,
+                    "sTexture": "dark_purple_bg",
+                    "uvs": {
+                        "u": 0.0,
+                        "v": 0.0,
+                        "uv_width": 1.0,
+                        "uv_height": 0.875
+                    },
+                    "color": {
+                        "r": 255,
+                        "g": 255,
+                        "b": 255,
+                        "a": 255
+                    },
+                    "bHidden": false,
+                    "bIsoMetric": false,
+                    "isoCellX": 0,
+                    "isoCellY": 0
+                }
+            }
+        },
+        {
+            "components": {
+                "transform": {
+                    "position": {
+                        "x": 256.0,
+                        "y": 0.0
+                    },
+                    "localPosition": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "rotation": 0.0,
+                    "localRotation": 0.0
+                },
+                "sprite": {
+                    "width": 256.0,
+                    "height": 256.0,
+                    "startX": 0,
+                    "startY": 0,
+                    "layer": 0,
+                    "sTexture": "dark_purple_bg",
+                    "uvs": {
+                        "u": 0.0,
+                        "v": 0.0,
+                        "uv_width": 1.0,
+                        "uv_height": 1.0
+                    },
+                    "color": {
+                        "r": 255,
+                        "g": 255,
+                        "b": 255,
+                        "a": 255
+                    },
+                    "bHidden": false,
+                    "bIsoMetric": false,
+                    "isoCellX": 0,
+                    "isoCellY": 0
+                }
+            }
+        },
+        {
+            "components": {
+                "transform": {
+                    "position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "localPosition": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "rotation": 0.0,
+                    "localRotation": 0.0
+                },
+                "sprite": {
+                    "width": 256.0,
+                    "height": 256.0,
+                    "startX": 0,
+                    "startY": 0,
+                    "layer": 0,
+                    "sTexture": "dark_purple_bg",
+                    "uvs": {
+                        "u": 0.0,
+                        "v": 0.0,
+                        "uv_width": 1.0,
+                        "uv_height": 1.0
+                    },
+                    "color": {
+                        "r": 255,
+                        "g": 255,
+                        "b": 255,
+                        "a": 255
+                    },
+                    "bHidden": false,
+                    "bIsoMetric": false,
+                    "isoCellX": 0,
+                    "isoCellY": 0
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,572 @@
+{
+    "warnings": {
+        "warning": "THIS FILE IS ENGINE GENERATED.",
+        "warning": "DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING."
+    },
+    "project_data": {
+        "project_name": "Scion Asteroids",
+        "main_lua_script": "scripts\\main.lua",
+        "file_icon": "assets\\misc\\scion_asteroids_icon.ico",
+        "game_type": "Top Down",
+        "copyright": "Copyright 2025 @JADE-ite Games Studios. All rights reserved ",
+        "version": "1.0.0.0",
+        "description": "Scion Asteroids is an example game on how to use different systems in Scion2D. ",
+        "default_scene": "title",
+        "assets": {
+            "textures": [
+                {
+                    "name": "ScionAsteroidsLogo",
+                    "path": "assets\\textures\\ScionAsteroidsLogo.png",
+                    "bPixelArt": false,
+                    "bTilemap": false
+                },
+                {
+                    "name": "asteroid_big",
+                    "path": "assets\\textures\\asteroid_1.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "asteroid_small",
+                    "path": "assets\\textures\\asteroid_2.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "dark_purple_bg",
+                    "path": "assets\\textures\\dark_purple_bg.png",
+                    "bPixelArt": true,
+                    "bTilemap": true
+                },
+                {
+                    "name": "default_pickup",
+                    "path": "assets\\textures\\pickups\\powerupBlue.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "game_over",
+                    "path": "assets\\textures\\game_over.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "lives",
+                    "path": "assets\\textures\\lives_ship.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "powerup_bolt_yellow",
+                    "path": "assets\\textures\\pickups\\powerupYellow_bolt.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "powerup_shield_green",
+                    "path": "assets\\textures\\pickups\\powerupGreen_shield.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "powerup_star_blue",
+                    "path": "assets\\textures\\pickups\\powerupBlue_star.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "proj_1",
+                    "path": "assets\\textures\\projectile_1.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "screen_crack",
+                    "path": "assets\\textures\\screen_crack.png",
+                    "bPixelArt": false,
+                    "bTilemap": false
+                },
+                {
+                    "name": "shield",
+                    "path": "assets\\textures\\shield.png",
+                    "bPixelArt": false,
+                    "bTilemap": false
+                },
+                {
+                    "name": "ship",
+                    "path": "assets\\textures\\ship.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "ship_explosion",
+                    "path": "assets\\textures\\ship_explosion.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "status_bar_fill",
+                    "path": "assets\\textures\\status_bar_fill.png",
+                    "bPixelArt": false,
+                    "bTilemap": false
+                },
+                {
+                    "name": "status_bars",
+                    "path": "assets\\textures\\status_bars.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                }
+            ],
+            "soundfx": [
+                {
+                    "name": "big_ast_explosion",
+                    "path": "assets\\soundfx\\big_ast_explosion.wav"
+                },
+                {
+                    "name": "collect_1",
+                    "path": "assets\\soundfx\\collect_1.mp3"
+                },
+                {
+                    "name": "complete",
+                    "path": "assets\\soundfx\\complete.ogg"
+                },
+                {
+                    "name": "crack_screen",
+                    "path": "assets\\soundfx\\crack_screen.ogg"
+                },
+                {
+                    "name": "final_death",
+                    "path": "assets\\soundfx\\final_death.ogg"
+                },
+                {
+                    "name": "health_increase",
+                    "path": "assets\\soundfx\\health_increase.ogg"
+                },
+                {
+                    "name": "health_pickup",
+                    "path": "assets\\soundfx\\health_pickup.ogg"
+                },
+                {
+                    "name": "laser",
+                    "path": "assets\\soundfx\\laser.wav"
+                },
+                {
+                    "name": "off",
+                    "path": "assets\\soundfx\\off.ogg"
+                },
+                {
+                    "name": "on",
+                    "path": "assets\\soundfx\\on.ogg"
+                },
+                {
+                    "name": "shield_enabled",
+                    "path": "assets\\soundfx\\shield_enabled.ogg"
+                },
+                {
+                    "name": "shield_hit_1",
+                    "path": "assets\\soundfx\\shield_hit_1.ogg"
+                },
+                {
+                    "name": "shield_increase",
+                    "path": "assets\\soundfx\\shield_increase.ogg"
+                },
+                {
+                    "name": "ship_damage_1",
+                    "path": "assets\\soundfx\\ship_damage_1.ogg"
+                },
+                {
+                    "name": "ship_explosion",
+                    "path": "assets\\soundfx\\explosion.wav"
+                },
+                {
+                    "name": "ship_hit_1",
+                    "path": "assets\\soundfx\\ship_hit_1.ogg"
+                },
+                {
+                    "name": "small_explosion_2",
+                    "path": "assets\\soundfx\\small_explosion_2.ogg"
+                },
+                {
+                    "name": "weapon_pickup",
+                    "path": "assets\\soundfx\\weapon_pickup.ogg"
+                },
+                {
+                    "name": "weapon_powerup",
+                    "path": "assets\\soundfx\\weapon_powerup.ogg"
+                }
+            ],
+            "music": [
+                {
+                    "name": "game_over",
+                    "path": "assets\\music\\game_over.mp3"
+                },
+                {
+                    "name": "space",
+                    "path": "assets\\music\\space.wav"
+                },
+                {
+                    "name": "title",
+                    "path": "assets\\music\\title.wav"
+                }
+            ],
+            "fonts": [
+                {
+                    "name": "Future-32",
+                    "path": "assets\\fonts\\Kenney Future.ttf",
+                    "fontSize": 32.0
+                }
+            ],
+            "scenes": [
+                {
+                    "name": "main",
+                    "sceneData": "assets/scenes\\main\\main_scene_data.json"
+                },
+                {
+                    "name": "title",
+                    "sceneData": "assets/scenes\\title\\title_scene_data.json"
+                }
+            ],
+            "prefabs": [
+                {
+                    "name": "PlayerShip_pfab",
+                    "path": "assets/prefabs\\PlayerShip_pfab.json"
+                }
+            ]
+        },
+        "physics": {
+            "enabled": false,
+            "gravity": 9.8,
+            "velocityIterations": 10,
+            "positionIterations": 8
+        },
+        "audio_config": {
+            "bGlobalEnabled": false,
+            "globalVolume": 100,
+            "bMusicOverrideEnabled": false,
+            "musicVolume": 100,
+            "allocatedChannels": 64,
+            "sound_channel_data": [
+                {
+                    "channelID": 0,
+                    "bEnabled": true,
+                    "volume": 67
+                },
+                {
+                    "channelID": 1,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 2,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 3,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 4,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 5,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 6,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 7,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 8,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 9,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 10,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 11,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 12,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 13,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 14,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 15,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 16,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 17,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 18,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 19,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 20,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 21,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 22,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 23,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 24,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 25,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 26,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 27,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 28,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 29,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 30,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 31,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 32,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 33,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 34,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 35,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 36,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 37,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 38,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 39,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 40,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 41,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 42,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 43,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 44,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 45,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 46,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 47,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 48,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 49,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 50,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 51,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 52,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 53,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 54,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 55,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 56,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 57,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 58,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 59,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 60,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 61,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 62,
+                    "bEnabled": false,
+                    "volume": 100
+                },
+                {
+                    "channelID": 63,
+                    "bEnabled": false,
+                    "volume": 100
+                }
+            ]
+        }
+    }
+}
