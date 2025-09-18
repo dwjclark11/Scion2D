@@ -21,7 +21,8 @@
 #include <Rendering/Essentials/Font.h>
 #include <Sounds/Essentials/Music.h>
 #include <Sounds/Essentials/SoundFX.h>
-
+#include <Sounds/MusicPlayer/MusicPlayer.h>
+#include <Sounds/SoundPlayer/SoundFxPlayer.h>
 #include <ScionFilesystem/Process/FileProcessor.h>
 #include <ScionFilesystem/Utilities/FilesystemUtilities.h>
 
@@ -176,6 +177,8 @@ void AssetDisplay::CheckRename( const std::string& sCheckName ) const
 
 void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 {
+	DrawSoundContext( sAssetName );
+	
 	ImGui::SeparatorText( "Edit" );
 	if ( ImGui::Selectable( ICON_FA_PEN " Rename" ) )
 	{
@@ -250,6 +253,74 @@ void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 				{
 					SCION_ERROR( "Failed to open file location [{}]", sAssetPath );
 				}
+			}
+		}
+	}
+}
+
+void AssetDisplay::DrawSoundContext( const std::string& sAssetName )
+{
+	if ( m_eSelectedType == SCION_UTIL::AssetType::MUSIC )
+	{
+		ImGui::SeparatorText( "Music Controls" );
+		auto& musicPlayer = MAIN_REGISTRY().GetMusicPlayer();
+
+		if ( !musicPlayer.IsPlaying() )
+		{
+			if ( ImGui::Selectable( ICON_FA_PLAY " Play" ) )
+			{
+				auto& assetManager = MAIN_REGISTRY().GetAssetManager();
+				if ( auto pMusic = assetManager.GetMusic( sAssetName ) )
+				{
+					musicPlayer.Play( *pMusic );
+				}
+			}
+
+			ImGui::BeginDisabled();
+			ImGui::Selectable( ICON_FA_STOP " Stop" );
+			ImGui::EndDisabled();
+		}
+		else
+		{
+			ImGui::BeginDisabled();
+			ImGui::Selectable( ICON_FA_PLAY " Play" );
+			ImGui::EndDisabled();
+
+			if ( ImGui::Selectable( ICON_FA_STOP " Stop" ) )
+			{
+				musicPlayer.Stop();
+			}
+		}
+	}
+	else if ( m_eSelectedType == SCION_UTIL::AssetType::SOUNDFX )
+	{
+		ImGui::SeparatorText( "Sound Controls" );
+		auto& soundPlayer = MAIN_REGISTRY().GetSoundPlayer();
+
+		if ( !soundPlayer.IsPlaying( 0 ) )
+		{
+			if ( ImGui::Selectable( ICON_FA_PLAY " Play" ) )
+			{
+				auto& assetManager = MAIN_REGISTRY().GetAssetManager();
+				if ( auto pSoundfx = assetManager.GetSoundFx( sAssetName ) )
+				{
+					soundPlayer.Play( *pSoundfx, 0, 0 );
+				}
+			}
+
+			ImGui::BeginDisabled();
+			ImGui::Selectable( ICON_FA_STOP " Stop" );
+			ImGui::EndDisabled();
+		}
+		else
+		{
+			ImGui::BeginDisabled();
+			ImGui::Selectable( ICON_FA_PLAY " Play" );
+			ImGui::EndDisabled();
+
+			if ( ImGui::Selectable( ICON_FA_STOP " Stop" ) )
+			{
+				soundPlayer.Stop( 0 );
 			}
 		}
 	}

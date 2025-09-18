@@ -27,6 +27,7 @@ class AssetDisplay : public IDisplay
 	bool DoRenameAsset( const std::string& sOldName, const std::string& sNewName ) const;
 	void CheckRename( const std::string& sCheckName ) const;
 	void OpenAssetContext( const std::string& sAssetName );
+	void DrawSoundContext( const std::string& sAssetName );
 
   private:
 	const std::vector<std::string> m_SelectableTypes{ "TEXTURES", "FONTS", "MUSIC", "SOUNDFX", "SCENES", "PREFABS" };
