@@ -46,31 +46,32 @@ void SCION_CORE::ECS::Registry::CreateLuaRegistryBind( sol::state& lua, Registry
 				}
 			} ),
 		"exclude",
-		sol::overload(
-			[ & ]( entt::runtime_view& view, const sol::variadic_args& va ) {
-				for ( const auto& type : va )
-				{
-					if ( !type.as<sol::table>().valid() )
-						continue;
+		[ &registry ]( entt::runtime_view& view, const sol::variadic_args& va ) {
+			Registry* pRegistry = &registry;
+			auto it = va.begin();
 
-					const auto excluded_view =
-						InvokeMetaFunction( GetIdType( type ), "exclude_component_from_view"_hs, &registry, view );
+			// Check to see if the first argument is a registry
+			if ( it != va.end() && it->is<Registry>() )
+			{
+				pRegistry = &it->as<Registry&>();
+				++it; // Skip past the registry
+			}
 
-					view = excluded_view ? excluded_view.cast<entt::runtime_view>() : view;
-				}
-			},
-			[ & ]( entt::runtime_view& view, Registry& reg, const sol::variadic_args& va ) {
-				for ( const auto& type : va )
-				{
-					if ( !type.as<sol::table>().valid() )
-						continue;
+			for ( ; it != va.end(); ++it)
+			{
+				sol::object obj = *it;
+				if ( !obj.is<sol::table>())
+					continue;
 
-					const auto excluded_view =
-						InvokeMetaFunction( GetIdType( type ), "exclude_component_from_view"_hs, &reg, view );
+				sol::table type = obj.as<sol::table>();
+				if ( !type.valid() )
+					continue;
 
-					view = excluded_view ? excluded_view.cast<entt::runtime_view>() : view;
-				}
-			} ) );
+				InvokeMetaFunction( GetIdType( type ), "exclude_component_from_view"_hs, &registry, &view );
+			}
+
+			return view;
+		} );
 
 	lua.new_usertype<Registry>(
 		"Registry",
