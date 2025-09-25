@@ -22,13 +22,13 @@ void LuaCoreBinder::CreateLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& r
 	lua.new_usertype<Mouse>(
 		"Mouse",
 		sol::no_constructor,
-		"just_pressed",
+		"justPressed",
 		[ & ]( int btn ) { return mouse.IsBtnJustPressed( btn ); },
-		"just_released",
+		"justReleased",
 		[ & ]( int btn ) { return mouse.IsBtnJustReleased( btn ); },
 		"pressed",
 		[ & ]( int btn ) { return mouse.IsBtnPressed( btn ); },
-		"screen_position",
+		"screenPosition",
 		[ & ]() {
 			const auto& mouseInfo = registry.GetContext<std::shared_ptr<MouseGuiInfo>>();
 			// If the mouse info is invalid, return the mouse screen position from SDL.
@@ -41,7 +41,7 @@ void LuaCoreBinder::CreateLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& r
 
 			return mouseInfo->position;
 		},
-		"world_position",
+		"worldPosition",
 		[ & ]() {
 			const auto& mouseInfo = registry.GetContext<std::shared_ptr<MouseGuiInfo>>();
 			// If the mouse info is invalid, return the mouse screen position from SDL.
@@ -60,9 +60,9 @@ void LuaCoreBinder::CreateLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& r
 
 			return camera->ScreenCoordsToWorld( glm::vec2{ x, y } );
 		},
-		"wheel_x",
+		"wheelX",
 		[ & ]() { return mouse.GetMouseWheelX(); },
-		"wheel_y",
+		"wheelY",
 		[ & ]() { return mouse.GetMouseWheelY(); } );
 
 	/*

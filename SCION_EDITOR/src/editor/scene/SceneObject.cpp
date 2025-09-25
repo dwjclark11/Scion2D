@@ -314,32 +314,27 @@ bool SceneObject::DuplicateGameObject( entt::entity entity )
 		return false;
 	}
 
-	// Create the new entity in the registry
-	auto& registry = m_Registry.GetRegistry();
-	auto newEntity = registry.create();
+	auto newestEntity = RelationshipUtils::DuplicateRecursive(m_Registry.GetRegistry(), entity);
 
-	// Copy the components of the entity to the new entity
-	for ( auto&& [ id, storage ] : registry.storage() )
-	{
-		if ( !storage.contains( entity ) )
-			continue;
+	auto checkTagName = [ & ]( entt::entity entity, Registry* reg ) {
+		Entity ent{ reg, entity };
+		const std::string& sTag{ ent.GetName() };
+		if ( m_mapTagToEntity.contains( sTag ) )
+		{
+			size_t tagNum{ 1 };
+			while ( m_mapTagToEntity.contains( fmt::format( "{}_{}", sTag, tagNum ) ) )
+			{
+				++tagNum;
+			}
 
-		SCION_CORE::Utils::InvokeMetaFunction(
-			id, "copy_component"_hs, Entity{ &m_Registry, entity }, Entity{ &m_Registry, newEntity } );
-	}
+			ent.ChangeName( fmt::format( "{}_{}", sTag, tagNum ) );
+		}
 
-	// Now we need to set the tag for the entity
-	size_t tagNum{ 1 };
+		m_mapTagToEntity.emplace( ent.GetName(), entity );
+	};
 
-	while ( CheckTagName( fmt::format( "{}_{}", objItr->first, tagNum ) ) )
-	{
-		++tagNum;
-	}
-
-	Entity newEnt{ &m_Registry, newEntity };
-	newEnt.ChangeName( fmt::format( "{}_{}", objItr->first, tagNum ) );
-
-	m_mapTagToEntity.emplace( newEnt.GetName(), newEntity );
+	RelationshipUtils::ApplyFunctionToHierarchy(
+		m_Registry.GetRegistry(), newestEntity, checkTagName, &m_Registry );
 
 	return true;
 }

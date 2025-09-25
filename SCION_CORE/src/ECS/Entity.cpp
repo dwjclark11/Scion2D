@@ -93,6 +93,18 @@ Entity::~Entity() {
 bool Entity::AddChild( entt::entity child, bool bSetLocal )
 {
 	auto& registry = m_Registry->GetRegistry();
+	if (auto* pChildUneditable = registry.try_get<UneditableComponent>(child))
+	{
+		SCION_WARN( "Failed to add child. Child is an uneditable entity." );
+		return false;
+	}
+
+	if ( auto* pParentUneditable = registry.try_get<UneditableComponent>( m_Entity ) )
+	{
+		SCION_WARN( "Failed to add child. Parent is an uneditable entity." );
+		return false;
+	}
+
 	auto& relations = registry.get<Relationship>( m_Entity );
 
 	Entity childEntity{ m_Registry, child };

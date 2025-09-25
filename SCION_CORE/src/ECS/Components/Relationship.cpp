@@ -25,6 +25,7 @@ bool RelationshipUtils::IsAParentOf( Entity& entityA, Entity& entityB )
 
 	return false;
 }
+
 void RelationshipUtils::SetSiblingLinks( Entity& firstChild, Relationship& childRelationship )
 {
 	// we want to get a copy of the parentChild here so we can move to the next one
@@ -102,6 +103,65 @@ void RelationshipUtils::RemoveAndDelete( Entity& entityToRemove, std::vector<std
 	//SCION_LOG( "JUST Destroyed: {}", static_cast<std::uint32_t>( entityToRemove.GetEntity() ) );
 	entitiesRemoved.emplace_back( entityToRemove.GetName() );
 	entityToRemove.Destroy();
+}
+
+entt::entity RelationshipUtils::DuplicateRecursive( entt::registry& reg, entt::entity source, entt::entity newParent )
+{
+	// Create a new entity
+	entt::entity copy = reg.create();
+
+	// Copy all components except relationship
+	for (auto&& [id, storage] : reg.storage())
+	{
+		if ( id == entt::type_hash<Relationship>::value() )
+			continue;
+
+		if (storage.contains(source))
+		{
+			storage.push( copy, storage.value( source ) );
+		}
+	}
+
+	// Add a new relationship
+	auto& copyRel = reg.emplace<Relationship>( copy );
+	copyRel.self = copy;
+	copyRel.parent = newParent;
+
+	// Recursively duplicate children
+	const auto& srcRel = reg.get<Relationship>( source );
+	for (entt::entity child = srcRel.firstChild; child != entt::null;
+		child = reg.get<Relationship>(child).nextSibling)
+	{
+		entt::entity childCopy = DuplicateRecursive( reg, child, copy );
+
+		// Append to copy's child list
+		auto& copyRelRef = reg.get<Relationship>( copy );
+		auto& childRel = reg.get<Relationship>( childCopy );
+
+		if (copyRelRef.firstChild == entt::null)
+		{
+			copyRelRef.firstChild = childCopy;
+		}
+		else
+		{
+			entt::entity last = copyRelRef.firstChild;
+			auto* pLastRel = reg.try_get<Relationship>( last );
+			while ( pLastRel && pLastRel->nextSibling != entt::null )
+			{
+				last = pLastRel->nextSibling;
+				pLastRel = reg.try_get<Relationship>( last );
+			}
+
+			if ( pLastRel )
+			{
+				pLastRel->nextSibling = childCopy;
+			}
+
+			childRel.prevSibling = last;
+		}
+	}
+
+	return copy;
 }
 
 void Relationship::CreateRelationshipLuaBind( sol::state& lua )
