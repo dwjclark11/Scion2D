@@ -53,7 +53,9 @@ void StateMachine::ChangeState( const std::string& stateName, bool bRemoveState,
 		}
 
 		if ( bRemoveState )
-			oldState->bKillState;
+		{
+			oldState->bKillState = true;
+		}
 
 		m_sCurrentState = stateName;
 	}
