@@ -36,7 +36,9 @@ class Registry
 	 */
 	inline entt::entity CreateEntity() { return m_pRegistry->create(); }
 
-	inline void ClearRegistry() { m_pRegistry->clear(); }
+	void ClearRegistry();
+	void AddToPendingDestruction( entt::entity entity );
+	void ClearPendingEntities();
 
 	/*
 	 * @brief The context is a general purpose map that can hold any type of variable.
@@ -78,6 +80,7 @@ class Registry
   private:
 	std::shared_ptr<entt::registry> m_pRegistry;
 	ERegistryType m_eType{ ERegistryType::ScionRegistry };
+	std::vector<entt::entity> m_EntitiesPendingDestruction;
 };
 
 template <typename TComponent>

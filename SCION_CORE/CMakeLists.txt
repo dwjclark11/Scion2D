@@ -132,7 +132,7 @@ set(COMMON_CORE_SRC
 	"src/Scene/SceneManager.cpp"	
 )
 
-add_library( SCION_CORE ${COMMON_CORE_SRC} )
+add_library( SCION_CORE ${COMMON_CORE_SRC}  "include/Core/ECS/Components/PersistentComponent.h")
 
 target_include_directories(
     SCION_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -153,7 +153,7 @@ target_compile_options(
 
 
 ## SCION_CORE_EDITOR - Editor Compile Flag is set
-add_library( SCION_CORE_EDITOR ${COMMON_CORE_SRC} )
+add_library( SCION_CORE_EDITOR ${COMMON_CORE_SRC}  "include/Core/ECS/Components/PersistentComponent.h")
 
 target_compile_definitions(SCION_CORE_EDITOR PUBLIC IN_SCION_EDITOR)
 

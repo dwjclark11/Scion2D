@@ -39,9 +39,8 @@ class Entity
 	 * @brief Destroys the underlying entt::entity. This will remove the entity from the
 	 * the registry. USE WITH CAUTION!! Please ensure that there are no other references to
 	 * this Entity, trying to access an entity that does not exist can cause problems.
-	 * @return Returns the std::uint32_t id of the destroyed entity.
 	 */
-	std::uint32_t Destroy();
+	void Destroy();
 	
 	/*
 	 * @brief Gets the actual entity.

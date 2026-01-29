@@ -12,6 +12,7 @@
 #include "TileComponent.h"
 #include "Relationship.h"
 #include "UIComponent.h"
+#include "PersistentComponent.h"
 
 namespace SCION_CORE::ECS
 {

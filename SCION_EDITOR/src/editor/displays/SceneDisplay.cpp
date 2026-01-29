@@ -474,5 +474,7 @@ void SceneDisplay::Update()
 
 	auto& animationSystem = mainRegistry.GetAnimationSystem();
 	animationSystem.Update( runtimeRegistry, *camera );
+
+	runtimeRegistry.ClearPendingEntities();
 }
 } // namespace SCION_EDITOR

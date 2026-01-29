@@ -264,15 +264,16 @@ void Entity::ChangeName( const std::string& sName )
 	m_sName = sName;
 }
 
-std::uint32_t Entity::Destroy()
+void Entity::Destroy()
 {
 	if ( !m_Registry->IsValid( m_Entity ) )
 	{
 		SCION_ERROR( "Failed t destroy entity. Entity ID [{}] is not valid.", static_cast<std::uint32_t>( m_Entity ) );
-		return static_cast<std::uint32_t>(entt::null);
+		return;
 	}
 
-	return m_Registry->GetRegistry().destroy( m_Entity );
+	// TODO: Handle Deleting children etc
+	m_Registry->AddToPendingDestruction( m_Entity );
 }
 
 void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )

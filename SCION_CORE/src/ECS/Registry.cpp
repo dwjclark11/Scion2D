@@ -2,12 +2,43 @@
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/MetaUtilities.h"
 #include "Core/ECS/ECSUtils.h"
+#include "Core/ECS/Components/PersistentComponent.h"
 
 using namespace SCION_CORE::Utils;
 
 SCION_CORE::ECS::Registry::Registry()
 	: m_pRegistry{ std::make_shared<entt::registry>() }
 {
+}
+
+void SCION_CORE::ECS::Registry::ClearRegistry()
+{
+	auto view = m_pRegistry->view<entt::entity>( entt::exclude<SCION_CORE::ECS::PersistentComponent> );
+	for ( auto entity : view )
+	{
+		m_pRegistry->destroy( entity );
+	}
+}
+
+void SCION_CORE::ECS::Registry::AddToPendingDestruction( entt::entity entity )
+{
+	m_EntitiesPendingDestruction.push_back( entity );
+}
+
+void SCION_CORE::ECS::Registry::ClearPendingEntities()
+{
+	if ( m_EntitiesPendingDestruction.empty() )
+		return;
+
+	for ( auto entity : m_EntitiesPendingDestruction )
+	{
+		if ( m_pRegistry->valid( entity ) )
+		{
+			m_pRegistry->destroy( entity );
+		}
+	}
+
+	m_EntitiesPendingDestruction.clear();
 }
 
 void SCION_CORE::ECS::Registry::CreateLuaRegistryBind( sol::state& lua, Registry& registry )

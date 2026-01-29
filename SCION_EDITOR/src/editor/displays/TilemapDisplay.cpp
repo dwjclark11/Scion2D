@@ -647,6 +647,9 @@ void TilemapDisplay::Update()
 		else
 			COMMAND_MANAGER().Undo();
 	}
+
+	// We need to clear pending entities if they have been removed/deleted.
+	pCurrentScene->GetRegistry().ClearPendingEntities();
 }
 
 } // namespace SCION_EDITOR
