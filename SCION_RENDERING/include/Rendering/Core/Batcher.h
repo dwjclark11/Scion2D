@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 constexpr size_t NUM_SPRITE_VERTICES = 4;
 constexpr size_t NUM_SPRITE_INDICES = 6;
@@ -183,4 +183,4 @@ inline void Batcher<TBatch, TGlyph>::Flush( std::vector<TVertex>& vertices )
 	m_Offset = 0;
 }
 
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

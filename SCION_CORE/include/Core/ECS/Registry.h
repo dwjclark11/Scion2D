@@ -2,7 +2,7 @@
 #include <entt/entt.hpp>
 #include <sol/sol.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 
 enum ERegistryType
@@ -89,6 +89,6 @@ entt::runtime_view& add_component_to_view( Registry* registry, entt::runtime_vie
 template <typename TComponent>
 auto exclude_component_from_view( Registry* registry, entt::runtime_view* view );
 
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS
 
 #include "Registry.inl"

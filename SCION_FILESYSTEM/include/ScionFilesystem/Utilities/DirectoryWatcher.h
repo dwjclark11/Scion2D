@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <memory>
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 class DirectoryWatcher
 {
@@ -17,4 +17,4 @@ class DirectoryWatcher
 	struct Impl;
 	std::unique_ptr<Impl> m_pImpl;
 };
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem

@@ -1,17 +1,17 @@
 #pragma once
 #include <SDL.h>
 
-namespace SCION_WINDOWING
+namespace Scion::Windowing
 {
 class Window;
 }
 
-namespace SCION_EDITOR::Events
+namespace Scion::Editor::Events
 {
 struct CloseEditorEvent;
 }
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 class Application
 {
@@ -38,7 +38,7 @@ class Application
 
 	void RegisterEditorMetaFunctions();
 
-	void OnCloseEditor( SCION_EDITOR::Events::CloseEditorEvent& close );
+	void OnCloseEditor( Scion::Editor::Events::CloseEditorEvent& close );
 
 	Application();
 	~Application() = default;
@@ -46,10 +46,10 @@ class Application
 	Application& operator=( const Application& ) = delete;
 
   private:
-	std::unique_ptr<SCION_WINDOWING::Window> m_pWindow;
+	std::unique_ptr<Scion::Windowing::Window> m_pWindow;
 	std::unique_ptr<class Hub> m_pHub;
 
 	SDL_Event m_Event;
 	bool m_bIsRunning;
 };
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

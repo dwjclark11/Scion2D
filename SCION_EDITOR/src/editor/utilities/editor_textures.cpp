@@ -1,6 +1,6 @@
-#include "editor_textures.h"
+#include "editor/utilities/editor_textures.h"
 
-namespace SCION_EDITOR::EditorTextures
+namespace Scion::Editor::EditorTextures
 {
 
 namespace
@@ -1114,4 +1114,4 @@ const size_t g_DefaultPlayerSize = ZZ_S2D_default_player_size;
 unsigned char* g_PanningCursor = ZZ_S2D_PanningCursor;
 const size_t g_PanningCursorSize = ZZ_S2D_PanningCursor_size;
 
-} // namespace SCION_EDITOR::EditorTextures
+} // namespace Scion::Editor::EditorTextures

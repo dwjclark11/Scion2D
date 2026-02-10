@@ -3,7 +3,7 @@
 #include <sol/sol.hpp>
 #include "Logger/Logger.h"
 
-namespace SCION_CORE::Events
+namespace Scion::Core::Events
 {
 /*
  * EventDispatcher
@@ -139,6 +139,6 @@ void update_event( EventDispatcher& dispatcher );
 template <typename TEvent>
 bool has_handlers( EventDispatcher& dispatcher );
 
-} // namespace SCION_CORE::Events
+} // namespace Scion::Core::Events
 
 #include "EventDispatcher.inl"

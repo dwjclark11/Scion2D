@@ -1,7 +1,7 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 struct State;
 
@@ -28,4 +28,4 @@ class StateMachine
 	std::string m_sCurrentState;
 	std::optional<sol::table> m_StateTable;
 };
-} // namespace SCION_CORE
+} // namespace Scion::Core

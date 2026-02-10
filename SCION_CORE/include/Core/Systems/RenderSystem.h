@@ -1,18 +1,18 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 class Registry;
 }
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class Camera2D;
 class SpriteBatchRenderer;
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 class RenderSystem
 {
@@ -20,10 +20,10 @@ class RenderSystem
 	RenderSystem();
 	~RenderSystem();
 
-	void Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera );
-	static void CreateRenderSystemLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& registry );
+	void Update( Scion::Core::ECS::Registry& registry, Scion::Rendering::Camera2D& camera );
+	static void CreateRenderSystemLuaBind( sol::state& lua, Scion::Core::ECS::Registry& registry );
 
   private:
-	std::unique_ptr<SCION_RENDERING::SpriteBatchRenderer> m_pBatchRenderer;
+	std::unique_ptr<Scion::Rendering::SpriteBatchRenderer> m_pBatchRenderer;
 };
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

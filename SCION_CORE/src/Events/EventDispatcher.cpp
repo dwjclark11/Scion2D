@@ -1,9 +1,9 @@
 #include "Core/Events/EventDispatcher.h"
 #include "Core/ECS/MetaUtilities.h"
 
-using namespace SCION_CORE::Utils;
+using namespace Scion::Core::Utils;
 
-namespace SCION_CORE::Events
+namespace Scion::Core::Events
 {
 enum class EDispatcherType
 {
@@ -85,4 +85,4 @@ void EventDispatcher::CreateEventDispatcherLuaBind( sol::state& lua, EventDispat
 		"clearQueue",
 		[]( EventDispatcher& eventDispatcher ) { eventDispatcher.ClearQueue(); } );
 }
-} // namespace SCION_CORE::Events
+} // namespace Scion::Core::Events

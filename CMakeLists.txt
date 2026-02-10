@@ -48,15 +48,9 @@ add_compile_definitions(SOL_EXCEPTIONS_ALWAYS_UNSAFE=1)
 
 find_package(glad CONFIG REQUIRED)
 find_package(soil2 CONFIG REQUIRED)
-# Removed ImGui from Configs for now.
-# Current VCPKG docking version is not up to date with
-# Needed SDL2 changes for multi-viewports.
-# Added entirely in the thirdparty/imgui folder.
-# find_package(imgui CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_mixer CONFIG REQUIRED)
-find_package(box2d CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(Lua REQUIRED)
@@ -88,8 +82,11 @@ set_target_properties(
 	SCION_CORE
     PROPERTIES FOLDER "Engine")
 
-include(cmake/AddResources.cmake)
-add_subdirectory(SCION_EDITOR)
+
 add_subdirectory(SCION_ENGINE)
+
+include(cmake/AddResources.cmake)
+include(cmake/imgui.cmake)
+add_subdirectory(SCION_EDITOR)
 add_subdirectory(crash_reporter)
 

@@ -1,4 +1,4 @@
-#include "ProjectLoader.h"
+#include "editor/loaders/ProjectLoader.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
@@ -23,34 +23,34 @@
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
 
-using namespace SCION_FILESYSTEM;
+using namespace Scion::Filesystem;
 
 // clang-format off
-static const std::map<SCION_CORE::EProjectFolderType, std::string> mapProjectDirs = {
-		{ SCION_CORE::EProjectFolderType::Content,		"content" },
-		{ SCION_CORE::EProjectFolderType::Scripts,		"content/scripts" },
+static const std::map<Scion::Core::EProjectFolderType, std::string> mapProjectDirs = {
+		{ Scion::Core::EProjectFolderType::Content,		"content" },
+		{ Scion::Core::EProjectFolderType::Scripts,		"content/scripts" },
 		// Asset Folders
-		{ SCION_CORE::EProjectFolderType::Assets,		"content/assets" },
-		{ SCION_CORE::EProjectFolderType::SoundFx,		"content/assets/soundfx" },
-		{ SCION_CORE::EProjectFolderType::Music,		"content/assets/music" },
-		{ SCION_CORE::EProjectFolderType::Textures,		"content/assets/textures" },
-		{ SCION_CORE::EProjectFolderType::Shaders,		"content/assets/shaders" },
-		{ SCION_CORE::EProjectFolderType::Fonts,		"content/assets/fonts" },
-		{ SCION_CORE::EProjectFolderType::Prefabs,		"content/assets/prefabs" },
-		{ SCION_CORE::EProjectFolderType::Scenes,		"content/assets/scenes" },
+		{ Scion::Core::EProjectFolderType::Assets,		"content/assets" },
+		{ Scion::Core::EProjectFolderType::SoundFx,		"content/assets/soundfx" },
+		{ Scion::Core::EProjectFolderType::Music,		"content/assets/music" },
+		{ Scion::Core::EProjectFolderType::Textures,		"content/assets/textures" },
+		{ Scion::Core::EProjectFolderType::Shaders,		"content/assets/shaders" },
+		{ Scion::Core::EProjectFolderType::Fonts,		"content/assets/fonts" },
+		{ Scion::Core::EProjectFolderType::Prefabs,		"content/assets/prefabs" },
+		{ Scion::Core::EProjectFolderType::Scenes,		"content/assets/scenes" },
 		// Config Folders
-		{ SCION_CORE::EProjectFolderType::Config,		"config"},
-		{ SCION_CORE::EProjectFolderType::GameConfig,	"config/game"},
-		{ SCION_CORE::EProjectFolderType::EditorConfig, "config/editor"},
+		{ Scion::Core::EProjectFolderType::Config,		"config"},
+		{ Scion::Core::EProjectFolderType::GameConfig,	"config/game"},
+		{ Scion::Core::EProjectFolderType::EditorConfig, "config/editor"},
 	};
 // clang-format on
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
 bool ProjectLoader::CreateNewProject( const std::string& sProjectName, const std::string& sFilepath )
 {
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 	SCION_ASSERT( pProjectInfo && "Project Info must exist." );
 
 	// Create the game filepath
@@ -120,7 +120,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 	}
 
 	auto& mainRegistry = MAIN_REGISTRY();
-	auto& pProjectInfo = mainRegistry.GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pProjectInfo = mainRegistry.GetContext<Scion::Core::ProjectInfoPtr>();
 	SCION_ASSERT( pProjectInfo && "Project Info must be valid!" );
 
 	// We need the project filepath saved!
@@ -162,7 +162,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 	}
 
 	// Setup Project Files
-	if ( auto optScriptPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::Scripts ) )
+	if ( auto optScriptPath = pProjectInfo->TryGetFolderPath( Scion::Core::EProjectFolderType::Scripts ) )
 	{
 		fs::path mainScriptPath = *optScriptPath / "main.lua";
 		if ( !fs::exists( mainScriptPath ) )
@@ -173,7 +173,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 	}
 
 	// Setup Project Files
-	if ( auto optGameConfigPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::GameConfig ) )
+	if ( auto optGameConfigPath = pProjectInfo->TryGetFolderPath( Scion::Core::EProjectFolderType::GameConfig ) )
 	{
 		fs::path scriptListPath = *optGameConfigPath / "script_list.lua";
 		if ( !fs::exists( scriptListPath ) )
@@ -187,7 +187,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 	// Get the project path before we adjust it to the content path
 	CORE_GLOBALS().SetProjectPath( projectPath.string() );
 
-	auto optContentFolderPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::Content );
+	auto optContentFolderPath = pProjectInfo->TryGetFolderPath( Scion::Core::EProjectFolderType::Content );
 	SCION_ASSERT( optContentFolderPath && "Content folder not set correctly in project info." );
 
 	// Check to see if there is a main lua path
@@ -220,7 +220,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		}
 	}
 
-	auto optGameConfigPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::GameConfig );
+	auto optGameConfigPath = pProjectInfo->TryGetFolderPath( Scion::Core::EProjectFolderType::GameConfig );
 	SCION_ASSERT( optGameConfigPath && "Game Config folder path has not been setup correctly in project info." );
 
 	fs::path scriptListPath = *optGameConfigPath / "script_list.lua";
@@ -414,7 +414,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 			std::string sJsonPrefabPath = jsonPrefab[ "path" ].GetString();
 			fs::path prefabPath = *optContentFolderPath / sJsonPrefabPath;
 
-			if ( auto pPrefab = SCION_CORE::PrefabCreator::CreatePrefab( prefabPath.string() ) )
+			if ( auto pPrefab = Scion::Core::PrefabCreator::CreatePrefab( prefabPath.string() ) )
 			{
 				if ( !assetManager.AddPrefab( sName, std::move( pPrefab ) ) )
 				{
@@ -502,7 +502,7 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 	return true;
 }
 
-bool ProjectLoader::SaveLoadedProject( const SCION_CORE::ProjectInfo& projectInfo )
+bool ProjectLoader::SaveLoadedProject( const Scion::Core::ProjectInfo& projectInfo )
 {
 	auto optProjectFilePath = projectInfo.GetProjectFilePath();
 	SCION_ASSERT( optProjectFilePath && "Project file path not set correctly." );
@@ -577,7 +577,7 @@ bool ProjectLoader::SaveLoadedProject( const SCION_CORE::ProjectInfo& projectInf
 		pSerializer->StartNewObject()
 			.AddKeyValuePair( "name", sName )
 			.AddKeyValuePair( "path", sTexturePath )
-			.AddKeyValuePair( "bPixelArt", pTexture->GetType() == SCION_RENDERING::Texture::TextureType::PIXEL )
+			.AddKeyValuePair( "bPixelArt", pTexture->GetType() == Scion::Rendering::Texture::TextureType::PIXEL )
 			.AddKeyValuePair( "bTilemap", pTexture->IsTileset() )
 			.EndObject();
 	}
@@ -716,7 +716,7 @@ bool ProjectLoader::CreateProjectFile( const std::string& sProjectName, const st
 	}
 
 	// We want to grab the project file path
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 	pProjectInfo->SetProjectFilePath( fs::path{ sProjectFile } );
 
 	auto optMainLuaScript = pProjectInfo->GetMainLuaScriptPath();
@@ -765,7 +765,7 @@ bool ProjectLoader::CreateMainLuaScript( const std::string& sProjectName, const 
 	SCION_ASSERT( pLuaSerializer );
 
 	// Save the main lua file path
-	MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>()->SetMainLuaScriptPath( mainLuaFilePath );
+	MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>()->SetMainLuaScriptPath( mainLuaFilePath );
 
 	pLuaSerializer->AddBlockComment( "\tMain Lua script. This is needed to run all scripts in the editor"
 									 "\n\tGENERATED BY THE ENGINE ON PROJECT CREATION. DON'T CHANGE UNLESS "
@@ -791,9 +791,9 @@ bool ProjectLoader::CreateMainLuaScript( const std::string& sProjectName, const 
 
 bool ProjectLoader::CreateScriptListFile()
 {
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 
-	auto optPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::GameConfig );
+	auto optPath = pProjectInfo->TryGetFolderPath( Scion::Core::EProjectFolderType::GameConfig );
 	if ( !optPath )
 	{
 		SCION_ERROR( "Failed to create script list file. Game Config path does not exist." );
@@ -820,4 +820,4 @@ bool ProjectLoader::CreateScriptListFile()
 	return true;
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

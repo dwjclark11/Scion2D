@@ -1,4 +1,4 @@
-#include "Gui.h"
+#include "editor/utilities/imgui/Gui.h"
 #include "Logger/Logger.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/utilities/fonts/editor_fonts.h"
@@ -7,7 +7,7 @@
 
 // IMGUI
 // ===================================
-#include "ImGuiUtils.h"
+#include "editor/utilities/imgui/ImGuiUtils.h"
 #include "imgui.h"
 #include <imgui_internal.h>
 #include <imgui_impl_sdl2.h>
@@ -15,9 +15,9 @@
 #include <SDL_opengl.h>
 // ===================================
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
-bool Gui::InitImGui( SCION_WINDOWING::Window* pWindow )
+bool Gui::InitImGui( Scion::Windowing::Window* pWindow )
 {
 	if ( m_bInitialized )
 		return false;
@@ -86,7 +86,7 @@ void Gui::Begin()
 	ImGui::NewFrame();
 }
 
-void Gui::End( SCION_WINDOWING::Window* pWindow )
+void Gui::End( Scion::Windowing::Window* pWindow )
 {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
@@ -107,4 +107,4 @@ void Gui::ShowImGuiDemo()
 	ImGui::ShowDemoWindow();
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

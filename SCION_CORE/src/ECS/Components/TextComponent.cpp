@@ -1,7 +1,7 @@
 #include "Core/ECS/Components/TextComponent.h"
 #include <entt/entt.hpp>
 
-std::string SCION_CORE::ECS::TextComponent::to_string()
+std::string Scion::Core::ECS::TextComponent::to_string()
 {
 	std::stringstream ss;
 	ss << "==== Text Component ==== \n"
@@ -19,7 +19,7 @@ std::string SCION_CORE::ECS::TextComponent::to_string()
 	return ss.str();
 }
 
-void SCION_CORE::ECS::TextComponent::CreateLuaTextBindings( sol::state& lua )
+void Scion::Core::ECS::TextComponent::CreateLuaTextBindings( sol::state& lua )
 {
 	lua.new_usertype<TextComponent>(
 		"TextComponent",
@@ -29,7 +29,7 @@ void SCION_CORE::ECS::TextComponent::CreateLuaTextBindings( sol::state& lua )
 		sol::factories(
 			[]( const std::string& sFontName,
 				const std::string& sTextStr,
-				SCION_RENDERING::Color color,
+				Scion::Rendering::Color color,
 				int padding,
 				float wrap ) {
 				return TextComponent{

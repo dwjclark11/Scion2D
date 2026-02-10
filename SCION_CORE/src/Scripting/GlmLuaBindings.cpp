@@ -2,9 +2,12 @@
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
+#include <glm/gtc/epsilon.hpp>
+#include <glm/gtc/quaternion.hpp>
+
 #include "Core/Scripting/ScriptingUtilities.h"
 
-namespace SCION_CORE::Scripting
+namespace Scion::Core::Scripting
 {
 
 // glm::vec2
@@ -276,4 +279,4 @@ void GLMBindings::CreateGLMBindings( sol::state& lua )
 	MathFreeFunctions( lua );
 	MathConstants( lua );
 }
-} // namespace SCION_CORE::Scripting
+} // namespace Scion::Core::Scripting

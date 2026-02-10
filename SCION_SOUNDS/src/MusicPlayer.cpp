@@ -2,7 +2,7 @@
 #include "Sounds/Essentials/Music.h"
 #include <Logger/Logger.h>
 
-namespace SCION_SOUNDS
+namespace Scion::Sounds
 {
 
 MusicPlayer::MusicPlayer()
@@ -82,4 +82,4 @@ bool MusicPlayer::IsPaused()
 	return Mix_PausedMusic();
 }
 
-} // namespace SCION_SOUNDS
+} // namespace Scion::Sounds

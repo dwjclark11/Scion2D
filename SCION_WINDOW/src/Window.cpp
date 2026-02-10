@@ -2,7 +2,7 @@
 #include <iostream>
 #include <Logger/Logger.h>
 
-namespace SCION_WINDOWING
+namespace Scion::Windowing
 {
 
 void Window::CreateNewWindow( Uint32 flags )
@@ -63,4 +63,4 @@ void Window::SetWindowName( const std::string& name )
 	m_sTitle = name;
 	SDL_SetWindowTitle( m_pWindow.get(), name.c_str() );
 }
-} // namespace SCION_WINDOWING
+} // namespace Scion::Windowing

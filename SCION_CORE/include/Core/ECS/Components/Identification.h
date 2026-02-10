@@ -2,7 +2,7 @@
 #include <string>
 #include <entt/entt.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 struct Identification
 {
@@ -13,4 +13,4 @@ struct Identification
 	/* The underlying entity id of the owner. */
 	uint32_t entity_id{ entt::null };
 };
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

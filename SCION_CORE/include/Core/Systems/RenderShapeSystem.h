@@ -1,29 +1,29 @@
 #pragma once
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class Camera2D;
 class RectBatchRenderer;
 class CircleBatchRenderer;
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 class Registry;
 }
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 class RenderShapeSystem
 {
   private:
-	std::unique_ptr<SCION_RENDERING::RectBatchRenderer> m_pRectRenderer;
-	std::unique_ptr<SCION_RENDERING::CircleBatchRenderer> m_pCircleRenderer;
+	std::unique_ptr<Scion::Rendering::RectBatchRenderer> m_pRectRenderer;
+	std::unique_ptr<Scion::Rendering::CircleBatchRenderer> m_pCircleRenderer;
 
   public:
 	RenderShapeSystem();
 	~RenderShapeSystem() = default;
 
-	void Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera );
+	void Update( Scion::Core::ECS::Registry& registry, Scion::Rendering::Camera2D& camera );
 };
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

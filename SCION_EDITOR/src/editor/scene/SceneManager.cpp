@@ -1,5 +1,5 @@
-#include "SceneManager.h"
-#include "SceneObject.h"
+#include "editor/scene/SceneManager.h"
+#include "editor/scene/SceneObject.h"
 #include "ScionUtilities/ScionUtilities.h"
 #include "editor/tools/ToolManager.h"
 #include "editor/tools/TileTool.h"
@@ -15,9 +15,9 @@
 
 #include "Logger/Logger.h"
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 EditorSceneManager& EditorSceneManager::GetInstance()
 {
@@ -25,7 +25,7 @@ EditorSceneManager& EditorSceneManager::GetInstance()
 	return instance;
 }
 
-bool EditorSceneManager::AddScene( const std::string& sSceneName, SCION_CORE::EMapType eType )
+bool EditorSceneManager::AddScene( const std::string& sSceneName, Scion::Core::EMapType eType )
 {
 	if ( m_mapScenes.contains( sSceneName ) )
 	{
@@ -95,7 +95,7 @@ bool EditorSceneManager::DeleteScene( const std::string& sSceneName )
 
 	if ( m_mapScenes.erase( sSceneName ) > 0 )
 	{
-		auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+		auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 		SCION_ASSERT( pProjectInfo && "Project Info must exist!" );
 		// Save entire project
 		ProjectLoader pl{};
@@ -135,10 +135,10 @@ CommandManager& EditorSceneManager::GetCommandManager()
 	return *m_pCommandManager;
 }
 
-SCION_CORE::Events::EventDispatcher& EditorSceneManager::GetDispatcher()
+Scion::Core::Events::EventDispatcher& EditorSceneManager::GetDispatcher()
 {
 	if ( !m_pSceneDispatcher )
-		m_pSceneDispatcher = std::make_unique<SCION_CORE::Events::EventDispatcher>();
+		m_pSceneDispatcher = std::make_unique<Scion::Core::Events::EventDispatcher>();
 
 	SCION_ASSERT( m_pSceneDispatcher && "Event Dispatcher must be valid" );
 
@@ -193,8 +193,8 @@ void EditorSceneManager::UpdateScenes()
 {
 	if ( auto pCurrentScene = GetCurrentSceneObject() )
 	{
-		SCION_CORE::UpdateDirtyEntities( pCurrentScene->GetRegistry() );
-		SCION_CORE::UpdateDirtyEntities( pCurrentScene->GetRuntimeRegistry() );
+		Scion::Core::UpdateDirtyEntities( pCurrentScene->GetRegistry() );
+		Scion::Core::UpdateDirtyEntities( pCurrentScene->GetRuntimeRegistry() );
 	}
 }
 
@@ -205,7 +205,7 @@ std::string EditorSceneManager::GetSceneFilepath( const std::string& sSceneName 
 }
 
 EditorSceneManager::EditorSceneManager()
-	: SCION_CORE::SceneManager()
+	: Scion::Core::SceneManager()
 {
 }
 
@@ -264,10 +264,10 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 			if ( auto pCurrentScene = sceneManager.GetCurrentSceneObject() )
 			{
 				auto* pRuntimeData = pCurrentScene->GetRuntimeData();
-				return pRuntimeData ? pRuntimeData->canvas : SCION_CORE::Canvas{};
+				return pRuntimeData ? pRuntimeData->canvas : Scion::Core::Canvas{};
 			}
 
-			return SCION_CORE::Canvas{};
+			return Scion::Core::Canvas{};
 		},
 		"getDefaultMusic",
 		[ & ] {
@@ -293,4 +293,4 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 	// clang-format on
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

@@ -16,20 +16,20 @@
 
 #include <Logger/Logger.h>
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 using namespace SCION_RESOURCES;
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 
 RenderUISystem::RenderUISystem()
-	: m_pSpriteRenderer{ std::make_unique<SCION_RENDERING::SpriteBatchRenderer>() }
-	, m_pTextRenderer{ std::make_unique<SCION_RENDERING::TextBatchRenderer>() }
+	: m_pSpriteRenderer{ std::make_unique<Scion::Rendering::SpriteBatchRenderer>() }
+	, m_pTextRenderer{ std::make_unique<Scion::Rendering::TextBatchRenderer>() }
 	, m_pCamera2D{ nullptr }
 {
 	auto& coreEngine = CoreEngineData::GetInstance();
 
-	m_pCamera2D = std::make_unique<SCION_RENDERING::Camera2D>( coreEngine.WindowWidth(), coreEngine.WindowHeight() );
+	m_pCamera2D = std::make_unique<Scion::Rendering::Camera2D>( coreEngine.WindowWidth(), coreEngine.WindowHeight() );
 
 	m_pCamera2D->Update();
 }
@@ -38,7 +38,7 @@ RenderUISystem::~RenderUISystem()
 {
 }
 
-void RenderUISystem::Update( SCION_CORE::ECS::Registry& registry )
+void RenderUISystem::Update( Scion::Core::ECS::Registry& registry )
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
@@ -77,7 +77,7 @@ void RenderUISystem::Update( SCION_CORE::ECS::Registry& registry )
 		glm::vec4 spriteRect{ transform.position.x, transform.position.y, sprite.width, sprite.height };
 		glm::vec4 uvRect{ sprite.uvs.u, sprite.uvs.v, sprite.uvs.uv_width, sprite.uvs.uv_height };
 
-		glm::mat4 model = SCION_CORE::RSTModel( transform, sprite.width, sprite.height );
+		glm::mat4 model = Scion::Core::RSTModel( transform, sprite.width, sprite.height );
 
 		m_pSpriteRenderer->AddSprite( spriteRect, uvRect, pTexture->GetID(), sprite.layer, model, sprite.color );
 	}
@@ -122,12 +122,12 @@ void RenderUISystem::Update( SCION_CORE::ECS::Registry& registry )
 
 		if ( transform.bDirty || text.bDirty )
 		{
-			const auto [ textWidth, textHeight ] = SCION_CORE::GetTextBlockSize( text, transform, assetManager );
+			const auto [ textWidth, textHeight ] = Scion::Core::GetTextBlockSize( text, transform, assetManager );
 			text.textBoxWidth = textWidth;
 			text.textBoxHeight = textHeight;
 		}
 
-		glm::mat4 model = SCION_CORE::RSTModel( transform, text.textBoxWidth, text.textBoxHeight );
+		glm::mat4 model = Scion::Core::RSTModel( transform, text.textBoxWidth, text.textBoxHeight );
 
 		m_pTextRenderer->AddText(
 			text.sTextStr, pFont, transform.position, text.padding, text.wrap, text.color, model );
@@ -148,4 +148,4 @@ void RenderUISystem::CreateRenderUISystemLuaBind( sol::state& lua )
 									  [ & ]( RenderUISystem& system, Registry& reg ) { system.Update( reg ); } );
 }
 
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

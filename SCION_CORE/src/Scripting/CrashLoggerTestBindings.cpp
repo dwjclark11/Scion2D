@@ -2,7 +2,7 @@
 #include "Core/ECS/MainRegistry.h"
 #include "Logger/CrashLogger.h"
 
-namespace SCION_CORE::Scripting
+namespace Scion::Core::Scripting
 {
 static void FunctionC()
 {
@@ -67,4 +67,4 @@ void CrashLoggerTests::CreateLuaBind( sol::state& lua )
         end
     )" );
 }
-} // namespace SCION_CORE::Scripting
+} // namespace Scion::Core::Scripting

@@ -12,7 +12,7 @@
  * @param Takes an std::string_view or string in the form of "This is a log value: {0}, and {1}", followed by
  * the arguments
  */
-#define SCION_LOG( x, ... ) SCION_LOGGER::Logger::GetInstance().Log( x __VA_OPT__(, ) __VA_ARGS__ )
+#define SCION_LOG( x, ... ) Scion::Logger::Logger::GetInstance().Log( x __VA_OPT__(, ) __VA_ARGS__ )
 
 /*
  * @brief Variadic Macro for logging warnings. This macro takes in a string message, followed by the
@@ -20,7 +20,7 @@
  * @param Takes an std::string_view or string in the form of "This is a log value: {0}, and {1}", followed by
  * the arguments
  */
-#define SCION_WARN( x, ... ) SCION_LOGGER::Logger::GetInstance().Warn( x __VA_OPT__(, ) __VA_ARGS__ )
+#define SCION_WARN( x, ... ) Scion::Logger::Logger::GetInstance().Warn( x __VA_OPT__(, ) __VA_ARGS__ )
 
 /*
  * @brief Variadic Macro for logging Errors. This macro takes in a string message, followed by the
@@ -29,15 +29,15 @@
  * the arguments
  */
 #define SCION_ERROR( x, ... )                                                                                          \
-	SCION_LOGGER::Logger::GetInstance().Error( std::source_location::current(), x __VA_OPT__(, ) __VA_ARGS__ )
+	Scion::Logger::Logger::GetInstance().Error( std::source_location::current(), x __VA_OPT__(, ) __VA_ARGS__ )
 
 #define SCION_ASSERT( x ) assert( x )
-#define SCION_INIT_LOGS( console, retain ) SCION_LOGGER::Logger::GetInstance().Init( console, retain )
+#define SCION_INIT_LOGS( console, retain ) Scion::Logger::Logger::GetInstance().Init( console, retain )
 
-#define SCION_GET_LOGS() SCION_LOGGER::Logger::GetInstance().GetLogs()
-#define SCION_CLEAR_LOGS() SCION_LOGGER::Logger::GetInstance().ClearLogs()
+#define SCION_GET_LOGS() Scion::Logger::Logger::GetInstance().GetLogs()
+#define SCION_CLEAR_LOGS() Scion::Logger::Logger::GetInstance().ClearLogs()
 
-namespace SCION_LOGGER
+namespace Scion::Logger
 {
 struct LogEntry
 {
@@ -100,6 +100,6 @@ class Logger
 
 	std::string CurrentDateTime();
 };
-} // namespace SCION_LOGGER
+} // namespace Scion::Logger
 
 #include "Logger.inl"

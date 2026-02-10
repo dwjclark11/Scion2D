@@ -1,6 +1,6 @@
 #include "Physics/BoxTraceCallback.h"
 
-namespace SCION_PHYSICS
+namespace Scion::Physics
 {
 bool BoxTraceCallback::ReportFixture( b2Fixture* pFixture )
 {
@@ -8,4 +8,4 @@ bool BoxTraceCallback::ReportFixture( b2Fixture* pFixture )
 
 	return true;
 }
-} // namespace SCION_PHYSICS
+} // namespace Scion::Physics

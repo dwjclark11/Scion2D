@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 struct Line
@@ -40,4 +40,4 @@ struct Text
 	Color color{ 255, 255, 255, 255 };
 };
 
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

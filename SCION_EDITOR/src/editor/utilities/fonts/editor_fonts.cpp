@@ -1,4 +1,4 @@
-#include "editor_fonts.h"
+#include "editor/utilities/fonts/editor_fonts.h"
 
 /*
 * Font Awesome Free License
@@ -43,7 +43,7 @@ to represent the company, product, or service to which they refer.**
  * https://github.com/FortAwesome/Font-Awesome/blob/5.x/webfonts/fa-solid-900.ttf
  */
 
-namespace SCION_EDITOR::EditorFonts
+namespace Scion::Editor::EditorFonts
 {
 
 // clang-format off
@@ -10726,4 +10726,4 @@ unsigned int fa_solid_900_size = 202744;
 
 unsigned char* g_FaSolid900 = fa_solid_900;
 const size_t g_FaSolid900Size = fa_solid_900_size;
-} // namespace SCION_EDITOR::EditorFonts
+} // namespace Scion::Editor::EditorFonts

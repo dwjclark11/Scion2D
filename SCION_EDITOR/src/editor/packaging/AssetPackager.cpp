@@ -1,19 +1,19 @@
-#include "AssetPackager.h"
+#include "editor/packaging/AssetPackager.h"
 #include "ScionUtilities/ScionUtilities.h"
 #include "ScionUtilities/HelperUtilities.h"
 #include "ScionUtilities/ThreadPool.h"
 
 #include "ScionFilesystem/Serializers/LuaSerializer.h"
-#include "ScriptCompiler.h"
+#include "editor/packaging/ScriptCompiler.h"
 #include "Logger/Logger.h"
 #include <libzippp/libzippp.h>
 
-using namespace SCION_FILESYSTEM;
+using namespace Scion::Filesystem;
 namespace fs = std::filesystem;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
-AssetPackager::AssetPackager( const AssetPackagerParams& params, std::shared_ptr<SCION_UTIL::ThreadPool> pThreadPool )
+AssetPackager::AssetPackager( const AssetPackagerParams& params, std::shared_ptr<Scion::Utilities::ThreadPool> pThreadPool )
 	: m_Params{ params }
 	, m_pThreadPool{ pThreadPool }
 {
@@ -45,7 +45,7 @@ void AssetPackager::PackageAssets( const rapidjson::Value& assets )
 	}
 }
 
-void AssetPackager::ConvertAssetToLuaTable( SCION_FILESYSTEM::LuaSerializer& luaSerializer,
+void AssetPackager::ConvertAssetToLuaTable( Scion::Filesystem::LuaSerializer& luaSerializer,
 											const AssetConversionData& conversionData )
 {
 	std::fstream in{ conversionData.sInAssetFile, std::ios::in | std::ios::binary };
@@ -64,14 +64,14 @@ void AssetPackager::ConvertAssetToLuaTable( SCION_FILESYSTEM::LuaSerializer& lua
 			.AddKeyValuePair( "assetName", conversionData.sAssetName, true, false, false, true )
 			.AddKeyValuePair( "assetExt", assetPath.extension().string(), true, false, false, true )
 			.AddKeyValuePair(
-				"assetType", SCION_UTIL::AssetTypeToStr( conversionData.eType ), true, false, false, true );
+				"assetType", Scion::Utilities::AssetTypeToStr( conversionData.eType ), true, false, false, true );
 
-		if ( conversionData.eType == SCION_UTIL::AssetType::FONT )
+		if ( conversionData.eType == Scion::Utilities::AssetType::FONT )
 		{
 			luaSerializer.AddKeyValuePair( "fontSize",
 										   conversionData.optFontSize ? *conversionData.optFontSize : 32.f );
 		}
-		else if ( conversionData.eType == SCION_UTIL::AssetType::TEXTURE )
+		else if ( conversionData.eType == Scion::Utilities::AssetType::TEXTURE )
 		{
 			luaSerializer.AddKeyValuePair( "bPixelArt",
 										   conversionData.optPixelArt ? *conversionData.optPixelArt : true );
@@ -135,19 +135,19 @@ void AssetPackager::CreateLuaAssetFiles( const std::string& sProjectPath, const 
 
 	std::vector<std::future<AssetPackageStatus>> assetFutures;
 	assetFutures.emplace_back( m_pThreadPool->Enqueue( [ & ] {
-		return SerializeAssetsByType( assets, tempAssetPath, "textures", sContentPath, SCION_UTIL::AssetType::TEXTURE );
+		return SerializeAssetsByType( assets, tempAssetPath, "textures", sContentPath, Scion::Utilities::AssetType::TEXTURE );
 	} ) );
 
 	assetFutures.emplace_back( m_pThreadPool->Enqueue( [ & ] {
-		return SerializeAssetsByType( assets, tempAssetPath, "soundfx", sContentPath, SCION_UTIL::AssetType::SOUNDFX );
+		return SerializeAssetsByType( assets, tempAssetPath, "soundfx", sContentPath, Scion::Utilities::AssetType::SOUNDFX );
 	} ) );
 
 	assetFutures.emplace_back( m_pThreadPool->Enqueue( [ & ] {
-		return SerializeAssetsByType( assets, tempAssetPath, "music", sContentPath, SCION_UTIL::AssetType::MUSIC );
+		return SerializeAssetsByType( assets, tempAssetPath, "music", sContentPath, Scion::Utilities::AssetType::MUSIC );
 	} ) );
 
 	assetFutures.emplace_back( m_pThreadPool->Enqueue( [ & ] {
-		return SerializeAssetsByType( assets, tempAssetPath, "fonts", sContentPath, SCION_UTIL::AssetType::FONT );
+		return SerializeAssetsByType( assets, tempAssetPath, "fonts", sContentPath, Scion::Utilities::AssetType::FONT );
 	} ) );
 
 	bool bHasError{ false };
@@ -291,7 +291,7 @@ AssetPackager::AssetPackageStatus AssetPackager::SerializeAssetsByType( const ra
 																		const std::filesystem::path& tempAssetsPath,
 																		const std::string& sAssetTypeName,
 																		const std::string& sContentPath,
-																		SCION_UTIL::AssetType eAssetType )
+																		Scion::Utilities::AssetType eAssetType )
 {
 	const std::string sAssetFile{ sAssetTypeName + ".s2dasset" };
 	fs::path assetPath = tempAssetsPath / sAssetFile;
@@ -330,11 +330,11 @@ AssetPackager::AssetPackageStatus AssetPackager::SerializeAssetsByType( const ra
 				AssetConversionData conversionData{
 					.sInAssetFile = sPath, .sAssetName = jsonValue[ "name" ].GetString(), .eType = eAssetType };
 
-				if (eAssetType == SCION_UTIL::AssetType::FONT && jsonValue.HasMember("fontSize"))
+				if (eAssetType == Scion::Utilities::AssetType::FONT && jsonValue.HasMember("fontSize"))
 				{
 					conversionData.optFontSize = jsonValue[ "fontSize" ].GetFloat();
 				}
-				else if (eAssetType == SCION_UTIL::AssetType::TEXTURE && jsonValue.HasMember("bPixelArt"))
+				else if (eAssetType == Scion::Utilities::AssetType::TEXTURE && jsonValue.HasMember("bPixelArt"))
 				{
 					conversionData.optPixelArt = jsonValue[ "bPixelArt" ].GetBool();
 				}
@@ -353,4 +353,4 @@ AssetPackager::AssetPackageStatus AssetPackager::SerializeAssetsByType( const ra
 
 	return { .bSuccess = true };
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

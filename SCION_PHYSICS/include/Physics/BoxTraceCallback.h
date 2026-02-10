@@ -3,7 +3,7 @@
 #include <box2d/box2d.h>
 #include <vector>
 
-namespace SCION_PHYSICS
+namespace Scion::Physics
 {
 class BoxTraceCallback : public b2QueryCallback
 {
@@ -16,4 +16,4 @@ class BoxTraceCallback : public b2QueryCallback
   private:
 	std::vector<b2Body*> m_Bodies;
 };
-} // namespace SCION_PHYSICS
+} // namespace Scion::Physics

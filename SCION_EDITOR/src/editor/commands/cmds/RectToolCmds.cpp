@@ -1,4 +1,4 @@
-#include "RectToolCmds.h"
+#include "editor/commands/cmds/RectToolCmds.h"
 #include "Core/ECS/Registry.h"
 #include "Core/ECS/Entity.h"
 #include "Core/ECS/Components/AllComponents.h"
@@ -6,9 +6,9 @@
 #include "Logger/Logger.h"
 #include "editor/utilities/EditorUtilities.h"
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 void RectToolAddTilesCmd::undo()
 {
@@ -166,4 +166,4 @@ void RectToolRemoveTilesCmd::redo()
 	}
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

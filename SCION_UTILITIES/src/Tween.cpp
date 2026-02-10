@@ -6,7 +6,7 @@
 #include "Logger/Logger.h"
 #include "ScionUtilities/MathUtilities.h"
 
-namespace SCION_UTIL
+namespace Scion::Utilities
 {
 
 /*
@@ -306,4 +306,4 @@ float Tween::GetEasingFunc( EEasingFunc func, float currentTime, float start, fl
 	return g_mapEasingFunctions[ func ]( currentTime, start, change, duration );
 }
 
-} // namespace SCION_UTIL
+} // namespace Scion::Utilities

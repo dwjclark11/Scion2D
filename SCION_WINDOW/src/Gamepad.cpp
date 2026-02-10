@@ -1,7 +1,7 @@
 #include "Windowing/Inputs/Gamepad.h"
 #include <Logger/Logger.h>
 
-namespace SCION_WINDOWING::Inputs
+namespace Scion::Windowing::Inputs
 {
 
 Gamepad::Gamepad(Controller controller)
@@ -186,4 +186,4 @@ void Gamepad::RumbleController( Uint16 lowFrequencyRumble, Uint16 highFrequencyR
 		SCION_WARN( "Rumble not supported for controller [{}] - Error: {}", m_InstanceID, SDL_GetError() );
 	}
 }
-} // namespace SCION_WINDOWING::Inputs
+} // namespace Scion::Windowing::Inputs

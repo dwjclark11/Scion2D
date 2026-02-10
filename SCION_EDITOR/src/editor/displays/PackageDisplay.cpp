@@ -1,4 +1,4 @@
-#include "PackageDisplay.h"
+#include "editor/displays/PackageDisplay.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/ECS/MainRegistry.h"
@@ -18,12 +18,12 @@
 #include <imgui_stdlib.h>
 
 namespace fs = std::filesystem;
-using namespace SCION_FILESYSTEM;
+using namespace Scion::Filesystem;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 PackageGameDisplay::PackageGameDisplay()
-	: m_pGameConfig{ std::make_unique<SCION_CORE::GameConfig>() }
+	: m_pGameConfig{ std::make_unique<Scion::Core::GameConfig>() }
 	, m_pPackager{ nullptr }
 	, m_sDestinationPath{}
 	, m_sScriptListPath{}
@@ -35,7 +35,7 @@ PackageGameDisplay::PackageGameDisplay()
 	, m_bScriptListExists{ false }
 	, m_bPackageHasErrors{ false }
 {
-	const auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	const auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 	auto optScriptListPath = pProjectInfo->GetScriptListPath();
 	SCION_ASSERT( optScriptListPath && "Script List path not set correctly in project info." );
 
@@ -78,7 +78,7 @@ void PackageGameDisplay::Draw()
 		return;
 	}
 
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 
 	ImGui::SeparatorText( "Package and Export Game" );
 	ImGui::NewLine();
@@ -99,7 +99,7 @@ void PackageGameDisplay::Draw()
 		if ( ImGui::Button( "..."
 							"##dest" ) )
 		{
-			SCION_FILESYSTEM::FileDialog fd{};
+			Scion::Filesystem::FileDialog fd{};
 			const auto sFilepath = fd.SelectFolderDialog( "Choose Destination Folder", BASE_PATH );
 			if ( !sFilepath.empty() )
 			{
@@ -250,7 +250,7 @@ void PackageGameDisplay::Draw()
 		{
 			// We want to ensure we are packaging the most current data.
 			// Save all files, before packaging.
-			auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+			auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 			SCION_ASSERT( pProjectInfo && "Project Info must exist!" );
 			// Save entire project
 			ProjectLoader pl{};
@@ -292,8 +292,8 @@ void PackageGameDisplay::Draw()
 				fmt::format( "{}{}{}", m_sDestinationPath, PATH_SEPARATOR, m_pGameConfig->sGameName );
 
 			auto pPackageData = std::make_unique<PackageData>();
-			pPackageData->pProjectInfo = std::make_unique<SCION_CORE::ProjectInfo>( *pProjectInfo );
-			pPackageData->pGameConfig = std::make_unique<SCION_CORE::GameConfig>( *m_pGameConfig );
+			pPackageData->pProjectInfo = std::make_unique<Scion::Core::ProjectInfo>( *pProjectInfo );
+			pPackageData->pGameConfig = std::make_unique<Scion::Core::GameConfig>( *m_pGameConfig );
 			pPackageData->sTempDataPath = fs::path{ pProjectInfo->GetProjectPath() / "tempData" }.string();
 			pPackageData->sFinalDestination = sFullDestination;
 			pPackageData->sAssetFilepath = pPackageData->sTempDataPath + PATH_SEPARATOR + "assetDefs.lua";
@@ -322,4 +322,4 @@ bool PackageGameDisplay::CanPackageGame() const
 		   fs::exists( fs::path{ m_sDestinationPath } ) && !m_sDestinationPath.empty();
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

@@ -5,7 +5,7 @@
 #include "Core/Character/PlayerStart.h"
 #include "ScionUtilities/HelperUtilities.h"
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 struct Canvas
 {
@@ -52,7 +52,7 @@ class Scene
 	 */
 	int AddLayer( const std::string& sLayerName, bool bVisible );
 
-	int AddLayer( const SCION_UTIL::SpriteLayerParams& layerParam );
+	int AddLayer( const Scion::Utilities::SpriteLayerParams& layerParam );
 
 	/*
 	 * @brief Checks to see if the layer already exists in the scene.
@@ -73,8 +73,8 @@ class Scene
 	inline void SetDefaultMusic( const std::string& sDefaultMusic ) { m_sDefaultMusic = sDefaultMusic; }
 
 	inline Canvas& GetCanvas() { return m_Canvas; }
-	inline SCION_CORE::ECS::Registry& GetRegistry() { return m_Registry; }
-	inline SCION_CORE::ECS::Registry* GetRegistryPtr() { return &m_Registry; }
+	inline Scion::Core::ECS::Registry& GetRegistry() { return m_Registry; }
+	inline Scion::Core::ECS::Registry* GetRegistryPtr() { return &m_Registry; }
 	inline const std::string& GetSceneDataPath() { return m_sSceneDataPath; }
 	inline EMapType GetMapType() const { return m_eMapType; }
 	inline bool IsLoaded() const { return m_bSceneLoaded; }
@@ -83,7 +83,7 @@ class Scene
 	 * @return Returns true if there are layers present, false otherwise.
 	 */
 	inline bool HasTileLayers() const { return !m_LayerParams.empty(); }
-	inline std::vector<SCION_UTIL::SpriteLayerParams>& GetLayerParams() { return m_LayerParams; }
+	inline std::vector<Scion::Utilities::SpriteLayerParams>& GetLayerParams() { return m_LayerParams; }
 
 	inline PlayerStart& GetPlayerStart() { return m_PlayerStart; }
 	inline bool IsPlayerStartEnabled() const { return m_bUsePlayerStart; }
@@ -100,7 +100,7 @@ class Scene
 	
   protected:
 	/* The registry that is used in the tilemap editor and the scene hierarchy. */
-	SCION_CORE::ECS::Registry m_Registry;
+	Scion::Core::ECS::Registry m_Registry;
 	/* The name of the scene object represents. */
 	std::string m_sSceneName;
 	/* The filepath which to load and save the tilemap. */
@@ -116,14 +116,14 @@ class Scene
 	/* All scenes will have a default player start. This flag will control it's use. */
 	bool m_bUsePlayerStart;
 
-	SCION_CORE::Canvas m_Canvas;
+	Scion::Core::Canvas m_Canvas;
 
 	/* The type of map to create tiles. Iso or regular grid. */
 	EMapType m_eMapType;
 
-	std::vector<SCION_UTIL::SpriteLayerParams> m_LayerParams;
+	std::vector<Scion::Utilities::SpriteLayerParams> m_LayerParams;
 
 	PlayerStart m_PlayerStart;
 };
 
-} // namespace SCION_CORE
+} // namespace Scion::Core

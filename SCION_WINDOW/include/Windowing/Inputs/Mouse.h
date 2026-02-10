@@ -2,7 +2,7 @@
 #include "Button.h"
 #include "MouseButtons.h"
 
-namespace SCION_WINDOWING::Inputs
+namespace Scion::Windowing::Inputs
 {
 class Mouse
 {
@@ -41,4 +41,4 @@ class Mouse
 	int m_WheelY{ 0 };
 	bool m_bMouseMoving{ false };
 };
-} // namespace SCION_WINDOWING::Inputs
+} // namespace Scion::Windowing::Inputs

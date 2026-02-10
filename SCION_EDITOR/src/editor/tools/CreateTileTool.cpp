@@ -1,4 +1,4 @@
-#include "CreateTileTool.h"
+#include "editor/tools/CreateTileTool.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Rendering/Core/Camera2D.h"
@@ -13,9 +13,9 @@
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 void CreateTileTool::CreateNewTile()
 {
@@ -29,7 +29,7 @@ void CreateTileTool::CreateNewTile()
 
 	tile.AddComponent<TransformComponent>( m_pMouseTile->transform );
 
-	if (m_pCurrentScene->GetMapType() == SCION_CORE::EMapType::IsoGrid)
+	if (m_pCurrentScene->GetMapType() == Scion::Core::EMapType::IsoGrid)
 	{
 		m_pMouseTile->sprite.bIsoMetric = true;
 		m_pMouseTile->sprite.isoCellX = m_GridCoords.x;
@@ -150,4 +150,4 @@ void CreateTileTool::Draw()
 	DrawMouseSprite();
 	pShader->Disable();
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

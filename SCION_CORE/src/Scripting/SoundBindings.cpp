@@ -6,10 +6,10 @@
 #include <Sounds/SoundPlayer/SoundFxPlayer.h>
 #include <Logger/Logger.h>
 
-using namespace SCION_SOUNDS;
+using namespace Scion::Sounds;
 using namespace SCION_RESOURCES;
 
-void SCION_CORE::Scripting::SoundBinder::CreateSoundBind( sol::state& lua )
+void Scion::Core::Scripting::SoundBinder::CreateSoundBind( sol::state& lua )
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& musicPlayer = mainRegistry.GetMusicPlayer();

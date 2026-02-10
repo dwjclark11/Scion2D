@@ -1,4 +1,4 @@
-#include "DrawComponentUtils.h"
+#include "editor/utilities/DrawComponentUtils.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
@@ -14,9 +14,9 @@
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 
-using namespace SCION_UTIL;
-using namespace SCION_PHYSICS;
-using namespace SCION_CORE::ECS;
+using namespace Scion::Utilities;
+using namespace Scion::Physics;
+using namespace Scion::Core::ECS;
 
 static constexpr std::string GetPhysicsBodyDescription( RigidBodyType eType )
 {
@@ -29,9 +29,9 @@ static constexpr std::string GetPhysicsBodyDescription( RigidBodyType eType )
 	}
 }
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TransformComponent& transform )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::TransformComponent& transform )
 {
 	ImGui::SeparatorText( "Transform" );
 	ImGui::PushID( entt::type_hash<TransformComponent>::value() );
@@ -77,7 +77,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TransformComponent
 	ImGui::PopID();
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& sprite )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::SpriteComponent& sprite )
 {
 	bool bChanged{ false };
 
@@ -123,7 +123,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 		ImGui::ItemToolTip( "The current active texture of the sprite to be drawn." );
 		if ( ImGui::BeginCombo( "##texture", sSelectedTexture.c_str() ) )
 		{
-			for ( const auto& sTextureName : assetManager.GetAssetKeyNames( SCION_UTIL::AssetType::TEXTURE ) )
+			for ( const auto& sTextureName : assetManager.GetAssetKeyNames( Scion::Utilities::AssetType::TEXTURE ) )
 			{
 				if ( ImGui::Selectable( sTextureName.c_str(), sTextureName == sSelectedTexture ) )
 				{
@@ -203,11 +203,11 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::SpriteComponent& s
 		if ( !pTexture )
 			return;
 
-		SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+		Scion::Core::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 	}
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::AnimationComponent& animation )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::AnimationComponent& animation )
 {
 	ImGui::SeparatorText( "Animation Component" );
 	ImGui::PushID( entt::type_hash<AnimationComponent>::value() );
@@ -234,7 +234,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::AnimationComponent
 	ImGui::PopID();
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::BoxColliderComponent& boxCollider )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::BoxColliderComponent& boxCollider )
 {
 	ImGui::SeparatorText( "Box Collider Component" );
 	ImGui::PushID( entt::type_hash<BoxColliderComponent>::value() );
@@ -271,7 +271,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::BoxColliderCompone
 	ImGui::PopID();
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::CircleColliderComponent& circleCollider )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::CircleColliderComponent& circleCollider )
 {
 	ImGui::SeparatorText( "Circle Collider Component" );
 	ImGui::PushID( entt::type_hash<CircleColliderComponent>::value() );
@@ -300,7 +300,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::CircleColliderComp
 	ImGui::PopID();
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& physics )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::PhysicsComponent& physics )
 {
 	ImGui::SeparatorText( "Physics Component" );
 	ImGui::PushID( entt::type_hash<PhysicsComponent>::value() );
@@ -523,7 +523,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::PhysicsComponent& 
 	ImGui::PopID();
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::RigidBodyComponent& rigidbody )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::RigidBodyComponent& rigidbody )
 {
 	ImGui::SeparatorText( "Rigidbody Component" );
 	ImGui::PushID( entt::type_hash<RigidBodyComponent>::value() );
@@ -544,7 +544,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::RigidBodyComponent
 	ImGui::PopID();
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TextComponent& textComponent )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::TextComponent& textComponent )
 {
 	ImGui::SeparatorText( "Text Component" );
 	ImGui::PushID( entt::type_hash<TextComponent>::value() );
@@ -565,7 +565,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TextComponent& tex
 		if ( ImGui::BeginCombo( "##fontName", sFontName.c_str() ) )
 		{
 			auto& assetManager = MAIN_REGISTRY().GetAssetManager();
-			for ( const auto& sFont : assetManager.GetAssetKeyNames( SCION_UTIL::AssetType::FONT ) )
+			for ( const auto& sFont : assetManager.GetAssetKeyNames( Scion::Utilities::AssetType::FONT ) )
 			{
 				if ( ImGui::Selectable( sFont.c_str(), sFont == sFontName ) )
 				{
@@ -613,7 +613,7 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::TextComponent& tex
 	ImGui::PopID();
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Identification& identification )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::Identification& identification )
 {
 	ImGui::SeparatorText( "Identificaton" );
 	ImGui::PushID( entt::type_hash<Identification>::value() );
@@ -640,8 +640,8 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Identification& id
 	ImGui::PopID();
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
-											 SCION_CORE::ECS::TransformComponent& transform )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::Entity& entity,
+											 Scion::Core::ECS::TransformComponent& transform )
 {
 	ImGui::SeparatorText( "Transform" );
 	ImGui::PushID( entt::type_hash<TransformComponent>::value() );
@@ -710,49 +710,49 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 	ImGui::PopID();
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity, SCION_CORE::ECS::SpriteComponent& sprite )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::Entity& entity, Scion::Core::ECS::SpriteComponent& sprite )
 {
 	DrawImGuiComponent( sprite );
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
-											 SCION_CORE::ECS::AnimationComponent& animation )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::Entity& entity,
+											 Scion::Core::ECS::AnimationComponent& animation )
 {
 	DrawImGuiComponent( animation );
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
-											 SCION_CORE::ECS::BoxColliderComponent& boxCollider )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::Entity& entity,
+											 Scion::Core::ECS::BoxColliderComponent& boxCollider )
 {
 	DrawImGuiComponent( boxCollider );
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
-											 SCION_CORE::ECS::CircleColliderComponent& circleCollider )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::Entity& entity,
+											 Scion::Core::ECS::CircleColliderComponent& circleCollider )
 {
 	DrawImGuiComponent( circleCollider );
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
-											 SCION_CORE::ECS::PhysicsComponent& physics )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::Entity& entity,
+											 Scion::Core::ECS::PhysicsComponent& physics )
 {
 	DrawImGuiComponent( physics );
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
-											 SCION_CORE::ECS::RigidBodyComponent& rigidbody )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::Entity& entity,
+											 Scion::Core::ECS::RigidBodyComponent& rigidbody )
 {
 	DrawImGuiComponent( rigidbody );
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
-											 SCION_CORE::ECS::TextComponent& textComponent )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::Entity& entity,
+											 Scion::Core::ECS::TextComponent& textComponent )
 {
 	DrawImGuiComponent( textComponent );
 }
 
-void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
-											 SCION_CORE::ECS::Identification& identification )
+void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::Entity& entity,
+											 Scion::Core::ECS::Identification& identification )
 {
 
 	ImGui::SeparatorText( "Identificaton" );
@@ -810,4 +810,4 @@ void DrawComponentsUtil::DrawImGuiComponent( SCION_CORE::ECS::Entity& entity,
 	ImGui::PopID();
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

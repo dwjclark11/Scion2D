@@ -2,7 +2,7 @@
 #include "Core/States/State.h"
 #include "Logger/Logger.h"
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 StateMachine::StateMachine()
 	: StateMachine( sol::lua_nil_t{} )
@@ -213,4 +213,4 @@ void StateMachine::CreateLuaStateMachine( sol::state& lua )
 		"destroy",
 		&StateMachine::DestroyStates );
 }
-} // namespace SCION_CORE
+} // namespace Scion::Core

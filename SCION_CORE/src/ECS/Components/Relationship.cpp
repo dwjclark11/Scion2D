@@ -1,7 +1,7 @@
 #include "Core/ECS/Components/Relationship.h"
 #include "Core/ECS/Entity.h"
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 bool RelationshipUtils::IsAParentOf( Entity& entityA, Entity& entityB )
 {
@@ -184,4 +184,4 @@ void Relationship::CreateRelationshipLuaBind( sol::state& lua )
 		[]( Relationship& relations ) { return static_cast<uint32_t>( relations.firstChild ); } );
 }
 
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

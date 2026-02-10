@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include <string>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class Texture
 {
@@ -50,4 +50,4 @@ class Texture
 	bool m_bTileset;
 	bool m_bEditorTexture;
 };
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

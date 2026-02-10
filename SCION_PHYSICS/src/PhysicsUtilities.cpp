@@ -4,7 +4,7 @@
 #include <map>
 #include <algorithm>
 
-namespace SCION_PHYSICS
+namespace Scion::Physics
 {
 
 static const std::map<std::string, RigidBodyType> StringToRigidBodyType{ { "STATIC", RigidBodyType::STATIC },
@@ -91,7 +91,7 @@ bool AddCustomFilterCategoryType( const std::string& sNewFilterCatType, std::str
 	FilterCategory eFilterCat = catItr->second;
 
 	// Now we want to get the key and change the node name.
-	if ( !SCION_UTIL::KeyChange( StringToFilterCategory, sFilterCatToChange, sNewFilterCatType ) )
+	if ( !Scion::Utilities::KeyChange( StringToFilterCategory, sFilterCatToChange, sNewFilterCatType ) )
 	{
 		sErrorStr = "Failed to add new filter category. Unable to change the key.";
 		return false;
@@ -151,4 +151,4 @@ const std::map<RigidBodyType, std::string>& GetRigidBodyStringMap()
 	return RigidBodyTypeToString;
 }
 
-} // namespace SCION_PHYSICS
+} // namespace Scion::Physics

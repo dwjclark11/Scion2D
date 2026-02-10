@@ -1,4 +1,4 @@
-#include "ScriptCompiler.h"
+#include "editor/packaging/ScriptCompiler.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include "ScionUtilities/HelperUtilities.h"
 #include "ScionFilesystem/Utilities/FilesystemUtilities.h"
@@ -12,7 +12,7 @@ constexpr const std::string_view FIND_LUAC_COMMAND = "where luac";
 constexpr const std::string_view FIND_LUAC_COMMAND = "which luac";
 #endif
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
 ScriptCompiler::ScriptCompiler()
@@ -121,7 +121,7 @@ void ScriptCompiler::Compile()
 
 	sCommand += "\"";
 
-	const std::string sError = SCION_FILESYSTEM::ExecCmdWithErrorOutput( sCommand );
+	const std::string sError = Scion::Filesystem::ExecCmdWithErrorOutput( sCommand );
 
 	if ( !sError.empty() )
 	{
@@ -154,4 +154,4 @@ std::optional<std::string> ScriptCompiler::FindLuaCompiler()
 
 	return sResult.empty() ? std::nullopt : std::optional<std::string>{ sResult };
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

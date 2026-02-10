@@ -3,7 +3,7 @@
 
 constexpr int MAX_DECIMAL_PLACES = 5;
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 JSONSerializer::JSONSerializer( const std::string& sFilename, int maxDecimalPlaces )
 	: m_Filestream{}
@@ -141,4 +141,4 @@ JSONSerializer& JSONSerializer::AddKeyValuePair( const std::string& key, const b
 	return *this;
 }
 
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem

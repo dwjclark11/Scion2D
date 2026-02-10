@@ -115,17 +115,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 	```
 	vcpkg install fmt glm entt glad soil2 sdl2[alsa] sdl2-mixer[mpg123] lua sol2 stb tinyfiledialogs rapidjson libzippp tinyxml2
 	```
-- ImGui Docking and SDL2-Binding
-  * It seems like the ```ImGui[sdl2-binding]``` no longer exists in vcpkg. Also the current ```Imgui[docking-experimental]``` does not seem to be up to date either.
-  * For now, we grabbed the latest from the docking imgui branch and build with the editor. I have added the necessary files under the [thirdparty](https://github.com/dwjclark11/Scion2D/tree/master/thirdparty/imgui_backends) folder.
-  * These should already be setup in cmake.
-  * Will move back to using vcpkg bindings once the correct version is available.
-- Box2d Install
-  * There has been a huge change in the latest box2d that is a breaking change to our codebase.
-  * We are using Box2D 2.41, the latest 3.1, uses a C-API that is done in a completely different way.
-  * Eventually we are going to have to update the code to support the latest; however, we currently have a work around.
-  * Please see the ```Readme.md``` file here [SCION_PHYSICS](https://github.com/dwjclark11/Scion2D/tree/master/SCION_PHYSICS) for the workaround steps.
-    
+
 ## Clone the repository 
 ```
 git clone https://github.com/dwjclark11/Scion2D.git
@@ -133,8 +123,6 @@ cd Scion2D
 cmake -S . -B build
 ```
  
-* Also, in the main.lua file for the editor, comment out the loaded assets and files that don't exist. They will just error out.
-
 ## Use the built-in OpenGL debugger
 Note: this requires a graphics adapter with OpenGL version >= 4.3 capabilities.
 
@@ -143,17 +131,17 @@ In Scion2D/CMakeLists.txt:
 * Optionnaly, set the variable ```SCION_OPENGL_DEBUG_FORWARD_COMPATIBILITY``` to ```ON``` in order to enable warnings about deprecated OpenGL functions.
 
 Activate the debugger in your code as soon as you have a valid OpenGL context made current:
-* ```SCION_RENDERING::OpenGLDebugger::init()```.
+* ```Scion::Rendering::OpenGLDebugger::init()```.
 * Optionnaly, you can opt out a list of warning wy doing the following:
 	```
 	std::vector<unsigned int> ignore{ 1281, 131169, 131185, 131204, 31218 };
-	SCION_RENDERING::OpenGLDebugger::init( ignore );
+	Scion::Rendering::OpenGLDebugger::init( ignore );
 	```
 
-* To allow the debugger to break, call ```SCION_RENDERING::OpenGLDebugger::breakOnError( true/false )``` and/or ```SCION_RENDERING::OpenGLDebugger::breakOnWarning( true/false )```.
-* To ignore a specific warning, call ```SCION_RENDERING::OpenGLDebugger::push( Id )```.
-* To reinstate, call ```SCION_RENDERING::OpenGLDebugger::pop( Id )```.
-* To set the severity level, call ```SCION_RENDERING::OpenGLDebugger::setSeverityLevel( SCION_RENDERING::OpenGLDebuggerSeverity::Disable/Notification/Low/Medium/High )```.
+* To allow the debugger to break, call ```Scion::Rendering::OpenGLDebugger::breakOnError( true/false )``` and/or ```Scion::Rendering::OpenGLDebugger::breakOnWarning( true/false )```.
+* To ignore a specific warning, call ```Scion::Rendering::OpenGLDebugger::push( Id )```.
+* To reinstate, call ```Scion::Rendering::OpenGLDebugger::pop( Id )```.
+* To set the severity level, call ```Scion::Rendering::OpenGLDebugger::setSeverityLevel( Scion::Rendering::OpenGLDebuggerSeverity::Disable/Notification/Low/Medium/High )```.
 
 ## Force the discrete GPU on Optimus laptops
 In Scion2D/CMakeLists.txt:

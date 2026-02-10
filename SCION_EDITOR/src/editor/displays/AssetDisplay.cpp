@@ -1,5 +1,5 @@
-#include "AssetDisplay.h"
-#include "AssetDisplayUtils.h"
+#include "editor/displays/AssetDisplay.h"
+#include "editor/displays/AssetDisplayUtils.h"
 #include "ScionUtilities/ScionUtilities.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Scripting/InputManager.h"
@@ -31,7 +31,7 @@
 constexpr float DEFAULT_ASSET_SIZE = 64.f;
 constexpr ImVec2 DRAG_ASSET_SIZE = ImVec2{ 32.f, 32.f };
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 void AssetDisplay::SetAssetType()
 {
@@ -40,37 +40,37 @@ void AssetDisplay::SetAssetType()
 
 	if ( m_sSelectedType == "TEXTURES" )
 	{
-		m_eSelectedType = SCION_UTIL::AssetType::TEXTURE;
+		m_eSelectedType = Scion::Utilities::AssetType::TEXTURE;
 		m_sDragSource = std::string{ DROP_TEXTURE_SRC };
 	}
 	else if ( m_sSelectedType == "FONTS" )
 	{
-		m_eSelectedType = SCION_UTIL::AssetType::FONT;
+		m_eSelectedType = Scion::Utilities::AssetType::FONT;
 		m_sDragSource = std::string{ DROP_FONT_SRC };
 	}
 	else if ( m_sSelectedType == "SOUNDFX" )
 	{
-		m_eSelectedType = SCION_UTIL::AssetType::SOUNDFX;
+		m_eSelectedType = Scion::Utilities::AssetType::SOUNDFX;
 		m_sDragSource = std::string{ DROP_SOUNDFX_SRC };
 	}
 	else if ( m_sSelectedType == "MUSIC" )
 	{
-		m_eSelectedType = SCION_UTIL::AssetType::MUSIC;
+		m_eSelectedType = Scion::Utilities::AssetType::MUSIC;
 		m_sDragSource = std::string{ DROP_MUSIC_SRC };
 	}
 	else if ( m_sSelectedType == "SCENES" )
 	{
-		m_eSelectedType = SCION_UTIL::AssetType::SCENE;
+		m_eSelectedType = Scion::Utilities::AssetType::SCENE;
 		m_sDragSource = std::string{ DROP_SCENE_SRC };
 	}
 	else if ( m_sSelectedType == "PREFABS" )
 	{
-		m_eSelectedType = SCION_UTIL::AssetType::PREFAB;
+		m_eSelectedType = Scion::Utilities::AssetType::PREFAB;
 		m_sDragSource = std::string{ DROP_PREFAB_SRC };
 	}
 	else
 	{
-		m_eSelectedType = SCION_UTIL::AssetType::NO_TYPE;
+		m_eSelectedType = Scion::Utilities::AssetType::NO_TYPE;
 		m_sDragSource = "NO_ASSET_TYPE";
 	}
 
@@ -82,36 +82,36 @@ unsigned int AssetDisplay::GetTextureID( const std::string& sAssetName ) const
 	auto& assetManager = MAIN_REGISTRY().GetAssetManager();
 	switch ( m_eSelectedType )
 	{
-	case SCION_UTIL::AssetType::TEXTURE: {
+	case Scion::Utilities::AssetType::TEXTURE: {
 		auto pTexture = assetManager.GetTexture( sAssetName );
 		if ( pTexture )
 			return pTexture->GetID();
 
 		break;
 	}
-	case SCION_UTIL::AssetType::FONT: {
+	case Scion::Utilities::AssetType::FONT: {
 		auto pFont = assetManager.GetFont( sAssetName );
 		if ( pFont )
 			return pFont->GetFontAtlasID();
 
 		break;
 	}
-	case SCION_UTIL::AssetType::SOUNDFX:
-	case SCION_UTIL::AssetType::MUSIC: {
+	case Scion::Utilities::AssetType::SOUNDFX:
+	case Scion::Utilities::AssetType::MUSIC: {
 		auto pTexture = assetManager.GetTexture( "music_icon" );
 		if ( pTexture )
 			return pTexture->GetID();
 
 		break;
 	}
-	case SCION_UTIL::AssetType::SCENE: {
+	case Scion::Utilities::AssetType::SCENE: {
 		auto pTexture = assetManager.GetTexture( "scene_icon" );
 		if ( pTexture )
 			return pTexture->GetID();
 
 		break;
 	}
-	case SCION_UTIL::AssetType::PREFAB: {
+	case Scion::Utilities::AssetType::PREFAB: {
 		if ( auto pPrefab = assetManager.GetPrefab( sAssetName ) )
 		{
 			if ( auto& sprite = pPrefab->GetPrefabbedEntity().sprite )
@@ -135,7 +135,7 @@ bool AssetDisplay::DoRenameAsset( const std::string& sOldName, const std::string
 	if ( sNewName.empty() )
 		return false;
 
-	if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
+	if ( m_eSelectedType == Scion::Utilities::AssetType::SCENE )
 	{
 		return SCENE_MANAGER().ChangeSceneName( sOldName, sNewName );
 	}
@@ -158,7 +158,7 @@ void AssetDisplay::CheckRename( const std::string& sCheckName ) const
 
 	bool bHasAsset{ false };
 
-	if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
+	if ( m_eSelectedType == Scion::Utilities::AssetType::SCENE )
 	{
 		if ( SCENE_MANAGER().CheckHasScene( sCheckName ) )
 			bHasAsset = true;
@@ -188,7 +188,7 @@ void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 	if ( ImGui::Selectable( ICON_FA_TRASH " Delete" ) )
 	{
 		bool bSuccess{ false };
-		if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
+		if ( m_eSelectedType == Scion::Utilities::AssetType::SCENE )
 		{
 			if ( !SCENE_MANAGER().DeleteScene( sAssetName ) )
 			{
@@ -211,7 +211,7 @@ void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 		// There should be some sort of message to the user before deleting??
 		if ( bSuccess )
 		{
-			auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+			auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 			SCION_ASSERT( pProjectInfo && "Project Info must exist!" );
 			// Save entire project
 			ProjectLoader pl{};
@@ -231,13 +231,13 @@ void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 	ImGui::SeparatorText( "File Explorer" );
 	if ( ImGui::Selectable( ICON_FA_FILE_ALT " Open File Location" ) )
 	{
-		if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
+		if ( m_eSelectedType == Scion::Utilities::AssetType::SCENE )
 		{
 			std::string sScenePath = SCENE_MANAGER().GetSceneFilepath( sAssetName );
 			if ( !sScenePath.empty() )
 			{
-				SCION_FILESYSTEM::FileProcessor fp{};
-				if ( !fp.OpenFileLocation( SCION_FILESYSTEM::NormalizePath( sScenePath ) ) )
+				Scion::Filesystem::FileProcessor fp{};
+				if ( !fp.OpenFileLocation( Scion::Filesystem::NormalizePath( sScenePath ) ) )
 				{
 					SCION_ERROR( "Failed to open file location [{}]", sScenePath );
 				}
@@ -248,8 +248,8 @@ void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 			std::string sAssetPath = ASSET_MANAGER().GetAssetFilepath( sAssetName, m_eSelectedType );
 			if ( !sAssetPath.empty() )
 			{
-				SCION_FILESYSTEM::FileProcessor fp{};
-				if ( !fp.OpenFileLocation( SCION_FILESYSTEM::NormalizePath( sAssetPath ) ) )
+				Scion::Filesystem::FileProcessor fp{};
+				if ( !fp.OpenFileLocation( Scion::Filesystem::NormalizePath( sAssetPath ) ) )
 				{
 					SCION_ERROR( "Failed to open file location [{}]", sAssetPath );
 				}
@@ -260,7 +260,7 @@ void AssetDisplay::OpenAssetContext( const std::string& sAssetName )
 
 void AssetDisplay::DrawSoundContext( const std::string& sAssetName )
 {
-	if ( m_eSelectedType == SCION_UTIL::AssetType::MUSIC )
+	if ( m_eSelectedType == Scion::Utilities::AssetType::MUSIC )
 	{
 		ImGui::SeparatorText( "Music Controls" );
 		auto& musicPlayer = MAIN_REGISTRY().GetMusicPlayer();
@@ -292,7 +292,7 @@ void AssetDisplay::DrawSoundContext( const std::string& sAssetName )
 			}
 		}
 	}
-	else if ( m_eSelectedType == SCION_UTIL::AssetType::SOUNDFX )
+	else if ( m_eSelectedType == Scion::Utilities::AssetType::SOUNDFX )
 	{
 		ImGui::SeparatorText( "Sound Controls" );
 		auto& soundPlayer = MAIN_REGISTRY().GetSoundPlayer();
@@ -333,7 +333,7 @@ void AssetDisplay::DrawSelectedAssets()
 
 	std::vector<std::string> assetNames{};
 
-	if ( m_eSelectedType == SCION_UTIL::AssetType::SCENE )
+	if ( m_eSelectedType == Scion::Utilities::AssetType::SCENE )
 	{
 		assetNames = SCENE_MANAGER().GetSceneNames();
 	}
@@ -382,7 +382,7 @@ void AssetDisplay::DrawSelectedAssets()
 			std::string sCheckName{ m_sRenameBuf.data() };
 			std::string assetBtn = "##asset" + std::to_string( id );
 
-			if ( m_eSelectedType == SCION_UTIL::AssetType::PREFAB )
+			if ( m_eSelectedType == Scion::Utilities::AssetType::PREFAB )
 			{
 				if ( auto pPrefab = assetManager.GetPrefab( *assetItr ) )
 				{
@@ -494,7 +494,7 @@ AssetDisplay::AssetDisplay()
 	, m_sSelectedType{ "TEXTURES" }
 	, m_sDragSource{}
 	, m_sRenameBuf{}
-	, m_eSelectedType{ SCION_UTIL::AssetType::TEXTURE }
+	, m_eSelectedType{ Scion::Utilities::AssetType::TEXTURE }
 	, m_AssetSize{ DEFAULT_ASSET_SIZE }
 	, m_SelectedID{ -1 }
 {
@@ -590,4 +590,4 @@ void AssetDisplay::DrawToolbar()
 	ImGui::Separator();
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

@@ -4,9 +4,9 @@
 #include <memory>
 #include <stdexcept>
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
-std::string SCION_FILESYSTEM::ExecCmdWithErrorOutput( const std::string& sCmd )
+std::string Scion::Filesystem::ExecCmdWithErrorOutput( const std::string& sCmd )
 {
 	std::array<char, 128> buffer;
 	std::string sResult{};
@@ -36,4 +36,4 @@ std::string NormalizePath( const std::string& sPath )
 	fs::path path{ sPath };
 	return path.make_preferred().string();
 }
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem

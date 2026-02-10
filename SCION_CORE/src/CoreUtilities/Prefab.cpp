@@ -25,12 +25,12 @@ namespace fs = std::filesystem;
 
 #include "Logger/Logger.h"
 
-using namespace SCION_FILESYSTEM;
-using namespace SCION_CORE::ECS;
+using namespace Scion::Filesystem;
+using namespace Scion::Core::ECS;
 
-using namespace SCION_UTIL::StringUtils;
+using namespace Scion::Utilities::StringUtils;
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 Prefab::Prefab()
@@ -56,10 +56,10 @@ Prefab::Prefab( EPrefabType eType, const PrefabbedEntity& prefabbed )
 	m_sName = prefabbed.id->name + "_pfab";
 	m_Entity.id->name = m_sName;
 
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 	SCION_ASSERT( pProjectInfo && "Project Info must exist!" );
 
-	auto optPrefabPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::Prefabs );
+	auto optPrefabPath = pProjectInfo->TryGetFolderPath( Scion::Core::EProjectFolderType::Prefabs );
 	SCION_ASSERT( optPrefabPath && "Prefab folder path not set correctly." );
 
 	fs::path prefabPath = *optPrefabPath / fs::path{ m_sName + ".json" };
@@ -361,7 +361,7 @@ bool Prefab::Save()
 	return true;
 }
 
-std::shared_ptr<Prefab> PrefabCreator::CreatePrefab( EPrefabType eType, SCION_CORE::ECS::Entity& entityToPrefab )
+std::shared_ptr<Prefab> PrefabCreator::CreatePrefab( EPrefabType eType, Scion::Core::ECS::Entity& entityToPrefab )
 {
 	PrefabbedEntity prefabbed{};
 
@@ -450,8 +450,8 @@ std::shared_ptr<Prefab> PrefabCreator::CreatePrefab( const std::string& sPrefabP
 	return nullptr;
 }
 
-std::shared_ptr<SCION_CORE::ECS::Entity> PrefabCreator::AddPrefabToScene( const Prefab& prefab,
-																		  SCION_CORE::ECS::Registry& registry )
+std::shared_ptr<Scion::Core::ECS::Entity> PrefabCreator::AddPrefabToScene( const Prefab& prefab,
+																		  Scion::Core::ECS::Registry& registry )
 {
 	const auto& prefabbed = prefab.GetPrefabbedEntity();
 
@@ -470,7 +470,7 @@ std::shared_ptr<SCION_CORE::ECS::Entity> PrefabCreator::AddPrefabToScene( const 
 
 	sTag = sCheckTag;
 
-	auto newEnt = std::make_shared<SCION_CORE::ECS::Entity>( &registry, sTag, prefabbed.id->group );
+	auto newEnt = std::make_shared<Scion::Core::ECS::Entity>( &registry, sTag, prefabbed.id->group );
 
 	newEnt->AddComponent<TransformComponent>( prefabbed.transform );
 	if ( prefabbed.sprite )
@@ -539,4 +539,4 @@ bool PrefabCreator::DeletePrefab( Prefab& prefabToDelete )
 	return true;
 }
 
-} // namespace SCION_CORE
+} // namespace Scion::Core

@@ -6,7 +6,7 @@ constexpr int MAX_LOOP_FAIL_CHECK = 100;
 constexpr GLuint NUM_VERTICES = 6;
 constexpr float MIN_TEXT_WRAP = 100.f;
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 void TextBatchRenderer::Initialize()
@@ -249,4 +249,4 @@ void TextBatchRenderer::AddText( const std::string& text, const std::shared_ptr<
 	);
 	// clang-format on
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

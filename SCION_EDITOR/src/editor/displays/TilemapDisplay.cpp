@@ -1,4 +1,4 @@
-#include "TilemapDisplay.h"
+#include "editor/displays/TilemapDisplay.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/Resources/AssetManager.h"
@@ -43,7 +43,7 @@
 #include "Windowing/Inputs/Mouse.h"
 #include "Windowing/Inputs/Keyboard.h"
 
-using namespace SCION_WINDOWING::Inputs;
+using namespace Scion::Windowing::Inputs;
 
 
 #include "Logger/Logger.h"
@@ -53,18 +53,18 @@ using namespace SCION_WINDOWING::Inputs;
 #include <signal.h>
 #endif
 
-using namespace SCION_CORE::ECS;
-using namespace SCION_CORE::Systems;
-using namespace SCION_RENDERING;
+using namespace Scion::Core::ECS;
+using namespace Scion::Core::Systems;
+using namespace Scion::Rendering;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 void TilemapDisplay::RenderTilemap()
 {
 	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
-	auto& renderer = mainRegistry.GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
+	auto& renderer = mainRegistry.GetContext<std::shared_ptr<Scion::Rendering::Renderer>>();
 
 	auto& renderSystem = mainRegistry.GetContext<EditorRenderSystemPtr>();
 	auto& renderUISystem = mainRegistry.GetRenderUISystem();
@@ -101,9 +101,9 @@ void TilemapDisplay::RenderTilemap()
 				}
 				else
 				{
-					SCION_CORE::ECS::Entity checkedEntity{ pCurrentScene->GetRegistryPtr(),
+					Scion::Core::ECS::Entity checkedEntity{ pCurrentScene->GetRegistryPtr(),
 														   static_cast<entt::entity>( id ) };
-					if ( checkedEntity.HasComponent<SCION_CORE::ECS::TileComponent>() )
+					if ( checkedEntity.HasComponent<Scion::Core::ECS::TileComponent>() )
 					{
 						id = entt::null;
 					}
@@ -252,9 +252,9 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 	startPosition = mousePos;
 }
 
-void TilemapDisplay::HandleKeyPressedEvent( const SCION_CORE::Events::KeyEvent& keyEvent )
+void TilemapDisplay::HandleKeyPressedEvent( const Scion::Core::Events::KeyEvent& keyEvent )
 {
-	if ( !m_bWindowActive || keyEvent.eType == SCION_CORE::Events::EKeyEventType::Released )
+	if ( !m_bWindowActive || keyEvent.eType == Scion::Core::Events::EKeyEventType::Released )
 		return;
 
 	// No need to change the tools if there is no scene loaded.
@@ -281,14 +281,14 @@ void TilemapDisplay::HandleKeyPressedEvent( const SCION_CORE::Events::KeyEvent& 
 	else if ( keyEvent.key == SCION_KEY_Y )
 	{
 		// IsoGrid scenes are not currently supported for rect tool.
-		if ( pCurrentScene->GetMapType() == SCION_CORE::EMapType::Grid )
+		if ( pCurrentScene->GetMapType() == Scion::Core::EMapType::Grid )
 		{
 			TOOL_MANAGER().SetToolActive( EToolType::RECT_FILL_TILE );
 		}
 	}
 }
 
-void TilemapDisplay::AddPrefabbedEntityToScene( const SCION_CORE::PrefabbedEntity& prefabbed )
+void TilemapDisplay::AddPrefabbedEntityToScene( const Scion::Core::PrefabbedEntity& prefabbed )
 {
 	auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject();
 	if ( !pCurrentScene )
@@ -302,7 +302,7 @@ void TilemapDisplay::AddPrefabbedEntityToScene( const SCION_CORE::PrefabbedEntit
 		++count;
 	}
 
-	SCION_CORE::ECS::Entity newEnt{ pCurrentScene->GetRegistryPtr(), sTag, prefabbed.id->group };
+	Scion::Core::ECS::Entity newEnt{ pCurrentScene->GetRegistryPtr(), sTag, prefabbed.id->group };
 
 	newEnt.AddComponent<TransformComponent>( prefabbed.transform );
 	if ( prefabbed.sprite )
@@ -451,7 +451,7 @@ void TilemapDisplay::DrawToolbar()
 	bool bIsoScene{ false };
 	if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentScene() )
 	{
-		bIsoScene = pCurrentScene->GetMapType() == SCION_CORE::EMapType::IsoGrid;
+		bIsoScene = pCurrentScene->GetMapType() == Scion::Core::EMapType::IsoGrid;
 	}
 
 	if ( bIsoScene )
@@ -501,12 +501,12 @@ void TilemapDisplay::DrawToolbar()
 }
 
 TilemapDisplay::TilemapDisplay()
-	: m_pTilemapCam{ std::make_unique<SCION_RENDERING::Camera2D>() }
+	: m_pTilemapCam{ std::make_unique<Scion::Rendering::Camera2D>() }
 	, m_bWindowActive{ false }
 {
-	ADD_EVENT_HANDLER( SCION_CORE::Events::KeyEvent, &TilemapDisplay::HandleKeyPressedEvent, *this );
+	ADD_EVENT_HANDLER( Scion::Core::Events::KeyEvent, &TilemapDisplay::HandleKeyPressedEvent, *this );
 
-	if (auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>())
+	if (auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>())
 	{
 		if (!pProjectInfo->GetDefaultScene().empty() && SCENE_MANAGER().GetCurrentScene())
 		{
@@ -652,4 +652,4 @@ void TilemapDisplay::Update()
 	pCurrentScene->GetRegistry().ClearPendingEntities();
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

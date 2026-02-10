@@ -2,7 +2,7 @@
 #include "Batcher.h"
 #include "Rendering/Essentials/BatchTypes.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class PickingBatchRenderer : public Batcher<Batch, PickingGlyph>
 {
@@ -39,4 +39,4 @@ class PickingBatchRenderer : public Batcher<Batch, PickingGlyph>
 	void Initialize();
 	virtual void GenerateBatches() override;
 };
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

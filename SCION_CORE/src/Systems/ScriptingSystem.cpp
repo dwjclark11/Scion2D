@@ -47,11 +47,11 @@
 
 namespace fs = std::filesystem;
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 using namespace SCION_RESOURCES;
-using namespace SCION_CORE::Events;
+using namespace Scion::Core::Events;
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 
 ScriptingSystem::ScriptingSystem()
@@ -59,7 +59,7 @@ ScriptingSystem::ScriptingSystem()
 {
 }
 
-bool ScriptingSystem::LoadMainScript( const std::string& sMainLuaFile, SCION_CORE::ECS::Registry& registry,
+bool ScriptingSystem::LoadMainScript( const std::string& sMainLuaFile, Scion::Core::ECS::Registry& registry,
 									  sol::state& lua )
 {
 	std::error_code ec;
@@ -119,13 +119,13 @@ bool ScriptingSystem::LoadMainScript( const std::string& sMainLuaFile, SCION_COR
 	return true;
 }
 
-bool ScriptingSystem::LoadMainScript( SCION_CORE::ProjectInfo& projectInfo, SCION_CORE::ECS::Registry& registry,
+bool ScriptingSystem::LoadMainScript( Scion::Core::ProjectInfo& projectInfo, Scion::Core::ECS::Registry& registry,
 									  sol::state& lua )
 {
 	
 	auto optScriptListPath = projectInfo.GetScriptListPath();
 	SCION_ASSERT( optScriptListPath && "Script List Path not setup correctly in project info." );
-	auto optContentPath = projectInfo.TryGetFolderPath( SCION_CORE::EProjectFolderType::Content );
+	auto optContentPath = projectInfo.TryGetFolderPath( Scion::Core::EProjectFolderType::Content );
 	SCION_ASSERT( optContentPath && "Content Path not setup correctly in project info." );
 
 	// Try to load script list files.
@@ -180,7 +180,7 @@ bool ScriptingSystem::LoadMainScript( SCION_CORE::ProjectInfo& projectInfo, SCIO
 	return LoadMainScript( optMainLuaScript->string(), registry, lua );
 }
 
-void ScriptingSystem::Update( SCION_CORE::ECS::Registry& registry )
+void ScriptingSystem::Update( Scion::Core::ECS::Registry& registry )
 {
 	if ( !m_bMainLoaded )
 	{
@@ -202,7 +202,7 @@ void ScriptingSystem::Update( SCION_CORE::ECS::Registry& registry )
 	}
 }
 
-void ScriptingSystem::Render( SCION_CORE::ECS::Registry& registry )
+void ScriptingSystem::Render( Scion::Core::ECS::Registry& registry )
 {
 	if ( !m_bMainLoaded )
 	{
@@ -225,7 +225,7 @@ void ScriptingSystem::Render( SCION_CORE::ECS::Registry& registry )
 }
 
 auto create_timer = []( sol::state& lua ) {
-	using namespace SCION_UTIL;
+	using namespace Scion::Utilities;
 	lua.new_usertype<Timer>( "Timer",
 							 sol::call_constructor,
 							 sol::constructors<Timer()>(),
@@ -255,7 +255,7 @@ auto create_timer = []( sol::state& lua ) {
 };
 
 auto createTweenLuaBind = []( sol::state& lua ) {
-	using namespace SCION_UTIL;
+	using namespace Scion::Utilities;
 
 	// We only need to expose the easing function type to the user not how it was implemented.
 	lua.new_enum<EEasingFunc>( "EasingFuncType",
@@ -292,9 +292,9 @@ auto createTweenLuaBind = []( sol::state& lua ) {
 };
 
 auto create_lua_logger = []( sol::state& lua ) {
-	auto& logger = SCION_LOGGER::Logger::GetInstance();
+	auto& logger = Scion::Logger::Logger::GetInstance();
 
-	lua.new_usertype<SCION_LOGGER::Logger>(
+	lua.new_usertype<Scion::Logger::Logger>(
 		"Logger",
 		sol::no_constructor,
 		"log",
@@ -402,27 +402,27 @@ auto create_lua_logger = []( sol::state& lua ) {
 			)" );
 };
 
-void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+void ScriptingSystem::RegisterLuaBindings( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
-	SCION_CORE::Scripting::GLMBindings::CreateGLMBindings( lua );
-	SCION_CORE::InputManager::CreateLuaInputBindings( lua, registry );
+	Scion::Core::Scripting::GLMBindings::CreateGLMBindings( lua );
+	Scion::Core::InputManager::CreateLuaInputBindings( lua, registry );
 	SCION_RESOURCES::AssetManager::CreateLuaAssetManager( lua );
-	SCION_CORE::Scripting::SoundBinder::CreateSoundBind( lua );
-	SCION_CORE::Scripting::RendererBinder::CreateRenderingBind( lua, registry );
-	SCION_CORE::Scripting::UserDataBinder::CreateLuaUserData( lua );
-	SCION_CORE::Scripting::LuaFilesystem::CreateLuaFileSystemBind( lua );
-	SCION_CORE::Scripting::ScriptingHelpers::CreateLuaHelpers( lua );
+	Scion::Core::Scripting::SoundBinder::CreateSoundBind( lua );
+	Scion::Core::Scripting::RendererBinder::CreateRenderingBind( lua, registry );
+	Scion::Core::Scripting::UserDataBinder::CreateLuaUserData( lua );
+	Scion::Core::Scripting::LuaFilesystem::CreateLuaFileSystemBind( lua );
+	Scion::Core::Scripting::ScriptingHelpers::CreateLuaHelpers( lua );
 
-	SCION_CORE::FollowCamera::CreateLuaFollowCamera( lua, registry );
-	SCION_CORE::Character::CreateCharacterLuaBind( lua, registry );
+	Scion::Core::FollowCamera::CreateLuaFollowCamera( lua, registry );
+	Scion::Core::Character::CreateCharacterLuaBind( lua, registry );
 
 	create_timer( lua );
 	create_lua_logger( lua );
 	createTweenLuaBind( lua );
 
-	SCION_CORE::State::CreateLuaStateBind( lua );
-	SCION_CORE::StateStack::CreateLuaStateStackBind( lua );
-	SCION_CORE::StateMachine::CreateLuaStateMachine( lua );
+	Scion::Core::State::CreateLuaStateBind( lua );
+	Scion::Core::StateStack::CreateLuaStateStackBind( lua );
+	Scion::Core::StateMachine::CreateLuaStateMachine( lua );
 
 	Registry::CreateLuaRegistryBind( lua, registry );
 	Entity::CreateLuaEntityBind( lua, registry );
@@ -437,12 +437,12 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Reg
 
 	if ( CORE_GLOBALS().IsPhysicsEnabled() )
 	{
-		SCION_CORE::Scripting::ContactListenerBinder::CreateLuaContactListener( lua, registry.GetRegistry() );
+		Scion::Core::Scripting::ContactListenerBinder::CreateLuaContactListener( lua, registry.GetRegistry() );
 		PhysicsComponent::CreatePhysicsLuaBind( lua, registry.GetRegistry() );
 	}
 }
 
-void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 
@@ -510,7 +510,7 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 			},
 			[&](const TextComponent& text, const TransformComponent& transform)
 			{
-				return SCION_CORE::GetTextBlockSize(text, transform, assetManager);
+				return Scion::Core::GetTextBlockSize(text, transform, assetManager);
 			}
 		)
 	);
@@ -539,29 +539,29 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Re
 
 	lua.set_function( "S2D_GetProjecPath", [ & ] { return engine.GetProjectPath(); } );
 
-	lua.new_usertype<SCION_UTIL::RandomIntGenerator>(
+	lua.new_usertype<Scion::Utilities::RandomIntGenerator>(
 		"RandomInt",
 		sol::call_constructor,
-		sol::constructors<SCION_UTIL::RandomIntGenerator( uint32_t, uint32_t ), SCION_UTIL::RandomIntGenerator()>(),
+		sol::constructors<Scion::Utilities::RandomIntGenerator( uint32_t, uint32_t ), Scion::Utilities::RandomIntGenerator()>(),
 		"get_value",
-		&SCION_UTIL::RandomIntGenerator::GetValue );
+		&Scion::Utilities::RandomIntGenerator::GetValue );
 
-	lua.new_usertype<SCION_UTIL::RandomFloatGenerator>(
+	lua.new_usertype<Scion::Utilities::RandomFloatGenerator>(
 		"RandomFloat",
 		sol::call_constructor,
-		sol::constructors<SCION_UTIL::RandomFloatGenerator( float, float ), SCION_UTIL::RandomFloatGenerator()>(),
+		sol::constructors<Scion::Utilities::RandomFloatGenerator( float, float ), Scion::Utilities::RandomFloatGenerator()>(),
 		"get_value",
-		&SCION_UTIL::RandomFloatGenerator::GetValue );
+		&Scion::Utilities::RandomFloatGenerator::GetValue );
 
 	lua.set_function( "S2D_EntityInView", [ & ]( const TransformComponent& transform, float width, float height ) {
-		auto& camera = registry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
-		return SCION_CORE::EntityInView( transform, width, height, *camera );
+		auto& camera = registry.GetContext<std::shared_ptr<Scion::Rendering::Camera2D>>();
+		return Scion::Core::EntityInView( transform, width, height, *camera );
 	} );
 
 	Scene::CreateLuaBind( lua );
 }
 
-void ScriptingSystem::RegisterLuaEvents( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+void ScriptingSystem::RegisterLuaEvents( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
 	auto* pDispatcher = registry.TryGetContext<std::shared_ptr<EventDispatcher>>();
 	SCION_ASSERT( pDispatcher && "There must be at least one registered dispatcher." );
@@ -574,11 +574,11 @@ void ScriptingSystem::RegisterLuaEvents( sol::state& lua, SCION_CORE::ECS::Regis
 	EventDispatcher::CreateEventDispatcherLuaBind( lua, **pDispatcher );
 }
 
-void ScriptingSystem::RegisterLuaSystems( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+void ScriptingSystem::RegisterLuaSystems( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
-	SCION_CORE::Systems::RenderSystem::CreateRenderSystemLuaBind( lua, registry );
-	SCION_CORE::Systems::RenderUISystem::CreateRenderUISystemLuaBind( lua );
-	SCION_CORE::Systems::AnimationSystem::CreateAnimationSystemLuaBind( lua, registry );
+	Scion::Core::Systems::RenderSystem::CreateRenderSystemLuaBind( lua, registry );
+	Scion::Core::Systems::RenderUISystem::CreateRenderUISystemLuaBind( lua );
+	Scion::Core::Systems::AnimationSystem::CreateAnimationSystemLuaBind( lua, registry );
 }
 
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

@@ -1,8 +1,8 @@
 #pragma once
 
-#define CORE_GLOBALS() SCION_CORE::CoreEngineData::GetInstance()
+#define CORE_GLOBALS() Scion::Core::CoreEngineData::GetInstance()
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 enum class EGameType
@@ -102,4 +102,4 @@ class CoreEngineData
 
 	EGameType m_eGameType{ EGameType::NoType };
 };
-} // namespace SCION_CORE
+} // namespace Scion::Core

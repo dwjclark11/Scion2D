@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 #pragma pack( push, 1 )
 

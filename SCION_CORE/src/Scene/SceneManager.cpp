@@ -6,9 +6,9 @@
 #include "Core/ECS/Registry.h"
 #include "Core/Loaders/TilemapLoader.h"
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 SceneManager::SceneManager()
@@ -18,7 +18,7 @@ SceneManager::SceneManager()
 {
 }
 
-bool SceneManager::AddScene( const std::string& sSceneName, SCION_CORE::EMapType eType )
+bool SceneManager::AddScene( const std::string& sSceneName, Scion::Core::EMapType eType )
 {
 	if ( m_mapScenes.contains( sSceneName ) )
 	{
@@ -65,7 +65,7 @@ Scene* SceneManager::GetCurrentScene()
 
 std::vector<std::string> SceneManager::GetSceneNames() const
 {
-	return SCION_UTIL::GetKeys( m_mapScenes );
+	return Scion::Utilities::GetKeys( m_mapScenes );
 }
 
 bool SceneManager::LoadCurrentScene()
@@ -95,7 +95,7 @@ bool SceneManager::CheckHasScene( const std::string& sSceneName )
 
 bool SceneManager::ChangeSceneName( const std::string& sOldName, const std::string& sNewName )
 {
-	return SCION_UTIL::KeyChange( m_mapScenes, sOldName, sNewName );
+	return Scion::Utilities::KeyChange( m_mapScenes, sOldName, sNewName );
 }
 
 void SceneManager::CreateLuaBind( sol::state& lua, ECS::Registry& registry )
@@ -134,7 +134,7 @@ void SceneManager::CreateLuaBind( sol::state& lua, ECS::Registry& registry )
 
 			registry.DestroyEntities();
 
-			SCION_CORE::Loaders::TilemapLoader tl{};
+			Scion::Core::Loaders::TilemapLoader tl{};
 
 			tl.LoadTilemapFromLuaTable( registry, lua[ sSceneName + "_tilemap" ] );
 			tl.LoadGameObjectsFromLuaTable( registry, lua[ sSceneName + "_objects" ] );
@@ -147,7 +147,7 @@ void SceneManager::CreateLuaBind( sol::state& lua, ECS::Registry& registry )
 			if ( !pSceneManagerData )
 			{
 				SCION_ERROR( "Scene manager data was not set correctly." );
-				return SCION_CORE::Canvas{};
+				return Scion::Core::Canvas{};
 			}
 
 			sol::optional<sol::table> optSceneData = lua[ (*pSceneManagerData)->sSceneName + "_data" ];
@@ -155,14 +155,14 @@ void SceneManager::CreateLuaBind( sol::state& lua, ECS::Registry& registry )
 			{
 				if ( sol::optional<sol::table> optCanvas = ( *optSceneData )[ "canvas" ] )
 				{
-					return SCION_CORE::Canvas{ .width = ( *optCanvas )[ "width" ].get_or( 640 ),
+					return Scion::Core::Canvas{ .width = ( *optCanvas )[ "width" ].get_or( 640 ),
 											   .height = ( *optCanvas )[ "height" ].get_or( 480 ),
 											   .tileWidth = ( *optCanvas )[ "tileWidth" ].get_or( 16 ),
 											   .tileHeight = ( *optCanvas )[ "tileHeight" ].get_or( 16 ) };
 				}
 			}
 
-			return SCION_CORE::Canvas{};
+			return Scion::Core::Canvas{};
 		},
 		"getDefaultMusic",
 		[ & ] {
@@ -202,4 +202,4 @@ void SceneManager::CreateLuaBind( sol::state& lua, ECS::Registry& registry )
 		} );
 }
 
-} // namespace SCION_CORE
+} // namespace Scion::Core

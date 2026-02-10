@@ -1,7 +1,7 @@
 #include "Windowing/Inputs/Keyboard.h"
 #include <Logger/Logger.h>
 
-namespace SCION_WINDOWING::Inputs
+namespace Scion::Windowing::Inputs
 {
 
 Keyboard::Keyboard()
@@ -229,4 +229,4 @@ const bool Keyboard::IsKeyJustReleased( int key ) const
 
 	return keyItr->second.bJustReleased;
 }
-} // namespace SCION_WINDOWING::Inputs
+} // namespace Scion::Windowing::Inputs

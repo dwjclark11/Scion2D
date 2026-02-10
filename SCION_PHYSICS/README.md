@@ -35,3 +35,5 @@ Use this cmd for that in the cmdline:
 
 ```vcpkg list```
 
+### OVERLAYS HAVE BEEN REMOVED
+Overlay ports have been removed, we are now using FetchContent to grab the desired box2d 2.4.2 src and build it directly.

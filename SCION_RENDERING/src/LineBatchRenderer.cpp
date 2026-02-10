@@ -1,6 +1,6 @@
 #include "Rendering/Core/LineBatchRenderer.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 void LineBatchRenderer::GenerateBatches()
@@ -78,4 +78,4 @@ void LineBatchRenderer::AddLine( const Line& line )
 	);
 	// clang-format on
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

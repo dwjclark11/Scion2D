@@ -2,7 +2,7 @@
 #include <stb_truetype.h>
 #include <iostream>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 Font::Font( GLuint fontAtlasID, int width, int height, float fontSize, void* data, float fontAscent,
@@ -76,4 +76,4 @@ void Font::GetNextCharPos( char c, glm::vec2& pos )
 		stbtt_GetBakedQuad( (stbtt_bakedchar*)( m_pData ), m_Width, m_Height, c - 32, &pos.x, &pos.y, &quad, 1 );
 	}
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

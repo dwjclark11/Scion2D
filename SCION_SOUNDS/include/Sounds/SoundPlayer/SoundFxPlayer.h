@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SCION_SOUNDS
+namespace Scion::Sounds
 {
 class SoundFxPlayer
 {
@@ -44,4 +44,4 @@ class SoundFxPlayer
 	 */
 	bool IsPlaying( int channel );
 };
-} // namespace SCION_SOUNDS
+} // namespace Scion::Sounds

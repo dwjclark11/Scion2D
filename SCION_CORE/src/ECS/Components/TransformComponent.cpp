@@ -1,7 +1,7 @@
 #include "Core/ECS/Components/TransformComponent.h"
 #include <entt/entt.hpp>
 
-std::string SCION_CORE::ECS::TransformComponent::to_string()
+std::string Scion::Core::ECS::TransformComponent::to_string()
 {
 	std::stringstream ss;
 	ss << "==== Transform Component ==== \n"
@@ -14,7 +14,7 @@ std::string SCION_CORE::ECS::TransformComponent::to_string()
 	return ss.str();
 }
 
-void SCION_CORE::ECS::TransformComponent::CreateLuaTransformBind( sol::state& lua )
+void Scion::Core::ECS::TransformComponent::CreateLuaTransformBind( sol::state& lua )
 {
 	lua.new_usertype<TransformComponent>(
 		"Transform",

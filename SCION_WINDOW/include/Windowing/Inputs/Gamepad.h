@@ -3,7 +3,7 @@
 #include "Button.h"
 #include <ScionUtilities/SDL_Wrappers.h>
 
-namespace SCION_WINDOWING::Inputs
+namespace Scion::Windowing::Inputs
 {
 class Gamepad
 {
@@ -146,4 +146,4 @@ class Gamepad
 	Uint8 m_JoystickHatValue;
 	std::string m_sName;
 };
-} // namespace SCION_WINDOWING::Inputs
+} // namespace Scion::Windowing::Inputs

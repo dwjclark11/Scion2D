@@ -7,7 +7,7 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include <stb_truetype.h>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 std::shared_ptr<Font> FontLoader::Create( const std::string& fontPath, float fontSize, int width, int height )
@@ -110,4 +110,4 @@ std::shared_ptr<Font> FontLoader::CreateFromMemory( const unsigned char* fontDat
 
 	return std::make_shared<Font>( fontId, width, height, fontSize, data, fontAscent );
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

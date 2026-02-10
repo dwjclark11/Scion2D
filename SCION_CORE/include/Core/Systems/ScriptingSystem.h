@@ -1,7 +1,7 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 struct ProjectInfo;
@@ -10,9 +10,9 @@ namespace ECS
 {
 class Registry;
 }
-} // namespace SCION_CORE
+} // namespace Scion::Core
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 class ScriptingSystem
 {
@@ -20,19 +20,19 @@ class ScriptingSystem
 	ScriptingSystem();
 	~ScriptingSystem() = default;
 
-	bool LoadMainScript( const std::string& sMainLuaFile, SCION_CORE::ECS::Registry& registry, sol::state& lua );
-	bool LoadMainScript( SCION_CORE::ProjectInfo& projectInfo, SCION_CORE::ECS::Registry& registry, sol::state& lua );
+	bool LoadMainScript( const std::string& sMainLuaFile, Scion::Core::ECS::Registry& registry, sol::state& lua );
+	bool LoadMainScript( Scion::Core::ProjectInfo& projectInfo, Scion::Core::ECS::Registry& registry, sol::state& lua );
 
-	void Update( SCION_CORE::ECS::Registry& registry );
-	void Render( SCION_CORE::ECS::Registry& registry );
+	void Update( Scion::Core::ECS::Registry& registry );
+	void Render( Scion::Core::ECS::Registry& registry );
 
-	static void RegisterLuaBindings( sol::state& lua, SCION_CORE::ECS::Registry& registry );
-	static void RegisterLuaFunctions( sol::state& lua, SCION_CORE::ECS::Registry& registry );
-	static void RegisterLuaEvents( sol::state& lua, SCION_CORE::ECS::Registry& registry );
-	static void RegisterLuaSystems( sol::state& lua, SCION_CORE::ECS::Registry& registry );
+	static void RegisterLuaBindings( sol::state& lua, Scion::Core::ECS::Registry& registry );
+	static void RegisterLuaFunctions( sol::state& lua, Scion::Core::ECS::Registry& registry );
+	static void RegisterLuaEvents( sol::state& lua, Scion::Core::ECS::Registry& registry );
+	static void RegisterLuaSystems( sol::state& lua, Scion::Core::ECS::Registry& registry );
 
   private:
 	bool m_bMainLoaded;
 };
 
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

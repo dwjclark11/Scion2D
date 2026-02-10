@@ -1,7 +1,7 @@
-#include "EditorStyleToolDisplay.h"
+#include "editor/displays/EditorStyleToolDisplay.h"
 #include <imgui.h>
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
 void EditorStyleToolDisplay::DrawSizePicker()
@@ -148,4 +148,4 @@ void EditorStyleToolDisplay::Draw()
 	DrawColorPicker();
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

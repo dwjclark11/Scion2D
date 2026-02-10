@@ -14,7 +14,7 @@
 #include "UIComponent.h"
 #include "PersistentComponent.h"
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 enum class EUneditableType
 {
@@ -31,4 +31,4 @@ struct UneditableComponent
 	EUneditableType eType{ EUneditableType::PlayerStart };
 };
 
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

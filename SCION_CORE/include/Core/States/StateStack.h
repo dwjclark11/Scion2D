@@ -2,7 +2,7 @@
 #include <vector>
 #include <sol/sol.hpp>
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 struct State;
 
@@ -27,4 +27,4 @@ class StateStack
 	std::vector<State> m_States{};
 	std::unique_ptr<State> m_pStateHolder{ nullptr };
 };
-} // namespace SCION_CORE
+} // namespace Scion::Core

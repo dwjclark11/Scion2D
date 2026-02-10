@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <sol/sol.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 struct TransformComponent
 {
@@ -23,4 +23,4 @@ struct TransformComponent
 
 	static void CreateLuaTransformBind( sol::state& lua );
 };
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

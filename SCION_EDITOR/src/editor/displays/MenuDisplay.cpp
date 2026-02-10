@@ -1,4 +1,4 @@
-#include "MenuDisplay.h"
+#include "editor/displays/MenuDisplay.h"
 #include "Logger/Logger.h"
 #include "ScionFilesystem/Dialogs/FileDialog.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
@@ -24,7 +24,7 @@
 #include <imgui.h>
 #include <SDL.h>
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 void MenuDisplay::Draw()
 {
@@ -48,7 +48,7 @@ void MenuDisplay::Draw()
 			ImGui::InlineLabel( ICON_FA_SAVE, 32.f );
 			if ( ImGui::MenuItem( "Save All", "Ctrl + S" ) )
 			{
-				auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+				auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 				SCION_ASSERT( pProjectInfo && "Project Info must exist!" );
 
 				// Save entire project
@@ -79,7 +79,7 @@ void MenuDisplay::Draw()
 			ImGui::InlineLabel( ICON_FA_FILE_IMPORT, 32.f );
 			if ( ImGui::MenuItem( "Import Tiled Map" ) )
 			{
-				SCION_FILESYSTEM::FileDialog fd{};
+				Scion::Filesystem::FileDialog fd{};
 				const auto sFilepath = fd.OpenFileDialog( "Import Tiled Map", BASE_PATH, { "*.lua", "*.tmx" } );
 				if ( !sFilepath.empty() )
 				{
@@ -215,8 +215,8 @@ void MenuDisplay::Draw()
 
 					std::string sPlayerStartCharacter{ pCurrentScene->GetPlayerStart().GetCharacterName() };
 					auto prefabs =
-						SCION_UTIL::GetKeys( ASSET_MANAGER().GetAllPrefabs() /*, []( auto& prefab ) {
-			  return prefab.second->GetType() == SCION_CORE::EPrefabType::Character;
+						Scion::Utilities::GetKeys( ASSET_MANAGER().GetAllPrefabs() /*, []( auto& prefab ) {
+			  return prefab.second->GetType() == Scion::Core::EPrefabType::Character;
 		  } */ );
 
 					ImGui::InlineLabel( ICON_FA_FLAG ICON_FA_GAMEPAD " Player Start Character:" );
@@ -247,7 +247,7 @@ void MenuDisplay::Draw()
 
 					bChanged = true;
 
-					auto musicNames = SCION_UTIL::GetKeys( ASSET_MANAGER().GetAllMusic() );
+					auto musicNames = Scion::Utilities::GetKeys( ASSET_MANAGER().GetAllMusic() );
 					musicNames.push_back( "None" );
 
 					std::string sDefaultSceneMusic{ pCurrentScene->GetDefaultMusicName() };
@@ -325,4 +325,4 @@ void MenuDisplay::DrawDisplayItem( EditorState& editorState, const std::string& 
 	}
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

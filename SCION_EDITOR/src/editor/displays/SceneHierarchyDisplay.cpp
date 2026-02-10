@@ -1,4 +1,4 @@
-#include "SceneHierarchyDisplay.h"
+#include "editor/displays/SceneHierarchyDisplay.h"
 #include "editor/scene/SceneManager.h"
 #include "editor/scene/SceneObject.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
@@ -23,18 +23,18 @@
 #include "Windowing/Inputs/Mouse.h"
 #include "Windowing/Inputs/Keyboard.h"
 
-using namespace SCION_WINDOWING::Inputs;
+using namespace Scion::Windowing::Inputs;
 
 #include <imgui.h>
 
-using namespace SCION_CORE::Events;
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::Events;
+using namespace Scion::Core::ECS;
 using namespace entt::literals;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
-bool SceneHierarchyDisplay::OpenTreeNode( SCION_CORE::ECS::Entity& entity )
+bool SceneHierarchyDisplay::OpenTreeNode( Scion::Core::ECS::Entity& entity )
 {
 	const auto& name = entity.GetName();
 
@@ -99,7 +99,7 @@ bool SceneHierarchyDisplay::OpenTreeNode( SCION_CORE::ECS::Entity& entity )
 	return bTreeNodeOpen;
 }
 
-void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool* bAddComponent )
+void SceneHierarchyDisplay::AddComponent( Scion::Core::ECS::Entity& entity, bool* bAddComponent )
 {
 	if ( !bAddComponent )
 		return;
@@ -180,7 +180,7 @@ void SceneHierarchyDisplay::AddComponent( SCION_CORE::ECS::Entity& entity, bool*
 				if ( !storage )
 				{
 					const auto addComponent =
-						SCION_CORE::Utils::InvokeMetaFunction( id_type, "add_component_default"_hs, entity );
+						Scion::Core::Utils::InvokeMetaFunction( id_type, "add_component_default"_hs, entity );
 
 					if ( addComponent )
 					{
@@ -300,7 +300,7 @@ void SceneHierarchyDisplay::DrawEntityComponents()
 			continue;
 
 		const auto drawInfo =
-			SCION_CORE::Utils::InvokeMetaFunction( id, "DrawEntityComponentInfo"_hs, *m_pSelectedEntity );
+			Scion::Core::Utils::InvokeMetaFunction( id, "DrawEntityComponentInfo"_hs, *m_pSelectedEntity );
 
 		if ( drawInfo )
 		{
@@ -369,7 +369,7 @@ bool SceneHierarchyDisplay::DuplicateSelectedEntity()
 	return true;
 }
 
-void SceneHierarchyDisplay::OnEntityChanged( SCION_EDITOR::Events::SwitchEntityEvent& swEntEvent )
+void SceneHierarchyDisplay::OnEntityChanged( Scion::Editor::Events::SwitchEntityEvent& swEntEvent )
 {
 	if ( !swEntEvent.pEntity )
 	{
@@ -391,12 +391,12 @@ void SceneHierarchyDisplay::OnEntityChanged( SCION_EDITOR::Events::SwitchEntityE
 	}
 
 	m_pSelectedEntity =
-		std::make_shared<SCION_CORE::ECS::Entity>( pCurrentScene->GetRegistryPtr(), swEntEvent.pEntity->GetEntity() );
+		std::make_shared<Scion::Core::ECS::Entity>( pCurrentScene->GetRegistryPtr(), swEntEvent.pEntity->GetEntity() );
 
 	SCION_ASSERT( m_pSelectedEntity && "Entity must be valid here!" );
 }
 
-void SceneHierarchyDisplay::OnKeyPressed( SCION_CORE::Events::KeyEvent& keyEvent )
+void SceneHierarchyDisplay::OnKeyPressed( Scion::Core::Events::KeyEvent& keyEvent )
 {
 	if ( !m_bWindowActive || keyEvent.eType == EKeyEventType::Released )
 		return;
@@ -421,7 +421,7 @@ void SceneHierarchyDisplay::OnKeyPressed( SCION_CORE::Events::KeyEvent& keyEvent
 	}
 }
 
-void SceneHierarchyDisplay::OnAddComponent( SCION_EDITOR::Events::AddComponentEvent& addCompEvent )
+void SceneHierarchyDisplay::OnAddComponent( Scion::Editor::Events::AddComponentEvent& addCompEvent )
 {
 	if ( addCompEvent.pEntity && addCompEvent.eType == Events::EComponentType::Text )
 	{
@@ -446,7 +446,7 @@ void SceneHierarchyDisplay::OpenContext( SceneObject* pCurrentScene )
 			{
 				if ( ImGui::Selectable( "Create Prefab" ) )
 				{
-					auto newPrefab = SCION_CORE::PrefabCreator::CreatePrefab( SCION_CORE::EPrefabType::Character,
+					auto newPrefab = Scion::Core::PrefabCreator::CreatePrefab( Scion::Core::EPrefabType::Character,
 																			  *m_pSelectedEntity );
 					ASSET_MANAGER().AddPrefab( m_pSelectedEntity->GetName() + "_pfab", std::move( newPrefab ) );
 				}
@@ -551,4 +551,4 @@ void SceneHierarchyDisplay::Draw()
 
 	DrawGameObjectDetails();
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

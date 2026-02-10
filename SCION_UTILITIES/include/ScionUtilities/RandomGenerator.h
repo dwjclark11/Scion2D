@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SCION_UTIL
+namespace Scion::Utilities
 {
 class RandomIntGenerator
 {
@@ -31,4 +31,4 @@ class RandomFloatGenerator
 	void Initialize();
 };
 
-} // namespace SCION_UTIL
+} // namespace Scion::Utilities

@@ -7,7 +7,7 @@
 
 using namespace SCION_RESOURCES;
 
-std::string SCION_CORE::ECS::SpriteComponent::to_string() const
+std::string Scion::Core::ECS::SpriteComponent::to_string() const
 {
 	std::stringstream ss;
 	ss << "==== Sprite Component ==== \n"
@@ -32,24 +32,24 @@ std::string SCION_CORE::ECS::SpriteComponent::to_string() const
 	return ss.str();
 }
 
-void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
+void Scion::Core::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
 
-	lua.new_usertype<SCION_RENDERING::Color>( "Color",
+	lua.new_usertype<Scion::Rendering::Color>( "Color",
 											  sol::call_constructor,
 											  sol::factories( []( GLubyte r, GLubyte g, GLubyte b, GLubyte a ) {
-												  return SCION_RENDERING::Color{ .r = r, .g = g, .b = b, .a = a };
+												  return Scion::Rendering::Color{ .r = r, .g = g, .b = b, .a = a };
 											  } ),
 											  "r",
-											  &SCION_RENDERING::Color::r,
+											  &Scion::Rendering::Color::r,
 											  "g",
-											  &SCION_RENDERING::Color::g,
+											  &Scion::Rendering::Color::g,
 											  "b",
-											  &SCION_RENDERING::Color::b,
+											  &Scion::Rendering::Color::b,
 											  "a",
-											  &SCION_RENDERING::Color::a );
+											  &Scion::Rendering::Color::a );
 
 	lua.new_usertype<UVs>( "UVs",
 						   sol::call_constructor,
@@ -74,7 +74,7 @@ void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
 										.width = width,
 										.height = height,
 										.uvs = UVs{},
-										.color = SCION_RENDERING::Color{ 255, 255, 255, 255 },
+										.color = Scion::Rendering::Color{ 255, 255, 255, 255 },
 										.start_x = start_x,
 										.start_y = start_y,
 										.layer = layer };
@@ -108,7 +108,7 @@ void SCION_CORE::ECS::SpriteComponent::CreateSpriteLuaBind( sol::state& lua )
 				return;
 			}
 
-			SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+			Scion::Core::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 		},
 		"inspectUVs",
 		[]( SpriteComponent& sprite ) {

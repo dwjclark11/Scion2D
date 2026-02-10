@@ -1,4 +1,4 @@
-#include "EditorRenderSystem.h"
+#include "editor/systems/EditorRenderSystem.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/ECS/MainRegistry.h"
@@ -14,12 +14,12 @@
 
 #include <ranges>
 
-using namespace SCION_CORE;
-using namespace SCION_CORE::ECS;
-using namespace SCION_RENDERING;
+using namespace Scion::Core;
+using namespace Scion::Core::ECS;
+using namespace Scion::Rendering;
 using namespace SCION_RESOURCES;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 EditorRenderSystem::EditorRenderSystem()
 	: m_pBatchRenderer{ std::make_unique<SpriteBatchRenderer>() }
@@ -28,8 +28,8 @@ EditorRenderSystem::EditorRenderSystem()
 
 EditorRenderSystem::~EditorRenderSystem() = default;
 
-void EditorRenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera,
-								 const std::vector<SCION_UTIL::SpriteLayerParams>& layerFilters )
+void EditorRenderSystem::Update( Scion::Core::ECS::Registry& registry, Scion::Rendering::Camera2D& camera,
+								 const std::vector<Scion::Utilities::SpriteLayerParams>& layerFilters )
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
@@ -83,7 +83,7 @@ void EditorRenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_REND
 		const auto& transform = spriteView.get<TransformComponent>( entity );
 		const auto& sprite = spriteView.get<SpriteComponent>( entity );
 
-		if ( !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, camera ) )
+		if ( !Scion::Core::EntityInView( transform, sprite.width, sprite.height, camera ) )
 			continue;
 
 		if ( sprite.sTextureName.empty() || sprite.bHidden )
@@ -99,7 +99,7 @@ void EditorRenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_REND
 		glm::vec4 spriteRect{ transform.position.x, transform.position.y, sprite.width, sprite.height };
 		glm::vec4 uvRect{ sprite.uvs.u, sprite.uvs.v, sprite.uvs.uv_width, sprite.uvs.uv_height };
 
-		glm::mat4 model = SCION_CORE::RSTModel( transform, sprite.width, sprite.height );
+		glm::mat4 model = Scion::Core::RSTModel( transform, sprite.width, sprite.height );
 
 		if ( sprite.bIsoMetric )
 		{
@@ -124,4 +124,4 @@ void EditorRenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_REND
 	spriteShader->Disable();
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

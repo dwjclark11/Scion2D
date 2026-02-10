@@ -2,7 +2,7 @@
 #include <memory>
 #include <string>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class FontLoader
 {
@@ -29,4 +29,4 @@ class FontLoader
 	static std::shared_ptr<class Font> CreateFromMemory( const unsigned char* fontData, float fontSize = 32.f,
 														 int width = 512, int height = 512 );
 };
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

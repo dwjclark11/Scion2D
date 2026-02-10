@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <string>
 
-namespace SCION_UTIL
+namespace Scion::Utilities
 {
 
 enum class AssetType
@@ -244,6 +244,6 @@ template <typename CharT, typename Traits, typename Alloc, size_t N>
 	return str;
 }
 } // namespace StringUtils
-} // namespace SCION_UTIL
+} // namespace Scion::Utilities
 
-#define GET_SUBSTRING( str, find ) SCION_UTIL::StringUtils::GetSubstring( str, find )
+#define GET_SUBSTRING( str, find ) Scion::Utilities::StringUtils::GetSubstring( str, find )

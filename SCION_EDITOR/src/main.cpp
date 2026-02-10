@@ -43,7 +43,7 @@ int main()
 #endif // !SCION_OPENGL_FORCE_DISCRETE_GPU
 #endif // !__linux
 
-	auto& app = SCION_EDITOR::Application::GetInstance();
+	auto& app = Scion::Editor::Application::GetInstance();
 	app.Run();
 
 	return 0;

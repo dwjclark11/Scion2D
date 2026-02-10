@@ -1,7 +1,7 @@
 #pragma once
 #include <ScionUtilities/SDL_Wrappers.h>
 
-namespace SCION_WINDOWING
+namespace Scion::Windowing
 {
 class Window
 {
@@ -40,4 +40,4 @@ class Window
 	int m_YPos;
 	Uint32 m_WindowFlags;
 };
-} // namespace SCION_WINDOWING
+} // namespace Scion::Windowing

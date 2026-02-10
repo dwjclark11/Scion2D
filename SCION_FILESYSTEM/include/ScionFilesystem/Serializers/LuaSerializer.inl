@@ -1,6 +1,6 @@
 #include "LuaSerializer.h"
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 template <Streamable TValue>
 inline LuaSerializer& LuaSerializer::AddValue( const TValue& value, bool bNewLine, bool bFinalValue, bool bIndent,
@@ -84,4 +84,4 @@ inline void LuaSerializer::Stream( const T& val )
 	}
 }
 
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem

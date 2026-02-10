@@ -2,12 +2,12 @@
 #include <sol/sol.hpp>
 #include "Physics/UserData.h"
 
-namespace SCION_CORE::Events
+namespace Scion::Core::Events
 {
 struct ContactEvent
 {
-	SCION_PHYSICS::ObjectData objectA{};
-	SCION_PHYSICS::ObjectData objectB{};
+	Scion::Physics::ObjectData objectA{};
+	Scion::Physics::ObjectData objectB{};
 };
 
 enum class EKeyEventType
@@ -46,4 +46,4 @@ struct LuaEventBinder
 	static void CreateLuaEventBindings( sol::state& lua );
 };
 
-} // namespace SCION_CORE::Events
+} // namespace Scion::Core::Events

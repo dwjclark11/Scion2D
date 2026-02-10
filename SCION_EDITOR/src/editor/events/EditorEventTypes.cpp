@@ -1,6 +1,6 @@
-#include "EditorEventTypes.h"
+#include "editor/events/EditorEventTypes.h"
 
-namespace SCION_EDITOR::Events
+namespace Scion::Editor::Events
 {
 
 // clang-format off
@@ -38,4 +38,4 @@ std::string GetComponentStrFromType( EComponentType eType )
 	return itr->second;
 }
 
-} // namespace SCION_EDITOR::Events
+} // namespace Scion::Editor::Events

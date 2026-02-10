@@ -4,7 +4,7 @@
 
 #include <ranges>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 
 entt::entity FindEntityByTag( Registry& registry, const std::string& sTag )
@@ -24,4 +24,4 @@ entt::entity FindEntityByTag( Registry& registry, const std::string& sTag )
 	return entt::entity{ entt::null };
 }
 
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

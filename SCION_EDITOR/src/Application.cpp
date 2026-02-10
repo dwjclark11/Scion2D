@@ -63,7 +63,7 @@
 #include "editor/utilities/imgui/Gui.h"
 // ===================================
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 bool Application::Initialize()
 {
@@ -101,7 +101,7 @@ bool Application::Initialize()
 	SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 );
 
 	// Create the Window
-	m_pWindow = std::make_unique<SCION_WINDOWING::Window>(
+	m_pWindow = std::make_unique<Scion::Windowing::Window>(
 		"SCION 2D", 800, 600, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, true, SDL_WINDOW_OPENGL );
 
 	/*
@@ -161,10 +161,10 @@ bool Application::Initialize()
 #ifdef SCION_OPENGL_DEBUG_CALLBACK
 	// OpenGL debug callback initialization. A valid current OpenGL context is necessary.
 	std::vector<unsigned int> ignore{ /* 1281, 131169, 131185, 131204, 31218*/ };
-	SCION_RENDERING::OpenGLDebugger::init( ignore );
-	SCION_RENDERING::OpenGLDebugger::breakOnError( false );
-	SCION_RENDERING::OpenGLDebugger::breakOnWarning( false );
-	SCION_RENDERING::OpenGLDebugger::setSeverityLevel( SCION_RENDERING::OpenGLDebuggerSeverity::Medium );
+	Scion::Rendering::OpenGLDebugger::init( ignore );
+	Scion::Rendering::OpenGLDebugger::breakOnError( false );
+	Scion::Rendering::OpenGLDebugger::breakOnWarning( false );
+	Scion::Rendering::OpenGLDebugger::setSeverityLevel( Scion::Rendering::OpenGLDebuggerSeverity::Medium );
 #endif
 
 	auto& mainRegistry = MAIN_REGISTRY();
@@ -186,7 +186,7 @@ bool Application::Initialize()
 		return false;
 	}
 
-	mainRegistry.AddToContext<SCION_CORE::ProjectInfoPtr>( std::make_shared<SCION_CORE::ProjectInfo>() );
+	mainRegistry.AddToContext<Scion::Core::ProjectInfoPtr>( std::make_shared<Scion::Core::ProjectInfo>() );
 	mainRegistry.AddToContext<EditorStatePtr>( std::make_shared<EditorState>() );
 	m_pHub = std::make_unique<Hub>( *m_pWindow );
 
@@ -228,10 +228,10 @@ bool Application::InitApp()
 	}
 
 	pEditorFramebuffers->mapFramebuffers.emplace( FramebufferType::SCENE,
-												  std::make_shared<SCION_RENDERING::Framebuffer>( 640, 480, false ) );
+												  std::make_shared<Scion::Rendering::Framebuffer>( 640, 480, false ) );
 
 	pEditorFramebuffers->mapFramebuffers.emplace( FramebufferType::TILEMAP,
-												  std::make_shared<SCION_RENDERING::Framebuffer>( 640, 480, false ) );
+												  std::make_shared<Scion::Rendering::Framebuffer>( 640, 480, false ) );
 
 	if ( !MAIN_REGISTRY().AddToContext<std::shared_ptr<GridSystem>>( std::make_shared<GridSystem>() ) )
 	{
@@ -245,31 +245,31 @@ bool Application::InitApp()
 		return false;
 	}
 
-	auto pPickingTexture = std::make_shared<SCION_RENDERING::PickingTexture>( 640, 480 );
+	auto pPickingTexture = std::make_shared<Scion::Rendering::PickingTexture>( 640, 480 );
 	if ( !pPickingTexture )
 	{
 		SCION_ERROR( "Failed to create the picking texture." );
 		return false;
 	}
 
-	if ( !MAIN_REGISTRY().AddToContext<std::shared_ptr<SCION_RENDERING::PickingTexture>>( pPickingTexture ) )
+	if ( !MAIN_REGISTRY().AddToContext<std::shared_ptr<Scion::Rendering::PickingTexture>>( pPickingTexture ) )
 	{
 		SCION_ERROR( "Failed to add the picking texture to the registry context!" );
 		return false;
 	}
 
-	ADD_EVENT_HANDLER( SCION_EDITOR::Events::CloseEditorEvent, &Application::OnCloseEditor, *this );
+	ADD_EVENT_HANDLER( Scion::Editor::Events::CloseEditorEvent, &Application::OnCloseEditor, *this );
 
 	// Register Meta Functions
 	RegisterEditorMetaFunctions();
-	SCION_CORE::CoreEngineData::RegisterMetaFunctions();
+	Scion::Core::CoreEngineData::RegisterMetaFunctions();
 
 	// We can now set the Crash Logger path to the running project
 	const auto& sProjectPath = CORE_GLOBALS().GetProjectPath();
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 	SCION_CRASH_LOGGER().SetProjectPath( pProjectInfo->GetProjectPath().string() );
 
-	MAIN_REGISTRY().AddToContext<SharedThreadPool>( std::make_shared<SCION_UTIL::ThreadPool>( 6 ) );
+	MAIN_REGISTRY().AddToContext<SharedThreadPool>( std::make_shared<Scion::Utilities::ThreadPool>( 6 ) );
 
 	return true;
 }
@@ -280,35 +280,35 @@ bool Application::LoadShaders()
 	auto& assetManager = mainRegistry.GetAssetManager();
 
 	if ( !assetManager.AddShaderFromMemory(
-			 "basic", SCION_CORE::Shaders::basicShaderVert, SCION_CORE::Shaders::basicShaderFrag ) )
+			 "basic", Scion::Core::Shaders::basicShaderVert, Scion::Core::Shaders::basicShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the basic shader to the asset manager" );
 		return false;
 	}
 
 	if ( !assetManager.AddShaderFromMemory(
-			 "color", SCION_CORE::Shaders::colorShaderVert, SCION_CORE::Shaders::colorShaderFrag ) )
+			 "color", Scion::Core::Shaders::colorShaderVert, Scion::Core::Shaders::colorShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the color shader to the asset manager" );
 		return false;
 	}
 
 	if ( !assetManager.AddShaderFromMemory(
-			 "circle", SCION_CORE::Shaders::circleShaderVert, SCION_CORE::Shaders::circleShaderFrag ) )
+			 "circle", Scion::Core::Shaders::circleShaderVert, Scion::Core::Shaders::circleShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the color shader to the asset manager" );
 		return false;
 	}
 
 	if ( !assetManager.AddShaderFromMemory(
-			 "font", SCION_CORE::Shaders::fontShaderVert, SCION_CORE::Shaders::fontShaderFrag ) )
+			 "font", Scion::Core::Shaders::fontShaderVert, Scion::Core::Shaders::fontShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the font shader to the asset manager" );
 		return false;
 	}
 
 	if ( !assetManager.AddShaderFromMemory(
-			 "picking", SCION_CORE::Shaders::pickingShaderVert, SCION_CORE::Shaders::pickingShaderFrag ) )
+			 "picking", Scion::Core::Shaders::pickingShaderVert, Scion::Core::Shaders::pickingShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the font shader to the asset manager" );
 		return false;
@@ -483,7 +483,7 @@ bool Application::LoadEditorTextures()
 
 void Application::ProcessEvents()
 {
-	auto& inputManager = SCION_CORE::InputManager::GetInstance();
+	auto& inputManager = Scion::Core::InputManager::GetInstance();
 	auto& keyboard = inputManager.GetKeyboard();
 	auto& mouse = inputManager.GetMouse();
 
@@ -495,13 +495,13 @@ void Application::ProcessEvents()
 		case SDL_QUIT: m_bIsRunning = false; break;
 		case SDL_KEYDOWN:
 			keyboard.OnKeyPressed( m_Event.key.keysym.sym );
-			EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::KeyEvent{
-				.key = m_Event.key.keysym.sym, .eType = SCION_CORE::Events::EKeyEventType::Pressed } );
+			EVENT_DISPATCHER().EmitEvent( Scion::Core::Events::KeyEvent{
+				.key = m_Event.key.keysym.sym, .eType = Scion::Core::Events::EKeyEventType::Pressed } );
 			break;
 		case SDL_KEYUP:
 			keyboard.OnKeyReleased( m_Event.key.keysym.sym );
-			EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::KeyEvent{
-				.key = m_Event.key.keysym.sym, .eType = SCION_CORE::Events::EKeyEventType::Released } );
+			EVENT_DISPATCHER().EmitEvent( Scion::Core::Events::KeyEvent{
+				.key = m_Event.key.keysym.sym, .eType = Scion::Core::Events::EKeyEventType::Released } );
 			break;
 		case SDL_MOUSEBUTTONDOWN: mouse.OnBtnPressed( m_Event.button.button ); break;
 		case SDL_MOUSEBUTTONUP: mouse.OnBtnReleased( m_Event.button.button ); break;
@@ -516,8 +516,8 @@ void Application::ProcessEvents()
 			int index = inputManager.AddGamepad( m_Event.jdevice.which );
 			if ( index > 0 )
 			{
-				EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::GamepadConnectEvent{
-					.eConnectType = SCION_CORE::Events::EGamepadConnectType::Connected, .index = index } );
+				EVENT_DISPATCHER().EmitEvent( Scion::Core::Events::GamepadConnectEvent{
+					.eConnectType = Scion::Core::Events::EGamepadConnectType::Connected, .index = index } );
 			}
 
 			break;
@@ -527,8 +527,8 @@ void Application::ProcessEvents()
 
 			if ( index > 0 )
 			{
-				EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::GamepadConnectEvent{
-					.eConnectType = SCION_CORE::Events::EGamepadConnectType::Disconnected, .index = index } );
+				EVENT_DISPATCHER().EmitEvent( Scion::Core::Events::GamepadConnectEvent{
+					.eConnectType = Scion::Core::Events::EGamepadConnectType::Disconnected, .index = index } );
 			}
 
 			break;
@@ -551,7 +551,7 @@ void Application::ProcessEvents()
 			break;
 		}
 		case SDL_DROPFILE: {
-			EVENT_DISPATCHER().EmitEvent( SCION_EDITOR::Events::FileEvent{
+			EVENT_DISPATCHER().EmitEvent( Scion::Editor::Events::FileEvent{
 				.eAction = Events::EFileAction::FileDropped, .sFilepath = std::string{ m_Event.drop.file } } );
 
 			break;
@@ -580,7 +580,7 @@ void Application::Update()
 void Application::UpdateInputs()
 {
 	// Update inputs
-	auto& inputManager = SCION_CORE::InputManager::GetInstance();
+	auto& inputManager = Scion::Core::InputManager::GetInstance();
 	auto& keyboard = inputManager.GetKeyboard();
 	keyboard.Update();
 	auto& mouse = inputManager.GetMouse();
@@ -601,7 +601,7 @@ void Application::Render()
 void Application::CleanUp()
 {
 	// Save the editor state.
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 	auto& pEditorState = MAIN_REGISTRY().GetContext<EditorStatePtr>();
 	pEditorState->Save( *pProjectInfo );
 
@@ -773,18 +773,18 @@ void Application::RenderDisplays()
 
 void Application::RegisterEditorMetaFunctions()
 {
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::Identification>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::TransformComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::SpriteComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::AnimationComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::PhysicsComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::TextComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::RigidBodyComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::BoxColliderComponent>();
-	DrawComponentsUtil::RegisterUIComponent<SCION_CORE::ECS::CircleColliderComponent>();
+	DrawComponentsUtil::RegisterUIComponent<Scion::Core::ECS::Identification>();
+	DrawComponentsUtil::RegisterUIComponent<Scion::Core::ECS::TransformComponent>();
+	DrawComponentsUtil::RegisterUIComponent<Scion::Core::ECS::SpriteComponent>();
+	DrawComponentsUtil::RegisterUIComponent<Scion::Core::ECS::AnimationComponent>();
+	DrawComponentsUtil::RegisterUIComponent<Scion::Core::ECS::PhysicsComponent>();
+	DrawComponentsUtil::RegisterUIComponent<Scion::Core::ECS::TextComponent>();
+	DrawComponentsUtil::RegisterUIComponent<Scion::Core::ECS::RigidBodyComponent>();
+	DrawComponentsUtil::RegisterUIComponent<Scion::Core::ECS::BoxColliderComponent>();
+	DrawComponentsUtil::RegisterUIComponent<Scion::Core::ECS::CircleColliderComponent>();
 }
 
-void Application::OnCloseEditor( SCION_EDITOR::Events::CloseEditorEvent& close )
+void Application::OnCloseEditor( Scion::Editor::Events::CloseEditorEvent& close )
 {
 	// TODO: Maybe add a check for save??
 	m_bIsRunning = false;
@@ -830,4 +830,4 @@ void Application::Run()
 
 	CleanUp();
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

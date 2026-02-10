@@ -1,7 +1,7 @@
 #include "Core/ECS/Components/BoxColliderComponent.h"
 #include <entt/entt.hpp>
 
-std::string SCION_CORE::ECS::BoxColliderComponent::to_string() const
+std::string Scion::Core::ECS::BoxColliderComponent::to_string() const
 {
 	std::stringstream ss;
 	ss << "==== Box Collider Component ==== \n"
@@ -13,7 +13,7 @@ std::string SCION_CORE::ECS::BoxColliderComponent::to_string() const
 	return ss.str();
 }
 
-void SCION_CORE::ECS::BoxColliderComponent::CreateLuaBoxColliderBind( sol::state& lua )
+void Scion::Core::ECS::BoxColliderComponent::CreateLuaBoxColliderBind( sol::state& lua )
 {
 	lua.new_usertype<BoxColliderComponent>( "BoxCollider",
 											"type_id",

@@ -1,4 +1,4 @@
-#include "EditorState.h"
+#include "editor/utilities/EditorState.h"
 #include "ScionFilesystem/Serializers/JSONSerializer.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
 
@@ -7,14 +7,14 @@
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
 
-using namespace SCION_FILESYSTEM;
+using namespace Scion::Filesystem;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
-bool EditorState::Save( SCION_CORE::ProjectInfo& projectInfo )
+bool EditorState::Save( Scion::Core::ProjectInfo& projectInfo )
 {
-	const auto optEditorConfigFolder = projectInfo.TryGetFolderPath( SCION_CORE::EProjectFolderType::EditorConfig );
+	const auto optEditorConfigFolder = projectInfo.TryGetFolderPath( Scion::Core::EProjectFolderType::EditorConfig );
 	if ( !optEditorConfigFolder )
 	{
 		SCION_ERROR( "Failed to save editor state. Editor config path is invalid" );
@@ -56,9 +56,9 @@ bool EditorState::Save( SCION_CORE::ProjectInfo& projectInfo )
 	return pSerializer->EndDocument();
 }
 
-bool EditorState::Load( SCION_CORE::ProjectInfo& projectInfo )
+bool EditorState::Load( Scion::Core::ProjectInfo& projectInfo )
 {
-	const auto optEditorConfigFolder = projectInfo.TryGetFolderPath( SCION_CORE::EProjectFolderType::EditorConfig );
+	const auto optEditorConfigFolder = projectInfo.TryGetFolderPath( Scion::Core::EProjectFolderType::EditorConfig );
 	if ( !optEditorConfigFolder )
 	{
 		SCION_ERROR( "Failed to load editor state. Editor config path is invalid" );
@@ -117,14 +117,14 @@ bool EditorState::Load( SCION_CORE::ProjectInfo& projectInfo )
 	return true;
 }
 
-bool EditorState::ImportState( const std::string& sImportedStateFile, SCION_CORE::ProjectInfo& projectInfo )
+bool EditorState::ImportState( const std::string& sImportedStateFile, Scion::Core::ProjectInfo& projectInfo )
 {
 	return false;
 }
 
-bool EditorState::CreateEditorStateFile( SCION_CORE::ProjectInfo& projectInfo )
+bool EditorState::CreateEditorStateFile( Scion::Core::ProjectInfo& projectInfo )
 {
-	const auto optEditorConfigFolder = projectInfo.TryGetFolderPath( SCION_CORE::EProjectFolderType::EditorConfig );
+	const auto optEditorConfigFolder = projectInfo.TryGetFolderPath( Scion::Core::EProjectFolderType::EditorConfig );
 	if ( !optEditorConfigFolder )
 	{
 		SCION_ERROR( "Failed to save editor state. Editor config path is invalid" );
@@ -169,4 +169,4 @@ bool EditorState::CreateEditorStateFile( SCION_CORE::ProjectInfo& projectInfo )
 	return pSerializer->EndDocument();
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

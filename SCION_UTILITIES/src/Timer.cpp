@@ -1,7 +1,7 @@
 #include "ScionUtilities/Timer.h"
 #include <iostream>
 
-namespace SCION_UTIL
+namespace Scion::Utilities
 {
 
 void Timer::Start()
@@ -55,4 +55,4 @@ const int64_t Timer::ElapsedSec()
 {
 	return ElapsedMS() / 1000;
 }
-} // namespace SCION_UTIL
+} // namespace Scion::Utilities

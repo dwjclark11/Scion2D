@@ -1,7 +1,7 @@
 #pragma once
 #include <box2d/box2d.h>
 
-namespace SCION_PHYSICS
+namespace Scion::Physics
 {
 class RayCastCallback : public b2RayCastCallback
 {
@@ -24,4 +24,4 @@ class RayCastCallback : public b2RayCastCallback
 	float m_Fraction;
 	bool m_bHit;
 };
-} // namespace SCION_PHYSICS
+} // namespace Scion::Physics

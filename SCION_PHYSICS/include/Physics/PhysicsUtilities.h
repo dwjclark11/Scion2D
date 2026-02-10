@@ -4,7 +4,7 @@
 #include <map>
 #include <vector>
 
-namespace SCION_PHYSICS
+namespace Scion::Physics
 {
 
 enum class RigidBodyType
@@ -78,4 +78,4 @@ std::string GetRigidBodyTypeString( RigidBodyType eRigidType );
 RigidBodyType GetRigidBodyTypeByString( const std::string sRigidType );
 const std::map<RigidBodyType, std::string>& GetRigidBodyStringMap();
 
-} // namespace SCION_PHYSICS
+} // namespace Scion::Physics

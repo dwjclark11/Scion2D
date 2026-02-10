@@ -1,4 +1,4 @@
-#include "TiledMapImporter.h"
+#include "editor/loaders/TiledMapImporter.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Core/Resources/AssetManager.h"
@@ -12,12 +12,12 @@
 
 #include <tinyxml2.h>
 
-using namespace SCION_CORE;
-using namespace SCION_CORE::ECS;
-using namespace SCION_PHYSICS;
+using namespace Scion::Core;
+using namespace Scion::Core::ECS;
+using namespace Scion::Physics;
 using namespace tinyxml2;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
 bool TiledMapImporter::ImportTilemapFromTiled( EditorSceneManager* pSceneManager, const std::string sTiledMapFile )
@@ -51,7 +51,7 @@ bool TiledMapImporter::ImportFromTMXFile( EditorSceneManager* pSceneManager, con
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
 
-	SceneObject newScene{ fs::path{ sTiledMapFile }.stem().string(), SCION_CORE::EMapType::Grid };
+	SceneObject newScene{ fs::path{ sTiledMapFile }.stem().string(), Scion::Core::EMapType::Grid };
 	auto& canvas = newScene.GetCanvas();
 
 	// Get the Root Element
@@ -140,7 +140,7 @@ bool TiledMapImporter::ImportFromTMXFile( EditorSceneManager* pSceneManager, con
 		const int COLS = std::atoi( pLayer->Attribute( "width" ) );
 		const std::string sLayerName = pLayer->Attribute( "name" );
 
-		newScene.AddLayer( SCION_UTIL::SpriteLayerParams{
+		newScene.AddLayer( Scion::Utilities::SpriteLayerParams{
 			.sLayerName = sLayerName,
 			.bVisible = true,
 			.layer = LAYER,
@@ -188,7 +188,7 @@ bool TiledMapImporter::ImportFromTMXFile( EditorSceneManager* pSceneManager, con
 						if ( coreGlobals.IsPhysicsEnabled() )
 						{
 							PhysicsAttributes physAttr{};
-							physAttr.eType = SCION_PHYSICS::RigidBodyType::STATIC;
+							physAttr.eType = Scion::Physics::RigidBodyType::STATIC;
 							physAttr.density = 1000.f;
 							physAttr.friction = 0.f;
 							physAttr.restitution = 0.f;
@@ -197,7 +197,7 @@ bool TiledMapImporter::ImportFromTMXFile( EditorSceneManager* pSceneManager, con
 							physAttr.boxSize = glm::vec2{ boxCollider.width, boxCollider.height };
 							physAttr.bBoxShape = true;
 
-							SCION_PHYSICS::ObjectData objectData{};
+							Scion::Physics::ObjectData objectData{};
 							objectData.tag = pObject->sName;
 							objectData.group = pObject->sType;
 							objectData.entityID = static_cast<uint32_t>( newTile.GetEntity() );
@@ -227,7 +227,7 @@ bool TiledMapImporter::ImportFromTMXFile( EditorSceneManager* pSceneManager, con
 					sprite.start_y = startY;
 					sprite.layer = LAYER;
 
-					SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+					Scion::Core::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 
 					newTile.AddComponent<TileComponent>(
 						TileComponent{ .id = static_cast<uint32_t>( newTile.GetEntity() ) } );
@@ -269,7 +269,7 @@ bool TiledMapImporter::ImportFromLuaFile( EditorSceneManager* pSceneManager, con
 		return false;
 	}
 
-	SceneObject newScene{ fs::path{ sTiledMapFile }.stem().string(), SCION_CORE::EMapType::Grid };
+	SceneObject newScene{ fs::path{ sTiledMapFile }.stem().string(), Scion::Core::EMapType::Grid };
 	auto& canvas = newScene.GetCanvas();
 
 	canvas.tileWidth = map[ "tilewidth" ].get_or( 16 );
@@ -347,7 +347,7 @@ bool TiledMapImporter::ImportFromLuaFile( EditorSceneManager* pSceneManager, con
 			const std::string sLayerName = layer[ "name" ].get<std::string>();
 			bool bVisible = layer[ "visible" ].get<bool>();
 
-			newScene.AddLayer( SCION_UTIL::SpriteLayerParams{
+			newScene.AddLayer( Scion::Utilities::SpriteLayerParams{
 				.sLayerName = sLayerName,
 				.bVisible = bVisible,
 				.layer = LAYER,
@@ -380,7 +380,7 @@ bool TiledMapImporter::ImportFromLuaFile( EditorSceneManager* pSceneManager, con
 							if ( coreGlobals.IsPhysicsEnabled() )
 							{
 								PhysicsAttributes physAttr{};
-								physAttr.eType = SCION_PHYSICS::RigidBodyType::STATIC;
+								physAttr.eType = Scion::Physics::RigidBodyType::STATIC;
 								physAttr.density = 1000.f;
 								physAttr.friction = 0.f;
 								physAttr.restitution = 0.f;
@@ -389,7 +389,7 @@ bool TiledMapImporter::ImportFromLuaFile( EditorSceneManager* pSceneManager, con
 								physAttr.boxSize = glm::vec2{ boxCollider.width, boxCollider.height };
 								physAttr.bBoxShape = true;
 
-								SCION_PHYSICS::ObjectData objectData{};
+								Scion::Physics::ObjectData objectData{};
 								objectData.tag = pObject->sName;
 								objectData.group = pObject->sType;
 								objectData.entityID = static_cast<uint32_t>( newTile.GetEntity() );
@@ -419,7 +419,7 @@ bool TiledMapImporter::ImportFromLuaFile( EditorSceneManager* pSceneManager, con
 						sprite.start_y = startY;
 						sprite.layer = LAYER;
 
-						SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+						Scion::Core::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 
 						newTile.AddComponent<TileComponent>(
 							TileComponent{ .id = static_cast<uint32_t>( newTile.GetEntity() ) } );
@@ -477,4 +477,4 @@ TiledMapImporter::TileObject* TiledMapImporter::Tileset::GetObjectFromId( int id
 	return nullptr;
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

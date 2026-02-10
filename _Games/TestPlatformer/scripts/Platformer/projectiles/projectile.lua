@@ -44,7 +44,7 @@ function Projectile:TimesUp()
 end
 
 function Projectile:Destroy()
-	Entity(self.m_EntityID):kill()
+	Entity(self.m_EntityID):destroy()
 	S2D_warn("Killed projectile with id: %d", self.m_EntityID)
 end
 

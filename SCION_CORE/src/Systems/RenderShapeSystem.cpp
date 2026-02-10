@@ -17,11 +17,11 @@
 
 #include "ScionUtilities/MathUtilities.h"
 
-using namespace SCION_CORE::ECS;
-using namespace SCION_RENDERING;
+using namespace Scion::Core::ECS;
+using namespace Scion::Rendering;
 using namespace SCION_RESOURCES;
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 
 RenderShapeSystem::RenderShapeSystem()
@@ -30,7 +30,7 @@ RenderShapeSystem::RenderShapeSystem()
 {
 }
 
-void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
+void RenderShapeSystem::Update( Scion::Core::ECS::Registry& registry, Scion::Rendering::Camera2D& camera )
 {
 	auto& assetManager = MAIN_REGISTRY().GetAssetManager();
 
@@ -47,13 +47,13 @@ void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDE
 		const auto& transform = boxView.get<TransformComponent>( entity );
 		const auto& boxCollider = boxView.get<BoxColliderComponent>( entity );
 
-		if ( !SCION_CORE::EntityInView( transform,
+		if ( !Scion::Core::EntityInView( transform,
 										static_cast<float>( boxCollider.width ),
 										static_cast<float>( boxCollider.height ),
 										camera ) )
 			continue;
 
-		glm::mat4 model = SCION_CORE::RSTModel( transform, boxCollider.width, boxCollider.height );
+		glm::mat4 model = Scion::Core::RSTModel( transform, boxCollider.width, boxCollider.height );
 
 		auto color = Color{ 255, 0, 0, 135 };
 		bool bUseIso{ false }; // We need another way to determine if we are using iso coords. The user might want to use their own physics
@@ -124,4 +124,4 @@ void RenderShapeSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDE
 	m_pCircleRenderer->Render();
 	circleShader->Disable();
 }
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

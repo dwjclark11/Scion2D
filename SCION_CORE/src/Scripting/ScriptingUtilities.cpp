@@ -1,7 +1,7 @@
 #include "Core/Scripting/ScriptingUtilities.h"
 #include "Logger/Logger.h"
 
-namespace SCION_CORE::Scripting
+namespace Scion::Core::Scripting
 {
 
 namespace
@@ -206,4 +206,4 @@ void ScriptingHelpers::CreateLuaHelpers( sol::state& lua )
 
 	// clang-format on
 }
-} // namespace SCION_CORE::Scripting
+} // namespace Scion::Core::Scripting

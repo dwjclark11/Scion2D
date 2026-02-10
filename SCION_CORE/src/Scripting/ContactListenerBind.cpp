@@ -4,13 +4,13 @@
 #include <Physics/UserData.h>
 #include <Logger/Logger.h>
 
-using namespace SCION_CORE::Utils;
+using namespace Scion::Core::Utils;
 
-namespace SCION_CORE::Scripting
+namespace Scion::Core::Scripting
 {
 
 std::tuple<sol::object, sol::object> ContactListenerBinder::GetUserData(
-	SCION_PHYSICS::ContactListener& contactListener, sol::this_state s )
+	Scion::Physics::ContactListener& contactListener, sol::this_state s )
 {
 	auto pUserDataA = contactListener.GetUserDataA();
 	auto pUserDataB = contactListener.GetUserDataB();
@@ -36,16 +36,16 @@ std::tuple<sol::object, sol::object> ContactListenerBinder::GetUserData(
 
 void ContactListenerBinder::CreateLuaContactListener( sol::state& lua, entt::registry& registry )
 {
-	auto& contactListener = registry.ctx().get<std::shared_ptr<SCION_PHYSICS::ContactListener>>();
+	auto& contactListener = registry.ctx().get<std::shared_ptr<Scion::Physics::ContactListener>>();
 	if ( !contactListener )
 	{
 		SCION_ERROR( "Failed to create the contact listener lua bind - Contact listener is not in the registry!" );
 		return;
 	}
 
-	lua.new_usertype<SCION_PHYSICS::ContactListener>(
+	lua.new_usertype<Scion::Physics::ContactListener>(
 		"ContactListener", sol::no_constructor, "getUserData", [ & ]( sol::this_state s ) {
 			return GetUserData( *contactListener, s );
 		} );
 }
-} // namespace SCION_CORE::Scripting
+} // namespace Scion::Core::Scripting

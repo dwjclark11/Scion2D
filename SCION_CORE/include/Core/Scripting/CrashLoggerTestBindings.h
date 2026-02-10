@@ -1,7 +1,7 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_CORE::Scripting
+namespace Scion::Core::Scripting
 {
 /*
  * Simple test to verify that the crash logger is working.
@@ -12,4 +12,4 @@ struct CrashLoggerTests
 {
 	static void CreateLuaBind( sol::state& lua );
 };
-} // namespace SCION_CORE::Scripting
+} // namespace Scion::Core::Scripting

@@ -11,7 +11,7 @@
 namespace fs = std::filesystem;
 using namespace std::chrono_literals;
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 
 struct DirectoryWatcher::Impl
@@ -233,4 +233,4 @@ void DirectoryWatcher::Impl::RunLinux()
 
 #endif
 
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem

@@ -1,6 +1,6 @@
 #include "ScionUtilities/RandomGenerator.h"
 
-namespace SCION_UTIL
+namespace Scion::Utilities
 {
 
 void RandomIntGenerator::Initialize()
@@ -47,4 +47,4 @@ float RandomFloatGenerator::GetValue()
 	return m_RealDistribution( m_RandomEngine );
 }
 
-} // namespace SCION_UTIL
+} // namespace Scion::Utilities

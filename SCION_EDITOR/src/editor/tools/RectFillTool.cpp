@@ -1,4 +1,4 @@
-#include "RectFillTool.h"
+#include "editor/tools/RectFillTool.h"
 #include "Rendering/Core/RectBatchRenderer.h"
 #include "Rendering/Core/BatchRenderer.h"
 #include "Rendering/Core/Camera2D.h"
@@ -14,12 +14,12 @@
 #include "editor/utilities/EditorUtilities.h"
 #include "editor/commands/CommandManager.h"
 
-using namespace SCION_RENDERING;
-using namespace SCION_CORE::ECS;
+using namespace Scion::Rendering;
+using namespace Scion::Core::ECS;
 
 constexpr int PREVIEW_LAYER = 10;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 void RectFillTool::CreateTiles()
 {
@@ -291,4 +291,4 @@ void RectFillTool::Draw()
 	m_pTileFillRect->width = dx;
 	m_pTileFillRect->height = dy;
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

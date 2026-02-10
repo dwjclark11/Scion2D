@@ -16,7 +16,7 @@ int main()
 	ShowWindow( GetConsoleWindow(), SW_SHOW );
 #endif // NDEBUG
 #endif // _WIN32
-	SCION_ENGINE::RuntimeApp app{};
+	Scion::Engine::RuntimeApp app{};
 	app.Run();
 
 	return 0;

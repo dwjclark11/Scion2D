@@ -18,7 +18,7 @@ static const char* WHITE = "\033[0;30m";
 static const char* CLOSE = "\022[0m";
 #endif
 
-namespace SCION_LOGGER
+namespace Scion::Logger
 {
 template <typename... Args>
 void Logger::Log( const std::string_view message, Args&&... args )
@@ -152,4 +152,4 @@ void Logger::Error( const std::string_view message, Args&&... args )
 		m_LogEntries.emplace_back( LogEntry::LogType::ERR, ss.str() );
 	}
 }
-} // namespace SCION_LOGGER
+} // namespace Scion::Logger

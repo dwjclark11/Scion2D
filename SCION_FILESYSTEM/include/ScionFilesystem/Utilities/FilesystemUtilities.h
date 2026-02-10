@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 /**
  * @brief Executes a system command and captures both stdout and stderr output.
@@ -25,4 +25,4 @@ std::string ExecCmdWithErrorOutput( const std::string& sCmd );
 */
 std::string NormalizePath( const std::string& sPath );
 
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem

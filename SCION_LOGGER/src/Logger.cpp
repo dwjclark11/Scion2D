@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-namespace SCION_LOGGER
+namespace Scion::Logger
 {
 
 Logger::LogTime::LogTime( const std::string& date )
@@ -149,4 +149,4 @@ void Logger::LuaError( const std::string_view message )
 		m_LogEntries.emplace_back( LogEntry::LogType::ERR, ss.str() );
 	}
 }
-} // namespace SCION_LOGGER
+} // namespace Scion::Logger

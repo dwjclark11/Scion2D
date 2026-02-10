@@ -1,4 +1,4 @@
-#include "ScriptDisplay.h"
+#include "editor/displays/ScriptDisplay.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
 
@@ -16,10 +16,10 @@
 
 namespace fs = std::filesystem;
 
-using namespace SCION_CORE;
-using namespace SCION_FILESYSTEM;
+using namespace Scion::Core;
+using namespace Scion::Filesystem;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
 ScriptDisplay::ScriptDisplay()
@@ -57,7 +57,7 @@ ScriptDisplay::ScriptDisplay()
 
 	GenerateScriptList();
 
-	m_pDirWatcher = std::make_unique<SCION_FILESYSTEM::DirectoryWatcher>(
+	m_pDirWatcher = std::make_unique<Scion::Filesystem::DirectoryWatcher>(
 		fs::path{ m_sScriptsDirectory },
 		[ this ]( const fs::path& file, bool bModified ) { OnFileChanged( file, bModified ); } );
 }
@@ -257,7 +257,7 @@ void ScriptDisplay::GenerateScriptList()
 
 void ScriptDisplay::WriteScriptListToFile()
 {
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 	SCION_ASSERT( pProjectInfo && "Project info must exist." );
 	auto optScriptListPath = pProjectInfo->GetScriptListPath();
 	SCION_ASSERT( optScriptListPath && "Script list path not setup correctly in project info." );
@@ -299,4 +299,4 @@ void ScriptDisplay::OnFileChanged( const std::filesystem::path& path, bool bModi
 	m_bFilesChanged.store( true, std::memory_order_relaxed );
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

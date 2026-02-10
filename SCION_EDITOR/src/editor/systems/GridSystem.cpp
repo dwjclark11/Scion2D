@@ -1,4 +1,4 @@
-#include "GridSystem.h"
+#include "editor/systems/GridSystem.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Rendering/Core/RectBatchRenderer.h"
@@ -10,16 +10,16 @@
 
 #include "editor/scene/SceneObject.h"
 
-using namespace SCION_CORE;
+using namespace Scion::Core;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 GridSystem::GridSystem()
-	: m_pBatchRenderer{ std::make_unique<SCION_RENDERING::RectBatchRenderer>() }
+	: m_pBatchRenderer{ std::make_unique<Scion::Rendering::RectBatchRenderer>() }
 {
 }
 
-void GridSystem::Update( SCION_CORE::Scene& currentScene, SCION_RENDERING::Camera2D& camera )
+void GridSystem::Update( Scion::Core::Scene& currentScene, Scion::Rendering::Camera2D& camera )
 {
 	if ( currentScene.GetMapType() == EMapType::IsoGrid )
 	{
@@ -44,7 +44,7 @@ void GridSystem::Update( SCION_CORE::Scene& currentScene, SCION_RENDERING::Camer
 	int cols = canvasWidth / tileWidth;
 	int rows = canvasHeight / tileHeight;
 
-	SCION_RENDERING::Color color{};
+	Scion::Rendering::Color color{};
 
 	for ( int row = 0; row < rows; row++ )
 	{
@@ -56,7 +56,7 @@ void GridSystem::Update( SCION_CORE::Scene& currentScene, SCION_RENDERING::Camer
 			else
 				color = { 200, 200, 200, 70 };
 
-			SCION_RENDERING::Rect rect{
+			Scion::Rendering::Rect rect{
 				.position = glm::vec2{ static_cast<float>( col * tileWidth ), static_cast<float>( row * tileHeight ) },
 				.width = static_cast<float>( tileWidth ),
 				.height = static_cast<float>( tileHeight ),
@@ -72,7 +72,7 @@ void GridSystem::Update( SCION_CORE::Scene& currentScene, SCION_RENDERING::Camer
 	pColorShader->Disable();
 }
 
-void GridSystem::UpdateIso( SCION_CORE::Scene& currentScene, SCION_RENDERING::Camera2D& camera )
+void GridSystem::UpdateIso( Scion::Core::Scene& currentScene, Scion::Rendering::Camera2D& camera )
 {
 	auto& assetManager = MAIN_REGISTRY().GetAssetManager();
 	const auto& canvas = currentScene.GetCanvas();
@@ -99,7 +99,7 @@ void GridSystem::UpdateIso( SCION_CORE::Scene& currentScene, SCION_RENDERING::Ca
 	int cols = canvasWidth / tileWidth;
 	int rows = canvasHeight / tileHeight;
 
-	SCION_RENDERING::Color color{};
+	Scion::Rendering::Color color{};
 
 	for ( int row = 0; row < rows; row++ )
 	{
@@ -113,7 +113,7 @@ void GridSystem::UpdateIso( SCION_CORE::Scene& currentScene, SCION_RENDERING::Ca
 
 			// Currently we are not going to use the canvas offset. We have control of the camera, so going into the negatives
 			// should not really matter.
-			SCION_RENDERING::Rect rect{ .position =
+			Scion::Rendering::Rect rect{ .position =
 											glm::vec2{ static_cast<float>( ( /*canvas.offset.x +*/ tileHalfWidth ) +
 																		   ( row - col ) * tileHalfWidth ),
 													   static_cast<float>( ( row + col ) * tileHalfHeight ) },
@@ -131,4 +131,4 @@ void GridSystem::UpdateIso( SCION_CORE::Scene& currentScene, SCION_RENDERING::Ca
 	pColorShader->Disable();
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

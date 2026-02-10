@@ -1,7 +1,7 @@
 #include "Core/ECS/Components/RigidBodyComponent.h"
 #include <entt/entt.hpp>
 
-std::string SCION_CORE::ECS::RigidBodyComponent::to_string() const
+std::string Scion::Core::ECS::RigidBodyComponent::to_string() const
 {
 	std::stringstream ss;
 	ss << "==== RigidBody Component ==== \n"
@@ -10,7 +10,7 @@ std::string SCION_CORE::ECS::RigidBodyComponent::to_string() const
 	return ss.str();
 }
 
-void SCION_CORE::ECS::RigidBodyComponent::CreateRigidBodyBind( sol::state& lua )
+void Scion::Core::ECS::RigidBodyComponent::CreateRigidBodyBind( sol::state& lua )
 {
 	lua.new_usertype<RigidBodyComponent>(
 		"RigidBody",

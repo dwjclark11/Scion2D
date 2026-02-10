@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SCION_UTIL
+namespace Scion::Utilities
 {
 
 enum class EEasingFunc
@@ -52,4 +52,4 @@ class Tween
 	bool m_bFinished;
 };
 
-} // namespace SCION_UTIL
+} // namespace Scion::Utilities

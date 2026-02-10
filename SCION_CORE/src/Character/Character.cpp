@@ -8,14 +8,14 @@
 #include <Rendering/Essentials/Texture.h>
 #include "Logger/Logger.h"
 
-using namespace SCION_CORE::Utils;
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::Utils;
+using namespace Scion::Core::ECS;
 using namespace entt::literals;
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
-Character::Character( SCION_CORE::ECS::Registry& registry, const CharacterParams& params )
+Character::Character( Scion::Core::ECS::Registry& registry, const CharacterParams& params )
 	: Entity{ &registry, params.sName, params.sGroup }
 {
 	AddComponent<TransformComponent>( TransformComponent{} );
@@ -73,13 +73,13 @@ Character::Character( SCION_CORE::ECS::Registry& registry, const CharacterParams
 	}
 }
 
-Character::Character( SCION_CORE::ECS::Registry& registry, entt::entity entity )
+Character::Character( Scion::Core::ECS::Registry& registry, entt::entity entity )
 	: Entity{ &registry, entity }
 {
 	// TODO: verify that it has all default components
 }
 
-Character::Character( const SCION_CORE::ECS::Entity& entity )
+Character::Character( const Scion::Core::ECS::Entity& entity )
 	: Entity{ entity }
 {
 }
@@ -98,22 +98,22 @@ StateMachine& Character::GetStateMachine()
 	return *m_pStateMachine;
 }
 
-SCION_CORE::ECS::TransformComponent& Character::GetTransformComponent()
+Scion::Core::ECS::TransformComponent& Character::GetTransformComponent()
 {
 	return GetComponent<TransformComponent>();
 }
 
-SCION_CORE::ECS::SpriteComponent& Character::GetSpriteComponent()
+Scion::Core::ECS::SpriteComponent& Character::GetSpriteComponent()
 {
 	return GetComponent<SpriteComponent>();
 }
 
-SCION_CORE::ECS::AnimationComponent& Character::GetAnimationComponent()
+Scion::Core::ECS::AnimationComponent& Character::GetAnimationComponent()
 {
 	return GetComponent<AnimationComponent>();
 }
 
-void Character::CreateCharacterLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+void Character::CreateCharacterLuaBind( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
 	lua.new_usertype<CharacterParams>(
 		"CharacterParams",
@@ -237,4 +237,4 @@ void Character::CreateCharacterLuaBind( sol::state& lua, SCION_CORE::ECS::Regist
 	);
 }
 
-} // namespace SCION_CORE
+} // namespace Scion::Core

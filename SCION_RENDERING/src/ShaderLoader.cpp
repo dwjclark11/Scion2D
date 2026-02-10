@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <Logger/Logger.h>
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 GLuint ShaderLoader::CreateProgram( const std::string& vertexShader, const std::string& fragmentShader )
@@ -197,4 +197,4 @@ bool ShaderLoader::Destroy( Shader* pShader )
 	glDeleteShader( pShader->ShaderProgramID() );
 	return true;
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

@@ -1,10 +1,10 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_CORE::Scripting
+namespace Scion::Core::Scripting
 {
 struct LuaFilesystem
 {
 	static void CreateLuaFileSystemBind( sol::state& lua );
 };
-} // namespace SCION_CORE::Scripting
+} // namespace Scion::Core::Scripting

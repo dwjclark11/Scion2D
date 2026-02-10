@@ -1,4 +1,4 @@
-#include "TileCmds.h"
+#include "editor/commands/cmds/TileCmds.h"
 #include "editor/scene/SceneObject.h"
 #include "Core/ECS/Registry.h"
 #include "Core/ECS/Entity.h"
@@ -7,10 +7,10 @@
 #include "Logger/Logger.h"
 #include "editor/utilities/EditorUtilities.h"
 
-using namespace SCION_CORE;
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core;
+using namespace Scion::Core::ECS;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
 void RemoveTileLayerCmd::undo()
@@ -252,7 +252,7 @@ void ChangeTileLayerNameCmd::undo()
 	}
 
 	auto& layerParams = pSceneObject->GetLayerParams();
-	auto layerItr = std::ranges::find( layerParams, sNewName, &SCION_UTIL::SpriteLayerParams::sLayerName );
+	auto layerItr = std::ranges::find( layerParams, sNewName, &Scion::Utilities::SpriteLayerParams::sLayerName );
 	SCION_ASSERT( layerItr != layerParams.end() && "Failed to find layer." );
 	layerItr->sLayerName = sOldName;
 }
@@ -268,9 +268,9 @@ void ChangeTileLayerNameCmd::redo()
 	}
 
 	auto& layerParams = pSceneObject->GetLayerParams();
-	auto layerItr = std::ranges::find( layerParams, sOldName, &SCION_UTIL::SpriteLayerParams::sLayerName );
+	auto layerItr = std::ranges::find( layerParams, sOldName, &Scion::Utilities::SpriteLayerParams::sLayerName );
 	SCION_ASSERT( layerItr != layerParams.end() && "Failed to find layer." );
 	layerItr->sLayerName = sNewName;
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

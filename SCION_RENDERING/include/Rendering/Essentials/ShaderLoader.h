@@ -2,7 +2,7 @@
 #include "Shader.h"
 #include <memory>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class ShaderLoader
 {
@@ -23,4 +23,4 @@ class ShaderLoader
 	static bool IsProgramValid( GLuint program );
 	static bool LinkShaders( GLuint program, GLuint vertexShader, GLuint fragmentShader );
 };
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

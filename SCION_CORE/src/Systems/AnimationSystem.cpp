@@ -9,13 +9,13 @@
 
 #include <SDL.h>
 
-using namespace SCION_CORE::ECS;
-using namespace SCION_RENDERING;
+using namespace Scion::Core::ECS;
+using namespace Scion::Rendering;
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 
-void AnimationSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
+void AnimationSystem::Update( Scion::Core::ECS::Registry& registry, Scion::Rendering::Camera2D& camera )
 {
 	auto view = registry.GetRegistry().view<AnimationComponent, SpriteComponent, TransformComponent>();
 	if ( view.size_hint() < 1 )
@@ -30,7 +30,7 @@ void AnimationSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERI
 		// We don't want to check if entities with UIComponents are out of the camera.
 		// Since they use a different camera.
 		if ( !registry.GetRegistry().all_of<UIComponent>( entity ) &&
-			 !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, camera ) )
+			 !Scion::Core::EntityInView( transform, sprite.width, sprite.height, camera ) )
 			continue;
 
 		if ( animation.numFrames <= 0 )
@@ -57,7 +57,7 @@ void AnimationSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERI
 	}
 }
 
-void AnimationSystem::CreateAnimationSystemLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+void AnimationSystem::CreateAnimationSystemLuaBind( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
 	auto& pCamera = registry.GetContext<std::shared_ptr<Camera2D>>();
 
@@ -70,4 +70,4 @@ void AnimationSystem::CreateAnimationSystemLuaBind( sol::state& lua, SCION_CORE:
 		"update",
 		[ & ]( AnimationSystem& system, Registry& reg ) { system.Update( reg, *pCamera ); } );
 }
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

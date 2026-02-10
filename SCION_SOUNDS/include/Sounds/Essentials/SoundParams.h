@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace SCION_SOUNDS
+namespace Scion::Sounds
 {
 struct SoundParams
 {
@@ -10,4 +10,4 @@ struct SoundParams
 	std::string filename{};
 	double duration{ 0.0 };
 };
-} // namespace SCION_SOUNDS
+} // namespace Scion::Sounds

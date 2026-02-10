@@ -1,4 +1,4 @@
-#include "AssetDisplayUtils.h"
+#include "editor/displays/AssetDisplayUtils.h"
 #include "ScionUtilities/ScionUtilities.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
@@ -20,11 +20,11 @@ namespace fs = std::filesystem;
 
 #define SOUNDFX_FILTERS std::vector<const char*>{ "*.mp3", "*.wav", "*.ogg" }
 
-using namespace SCION_FILESYSTEM;
-using namespace SCION_EDITOR;
+using namespace Scion::Filesystem;
+using namespace Scion::Editor;
 
-static const std::map<std::string, SCION_CORE::EMapType> g_mapStringToMapTypes{
-	{ "Grid", SCION_CORE::EMapType::Grid }, { "IsoGrid", SCION_CORE::EMapType::IsoGrid } };
+static const std::map<std::string, Scion::Core::EMapType> g_mapStringToMapTypes{
+	{ "Grid", Scion::Core::EMapType::Grid }, { "IsoGrid", Scion::Core::EMapType::IsoGrid } };
 
 namespace
 {
@@ -34,30 +34,30 @@ class AssetModalCreator
 	AssetModalCreator() {}
 
 	bool AddAssetBasedOnType( const std::string& sAssetName, const std::string& sFilepath,
-							  SCION_UTIL::AssetType eAssetType, bool bPixelArt = true, bool bTileset = false,
+							  Scion::Utilities::AssetType eAssetType, bool bPixelArt = true, bool bTileset = false,
 							  float fontSize = 32.f )
 	{
 		auto& assetManager = MAIN_REGISTRY().GetAssetManager();
 		switch ( eAssetType )
 		{
-		case SCION_UTIL::AssetType::TEXTURE:
+		case Scion::Utilities::AssetType::TEXTURE:
 			return assetManager.AddTexture( sAssetName, sFilepath, bPixelArt, bTileset );
-		case SCION_UTIL::AssetType::FONT: return assetManager.AddFont( sAssetName, sFilepath, fontSize );
-		case SCION_UTIL::AssetType::SOUNDFX: return assetManager.AddSoundFx( sAssetName, sFilepath );
-		case SCION_UTIL::AssetType::MUSIC: return assetManager.AddMusic( sAssetName, sFilepath );
-		case SCION_UTIL::AssetType::SCENE: return false;
+		case Scion::Utilities::AssetType::FONT: return assetManager.AddFont( sAssetName, sFilepath, fontSize );
+		case Scion::Utilities::AssetType::SOUNDFX: return assetManager.AddSoundFx( sAssetName, sFilepath );
+		case Scion::Utilities::AssetType::MUSIC: return assetManager.AddMusic( sAssetName, sFilepath );
+		case Scion::Utilities::AssetType::SCENE: return false;
 		}
 		return false;
 	}
 
-	std::string CheckForAsset( const std::string& sAssetName, SCION_UTIL::AssetType eAssetType )
+	std::string CheckForAsset( const std::string& sAssetName, Scion::Utilities::AssetType eAssetType )
 	{
 		std::string sError{};
 		if ( sAssetName.empty() )
 		{
 			sError = "Asset name cannot be empty!";
 		}
-		else if ( eAssetType == SCION_UTIL::AssetType::SCENE )
+		else if ( eAssetType == Scion::Utilities::AssetType::SCENE )
 		{
 			if ( SCENE_MANAGER().HasScene( sAssetName ) )
 				sError = fmt::format( "Scene [{}] already exists!", sAssetName );
@@ -84,7 +84,7 @@ class AssetModalCreator
 
 			static std::vector<std::string> mapTypes{ "Grid", "IsoGrid" };
 			static std::string sMapType{ "Grid" };
-			static SCION_CORE::EMapType eSelectedType{ SCION_CORE::EMapType::Grid };
+			static Scion::Core::EMapType eSelectedType{ Scion::Core::EMapType::Grid };
 
 			ImGui::InlineLabel( "Map Type" );
 			if ( ImGui::BeginCombo( "##Map Type", sMapType.c_str() ) )
@@ -98,7 +98,7 @@ class AssetModalCreator
 					}
 
 					ImGui::ItemToolTip( "{}",
-										eMapType == SCION_CORE::EMapType::IsoGrid
+										eMapType == Scion::Core::EMapType::IsoGrid
 											? "Warning! IsoGrid maps are not fully supported."
 											: "2D Grid tile map." );
 				}
@@ -107,7 +107,7 @@ class AssetModalCreator
 			}
 
 			std::string sCheckName{ sAssetName.data() };
-			std::string sNameError{ CheckForAsset( sCheckName, SCION_UTIL::AssetType::SCENE ) };
+			std::string sNameError{ CheckForAsset( sCheckName, Scion::Utilities::AssetType::SCENE ) };
 
 			if ( sNameError.empty() )
 			{
@@ -130,7 +130,7 @@ class AssetModalCreator
 				ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f }, sNameError.c_str() );
 			}
 
-			if ( eSelectedType == SCION_CORE::EMapType::IsoGrid )
+			if ( eSelectedType == Scion::Core::EMapType::IsoGrid )
 			{
 				ImGui::TextColored( ImVec4{ 1.f, 1.f, 0.f, 1.f }, "IsoGrid maps are not fully supported yet!" );
 			}
@@ -146,9 +146,9 @@ class AssetModalCreator
 			ImGui::EndPopup();
 		}
 	}
-	void AddAssetModal( SCION_UTIL::AssetType eAssetType, bool* pbOpen )
+	void AddAssetModal( Scion::Utilities::AssetType eAssetType, bool* pbOpen )
 	{
-		std::string sAssetType{ SCION_EDITOR::AssetDisplayUtils::AddAssetBasedOnType( eAssetType ) };
+		std::string sAssetType{ Scion::Editor::AssetDisplayUtils::AddAssetBasedOnType( eAssetType ) };
 
 		if ( *pbOpen )
 			ImGui::OpenPopup( sAssetType.c_str() );
@@ -172,7 +172,7 @@ class AssetModalCreator
 			{
 				FileDialog fd{};
 				sFilepath =
-					fd.OpenFileDialog( "Open", "", SCION_EDITOR::AssetDisplayUtils::GetAssetFileFilters( eAssetType ) );
+					fd.OpenFileDialog( "Open", "", Scion::Editor::AssetDisplayUtils::GetAssetFileFilters( eAssetType ) );
 
 				if ( !sFilepath.empty() )
 				{
@@ -181,12 +181,12 @@ class AssetModalCreator
 				}
 			}
 
-			if ( eAssetType == SCION_UTIL::AssetType::TEXTURE )
+			if ( eAssetType == Scion::Utilities::AssetType::TEXTURE )
 			{
 				ImGui::Checkbox( "Pixel Art", &bPixelArt );
 				ImGui::Checkbox( "Tileset", &bTileset );
 			}
-			else if ( eAssetType == SCION_UTIL::AssetType::FONT )
+			else if ( eAssetType == Scion::Utilities::AssetType::FONT )
 			{
 				ImGui::InputFloat( "Font Size", &fontSize, 1.f, 1.f, "%.1f" );
 			}
@@ -240,38 +240,38 @@ class AssetModalCreator
 
 } // namespace
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
-std::vector<const char*> AssetDisplayUtils::GetAssetFileFilters( SCION_UTIL::AssetType eAssetType )
+std::vector<const char*> AssetDisplayUtils::GetAssetFileFilters( Scion::Utilities::AssetType eAssetType )
 {
 	switch ( eAssetType )
 	{
-	case SCION_UTIL::AssetType::TEXTURE: return IMAGE_FILTERS;
-	case SCION_UTIL::AssetType::FONT: return FONT_FILTERS;
-	case SCION_UTIL::AssetType::SOUNDFX: return SOUNDFX_FILTERS;
-	case SCION_UTIL::AssetType::MUSIC: return MUSIC_FILTERS;
+	case Scion::Utilities::AssetType::TEXTURE: return IMAGE_FILTERS;
+	case Scion::Utilities::AssetType::FONT: return FONT_FILTERS;
+	case Scion::Utilities::AssetType::SOUNDFX: return SOUNDFX_FILTERS;
+	case Scion::Utilities::AssetType::MUSIC: return MUSIC_FILTERS;
 	}
 
 	return {};
 }
-std::string AssetDisplayUtils::AddAssetBasedOnType( SCION_UTIL::AssetType eAssetType )
+std::string AssetDisplayUtils::AddAssetBasedOnType( Scion::Utilities::AssetType eAssetType )
 {
 	switch ( eAssetType )
 	{
-	case SCION_UTIL::AssetType::TEXTURE: return "Add Texture";
-	case SCION_UTIL::AssetType::FONT: return "Add Font";
-	case SCION_UTIL::AssetType::SOUNDFX: return "Add SoundFx";
-	case SCION_UTIL::AssetType::MUSIC: return "Add Music";
-	case SCION_UTIL::AssetType::SCENE: return "Add Scene";
+	case Scion::Utilities::AssetType::TEXTURE: return "Add Texture";
+	case Scion::Utilities::AssetType::FONT: return "Add Font";
+	case Scion::Utilities::AssetType::SOUNDFX: return "Add SoundFx";
+	case Scion::Utilities::AssetType::MUSIC: return "Add Music";
+	case Scion::Utilities::AssetType::SCENE: return "Add Scene";
 	default: SCION_ASSERT( false && "Type has not been implemented!" ); return {};
 	}
 }
 
-void AssetDisplayUtils::OpenAddAssetModalBasedOnType( SCION_UTIL::AssetType eAssetType, bool* pbOpen )
+void AssetDisplayUtils::OpenAddAssetModalBasedOnType( Scion::Utilities::AssetType eAssetType, bool* pbOpen )
 {
-	SCION_ASSERT( eAssetType != SCION_UTIL::AssetType::NO_TYPE && "The asset type must be set!" );
+	SCION_ASSERT( eAssetType != Scion::Utilities::AssetType::NO_TYPE && "The asset type must be set!" );
 	static AssetModalCreator md{};
-	if ( eAssetType == SCION_UTIL::AssetType::SCENE )
+	if ( eAssetType == Scion::Utilities::AssetType::SCENE )
 	{
 		md.AddSceneModal( pbOpen );
 	}
@@ -280,4 +280,4 @@ void AssetDisplayUtils::OpenAddAssetModalBasedOnType( SCION_UTIL::AssetType eAss
 		md.AddAssetModal( eAssetType, pbOpen );
 	}
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

@@ -2,7 +2,7 @@
 #include "Registry.h"
 #include <sol/sol.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 class Entity
 {
@@ -130,6 +130,6 @@ auto remove_component( Entity& entity );
 template <typename TComponent>
 auto copy_component( Entity& entityToCopy, Entity& entityThatCopies );
 
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS
 
 #include "Entity.inl"

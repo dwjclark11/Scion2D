@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <sstream>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 struct Color
@@ -71,4 +71,4 @@ struct PickingVertex
 	uint32_t uid{ 0 };
 };
 
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

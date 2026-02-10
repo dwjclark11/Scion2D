@@ -6,7 +6,7 @@
 #include <vector>
 #include <entt/entt.hpp>
 
-namespace SCION_PHYSICS
+namespace Scion::Physics
 {
 struct UserData
 {
@@ -67,4 +67,4 @@ struct ObjectData
   private:
 	std::vector<const ObjectData*> contactEntities;
 };
-} // namespace SCION_PHYSICS
+} // namespace Scion::Physics

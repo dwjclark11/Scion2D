@@ -6,9 +6,9 @@
 
 #include <Logger/Logger.h>
 
-using namespace SCION_PHYSICS;
+using namespace Scion::Physics;
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 
 PhysicsComponent::PhysicsComponent( const PhysicsAttributes& physicsAttr )
@@ -18,7 +18,7 @@ PhysicsComponent::PhysicsComponent( const PhysicsAttributes& physicsAttr )
 {
 }
 
-void PhysicsComponent::Init( SCION_PHYSICS::PhysicsWorld pPhysicsWorld, int windowWidth, int windowHeight )
+void PhysicsComponent::Init( Scion::Physics::PhysicsWorld pPhysicsWorld, int windowWidth, int windowHeight )
 {
 	if ( !pPhysicsWorld )
 	{
@@ -46,7 +46,7 @@ void PhysicsComponent::Init( SCION_PHYSICS::PhysicsWorld pPhysicsWorld, int wind
 	bodyDef.fixedRotation = m_InitialAttribs.bFixedRotation;
 
 	// Create the Rigid Body
-	m_pRigidBody = SCION_PHYSICS::MakeSharedBody( pPhysicsWorld->CreateBody( &bodyDef ) );
+	m_pRigidBody = Scion::Physics::MakeSharedBody( pPhysicsWorld->CreateBody( &bodyDef ) );
 
 	if ( !m_pRigidBody )
 	{
@@ -124,7 +124,7 @@ const bool PhysicsComponent::IsSensor() const
 	return m_pRigidBody->GetFixtureList()->IsSensor();
 }
 
-SCION_PHYSICS::ObjectData PhysicsComponent::CastRay( const b2Vec2& point1, const b2Vec2& point2 ) const
+Scion::Physics::ObjectData PhysicsComponent::CastRay( const b2Vec2& point1, const b2Vec2& point2 ) const
 {
 	if ( !m_pRigidBody )
 	{
@@ -170,10 +170,10 @@ SCION_PHYSICS::ObjectData PhysicsComponent::CastRay( const b2Vec2& point1, const
 		}
 	}
 
-	return SCION_PHYSICS::ObjectData{};
+	return Scion::Physics::ObjectData{};
 }
 
-std::vector<SCION_PHYSICS::ObjectData> PhysicsComponent::BoxTrace( const b2Vec2& lowerBounds,
+std::vector<Scion::Physics::ObjectData> PhysicsComponent::BoxTrace( const b2Vec2& lowerBounds,
 																   const b2Vec2& upperBounds ) const
 {
 	if ( !m_pRigidBody )
@@ -186,7 +186,7 @@ std::vector<SCION_PHYSICS::ObjectData> PhysicsComponent::BoxTrace( const b2Vec2&
 	if ( !pWorld )
 		return {};
 
-	std::vector<SCION_PHYSICS::ObjectData> objectDataVec{};
+	std::vector<Scion::Physics::ObjectData> objectDataVec{};
 
 	BoxTraceCallback callback{};
 
@@ -229,7 +229,7 @@ std::vector<SCION_PHYSICS::ObjectData> PhysicsComponent::BoxTrace( const b2Vec2&
 	return objectDataVec;
 }
 
-SCION_PHYSICS::ObjectData PhysicsComponent::GetCurrentObjectData()
+Scion::Physics::ObjectData PhysicsComponent::GetCurrentObjectData()
 {
 	SCION_ASSERT( m_pRigidBody );
 
@@ -444,7 +444,7 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 		// TODO: Add in filters and other properties as needed
 	);
 
-	auto& pPhysicsWorld = registry.ctx().get<SCION_PHYSICS::PhysicsWorld>();
+	auto& pPhysicsWorld = registry.ctx().get<Scion::Physics::PhysicsWorld>();
 	SCION_ASSERT( pPhysicsWorld && "Physics World was not setup properly." );
 
 	if ( !pPhysicsWorld )
@@ -653,4 +653,4 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 
 	);
 }
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

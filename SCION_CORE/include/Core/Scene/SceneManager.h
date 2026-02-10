@@ -1,7 +1,7 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 enum class EMapType;
@@ -34,7 +34,7 @@ class SceneManager
 	 * @param eType The type of the map associated with the scene.
 	 * @return true if the scene was successfully added; false if the name already exists.
 	 */
-	virtual bool AddScene( const std::string& sSceneName, SCION_CORE::EMapType eType );
+	virtual bool AddScene( const std::string& sSceneName, Scion::Core::EMapType eType );
 	bool HasScene( const std::string& sSceneName );
 
 	/**
@@ -70,4 +70,4 @@ class SceneManager
 	std::string m_sCurrentScene{};
 	std::string m_sCurrentTileset{};
 };
-} // namespace SCION_CORE
+} // namespace Scion::Core

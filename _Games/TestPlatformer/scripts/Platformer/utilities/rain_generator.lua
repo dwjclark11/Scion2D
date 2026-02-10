@@ -93,7 +93,7 @@ function Rain:Finish()
 end
 
 function Rain:Destroy()
-	self.m_Entity:kill()
+	self.m_Entity:destroy()
 	self.m_Entity = nil
 end
 

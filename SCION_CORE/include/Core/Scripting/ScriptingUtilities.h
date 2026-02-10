@@ -4,7 +4,7 @@
 #include <initializer_list>
 #include <utility>
 
-namespace SCION_CORE::Scripting
+namespace Scion::Core::Scripting
 {
 
 struct MainScriptFunctions
@@ -89,6 +89,6 @@ struct ScriptingHelpers
 	static void CreateLuaHelpers( sol::state& lua );
 };
 
-} // namespace SCION_CORE::Scripting
+} // namespace Scion::Core::Scripting
 
-using MainScriptPtr = std::shared_ptr<SCION_CORE::Scripting::MainScriptFunctions>;
+using MainScriptPtr = std::shared_ptr<Scion::Core::Scripting::MainScriptFunctions>;

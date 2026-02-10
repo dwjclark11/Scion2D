@@ -1,7 +1,7 @@
 #include "Rendering/Essentials/Shader.h"
 #include <iostream>
 #include <Logger/Logger.h>
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 GLuint Shader::GetUniformLocation( const std::string& uniformName )
@@ -106,4 +106,4 @@ void Shader::Disable() const
 	glUseProgram( 0 );
 }
 
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

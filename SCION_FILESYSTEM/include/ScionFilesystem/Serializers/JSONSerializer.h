@@ -2,7 +2,7 @@
 #include <fstream>
 #include <rapidjson/prettywriter.h>
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 class JSONSerializer
 {
@@ -33,6 +33,6 @@ class JSONSerializer
 	int m_NumArraysStarted;
 };
 
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem
 
 #include "JSONSerializer.inl"

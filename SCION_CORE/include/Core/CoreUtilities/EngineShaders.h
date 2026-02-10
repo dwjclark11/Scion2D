@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SCION_CORE::Shaders
+namespace Scion::Core::Shaders
 {
 static const char* basicShaderVert = R"(
 #version 450 core

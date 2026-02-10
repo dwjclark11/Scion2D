@@ -10,14 +10,14 @@
 
 #include <Rendering/Essentials/Texture.h>
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
 constexpr const std::string_view PlayerStartTag = "S2D_PlayerStart";
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
-PlayerStart::PlayerStart( SCION_CORE::ECS::Registry& registry, Scene& sceneRef )
+PlayerStart::PlayerStart( Scion::Core::ECS::Registry& registry, Scene& sceneRef )
 	: m_SceneRef{ sceneRef }
 	, m_pVisualEntity{ nullptr }
 	, m_pCharacterPrefab{ nullptr }
@@ -29,7 +29,7 @@ PlayerStart::PlayerStart( SCION_CORE::ECS::Registry& registry, Scene& sceneRef )
 	
 }
 
-void PlayerStart::CreatePlayer( SCION_CORE::ECS::Registry& registry )
+void PlayerStart::CreatePlayer( Scion::Core::ECS::Registry& registry )
 {
 	if ( m_sCharacterName != "default" && !m_pCharacterPrefab && m_bCharacterLoaded )
 	{
@@ -86,7 +86,7 @@ void PlayerStart::CreatePlayer( SCION_CORE::ECS::Registry& registry )
 			float gravityScale = coreGlobals.GetGameType() == EGameType::Platformer ? 1.f : 0.f;
 
 			characterEnt.AddComponent<PhysicsComponent>(
-				PhysicsComponent{ PhysicsAttributes{ .eType = SCION_PHYSICS::RigidBodyType::DYNAMIC,
+				PhysicsComponent{ PhysicsAttributes{ .eType = Scion::Physics::RigidBodyType::DYNAMIC,
 													 .density = 100.f,
 													 .friction = 0.f,
 													 .restitution = 0.f,
@@ -185,4 +185,4 @@ void PlayerStart::LoadVisualEntity()
 	m_bVisualEntityCreated = true;
 }
 
-} // namespace SCION_CORE
+} // namespace Scion::Core

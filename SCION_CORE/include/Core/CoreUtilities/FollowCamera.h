@@ -3,7 +3,7 @@
 #include "CoreEngineData.h"
 #include "Core/ECS/Entity.h"
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 struct FollowCamParams
@@ -19,12 +19,12 @@ struct FollowCamParams
 class FollowCamera
 {
   private:
-	SCION_RENDERING::Camera2D& m_Camera;
+	Scion::Rendering::Camera2D& m_Camera;
 	FollowCamParams m_Params;
 	ECS::Entity m_Entity;
 
   public:
-	FollowCamera( SCION_RENDERING::Camera2D& camera, const ECS::Entity& entity, const FollowCamParams& params );
+	FollowCamera( Scion::Rendering::Camera2D& camera, const ECS::Entity& entity, const FollowCamParams& params );
 	~FollowCamera() = default;
 
 	void Update();
@@ -36,4 +36,4 @@ class FollowCamera
 
 	static void CreateLuaFollowCamera( sol::state& lua, ECS::Registry& registry );
 };
-} // namespace SCION_CORE
+} // namespace Scion::Core

@@ -11,10 +11,10 @@
 #include "Rendering/Essentials/Shader.h"
 #include "Logger/Logger.h"
 
-using namespace SCION_RENDERING;
-using namespace SCION_CORE::ECS;
+using namespace Scion::Rendering;
+using namespace Scion::Core::ECS;
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 RenderPickingSystem::RenderPickingSystem()
 	: m_pBatchRenderer{ std::make_unique<PickingBatchRenderer>() }
@@ -25,7 +25,7 @@ RenderPickingSystem::~RenderPickingSystem()
 {
 }
 
-void RenderPickingSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
+void RenderPickingSystem::Update( Scion::Core::ECS::Registry& registry, Scion::Rendering::Camera2D& camera )
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
@@ -50,7 +50,7 @@ void RenderPickingSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_REN
 		const auto& transform = spriteView.get<TransformComponent>( entity );
 		const auto& sprite = spriteView.get<SpriteComponent>( entity );
 
-		if ( !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, camera ) )
+		if ( !Scion::Core::EntityInView( transform, sprite.width, sprite.height, camera ) )
 			continue;
 
 		if ( sprite.sTextureName.empty() || sprite.bHidden )
@@ -66,7 +66,7 @@ void RenderPickingSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_REN
 		glm::vec4 spriteRect{ transform.position.x, transform.position.y, sprite.width, sprite.height };
 
 		glm::vec4 uvRect{ sprite.uvs.u, sprite.uvs.v, sprite.uvs.uv_width, sprite.uvs.uv_height };
-		glm::mat4 model = SCION_CORE::RSTModel( transform, sprite.width, sprite.height );
+		glm::mat4 model = Scion::Core::RSTModel( transform, sprite.width, sprite.height );
 
 		m_pBatchRenderer->AddSprite(
 			spriteRect, uvRect, pTexture->GetID(), sprite.layer, static_cast<uint32_t>( entity ), sprite.color, model );
@@ -77,4 +77,4 @@ void RenderPickingSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_REN
 
 	pickingShader->Disable();
 }
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

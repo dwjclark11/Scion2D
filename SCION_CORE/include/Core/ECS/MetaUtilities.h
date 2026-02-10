@@ -4,7 +4,7 @@
 
 #include <Logger/Logger.h>
 
-namespace SCION_CORE::Utils
+namespace Scion::Core::Utils
 {
 
 [[nodiscard]] entt::id_type GetIdType( const sol::table& comp );
@@ -30,4 +30,4 @@ inline auto InvokeMetaFunction( entt::id_type id, entt::id_type func_id, Args&&.
 {
 	return InvokeMetaFunction( entt::resolve( id ), func_id, std::forward<Args>( args )... );
 }
-} // namespace SCION_CORE::Utils
+} // namespace Scion::Core::Utils

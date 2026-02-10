@@ -1,4 +1,4 @@
-#include "CreateTileToolCmds.h"
+#include "editor/commands/cmds/CreateTileToolCmds.h"
 
 #include "Core/ECS/Registry.h"
 #include "Core/ECS/Entity.h"
@@ -7,9 +7,9 @@
 #include "editor/utilities/EditorUtilities.h"
 #include "Logger/Logger.h"
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 void CreateTileToolAddCmd::undo()
 {
@@ -191,4 +191,4 @@ void CreateTileToolRemoveCmd::redo()
 	}
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

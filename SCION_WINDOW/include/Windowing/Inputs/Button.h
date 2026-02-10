@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SCION_WINDOWING::Inputs
+namespace Scion::Windowing::Inputs
 {
 struct Button
 {
@@ -11,4 +11,4 @@ struct Button
 	void Update( bool bPressed );
 	void Reset();
 };
-} // namespace SCION_WINDOWING::Inputs
+} // namespace Scion::Windowing::Inputs

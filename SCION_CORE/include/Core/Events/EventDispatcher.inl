@@ -1,7 +1,7 @@
 #include "EventDispatcher.h"
 #include "Logger/Logger.h"
 
-namespace SCION_CORE::Events
+namespace Scion::Core::Events
 {
 
 template <typename TEventType, auto Func, typename THandlerType>
@@ -129,7 +129,7 @@ template <typename TEvent>
 inline void EventDispatcher::RegisterMetaEventFuncs()
 {
 	using namespace entt::literals;
-	entt::meta<TEvent>()
+	entt::meta_factory<TEvent>()
 		.type( entt::type_hash<TEvent>::value() )
 		.template func<&add_handler<TEvent>>( "add_handler"_hs )
 		.template func<&remove_handler<TEvent>>( "remove_handler"_hs )
@@ -139,4 +139,4 @@ inline void EventDispatcher::RegisterMetaEventFuncs()
 		.template func<&has_handlers<TEvent>>( "has_handlers"_hs );
 }
 
-} // namespace SCION_CORE::Events
+} // namespace Scion::Core::Events

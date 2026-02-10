@@ -1,6 +1,6 @@
 #include "Rendering/Essentials/Texture.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 Texture::Texture()
@@ -32,4 +32,4 @@ void Texture::Destroy()
 {
 	glDeleteTextures( 1, &m_TextureID );
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

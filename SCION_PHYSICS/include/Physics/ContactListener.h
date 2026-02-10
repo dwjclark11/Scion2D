@@ -2,7 +2,7 @@
 #include "Box2DWrappers.h"
 #include "UserData.h"
 
-namespace SCION_PHYSICS
+namespace Scion::Physics
 {
 class ContactListener : public b2ContactListener
 {
@@ -48,4 +48,4 @@ class ContactListener : public b2ContactListener
 	UserData* m_pUserDataA{ nullptr };
 	UserData* m_pUserDataB{ nullptr };
 };
-} // namespace SCION_PHYSICS
+} // namespace Scion::Physics

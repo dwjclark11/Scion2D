@@ -1,6 +1,6 @@
 #include "Physics/RayCastCallback.h"
 
-namespace SCION_PHYSICS
+namespace Scion::Physics
 {
 RayCastCallback::RayCastCallback()
 	: m_pHitFixture{ nullptr }
@@ -23,4 +23,4 @@ float RayCastCallback::ReportFixture( b2Fixture* pFixture, const b2Vec2& point, 
 	return 0.0f;
 }
 
-} // namespace SCION_PHYSICS
+} // namespace Scion::Physics

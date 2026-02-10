@@ -8,7 +8,7 @@
 #include <functional>
 #include <atomic>
 
-namespace SCION_UTIL
+namespace Scion::Utilities
 {
 class ThreadPool
 {
@@ -113,6 +113,6 @@ class ThreadPool
 	/* Indicates if the pool is shutting down. */
 	std::atomic<bool> m_bStopped;
 };
-} // namespace SCION_UTIL
+} // namespace Scion::Utilities
 
-using SharedThreadPool = std::shared_ptr<SCION_UTIL::ThreadPool>;
+using SharedThreadPool = std::shared_ptr<Scion::Utilities::ThreadPool>;

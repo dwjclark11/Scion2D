@@ -9,9 +9,9 @@
 
 #include <Rendering/Core/Camera2D.h>
 
-using namespace SCION_WINDOWING::Inputs;
+using namespace Scion::Windowing::Inputs;
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 InputManager::InputManager()
@@ -225,7 +225,7 @@ InputManager& InputManager::GetInstance()
 	return instance;
 }
 
-void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+void InputManager::CreateLuaInputBindings( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
 	RegisterLuaKeyNames( lua );
 	RegisterMouseBtnNames( lua );
@@ -233,7 +233,7 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Reg
 
 	auto& inputManager = GetInstance();
 	auto& keyboard = inputManager.GetKeyboard();
-	auto& camera = registry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
+	auto& camera = registry.GetContext<std::shared_ptr<Scion::Rendering::Camera2D>>();
 
 	lua.new_usertype<Keyboard>(
 		"Keyboard",
@@ -519,4 +519,4 @@ void InputManager::UpdateGamepads()
 			gamepad->Update();
 	}
 }
-} // namespace SCION_CORE
+} // namespace Scion::Core

@@ -2,30 +2,30 @@
 #include "Core/ECS/Registry.h"
 #include <sol/sol.hpp>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class Camera2D;
 class SpriteBatchRenderer;
 class TextBatchRenderer;
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 class RenderUISystem
 {
   private:
-	std::unique_ptr<SCION_RENDERING::SpriteBatchRenderer> m_pSpriteRenderer;
-	std::unique_ptr<SCION_RENDERING::TextBatchRenderer> m_pTextRenderer;
-	std::unique_ptr<SCION_RENDERING::Camera2D> m_pCamera2D;
+	std::unique_ptr<Scion::Rendering::SpriteBatchRenderer> m_pSpriteRenderer;
+	std::unique_ptr<Scion::Rendering::TextBatchRenderer> m_pTextRenderer;
+	std::unique_ptr<Scion::Rendering::Camera2D> m_pCamera2D;
 
   public:
 	RenderUISystem();
 	~RenderUISystem();
 
-	void Update( SCION_CORE::ECS::Registry& registry );
-	inline SCION_RENDERING::Camera2D* GetCamera() { return m_pCamera2D.get(); }
+	void Update( Scion::Core::ECS::Registry& registry );
+	inline Scion::Rendering::Camera2D* GetCamera() { return m_pCamera2D.get(); }
 
 	static void CreateRenderUISystemLuaBind( sol::state& lua );
 
 };
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

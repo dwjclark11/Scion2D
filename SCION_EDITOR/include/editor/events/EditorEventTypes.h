@@ -1,0 +1,90 @@
+#pragma once
+
+namespace Scion::Core::ECS
+{
+class Entity;
+}
+
+namespace Scion::Editor::Events
+{
+enum class EFileAction
+{
+	Delete,
+	Copy,
+	Cut,
+	Paste,
+	Rename,
+	FileDropped,
+	NoAction
+};
+
+struct FileEvent
+{
+	EFileAction eAction{ EFileAction::NoAction };
+	std::string sFilepath{};
+};
+
+struct CloseEditorEvent
+{
+	//
+};
+
+struct SwitchEntityEvent
+{
+	Scion::Core::ECS::Entity* pEntity{ nullptr };
+};
+
+enum class EContentCreateAction
+{
+	/* Create a new folder. */
+	Folder,
+	/* Create a new lua file with S2D_Class */
+	LuaClass,
+	/* Create a new lua file with an empty lua table. TableName = {} */
+	LuaTable,
+	/* Create a new lua file with S2D_Class that has a Scion State class implementation. */
+	LuaStateClass,
+	/* Create an empty lua file.*/
+	EmptyLuaFile,
+
+	NoAction
+};
+
+struct ContentCreateEvent
+{
+	EContentCreateAction eAction{ EContentCreateAction::NoAction };
+	std::string sFilepath{};
+};
+
+struct NameChangeEvent
+{
+	std::string sOldName{};
+	std::string sNewName{};
+	Scion::Core::ECS::Entity* pEntity{ nullptr };
+};
+
+enum class EComponentType
+{
+	Transform,
+	Sprite,
+	Physics,
+	Text,
+	BoxCollider,
+	CircleCollider,
+	RigidBody,
+	Animation,
+	Tile,
+	UI,
+	NoType
+};
+
+struct AddComponentEvent
+{
+	Scion::Core::ECS::Entity* pEntity{ nullptr };
+	EComponentType eType{ EComponentType::NoType };
+};
+
+EComponentType GetComponentTypeFromStr( const std::string& componentStr );
+std::string GetComponentStrFromType( EComponentType eType );
+
+} // namespace Scion::Editor::Events

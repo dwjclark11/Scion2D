@@ -3,7 +3,7 @@
 
 #include <entt/entt.hpp>
 
-namespace SCION_PHYSICS
+namespace Scion::Physics
 {
 
 void ContactListener::SetUserContacts( UserData* a, UserData* b )
@@ -114,4 +114,4 @@ void ContactListener::PreSolve( b2Contact* contact, const b2Manifold* oldManifol
 	// TODO: We could probably make some sol::functions that could be setup to be used.
 }
 
-} // namespace SCION_PHYSICS
+} // namespace Scion::Physics

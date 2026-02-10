@@ -6,23 +6,23 @@ namespace sol
 class state;
 }
 
-namespace SCION_WINDOWING
+namespace Scion::Windowing
 {
 class Window;
 }
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 struct GameConfig;
 }
 
-namespace SCION_UTIL
+namespace Scion::Utilities
 {
 enum class AssetType;
 struct S2DAsset;
-} // namespace SCION_UTIL
+} // namespace Scion::Utilities
 
-namespace SCION_ENGINE
+namespace Scion::Engine
 {
 class RuntimeApp
 {
@@ -50,9 +50,9 @@ class RuntimeApp
 	void CleanUp();
 
   private:
-	std::unique_ptr<SCION_WINDOWING::Window> m_pWindow;
-	std::unique_ptr<SCION_CORE::GameConfig> m_pGameConfig;
-	std::unordered_map<SCION_UTIL::AssetType, std::vector<std::unique_ptr<SCION_UTIL::S2DAsset>>> m_mapS2DAssets;
+	std::unique_ptr<Scion::Windowing::Window> m_pWindow;
+	std::unique_ptr<Scion::Core::GameConfig> m_pGameConfig;
+	std::unordered_map<Scion::Utilities::AssetType, std::vector<std::unique_ptr<Scion::Utilities::S2DAsset>>> m_mapS2DAssets;
 	SDL_Event m_Event;
 	bool m_bRunning;
 	/*
@@ -64,4 +64,4 @@ class RuntimeApp
 	*/
 	int m_DeltaAllocatedChannels;
 };
-} // namespace SCION_ENGINE
+} // namespace Scion::Engine

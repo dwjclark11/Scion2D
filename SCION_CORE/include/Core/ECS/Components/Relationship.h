@@ -2,7 +2,7 @@
 #include <entt/entt.hpp>
 #include <sol/sol.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 
 /*
@@ -109,4 +109,4 @@ struct RelationshipUtils
 	}
 };
 
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

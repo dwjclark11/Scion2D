@@ -5,9 +5,9 @@
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Core/Scene/Scene.h"
 
-using namespace SCION_CORE::Utils;
+using namespace Scion::Core::Utils;
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 
 Entity::Entity( Registry* registry )
@@ -330,7 +330,7 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 			if ( auto* pSprite = entity.TryGetComponent<SpriteComponent>(); pSprite->bIsoMetric )
 			{
 				auto& transform = entity.GetComponent<TransformComponent>();
-				auto [ cellX, cellY ] = SCION_CORE::ConvertWorldPosToIsoCoords( transform.position, canvas );
+				auto [ cellX, cellY ] = Scion::Core::ConvertWorldPosToIsoCoords( transform.position, canvas );
 				pSprite->isoCellX = cellX;
 				pSprite->isoCellY = cellY;
 			}
@@ -342,4 +342,4 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 		"id",
 		[]( Entity& entity ) { return static_cast<uint32_t>( entity.GetEntity() ); } );
 }
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

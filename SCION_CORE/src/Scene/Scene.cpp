@@ -20,10 +20,10 @@
 
 namespace fs = std::filesystem;
 
-using namespace SCION_FILESYSTEM;
-using namespace SCION_CORE::Loaders;
+using namespace Scion::Filesystem;
+using namespace Scion::Core::Loaders;
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 Scene::Scene()
 	: m_Registry{}
@@ -54,8 +54,8 @@ Scene::Scene( const std::string& sceneName, EMapType eType )
 	, m_eMapType{ eType }
 	, m_PlayerStart{ m_Registry, *this }
 {
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
-	auto optScenesPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::Scenes );
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
+	auto optScenesPath = pProjectInfo->TryGetFolderPath( Scion::Core::EProjectFolderType::Scenes );
 
 	SCION_ASSERT( optScenesPath && "Scenes folder path not set correctly." );
 
@@ -159,13 +159,13 @@ int Scene::AddLayer( const std::string& sLayerName, bool bVisible )
 	}
 
 	auto& spriteLayer =
-		m_LayerParams.emplace_back( SCION_UTIL::SpriteLayerParams{ .sLayerName = sLayerName, .bVisible = bVisible } );
+		m_LayerParams.emplace_back( Scion::Utilities::SpriteLayerParams{ .sLayerName = sLayerName, .bVisible = bVisible } );
 	spriteLayer.layer = m_LayerParams.size() - 1;
 
 	return static_cast<int>( m_LayerParams.size() );
 }
 
-int Scene::AddLayer( const SCION_UTIL::SpriteLayerParams& layerParam )
+int Scene::AddLayer( const Scion::Utilities::SpriteLayerParams& layerParam )
 {
 	auto layerItr =
 		std::ranges::find_if( m_LayerParams, [ &layerParam ]( const auto& lp ) { return lp == layerParam; } );
@@ -187,7 +187,7 @@ int Scene::AddLayer( const SCION_UTIL::SpriteLayerParams& layerParam )
 
 bool Scene::CheckLayerName( const std::string& sLayerName )
 {
-	return SCION_UTIL::CheckContainsValue( m_LayerParams, [ & ]( SCION_UTIL::SpriteLayerParams& spriteLayer ) {
+	return Scion::Utilities::CheckContainsValue( m_LayerParams, [ & ]( Scion::Utilities::SpriteLayerParams& spriteLayer ) {
 		return spriteLayer.sLayerName == sLayerName;
 	} );
 }
@@ -282,11 +282,11 @@ bool Scene::LoadSceneData()
 		std::string sMapType = sceneData[ "mapType" ].GetString();
 		if ( sMapType == "grid" )
 		{
-			m_eMapType = SCION_CORE::EMapType::Grid;
+			m_eMapType = Scion::Core::EMapType::Grid;
 		}
 		else if ( sMapType == "iso" )
 		{
-			m_eMapType = SCION_CORE::EMapType::IsoGrid;
+			m_eMapType = Scion::Core::EMapType::IsoGrid;
 			SetCanvasOffset();
 		}
 	}
@@ -390,7 +390,7 @@ bool Scene::SaveSceneData( bool bOverride )
 		.AddKeyValuePair( "tileHeight", m_Canvas.tileHeight )
 		.EndObject() // Canvas
 		.AddKeyValuePair( "mapType",
-						  ( m_eMapType == SCION_CORE::EMapType::Grid ? std::string{ "grid" } : std::string{ "iso" } ) )
+						  ( m_eMapType == Scion::Core::EMapType::Grid ? std::string{ "grid" } : std::string{ "iso" } ) )
 		.StartNewObject( "playerStart" )
 		.AddKeyValuePair( "enabled", m_bUsePlayerStart )
 		.AddKeyValuePair( "character", m_bUsePlayerStart ? m_PlayerStart.GetCharacterName() : std::string{ "default" } )
@@ -436,7 +436,7 @@ bool Scene::SaveSceneData( bool bOverride )
 
 void Scene::SetCanvasOffset()
 {
-	if ( m_eMapType == SCION_CORE::EMapType::Grid )
+	if ( m_eMapType == Scion::Core::EMapType::Grid )
 	{
 		m_Canvas.offset = glm::vec2{ 0.f };
 		return;
@@ -490,4 +490,4 @@ void Scene::CreateLuaBind( sol::state& lua )
 							  &Canvas::tileHeight );
 }
 
-} // namespace SCION_CORE
+} // namespace Scion::Core

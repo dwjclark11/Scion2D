@@ -2,7 +2,7 @@
 #include "Core/ECS/Entity.h"
 #include <glm/glm.hpp>
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 class Prefab;
@@ -12,9 +12,9 @@ class Scene;
 class PlayerStart
 {
   public:
-	PlayerStart( SCION_CORE::ECS::Registry& registry, Scene& sceneRef );
+	PlayerStart( Scion::Core::ECS::Registry& registry, Scene& sceneRef );
 
-	void CreatePlayer( SCION_CORE::ECS::Registry& registry );
+	void CreatePlayer( Scion::Core::ECS::Registry& registry );
 	std::string GetCharacterName();
 	void SetCharacter( const Prefab& prefab );
 
@@ -35,7 +35,7 @@ class PlayerStart
 	
   private:
 	Scene& m_SceneRef;
-	std::shared_ptr<SCION_CORE::ECS::Entity> m_pVisualEntity;
+	std::shared_ptr<Scion::Core::ECS::Entity> m_pVisualEntity;
 	std::shared_ptr<Prefab> m_pCharacterPrefab;
 	std::string m_sCharacterName;
 	bool m_bCharacterLoaded;
@@ -44,4 +44,4 @@ class PlayerStart
 	// TODO: Determine if this is needed.
 	std::shared_ptr<Character> m_pCharacter;
 };
-} // namespace SCION_CORE
+} // namespace Scion::Core

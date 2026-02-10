@@ -6,12 +6,12 @@
 #include <glm/glm.hpp>
 #include <entt/entt.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 
 struct PhysicsAttributes
 {
-	SCION_PHYSICS::RigidBodyType eType{ SCION_PHYSICS::RigidBodyType::STATIC };
+	Scion::Physics::RigidBodyType eType{ Scion::Physics::RigidBodyType::STATIC };
 	/* The density of the body, usually in kg/m^2. */
 	float density{ 1.f };
 	/* The Coulomb (dry) friction coefficient, usually in the range [0,1]. */
@@ -58,14 +58,14 @@ struct PhysicsAttributes
 	A group index of zero has no effect. Non-zero group filtering always wins against the mask bits. */
 	int16_t groupIndex{ 0 };
 	/* This is the user specified data for each body. */
-	SCION_PHYSICS::ObjectData objectData{};
+	Scion::Physics::ObjectData objectData{};
 };
 
 class PhysicsComponent
 {
   private:
 	std::shared_ptr<b2Body> m_pRigidBody;
-	std::shared_ptr<SCION_PHYSICS::UserData> m_pUserData;
+	std::shared_ptr<Scion::Physics::UserData> m_pUserData;
 	PhysicsAttributes m_InitialAttribs;
 
   public:
@@ -73,11 +73,11 @@ class PhysicsComponent
 	PhysicsComponent( const PhysicsAttributes& physicsAttr );
 	~PhysicsComponent() = default;
 
-	void Init( SCION_PHYSICS::PhysicsWorld pPhysicsWorld, int windowWidth, int windowHeight );
+	void Init( Scion::Physics::PhysicsWorld pPhysicsWorld, int windowWidth, int windowHeight );
 	const bool IsSensor() const;
-	SCION_PHYSICS::ObjectData CastRay( const b2Vec2& point1, const b2Vec2& point2 ) const;
-	std::vector<SCION_PHYSICS::ObjectData> BoxTrace( const b2Vec2& lowerBounds, const b2Vec2& upperBounds ) const;
-	SCION_PHYSICS::ObjectData GetCurrentObjectData();
+	Scion::Physics::ObjectData CastRay( const b2Vec2& point1, const b2Vec2& point2 ) const;
+	std::vector<Scion::Physics::ObjectData> BoxTrace( const b2Vec2& lowerBounds, const b2Vec2& upperBounds ) const;
+	Scion::Physics::ObjectData GetCurrentObjectData();
 
 	void SetFilterCategory( uint16_t category );
 	void SetFilterCategory();
@@ -89,7 +89,7 @@ class PhysicsComponent
 	bool UseFilters() const { return m_InitialAttribs.bUseFilters;  }
 
 	inline b2Body* GetBody() { return m_pRigidBody.get(); }
-	inline SCION_PHYSICS::UserData* GetUserData() { return m_pUserData.get(); }
+	inline Scion::Physics::UserData* GetUserData() { return m_pUserData.get(); }
 	
 	/* The attributes may have changed. we need to make a function that will refill the attributes */
 	inline const PhysicsAttributes& GetAttributes() const { return m_InitialAttribs; }
@@ -97,4 +97,4 @@ class PhysicsComponent
 	
 	static void CreatePhysicsLuaBind( sol::state& lua, entt::registry& registry );
 };
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

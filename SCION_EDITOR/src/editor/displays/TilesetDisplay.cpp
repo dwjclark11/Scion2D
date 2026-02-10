@@ -1,4 +1,4 @@
-#include "TilesetDisplay.h"
+#include "editor/displays/TilesetDisplay.h"
 #include "Logger/Logger.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/ECS/MainRegistry.h"
@@ -15,7 +15,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 void TilesetDisplay::DrawToolbar()
 {
@@ -156,7 +156,7 @@ void TilesetDisplay::Draw()
 						tileData.sprite.start_y = minRow;
 
 						// We only want to do this when the selection changes!!
-						SCION_CORE::GenerateUVsExt( tileData.sprite,
+						Scion::Core::GenerateUVsExt( tileData.sprite,
 													textureWidth,
 													textureHeight,
 													minCol * tileWidth / textureWidth,
@@ -191,4 +191,4 @@ void TilesetDisplay::Draw()
 
 	ImGui::End();
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

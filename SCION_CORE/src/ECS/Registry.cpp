@@ -4,28 +4,28 @@
 #include "Core/ECS/ECSUtils.h"
 #include "Core/ECS/Components/PersistentComponent.h"
 
-using namespace SCION_CORE::Utils;
+using namespace Scion::Core::Utils;
 
-SCION_CORE::ECS::Registry::Registry()
+Scion::Core::ECS::Registry::Registry()
 	: m_pRegistry{ std::make_shared<entt::registry>() }
 {
 }
 
-void SCION_CORE::ECS::Registry::ClearRegistry()
+void Scion::Core::ECS::Registry::ClearRegistry()
 {
-	auto view = m_pRegistry->view<entt::entity>( entt::exclude<SCION_CORE::ECS::PersistentComponent> );
+	auto view = m_pRegistry->view<entt::entity>( entt::exclude<Scion::Core::ECS::PersistentComponent> );
 	for ( auto entity : view )
 	{
 		m_pRegistry->destroy( entity );
 	}
 }
 
-void SCION_CORE::ECS::Registry::AddToPendingDestruction( entt::entity entity )
+void Scion::Core::ECS::Registry::AddToPendingDestruction( entt::entity entity )
 {
 	m_EntitiesPendingDestruction.push_back( entity );
 }
 
-void SCION_CORE::ECS::Registry::ClearPendingEntities()
+void Scion::Core::ECS::Registry::ClearPendingEntities()
 {
 	if ( m_EntitiesPendingDestruction.empty() )
 		return;
@@ -41,7 +41,7 @@ void SCION_CORE::ECS::Registry::ClearPendingEntities()
 	m_EntitiesPendingDestruction.clear();
 }
 
-void SCION_CORE::ECS::Registry::CreateLuaRegistryBind( sol::state& lua, Registry& registry )
+void Scion::Core::ECS::Registry::CreateLuaRegistryBind( sol::state& lua, Registry& registry )
 {
 	lua.new_enum<ERegistryType>( "RegistryType",
 								 {
@@ -129,7 +129,7 @@ void SCION_CORE::ECS::Registry::CreateLuaRegistryBind( sol::state& lua, Registry
 		},
 		"findEntityByTag",
 		[ & ]( Registry& reg, const std::string& sTag, sol::this_state s ) {
-			auto entity = SCION_CORE::ECS::FindEntityByTag( reg, sTag );
+			auto entity = Scion::Core::ECS::FindEntityByTag( reg, sTag );
 
 			return entity == entt::null ? sol::lua_nil_t{} : sol::make_reference( s, Entity{ &reg, entity } );
 		},

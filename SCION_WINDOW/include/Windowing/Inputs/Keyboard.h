@@ -2,7 +2,7 @@
 #include "Keys.h"
 #include "Button.h"
 
-namespace SCION_WINDOWING::Inputs
+namespace Scion::Windowing::Inputs
 {
 class Keyboard
 {
@@ -64,4 +64,4 @@ class Keyboard
   private:
 	std::map<int, Button> m_mapButtons;
 };
-} // namespace SCION_WINDOWING::Inputs
+} // namespace Scion::Windowing::Inputs

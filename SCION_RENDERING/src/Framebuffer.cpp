@@ -2,7 +2,7 @@
 #include <Logger/Logger.h>
 #include "Rendering/Essentials/TextureLoader.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 bool Framebuffer::Initialize()
@@ -107,4 +107,4 @@ void Framebuffer::CheckResize()
 	Initialize();
 	m_bShouldResize = false;
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

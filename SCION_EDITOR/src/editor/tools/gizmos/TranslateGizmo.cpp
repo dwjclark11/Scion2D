@@ -1,4 +1,4 @@
-#include "TranslateGizmo.h"
+#include "editor/tools/gizmos/TranslateGizmo.h"
 #include "editor/utilities/EditorUtilities.h"
 #include "Rendering/Core/BatchRenderer.h"
 #include "Rendering/Core/Camera2D.h"
@@ -13,9 +13,9 @@
 
 #include "Logger/Logger.h"
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
 TranslateGizmo::TranslateGizmo()
@@ -24,7 +24,7 @@ TranslateGizmo::TranslateGizmo()
 	Init( "S2D_x_axis_translate", "S2D_y_axis_translate" );
 }
 
-void TranslateGizmo::Update( SCION_CORE::Canvas& canvas )
+void TranslateGizmo::Update( Scion::Core::Canvas& canvas )
 {
 	Gizmo::Update( canvas );
 
@@ -64,7 +64,7 @@ void TranslateGizmo::Update( SCION_CORE::Canvas& canvas )
 		{
 			if ( pSprite->bIsoMetric )
 			{
-				auto [ cellX, cellY ] = SCION_CORE::ConvertWorldPosToIsoCoords(
+				auto [ cellX, cellY ] = Scion::Core::ConvertWorldPosToIsoCoords(
 					selectedTransform.position + glm::vec2{ pSprite->width / 2.f, pSprite->height }, canvas );
 				pSprite->isoCellX = cellX;
 				pSprite->isoCellX = cellY;
@@ -77,7 +77,7 @@ void TranslateGizmo::Update( SCION_CORE::Canvas& canvas )
 	ExamineMousePosition();
 }
 
-void TranslateGizmo::Draw( SCION_RENDERING::Camera2D* pCamera )
+void TranslateGizmo::Draw( Scion::Rendering::Camera2D* pCamera )
 {
 	if ( m_bHidden )
 		return;
@@ -147,4 +147,4 @@ void TranslateGizmo::Draw( SCION_RENDERING::Camera2D* pCamera )
 	pShader->Disable();
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

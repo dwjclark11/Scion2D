@@ -1,6 +1,6 @@
 #include "Core/ECS/MetaUtilities.h"
 
-entt::id_type SCION_CORE::Utils::GetIdType( const sol::table& comp )
+entt::id_type Scion::Core::Utils::GetIdType( const sol::table& comp )
 {
 	if ( !comp.valid() )
 	{

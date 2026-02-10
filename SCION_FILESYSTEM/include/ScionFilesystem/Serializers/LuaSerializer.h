@@ -3,7 +3,7 @@
 #include <sstream>
 #include <concepts>
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 template <class T>
 concept Streamable = requires( std::ostream& os, T obj ) { os << obj; };
@@ -74,6 +74,6 @@ class LuaSerializer
 };
 
 
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem
 
 #include "LuaSerializer.inl"

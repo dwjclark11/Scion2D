@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/ECS/Components/AllComponents.h"
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 namespace ECS
@@ -35,16 +35,16 @@ struct PrefabbedRelationships
 
 struct PrefabbedEntity
 {
-	SCION_CORE::ECS::TransformComponent transform{};
-	std::optional<SCION_CORE::ECS::AnimationComponent> animation{ std::nullopt };
-	std::optional<SCION_CORE::ECS::SpriteComponent> sprite{ std::nullopt };
-	std::optional<SCION_CORE::ECS::BoxColliderComponent> boxCollider{ std::nullopt };
-	std::optional<SCION_CORE::ECS::CircleColliderComponent> circleCollider{ std::nullopt };
-	std::optional<SCION_CORE::ECS::PhysicsComponent> physics{ std::nullopt };
-	std::optional<SCION_CORE::ECS::RigidBodyComponent> rigidBody{ std::nullopt };
-	std::optional<SCION_CORE::ECS::Identification> id{ std::nullopt };
-	std::optional<SCION_CORE::ECS::TextComponent> textComp{ std::nullopt };
-	std::optional<SCION_CORE::ECS::UIComponent> uiComp{ std::nullopt };
+	Scion::Core::ECS::TransformComponent transform{};
+	std::optional<Scion::Core::ECS::AnimationComponent> animation{ std::nullopt };
+	std::optional<Scion::Core::ECS::SpriteComponent> sprite{ std::nullopt };
+	std::optional<Scion::Core::ECS::BoxColliderComponent> boxCollider{ std::nullopt };
+	std::optional<Scion::Core::ECS::CircleColliderComponent> circleCollider{ std::nullopt };
+	std::optional<Scion::Core::ECS::PhysicsComponent> physics{ std::nullopt };
+	std::optional<Scion::Core::ECS::RigidBodyComponent> rigidBody{ std::nullopt };
+	std::optional<Scion::Core::ECS::Identification> id{ std::nullopt };
+	std::optional<Scion::Core::ECS::TextComponent> textComp{ std::nullopt };
+	std::optional<Scion::Core::ECS::UIComponent> uiComp{ std::nullopt };
 	std::optional<PrefabbedRelationships> relationships{ std::nullopt };
 };
 
@@ -81,11 +81,11 @@ class PrefabCreator
 {
   public:
 	PrefabCreator() = delete;
-	static std::shared_ptr<Prefab> CreatePrefab( EPrefabType eType, SCION_CORE::ECS::Entity& entityToPrefab );
+	static std::shared_ptr<Prefab> CreatePrefab( EPrefabType eType, Scion::Core::ECS::Entity& entityToPrefab );
 	static std::shared_ptr<Prefab> CreatePrefab( const std::string& sPrefabPath );
-	static std::shared_ptr<SCION_CORE::ECS::Entity> AddPrefabToScene( const Prefab& prefab,
-																	  SCION_CORE::ECS::Registry& registry );
+	static std::shared_ptr<Scion::Core::ECS::Entity> AddPrefabToScene( const Prefab& prefab,
+																	  Scion::Core::ECS::Registry& registry );
 	static bool DeletePrefab( Prefab& prefabToDelete );
 };
 
-} // namespace SCION_CORE
+} // namespace Scion::Core

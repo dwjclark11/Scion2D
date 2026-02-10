@@ -3,7 +3,7 @@
 #include "Font.h"
 #include <string>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 struct Batch
 {
@@ -86,4 +86,4 @@ struct PickingGlyph
 	GLuint textureID{ 0 };
 };
 
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

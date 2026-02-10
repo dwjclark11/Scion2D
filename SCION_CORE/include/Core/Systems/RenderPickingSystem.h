@@ -1,27 +1,27 @@
 #pragma once
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class Camera2D;
 class PickingBatchRenderer;
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 class Registry;
 }
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 class RenderPickingSystem
 {
   private:
-	std::unique_ptr<SCION_RENDERING::PickingBatchRenderer> m_pBatchRenderer;
+	std::unique_ptr<Scion::Rendering::PickingBatchRenderer> m_pBatchRenderer;
 
   public:
 	RenderPickingSystem();
 	~RenderPickingSystem();
 
-	void Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera );
+	void Update( Scion::Core::ECS::Registry& registry, Scion::Rendering::Camera2D& camera );
 };
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

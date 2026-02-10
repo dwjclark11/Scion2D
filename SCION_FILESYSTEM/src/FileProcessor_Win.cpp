@@ -6,9 +6,9 @@
 #include <shellapi.h>
 #include <fmt/format.h>
 
-using namespace SCION_UTIL;
+using namespace Scion::Utilities;
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 bool FileProcessor::OpenApplicationFromFile( const std::string& sFilename, std::vector<const char*> params )
 {
@@ -81,4 +81,4 @@ bool FileProcessor::OpenFileLocation( const std::string& sFilename )
 	return false;
 }
 
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem

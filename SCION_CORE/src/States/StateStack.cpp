@@ -2,7 +2,7 @@
 #include <Logger/Logger.h>
 #include "Core/States/State.h"
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 void StateStack::Push( State& state )
@@ -202,4 +202,4 @@ void StateStack::CreateLuaStateStackBind( sol::state& lua )
 								  "top",
 								  &StateStack::Top );
 }
-} // namespace SCION_CORE
+} // namespace Scion::Core

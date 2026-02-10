@@ -1,4 +1,4 @@
-#include "ContentDisplay.h"
+#include "editor/displays/ContentDisplay.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "ScionUtilities/ScionUtilities.h"
@@ -19,19 +19,19 @@
 
 #include <Rendering/Essentials/Texture.h>
 #include <imgui.h>
-#include <imgui_cpp/imgui_stdlib.h>
+#include <imgui_stdlib.h>
 
-using namespace SCION_EDITOR::Events;
-using namespace SCION_FILESYSTEM;
+using namespace Scion::Editor::Events;
+using namespace Scion::Filesystem;
 
 namespace fs = std::filesystem;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 ContentDisplay::ContentDisplay()
-	: m_pFileDispatcher{ std::make_unique<SCION_CORE::Events::EventDispatcher>() }
-	, m_CurrentDir{ *MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>()->TryGetFolderPath(
-		  SCION_CORE::EProjectFolderType::Content ) }
+	: m_pFileDispatcher{ std::make_unique<Scion::Core::Events::EventDispatcher>() }
+	, m_CurrentDir{ *MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>()->TryGetFolderPath(
+		  Scion::Core::EProjectFolderType::Content ) }
 	, m_sFilepathToAction{}
 	, m_Selected{ -1 }
 	, m_eFileAction{ Events::EFileAction::NoAction }
@@ -142,7 +142,7 @@ void ContentDisplay::Draw()
 
 					if ( ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked( 0 ) )
 					{
-						SCION_FILESYSTEM::FileProcessor fp{};
+						Scion::Filesystem::FileProcessor fp{};
 						if ( !fp.OpenApplicationFromFile( path.string(), {} ) )
 						{
 							SCION_ERROR( "Failed to open file {}", path.string() );
@@ -191,7 +191,7 @@ void ContentDisplay::Draw()
 
 					if ( ImGui::Selectable( ICON_FA_FILE_ALT " Open File Location" ) )
 					{
-						SCION_FILESYSTEM::FileProcessor fp{};
+						Scion::Filesystem::FileProcessor fp{};
 						if ( !fp.OpenFileLocation( path.string() ) )
 						{
 							SCION_ERROR( "Failed to open file location [{}]", path.string() );
@@ -297,8 +297,8 @@ void ContentDisplay::DrawToolbar()
 	ImGui::ItemToolTip( "Create Folder" );
 	ImGui::SameLine( 0.f, 16.f );
 
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
-	auto optContentPath = pProjectInfo->TryGetFolderPath( SCION_CORE::EProjectFolderType::Content );
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
+	auto optContentPath = pProjectInfo->TryGetFolderPath( Scion::Core::EProjectFolderType::Content );
 	SCION_ASSERT( optContentPath && "Content path has not be setup correctly in project info." );
 
 	const auto& savedPath = optContentPath->string();
@@ -422,12 +422,12 @@ void ContentDisplay::MoveFolderOrFile( const std::filesystem::path& movedPath, c
 	}
 }
 
-void ContentDisplay::HandleFileEvent( const SCION_EDITOR::Events::FileEvent& fileEvent )
+void ContentDisplay::HandleFileEvent( const Scion::Editor::Events::FileEvent& fileEvent )
 {
 	if ( fileEvent.sFilepath.empty() || fileEvent.eAction == EFileAction::NoAction )
 		return;
 
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 	if ( !pProjectInfo )
 		return;
 
@@ -500,7 +500,7 @@ void ContentDisplay::HandleFileEvent( const SCION_EDITOR::Events::FileEvent& fil
 	}
 }
 
-void ContentDisplay::HandleCreateEvent( const SCION_EDITOR::Events::ContentCreateEvent& createEvent )
+void ContentDisplay::HandleCreateEvent( const Scion::Editor::Events::ContentCreateEvent& createEvent )
 {
 	if ( createEvent.eAction == EContentCreateAction::NoAction )
 		return;
@@ -680,7 +680,7 @@ void ContentDisplay::OpenCreateLuaClassPopup()
 			}
 			else
 			{
-				auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+				auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 				std::string sCopyrightNotice{};
 				if ( pProjectInfo )
 				{
@@ -772,7 +772,7 @@ void ContentDisplay::OpenCreateLuaStateClassPopup()
 			}
 			else
 			{
-				auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+				auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 				std::string sCopyrightNotice{};
 				if ( pProjectInfo )
 				{
@@ -991,4 +991,4 @@ void ContentDisplay::OpenCreateEmptyLuaFilePopup()
 	}
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

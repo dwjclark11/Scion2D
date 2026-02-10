@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SCION_SOUNDS
+namespace Scion::Sounds
 {
 /*
  * @brief The MusicPlayer class is a simple wrapper around SDL_Mixer for music.
@@ -59,4 +59,4 @@ class MusicPlayer
 	 */
 	bool IsPaused();
 };
-} // namespace SCION_SOUNDS
+} // namespace Scion::Sounds

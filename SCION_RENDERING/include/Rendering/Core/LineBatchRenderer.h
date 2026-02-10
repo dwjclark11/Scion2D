@@ -3,7 +3,7 @@
 #include "Rendering/Essentials/BatchTypes.h"
 #include "Rendering/Essentials/Primitives.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class LineBatchRenderer : public Batcher<LineBatch, LineGlyph>
 {
@@ -20,4 +20,4 @@ class LineBatchRenderer : public Batcher<LineBatch, LineGlyph>
 	virtual void GenerateBatches() override;
 	void Initialize();
 };
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

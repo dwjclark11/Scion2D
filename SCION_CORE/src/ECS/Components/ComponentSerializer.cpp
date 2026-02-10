@@ -4,11 +4,11 @@
 #include "ScionFilesystem/Serializers/LuaSerializer.h"
 #include "Physics/PhysicsUtilities.h"
 
-using namespace SCION_PHYSICS;
+using namespace Scion::Physics;
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::JSONSerializer& serializer,
 											  const TransformComponent& transform )
 {
 	serializer.StartNewObject( "transform" )
@@ -29,7 +29,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.EndObject();
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::JSONSerializer& serializer,
 											  const SpriteComponent& sprite )
 {
 	serializer.StartNewObject( "sprite" )
@@ -58,7 +58,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.EndObject();
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::JSONSerializer& serializer,
 											  const AnimationComponent& animation )
 {
 	serializer.StartNewObject( "animation" )
@@ -69,7 +69,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.EndObject();
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::JSONSerializer& serializer,
 											  const BoxColliderComponent& boxCollider )
 {
 	serializer.StartNewObject( "boxCollider" )
@@ -82,7 +82,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.EndObject();
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::JSONSerializer& serializer,
 											  const CircleColliderComponent& circleCollider )
 {
 	serializer.StartNewObject( "circleCollider" )
@@ -94,7 +94,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.EndObject();
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const TextComponent& text )
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::JSONSerializer& serializer, const TextComponent& text )
 {
 	serializer
 		.StartNewObject( "text" ) // Start text table
@@ -112,7 +112,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 	serializer.EndObject(); // End Text table
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::JSONSerializer& serializer,
 											  const PhysicsComponent& physics )
 {
 	const auto& attributes = physics.GetAttributes();
@@ -160,7 +160,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.EndObject();
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::JSONSerializer& serializer,
 											  const RigidBodyComponent& rigidBody )
 {
 	serializer
@@ -172,7 +172,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.EndObject(); // End rigid body table
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const Identification& id )
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::JSONSerializer& serializer, const Identification& id )
 {
 	serializer
 		.StartNewObject( "id" ) // Start id table
@@ -181,7 +181,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& 
 		.EndObject(); // End id table
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const UIComponent& id )
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::JSONSerializer& serializer, const UIComponent& id )
 {
 	serializer.StartNewObject( "ui" ).EndObject();
 	// TODO: Add more members as needed.
@@ -278,7 +278,7 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 	text.wrap = jsonValue[ "wrap" ].GetFloat();
 	text.bHidden = jsonValue[ "bHidden" ].GetBool();
 
-	text.color = SCION_RENDERING::Color{ .r = static_cast<GLubyte>( jsonValue[ "color" ][ "r" ].GetInt() ),
+	text.color = Scion::Rendering::Color{ .r = static_cast<GLubyte>( jsonValue[ "color" ][ "r" ].GetInt() ),
 										 .g = static_cast<GLubyte>( jsonValue[ "color" ][ "g" ].GetInt() ),
 										 .b = static_cast<GLubyte>( jsonValue[ "color" ][ "b" ].GetInt() ),
 										 .a = static_cast<GLubyte>( jsonValue[ "color" ][ "a" ].GetInt() ) };
@@ -338,7 +338,7 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 	// The UI Component is currently only used as a flag for UI Rendering
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::LuaSerializer& serializer,
 											  const TransformComponent& transform )
 {
 	serializer.StartNewTable( "transform" )
@@ -359,7 +359,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.EndTable();
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::LuaSerializer& serializer,
 											  const SpriteComponent& sprite )
 {
 	serializer.StartNewTable( "sprite" )
@@ -388,7 +388,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.EndTable(); // SPRITE
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::LuaSerializer& serializer,
 											  const AnimationComponent& animation )
 {
 	serializer.StartNewTable( "animation" )
@@ -399,7 +399,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.EndTable( false );
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::LuaSerializer& serializer,
 											  const BoxColliderComponent& boxCollider )
 {
 	serializer.StartNewTable( "boxCollider" )
@@ -412,7 +412,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.EndTable( false );
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::LuaSerializer& serializer,
 											  const CircleColliderComponent& circleCollider )
 {
 	serializer.StartNewTable( "circleCollider" )
@@ -424,7 +424,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.EndTable( false );
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const TextComponent& text )
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::LuaSerializer& serializer, const TextComponent& text )
 {
 	serializer
 		.StartNewTable( "text" ) // Start text table
@@ -442,7 +442,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 	serializer.EndTable(); // End Text table
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::LuaSerializer& serializer,
 											  const PhysicsComponent& physics )
 {
 	const auto& attributes = physics.GetAttributes();
@@ -490,7 +490,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.EndTable();	   // Physics
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::LuaSerializer& serializer,
 											  const RigidBodyComponent& rigidBody )
 {
 	serializer
@@ -502,7 +502,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.EndTable(); // End rigid body table
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const Identification& id )
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::LuaSerializer& serializer, const Identification& id )
 {
 	serializer
 		.StartNewTable( "id" ) // Start id table
@@ -511,7 +511,7 @@ void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& s
 		.EndTable(); // End id table
 }
 
-void ComponentSerializer::SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const UIComponent& ui )
+void ComponentSerializer::SerializeComponent( Scion::Filesystem::LuaSerializer& serializer, const UIComponent& ui )
 {
 	serializer.StartNewTable( "ui" ).EndTable();
 }
@@ -589,7 +589,7 @@ void ComponentSerializer::DeserializeComponent( const sol::table& table, TextCom
 	text.wrap = table[ "wrap" ].get_or( 0 );
 	text.bHidden = table[ "bHidden" ].get_or( false );
 
-	text.color = SCION_RENDERING::Color{ .r = static_cast<GLubyte>( table[ "color" ][ "r" ].get_or( 255U ) ),
+	text.color = Scion::Rendering::Color{ .r = static_cast<GLubyte>( table[ "color" ][ "r" ].get_or( 255U ) ),
 										 .g = static_cast<GLubyte>( table[ "color" ][ "g" ].get_or( 255U ) ),
 										 .b = static_cast<GLubyte>( table[ "color" ][ "b" ].get_or( 255U ) ),
 										 .a = static_cast<GLubyte>( table[ "color" ][ "a" ].get_or( 255U ) ) };
@@ -645,4 +645,4 @@ void ComponentSerializer::DeserializeComponent( const sol::table& table, UICompo
 {
 }
 
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

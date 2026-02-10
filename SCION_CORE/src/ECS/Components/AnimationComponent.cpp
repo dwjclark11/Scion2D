@@ -1,7 +1,7 @@
 #include "Core/ECS/Components/AnimationComponent.h"
 #include <entt/entt.hpp>
 
-std::string SCION_CORE::ECS::AnimationComponent::to_string() const
+std::string Scion::Core::ECS::AnimationComponent::to_string() const
 {
 	// Current frame does not need to be returned because it is a calculated value
 	std::stringstream ss;
@@ -14,7 +14,7 @@ std::string SCION_CORE::ECS::AnimationComponent::to_string() const
 	return ss.str();
 }
 
-void SCION_CORE::ECS::AnimationComponent::CreateAnimationLuaBind( sol::state& lua )
+void Scion::Core::ECS::AnimationComponent::CreateAnimationLuaBind( sol::state& lua )
 {
 	lua.new_usertype<AnimationComponent>(
 		"Animation",

@@ -2,7 +2,7 @@
 #include <sol/sol.hpp>
 #include <SDL.h>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 struct AnimationComponent
 {
@@ -23,4 +23,4 @@ struct AnimationComponent
 
 	static void CreateAnimationLuaBind( sol::state& lua );
 };
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

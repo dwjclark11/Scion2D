@@ -8,13 +8,13 @@
 
 #include <Rendering/Essentials/Font.h>
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 bool EntityInView( const TransformComponent& transform, float width, float height,
-				   const SCION_RENDERING::Camera2D& camera )
+				   const Scion::Rendering::Camera2D& camera )
 {
 	const glm::vec2 cameraPos = camera.GetPosition() - camera.GetScreenOffset();
 	const int cameraWidth = camera.GetWidth();
@@ -56,7 +56,7 @@ glm::mat4 RSTModel( const TransformComponent& transform, float width, float heig
 	return model;
 }
 
-void GenerateUVs( SCION_CORE::ECS::SpriteComponent& sprite, int textureWidth, int textureHeight )
+void GenerateUVs( Scion::Core::ECS::SpriteComponent& sprite, int textureWidth, int textureHeight )
 {
 	sprite.uvs.uv_width = sprite.width / textureWidth;
 	sprite.uvs.uv_height = sprite.height / textureHeight;
@@ -65,7 +65,7 @@ void GenerateUVs( SCION_CORE::ECS::SpriteComponent& sprite, int textureWidth, in
 	sprite.uvs.v = sprite.start_y * sprite.uvs.uv_height;
 }
 
-void GenerateUVsExt( SCION_CORE::ECS::SpriteComponent& sprite, int textureWidth, int textureHeight, float u, float v )
+void GenerateUVsExt( Scion::Core::ECS::SpriteComponent& sprite, int textureWidth, int textureHeight, float u, float v )
 {
 	sprite.uvs.uv_width = sprite.width / textureWidth;
 	sprite.uvs.uv_height = sprite.height / textureHeight;
@@ -101,8 +101,8 @@ std::tuple<int, int> ConvertWorldPosToIsoCoords( const glm::vec2& position, cons
 	return std::make_tuple( cellX, cellY );
 }
 
-std::tuple<float, float> GetTextBlockSize( const SCION_CORE::ECS::TextComponent& textComp,
-										   const SCION_CORE::ECS::TransformComponent& transform,
+std::tuple<float, float> GetTextBlockSize( const Scion::Core::ECS::TextComponent& textComp,
+										   const Scion::Core::ECS::TransformComponent& transform,
 										   SCION_RESOURCES::AssetManager& assetManager )
 {
 	const auto& pFont = assetManager.GetFont( textComp.sFontName );
@@ -203,7 +203,7 @@ std::tuple<float, float> GetTextBlockSize( const SCION_CORE::ECS::TextComponent&
 	return std::make_tuple( wrap - paddingInfo.paddingX * 0.5f, height + paddingInfo.paddingY * 0.5f );
 }
 
-void UpdateDirtyEntities( SCION_CORE::ECS::Registry& registry )
+void UpdateDirtyEntities( Scion::Core::ECS::Registry& registry )
 {
 	auto& reg = registry.GetRegistry();
 	auto view = reg.view<ECS::TransformComponent>();
@@ -223,4 +223,4 @@ void UpdateDirtyEntities( SCION_CORE::ECS::Registry& registry )
 	}
 }
 
-} // namespace SCION_CORE
+} // namespace Scion::Core

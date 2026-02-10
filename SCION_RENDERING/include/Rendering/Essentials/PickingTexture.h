@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include <cstdint>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class PickingTexture
 {
@@ -33,4 +33,4 @@ class PickingTexture
 	int m_Height;
 	bool m_bShouldResize;
 };
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

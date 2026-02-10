@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/ECS/Registry.h"
 
-#define MAIN_REGISTRY() SCION_CORE::ECS::MainRegistry::GetInstance()
+#define MAIN_REGISTRY() Scion::Core::ECS::MainRegistry::GetInstance()
 #define ASSET_MANAGER() MAIN_REGISTRY().GetAssetManager()
 #define EVENT_DISPATCHER() MAIN_REGISTRY().GetEventDispatcher()
 #define ADD_EVENT_HANDLER( Event, Func, Handler ) EVENT_DISPATCHER().AddHandler<Event, Func>( Handler );
@@ -10,32 +10,32 @@ namespace SCION_RESOURCES
 {
 class AssetManager;
 }
-namespace SCION_SOUNDS
+namespace Scion::Sounds
 {
 class MusicPlayer;
 class SoundFxPlayer;
-} // namespace SCION_SOUNDS
+} // namespace Scion::Sounds
 
-namespace SCION_CORE::Events
+namespace Scion::Core::Events
 {
 class EventDispatcher;
 }
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class Renderer;
 }
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 class RenderSystem;
 class RenderUISystem;
 class RenderShapeSystem;
 class AnimationSystem;
 class PhysicsSystem;
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 class MainRegistry
 {
@@ -43,11 +43,11 @@ class MainRegistry
 	static MainRegistry& GetInstance();
 	bool Initialize( bool bEnableFilewatcher = false );
 
-	SCION_CORE::Events::EventDispatcher& GetEventDispatcher();
+	Scion::Core::Events::EventDispatcher& GetEventDispatcher();
 	SCION_RESOURCES::AssetManager& GetAssetManager();
-	SCION_SOUNDS::MusicPlayer& GetMusicPlayer();
-	SCION_SOUNDS::SoundFxPlayer& GetSoundPlayer();
-	SCION_RENDERING::Renderer& GetRenderer();
+	Scion::Sounds::MusicPlayer& GetMusicPlayer();
+	Scion::Sounds::SoundFxPlayer& GetSoundPlayer();
+	Scion::Rendering::Renderer& GetRenderer();
 
 	template <typename TContext>
 	TContext AddToContext( TContext context )
@@ -61,11 +61,11 @@ class MainRegistry
 		return m_pMainRegistry->GetContext<TContext>();
 	}
 
-	SCION_CORE::Systems::RenderSystem& GetRenderSystem();
-	SCION_CORE::Systems::RenderUISystem& GetRenderUISystem();
-	SCION_CORE::Systems::RenderShapeSystem& GetRenderShapeSystem();
-	SCION_CORE::Systems::AnimationSystem& GetAnimationSystem();
-	SCION_CORE::Systems::PhysicsSystem& GetPhysicsSystem();
+	Scion::Core::Systems::RenderSystem& GetRenderSystem();
+	Scion::Core::Systems::RenderUISystem& GetRenderUISystem();
+	Scion::Core::Systems::RenderShapeSystem& GetRenderShapeSystem();
+	Scion::Core::Systems::AnimationSystem& GetAnimationSystem();
+	Scion::Core::Systems::PhysicsSystem& GetPhysicsSystem();
 	Registry* GetRegistry();
 
   private:
@@ -80,4 +80,4 @@ class MainRegistry
 	std::unique_ptr<Registry> m_pMainRegistry{ nullptr };
 	bool m_bInitialized{ false };
 };
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

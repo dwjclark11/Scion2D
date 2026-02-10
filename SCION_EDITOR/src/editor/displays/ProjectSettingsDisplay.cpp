@@ -1,4 +1,4 @@
-#include "ProjectSettingsDisplay.h"
+#include "editor/displays/ProjectSettingsDisplay.h"
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
 #include "Core/ECS/MainRegistry.h"
@@ -15,10 +15,10 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
 
-using namespace SCION_PHYSICS;
-using namespace SCION_FILESYSTEM;
+using namespace Scion::Physics;
+using namespace Scion::Filesystem;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 ProjectSettingsDisplay::ProjectSettingsDisplay()
 	: m_SettingsCategory{}
@@ -124,7 +124,7 @@ void ProjectSettingsDisplay::CreateProjectSettings()
 {
 	auto& coreGlobals = CORE_GLOBALS();
 	auto& mainRegistry = MAIN_REGISTRY();
-	auto& pProjectInfo = mainRegistry.GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto& pProjectInfo = mainRegistry.GetContext<Scion::Core::ProjectInfoPtr>();
 	SCION_ASSERT( pProjectInfo && "Project Info was not setup correctly." );
 
 	SettingCategory projectSettings{ .sName = "Project" };
@@ -138,8 +138,8 @@ void ProjectSettingsDisplay::CreateProjectSettings()
 
 // clang-format off
 ProjectSettingsDisplay::SettingCategory ProjectSettingsDisplay::CreateGeneralSettings(
-	SCION_CORE::CoreEngineData& coreGlobals, SCION_CORE::ProjectInfo& projectInfo,
-	SCION_CORE::ECS::MainRegistry& mainRegistry )
+	Scion::Core::CoreEngineData& coreGlobals, Scion::Core::ProjectInfo& projectInfo,
+	Scion::Core::ECS::MainRegistry& mainRegistry )
 {
 	return SettingCategory{
 		.sName = "General",
@@ -197,7 +197,7 @@ ProjectSettingsDisplay::SettingCategory ProjectSettingsDisplay::CreateGeneralSet
 										"##iconpath" ) )
 					{
 						auto optContentPath =
-							projectInfo.TryGetFolderPath( SCION_CORE::EProjectFolderType::Content );
+							projectInfo.TryGetFolderPath( Scion::Core::EProjectFolderType::Content );
 						SCION_ASSERT( optContentPath && "Content folder not set correctly in project info." );
 						FileDialog fd{};
 
@@ -289,8 +289,8 @@ ProjectSettingsDisplay::SettingCategory ProjectSettingsDisplay::CreateGeneralSet
 }
 
 ProjectSettingsDisplay::SettingCategory ProjectSettingsDisplay::CreatePhysicsSettings(
-	SCION_CORE::CoreEngineData& coreGlobals, SCION_CORE::ProjectInfo& projectInfo,
-	SCION_CORE::ECS::MainRegistry& mainRegistry )
+	Scion::Core::CoreEngineData& coreGlobals, Scion::Core::ProjectInfo& projectInfo,
+	Scion::Core::ECS::MainRegistry& mainRegistry )
 {
 	return SettingCategory{
 		.sName = "Physics",
@@ -351,8 +351,8 @@ ProjectSettingsDisplay::SettingCategory ProjectSettingsDisplay::CreatePhysicsSet
 }
 
 ProjectSettingsDisplay::SettingCategory ProjectSettingsDisplay::CreateGraphicsSettings(
-	SCION_CORE::CoreEngineData& coreGlobals, SCION_CORE::ProjectInfo& projectInfo,
-	SCION_CORE::ECS::MainRegistry& mainRegistry )
+	Scion::Core::CoreEngineData& coreGlobals, Scion::Core::ProjectInfo& projectInfo,
+	Scion::Core::ECS::MainRegistry& mainRegistry )
 {
 	return SettingCategory{ "Graphics",
 							{
@@ -378,8 +378,8 @@ ProjectSettingsDisplay::SettingCategory ProjectSettingsDisplay::CreateGraphicsSe
 }
 
 ProjectSettingsDisplay::SettingCategory ProjectSettingsDisplay::CreateAudioSettings(
-	SCION_CORE::CoreEngineData& coreGlobals, SCION_CORE::ProjectInfo& projectInfo,
-	SCION_CORE::ECS::MainRegistry& mainRegistry )
+	Scion::Core::CoreEngineData& coreGlobals, Scion::Core::ProjectInfo& projectInfo,
+	Scion::Core::ECS::MainRegistry& mainRegistry )
 {
 	return SettingCategory{
 		"Audio",
@@ -494,4 +494,4 @@ ProjectSettingsDisplay::SettingCategory ProjectSettingsDisplay::CreateAudioSetti
 }
 
 // clang-format on
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

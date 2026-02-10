@@ -1,6 +1,6 @@
 #include "Rendering/Core/Camera2D.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 void Camera2D::Initialize()
 {
@@ -100,4 +100,4 @@ glm::vec2 Camera2D::WorldCoordsToScreen( const glm::vec2& worldCoords ) const
 
 	return screenCoords;
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

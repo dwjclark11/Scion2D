@@ -5,7 +5,7 @@
 #include <Windows.h>
 #endif
 
-namespace SCION_UTIL
+namespace Scion::Utilities
 {
 std::string AssetTypeToStr( AssetType eAssetType )
 {
@@ -118,4 +118,4 @@ std::wstring ConvertUtf8ToWide( const std::string& str )
 }
 } // namespace StringUtils
 
-} // namespace SCION_UTIL
+} // namespace Scion::Utilities

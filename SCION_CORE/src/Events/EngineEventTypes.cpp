@@ -1,7 +1,7 @@
 #include "Core/Events/EngineEventTypes.h"
 #include "Core/Events/EventDispatcher.h"
 
-namespace SCION_CORE::Events
+namespace Scion::Core::Events
 {
 void LuaEventBinder::CreateLuaEventBindings( sol::state& lua )
 {
@@ -24,7 +24,7 @@ void LuaEventBinder::CreateLuaEventBindings( sol::state& lua )
 									&entt::type_hash<ContactEvent>::value,
 									sol::call_constructor,
 									sol::factories( [] { return ContactEvent{}; },
-													[]( SCION_PHYSICS::ObjectData a, SCION_PHYSICS::ObjectData b ) {
+													[]( Scion::Physics::ObjectData a, Scion::Physics::ObjectData b ) {
 														return ContactEvent{ .objectA = a, .objectB = b };
 													} ),
 									"objectA",
@@ -108,4 +108,4 @@ void LuaEventBinder::CreateLuaEventBindings( sol::state& lua )
 		"release",
 		&LuaHandler<LuaEvent>::ReleaseConnection );
 }
-} // namespace SCION_CORE::Events
+} // namespace Scion::Core::Events

@@ -1,4 +1,4 @@
-#include "Hub.h"
+#include "editor/hub/Hub.h"
 #include <Windowing/Window/Window.h>
 #include "editor/utilities/imgui/Gui.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
@@ -25,10 +25,10 @@
 
 constexpr ImVec2 BUTTON_SIZE = ImVec2{ 100.f, 20.f };
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
-Hub::Hub( SCION_WINDOWING::Window& window )
+Hub::Hub( Scion::Windowing::Window& window )
 	: m_Window{ window }
 	, m_bRunning{ false }
 	, m_bLoadError{ false }
@@ -178,7 +178,7 @@ void Hub::DrawNewProject()
 	ImGui::SameLine();
 	if ( ImGui::Button( "Browse" ) )
 	{
-		SCION_FILESYSTEM::FileDialog fd{};
+		Scion::Filesystem::FileDialog fd{};
 		const auto sFilepath = fd.SelectFolderDialog( "Open", BASE_PATH );
 		if ( !sFilepath.empty() )
 		{
@@ -254,7 +254,7 @@ void Hub::DrawOpenProject()
 	ImGui::SameLine();
 	if ( ImGui::Button( "Browse" ) )
 	{
-		SCION_FILESYSTEM::FileDialog fd{};
+		Scion::Filesystem::FileDialog fd{};
 		const auto sFilepath = fd.OpenFileDialog( "Open", "", { "*.s2dprj" } );
 		if ( !sFilepath.empty() )
 		{
@@ -333,4 +333,4 @@ void Hub::Render()
 	SDL_GL_SwapWindow( m_Window.GetWindow().get() );
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

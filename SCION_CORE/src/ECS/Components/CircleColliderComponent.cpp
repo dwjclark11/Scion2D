@@ -1,7 +1,7 @@
 #include "Core/ECS/Components/CircleColliderComponent.h"
 #include <entt/entt.hpp>
 
-std::string SCION_CORE::ECS::CircleColliderComponent::to_string() const
+std::string Scion::Core::ECS::CircleColliderComponent::to_string() const
 {
 	std::stringstream ss;
 	ss << "==== Circle Collider Component ==== \n"
@@ -12,7 +12,7 @@ std::string SCION_CORE::ECS::CircleColliderComponent::to_string() const
 	return ss.str();
 }
 
-void SCION_CORE::ECS::CircleColliderComponent::CreateLuaCircleColliderBind( sol::state& lua )
+void Scion::Core::ECS::CircleColliderComponent::CreateLuaCircleColliderBind( sol::state& lua )
 {
 	lua.new_usertype<CircleColliderComponent>(
 		"CircleCollider",

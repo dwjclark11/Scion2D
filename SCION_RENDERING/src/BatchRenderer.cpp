@@ -1,7 +1,7 @@
 #include "Rendering/Core/BatchRenderer.h"
 #include <algorithm>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 void SpriteBatchRenderer::Initialize()
@@ -174,4 +174,4 @@ void SpriteBatchRenderer::AddSpriteIso( const glm::vec4& spriteRect, const glm::
 	// clang-format on
 }
 
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

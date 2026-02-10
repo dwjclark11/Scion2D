@@ -1,17 +1,17 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 class Registry;
 }
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class Camera2D;
 }
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 class AnimationSystem
 {
@@ -19,8 +19,8 @@ class AnimationSystem
 	AnimationSystem() = default;
 	~AnimationSystem() = default;
 
-	void Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera );
+	void Update( Scion::Core::ECS::Registry& registry, Scion::Rendering::Camera2D& camera );
 
-	static void CreateAnimationSystemLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& registry );
+	static void CreateAnimationSystemLuaBind( sol::state& lua, Scion::Core::ECS::Registry& registry );
 };
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

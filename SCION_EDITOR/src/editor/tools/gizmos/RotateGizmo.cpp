@@ -1,4 +1,4 @@
-#include "RotateGizmo.h"
+#include "editor/tools/gizmos/RotateGizmo.h"
 #include "editor/utilities/EditorUtilities.h"
 #include "Rendering/Core/BatchRenderer.h"
 #include "Rendering/Core/Camera2D.h"
@@ -13,9 +13,9 @@
 
 #include "Logger/Logger.h"
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-SCION_EDITOR::RotateGizmo::RotateGizmo()
+Scion::Editor::RotateGizmo::RotateGizmo()
 	: Gizmo( GizmoAxisParams{ .axisColor = XAXIS_GIZMO_COLOR,
 							  .axisHoveredColor = XAXIS_HOVERED_GIZMO_COLOR,
 							  .axisDisabledColor = GRAYED_OUT_GIZMO_COLOR },
@@ -24,7 +24,7 @@ SCION_EDITOR::RotateGizmo::RotateGizmo()
 	Init( "S2D_rotate_tool", "" );
 }
 
-void SCION_EDITOR::RotateGizmo::Update( SCION_CORE::Canvas& canvas )
+void Scion::Editor::RotateGizmo::Update( Scion::Core::Canvas& canvas )
 {
 	Gizmo::Update( canvas );
 
@@ -62,7 +62,7 @@ void SCION_EDITOR::RotateGizmo::Update( SCION_CORE::Canvas& canvas )
 	ExamineMousePosition();
 }
 
-void SCION_EDITOR::RotateGizmo::Draw( SCION_RENDERING::Camera2D* pCamera )
+void Scion::Editor::RotateGizmo::Draw( Scion::Rendering::Camera2D* pCamera )
 {
 	if ( m_bHidden )
 		return;

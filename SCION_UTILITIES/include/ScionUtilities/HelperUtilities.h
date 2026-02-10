@@ -22,7 +22,7 @@ constexpr char PATH_SEPARATOR = '/';
 constexpr const std::string_view CONTENT_FOLDER = "content";
 constexpr const std::string_view S2D_PRJ_FILE_EXT = ".s2dprj";
 
-namespace SCION_UTIL
+namespace Scion::Utilities
 {
 
 struct SpriteLayerParams
@@ -37,4 +37,4 @@ struct SpriteLayerParams
 	}
 };
 
-} // namespace SCION_UTIL
+} // namespace Scion::Utilities

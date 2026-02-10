@@ -2,7 +2,7 @@
 #include "Logger/Logger.h"
 #include <entt/entt.hpp>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 PickingTexture::PickingTexture()
 	: PickingTexture( 640, 480 )
@@ -133,4 +133,4 @@ void PickingTexture::CleanUp()
 		m_DepthTexture = 0;
 	}
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

@@ -5,7 +5,7 @@
 #include <SOIL2/SOIL2.h>
 #include <fstream>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 bool TextureLoader::LoadTexture( const std::string& filepath, GLuint& id, int& width, int& height, bool blended )
@@ -270,4 +270,4 @@ std::shared_ptr<Texture> TextureLoader::CreateFromMemory( const unsigned char* i
 
 	return nullptr;
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

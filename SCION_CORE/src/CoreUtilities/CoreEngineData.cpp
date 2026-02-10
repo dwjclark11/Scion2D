@@ -6,9 +6,9 @@
 
 #include <Logger/Logger.h>
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 constexpr float METERS_TO_PIXELS = 12.f;
 constexpr float PIXELS_TO_METERS = 1.f / METERS_TO_PIXELS;
@@ -155,7 +155,7 @@ void CoreEngineData::RegisterMetaFunctions()
 	Registry::RegisterMetaComponent<UIComponent>();
 
 	// Register User Data Types
-	SCION_CORE::Scripting::UserDataBinder::register_meta_user_data<ObjectData>();
+	Scion::Core::Scripting::UserDataBinder::register_meta_user_data<ObjectData>();
 }
 
-} // namespace SCION_CORE
+} // namespace Scion::Core

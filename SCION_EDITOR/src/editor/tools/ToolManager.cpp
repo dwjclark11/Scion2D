@@ -1,7 +1,7 @@
-#include "ToolManager.h"
-#include "CreateTileTool.h"
-#include "RectFillTool.h"
-#include "ToolAccessories.h"
+#include "editor/tools/ToolManager.h"
+#include "editor/tools/CreateTileTool.h"
+#include "editor/tools/RectFillTool.h"
+#include "editor/tools/ToolAccessories.h"
 #include "editor/tools/gizmos/TranslateGizmo.h"
 #include "editor/tools/gizmos/ScaleGizmo.h"
 #include "editor/tools/gizmos/RotateGizmo.h"
@@ -10,7 +10,7 @@
 
 #include "Core/Events/EventDispatcher.h"
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 ToolManager::ToolManager()
 {
@@ -26,7 +26,7 @@ ToolManager::ToolManager()
 	SetToolActive( EToolType::RECT_FILL_TILE );
 }
 
-void ToolManager::Update( SCION_CORE::Canvas& canvas )
+void ToolManager::Update( Scion::Core::Canvas& canvas )
 {
 	auto activeTool = std::ranges::find_if( m_mapTools, []( const auto& tool ) { return tool.second->IsActivated(); } );
 	if ( activeTool != m_mapTools.end() )
@@ -117,7 +117,7 @@ AbstractTool* ToolManager::GetActiveToolFromAbstract()
 	return nullptr;
 }
 
-bool ToolManager::SetupTools( SceneObject* pSceneObject, SCION_RENDERING::Camera2D* pCamera )
+bool ToolManager::SetupTools( SceneObject* pSceneObject, Scion::Rendering::Camera2D* pCamera )
 {
 	for ( auto& [ eType, pTool ] : m_mapTools )
 	{
@@ -175,9 +175,9 @@ void ToolManager::EnableGridSnap( bool bEnable )
 	}
 }
 
-std::vector<SCION_CORE::Events::EventDispatcher*> ToolManager::GetDispatchers()
+std::vector<Scion::Core::Events::EventDispatcher*> ToolManager::GetDispatchers()
 {
-	std::vector<SCION_CORE::Events::EventDispatcher*> dispatchers{};
+	std::vector<Scion::Core::Events::EventDispatcher*> dispatchers{};
 	for (auto& [eType, pGizmo] : m_mapGizmos)
 	{
 		dispatchers.push_back( &pGizmo->GetDispatcher() );
@@ -186,4 +186,4 @@ std::vector<SCION_CORE::Events::EventDispatcher*> ToolManager::GetDispatchers()
 	return dispatchers;
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

@@ -2,7 +2,7 @@
 #include <ScionUtilities/SDL_Wrappers.h>
 #include "SoundParams.h"
 
-namespace SCION_SOUNDS
+namespace Scion::Sounds
 {
 class Music
 {
@@ -26,4 +26,4 @@ class Music
 	SoundParams m_Params{};
 	MusicPtr m_pMusic{ nullptr };
 };
-} // namespace SCION_SOUNDS
+} // namespace Scion::Sounds

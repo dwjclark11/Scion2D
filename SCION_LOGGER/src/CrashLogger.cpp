@@ -24,7 +24,7 @@
 
 namespace fs = std::filesystem;
 
-namespace SCION_LOGGER
+namespace Scion::Logger
 {
 
 #ifdef _WIN32
@@ -425,4 +425,4 @@ void CrashLogger::CrashHandler( int signal )
 	std::exit( signal );
 }
 
-} // namespace SCION_LOGGER
+} // namespace Scion::Logger

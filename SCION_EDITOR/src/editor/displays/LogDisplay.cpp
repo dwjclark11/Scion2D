@@ -3,7 +3,7 @@
 #include "Logger/Logger.h"
 #include <imgui_stdlib.h>
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 void LogDisplay::GetLogs()
 {
@@ -124,4 +124,4 @@ void LogDisplay::Draw()
 	}
 	ImGui::End();
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

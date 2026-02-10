@@ -1,4 +1,4 @@
-#include "EditorUtilities.h"
+#include "editor/utilities/EditorUtilities.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
@@ -28,7 +28,7 @@ static const std::unordered_set<std::string> g_setReservedSystemDirs
 #endif
 // clang-format on
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 EFileType GetFileType( const std::string& sPath )
 {
@@ -67,7 +67,7 @@ std::vector<std::string> SplitStr( const std::string& str, char delimiter )
 	return tokens;
 }
 
-SCION_RENDERING::Texture* GetIconTexture( const std::string& sPath )
+Scion::Rendering::Texture* GetIconTexture( const std::string& sPath )
 {
 	auto& assetManager = ASSET_MANAGER();
 	switch ( GetFileType( sPath ) )
@@ -88,7 +88,7 @@ bool IsReservedPathOrFile( const std::filesystem::path& path )
 								[ & ]( const auto& dir ) { return lowerPath.starts_with( dir ); } );
 }
 
-bool IsDefaultProjectPathOrFile( const std::filesystem::path& path, const SCION_CORE::ProjectInfo& projectInfo )
+bool IsDefaultProjectPathOrFile( const std::filesystem::path& path, const Scion::Core::ProjectInfo& projectInfo )
 {
 	if ( fs::is_directory(path) )
 	{
@@ -113,4 +113,4 @@ bool IsDefaultProjectPathOrFile( const std::filesystem::path& path, const SCION_
 	return false;
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

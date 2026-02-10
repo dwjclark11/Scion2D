@@ -1,7 +1,7 @@
 #include "Rendering/Core/RectBatchRenderer.h"
 #include "Rendering/Essentials/Primitives.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 void RectBatchRenderer::GenerateBatches()
@@ -168,4 +168,4 @@ void RectBatchRenderer::AddIsoRect( const Rect& rect, glm::mat4 model )
 
 	// clang-format on
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

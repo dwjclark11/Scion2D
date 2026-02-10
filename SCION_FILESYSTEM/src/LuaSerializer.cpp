@@ -14,7 +14,7 @@ constexpr char SPACE = ' ';
 		'"', '\\', '\n', '\t', '\r'                                                                                    \
 	}
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 LuaSerializer::LuaSerializer( const std::string& sFilepath )
 	: m_FileStream{}
@@ -177,4 +177,4 @@ std::string LuaSerializer::AddQuotes( const std::string& str )
 	quotedStr += stringToQuote + "\"";
 	return quotedStr;
 }
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem

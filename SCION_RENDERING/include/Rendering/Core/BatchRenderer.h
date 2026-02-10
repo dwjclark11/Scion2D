@@ -2,7 +2,7 @@
 #include "Batcher.h"
 #include "Rendering/Essentials/BatchTypes.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class SpriteBatchRenderer : public Batcher<Batch, SpriteGlyph>
 {
@@ -43,4 +43,4 @@ class SpriteBatchRenderer : public Batcher<Batch, SpriteGlyph>
 	void Initialize();
 	virtual void GenerateBatches() override;
 };
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

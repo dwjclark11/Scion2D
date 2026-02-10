@@ -14,11 +14,11 @@
 
 #include <ranges>
 
-using namespace SCION_CORE::ECS;
-using namespace SCION_RENDERING;
+using namespace Scion::Core::ECS;
+using namespace Scion::Rendering;
 using namespace SCION_RESOURCES;
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 RenderSystem::RenderSystem()
 	: m_pBatchRenderer{ std::make_unique<SpriteBatchRenderer>() }
@@ -27,7 +27,7 @@ RenderSystem::RenderSystem()
 
 RenderSystem::~RenderSystem() = default;
 
-void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING::Camera2D& camera )
+void RenderSystem::Update( Scion::Core::ECS::Registry& registry, Scion::Rendering::Camera2D& camera )
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
@@ -54,7 +54,7 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING:
 		const auto& transform = spriteView.get<TransformComponent>( entity );
 		const auto& sprite = spriteView.get<SpriteComponent>( entity );
 
-		if ( !SCION_CORE::EntityInView( transform, sprite.width, sprite.height, camera ) )
+		if ( !Scion::Core::EntityInView( transform, sprite.width, sprite.height, camera ) )
 			continue;
 
 		if ( sprite.sTextureName.empty() || sprite.bHidden )
@@ -70,7 +70,7 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING:
 		glm::vec4 spriteRect{ transform.position.x, transform.position.y, sprite.width, sprite.height };
 		glm::vec4 uvRect{ sprite.uvs.u, sprite.uvs.v, sprite.uvs.uv_width, sprite.uvs.uv_height };
 
-		glm::mat4 model = SCION_CORE::RSTModel( transform, sprite.width, sprite.height );
+		glm::mat4 model = Scion::Core::RSTModel( transform, sprite.width, sprite.height );
 
 		if ( sprite.bIsoMetric )
 		{
@@ -95,7 +95,7 @@ void RenderSystem::Update( SCION_CORE::ECS::Registry& registry, SCION_RENDERING:
 	spriteShader->Disable();
 }
 
-void RenderSystem::CreateRenderSystemLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+void RenderSystem::CreateRenderSystemLuaBind( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
 	auto& pCamera = registry.GetContext<std::shared_ptr<Camera2D>>();
 
@@ -108,4 +108,4 @@ void RenderSystem::CreateRenderSystemLuaBind( sol::state& lua, SCION_CORE::ECS::
 									[ & ]( RenderSystem& system, Registry& reg ) { system.Update( reg, *pCamera ); } );
 }
 
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

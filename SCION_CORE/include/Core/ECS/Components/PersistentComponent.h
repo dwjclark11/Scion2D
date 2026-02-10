@@ -1,9 +1,9 @@
 #pragma once
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 struct PersistentComponent
 {
 	// bool bPersist{ true };
 };
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

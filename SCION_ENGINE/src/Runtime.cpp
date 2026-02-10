@@ -46,17 +46,17 @@
 
 namespace fs = std::filesystem;
 
-using namespace SCION_CORE::Systems;
-using namespace SCION_CORE::ECS;
-using namespace SCION_RENDERING;
+using namespace Scion::Core::Systems;
+using namespace Scion::Core::ECS;
+using namespace Scion::Rendering;
 
-namespace SCION_ENGINE
+namespace Scion::Engine
 {
 RuntimeApp::RuntimeApp()
 	: m_pWindow{ nullptr }
 	, m_Event{}
 	, m_bRunning{ true }
-	, m_pGameConfig{ std::make_unique<SCION_CORE::GameConfig>() }
+	, m_pGameConfig{ std::make_unique<Scion::Core::GameConfig>() }
 {
 }
 
@@ -131,12 +131,12 @@ void RuntimeApp::Initialize()
 	SCION_CRASH_LOGGER().SetLuaState( pLuaState->lua_state() );
 
 	// Setup Crash Tests
-	SCION_CORE::Scripting::CrashLoggerTests::CreateLuaBind( *pLuaState );
+	Scion::Core::Scripting::CrashLoggerTests::CreateLuaBind( *pLuaState );
 
 	auto& coreGlobals = CORE_GLOBALS();
 
 	// Create the Window
-	m_pWindow = std::make_unique<SCION_WINDOWING::Window>( m_pGameConfig->sGameName.c_str(),
+	m_pWindow = std::make_unique<Scion::Windowing::Window>( m_pGameConfig->sGameName.c_str(),
 														   m_pGameConfig->windowWidth,
 														   m_pGameConfig->windowHeight,
 														   SDL_WINDOWPOS_CENTERED,
@@ -186,7 +186,7 @@ void RuntimeApp::Initialize()
 	}
 
 	mainRegistry.AddToContext<std::shared_ptr<sol::state>>( std::move( pLuaState ) );
-	auto mainScript = mainRegistry.AddToContext<MainScriptPtr>( std::make_shared<SCION_CORE::Scripting::MainScriptFunctions>() );
+	auto mainScript = mainRegistry.AddToContext<MainScriptPtr>( std::make_shared<Scion::Core::Scripting::MainScriptFunctions>() );
 	if ( !LoadShaders() )
 	{
 		throw std::runtime_error( "Failed to Load game shaders." );
@@ -194,7 +194,7 @@ void RuntimeApp::Initialize()
 
 	LoadRegistryContext();
 	LoadBindings();
-	SCION_CORE::CoreEngineData::RegisterMetaFunctions();
+	Scion::Core::CoreEngineData::RegisterMetaFunctions();
 
 	if ( m_pGameConfig->bPackageAssets && !LoadZip() )
 	{
@@ -206,10 +206,10 @@ void RuntimeApp::Initialize()
 		throw std::runtime_error( "Failed to load game scripts. " );
 	}
 
-	auto pSceneManagerData = mainRegistry.AddToContext<std::shared_ptr<SCION_CORE::SceneManagerData>>(
-		std::make_shared<SCION_CORE::SceneManagerData>() );
+	auto pSceneManagerData = mainRegistry.AddToContext<std::shared_ptr<Scion::Core::SceneManagerData>>(
+		std::make_shared<Scion::Core::SceneManagerData>() );
 
-	SCION_CORE::Loaders::TilemapLoader tl{};
+	Scion::Core::Loaders::TilemapLoader tl{};
 	auto& lua = mainRegistry.GetContext<std::shared_ptr<sol::state>>();
 	tl.LoadTilemapFromLuaTable( *mainRegistry.GetRegistry(), ( *lua )[ m_pGameConfig->sStartupScene + "_tilemap" ] );
 	tl.LoadGameObjectsFromLuaTable( *mainRegistry.GetRegistry(),
@@ -236,28 +236,28 @@ bool RuntimeApp::LoadShaders()
 	auto& assetManager = mainRegistry.GetAssetManager();
 
 	if ( !assetManager.AddShaderFromMemory(
-			 "basic", SCION_CORE::Shaders::basicShaderVert, SCION_CORE::Shaders::basicShaderFrag ) )
+			 "basic", Scion::Core::Shaders::basicShaderVert, Scion::Core::Shaders::basicShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the basic shader to the asset manager" );
 		return false;
 	}
 
 	if ( !assetManager.AddShaderFromMemory(
-			 "color", SCION_CORE::Shaders::colorShaderVert, SCION_CORE::Shaders::colorShaderFrag ) )
+			 "color", Scion::Core::Shaders::colorShaderVert, Scion::Core::Shaders::colorShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the color shader to the asset manager" );
 		return false;
 	}
 
 	if ( !assetManager.AddShaderFromMemory(
-			 "circle", SCION_CORE::Shaders::circleShaderVert, SCION_CORE::Shaders::circleShaderFrag ) )
+			 "circle", Scion::Core::Shaders::circleShaderVert, Scion::Core::Shaders::circleShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the color shader to the asset manager" );
 		return false;
 	}
 
 	if ( !assetManager.AddShaderFromMemory(
-			 "font", SCION_CORE::Shaders::fontShaderVert, SCION_CORE::Shaders::fontShaderFrag ) )
+			 "font", Scion::Core::Shaders::fontShaderVert, Scion::Core::Shaders::fontShaderFrag ) )
 	{
 		SCION_ERROR( "Failed to add the font shader to the asset manager" );
 		return false;
@@ -361,11 +361,11 @@ bool RuntimeApp::LoadRegistryContext()
 
 	if ( coreGlobals.IsPhysicsEnabled() )
 	{
-		auto pPhysicsWorld = mainRegistry.AddToContext<SCION_PHYSICS::PhysicsWorld>(
+		auto pPhysicsWorld = mainRegistry.AddToContext<Scion::Physics::PhysicsWorld>(
 			std::make_shared<b2World>( b2Vec2{ 0.f, coreGlobals.GetGravity() } ) );
 
-		auto pContactListener = mainRegistry.AddToContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>(
-			std::make_shared<SCION_PHYSICS::ContactListener>() );
+		auto pContactListener = mainRegistry.AddToContext<std::shared_ptr<Scion::Physics::ContactListener>>(
+			std::make_shared<Scion::Physics::ContactListener>() );
 
 		pPhysicsWorld->SetContactListener( pContactListener.get() );
 	}
@@ -387,7 +387,7 @@ void RuntimeApp::LoadBindings()
 	ScriptingSystem::RegisterLuaEvents( *pLuaState, *pRegistry );
 	ScriptingSystem::RegisterLuaSystems( *pLuaState, *pRegistry );
 
-	SCION_CORE::SceneManager::CreateLuaBind( *pLuaState, *pRegistry );
+	Scion::Core::SceneManager::CreateLuaBind( *pLuaState, *pRegistry );
 }
 
 bool RuntimeApp::LoadScripts()
@@ -404,7 +404,7 @@ bool RuntimeApp::LoadPhysics()
 	auto& coreGlobals = CORE_GLOBALS();
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto* pRegistry = mainRegistry.GetRegistry();
-	auto& pPhysicsWorld = mainRegistry.GetContext<SCION_PHYSICS::PhysicsWorld>();
+	auto& pPhysicsWorld = mainRegistry.GetContext<Scion::Physics::PhysicsWorld>();
 	auto& pCamera = mainRegistry.GetContext<std::shared_ptr<Camera2D>>();
 
 	// We need to initialize all of the physics entities
@@ -478,7 +478,7 @@ bool RuntimeApp::LoadZip()
 	zipArchive.open( libzippp::ZipArchive::ReadOnly );
 	std::vector<libzippp::ZipEntry> entries = zipArchive.getEntries();
 
-	using namespace SCION_UTIL;
+	using namespace Scion::Utilities;
 
 	for ( const auto& entry : entries )
 	{
@@ -510,11 +510,11 @@ bool RuntimeApp::LoadZip()
 				pS2DAsset->assetSize = asset[ "dataSize" ].get_or( 0U );
 				pS2DAsset->assetEnd = asset[ "dataEnd" ].get_or( 0U );
 
-				if ( pS2DAsset->eType == SCION_UTIL::AssetType::FONT )
+				if ( pS2DAsset->eType == Scion::Utilities::AssetType::FONT )
 				{
 					pS2DAsset->optFontSize = asset[ "fontSize" ].get_or( 32.f );
 				}
-				else if ( pS2DAsset->eType == SCION_UTIL::AssetType::TEXTURE )
+				else if ( pS2DAsset->eType == Scion::Utilities::AssetType::TEXTURE )
 				{
 					pS2DAsset->optPixelArt = asset[ "bPixelArt" ].get_or( false );
 				}
@@ -604,13 +604,13 @@ void RuntimeApp::ProcessEvents()
 		case SDL_QUIT: m_bRunning = false; break;
 		case SDL_KEYDOWN:
 			keyboard.OnKeyPressed( m_Event.key.keysym.sym );
-			EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::KeyEvent{
-				.key = m_Event.key.keysym.sym, .eType = SCION_CORE::Events::EKeyEventType::Pressed } );
+			EVENT_DISPATCHER().EmitEvent( Scion::Core::Events::KeyEvent{
+				.key = m_Event.key.keysym.sym, .eType = Scion::Core::Events::EKeyEventType::Pressed } );
 			break;
 		case SDL_KEYUP:
 			keyboard.OnKeyReleased( m_Event.key.keysym.sym );
-			EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::KeyEvent{
-				.key = m_Event.key.keysym.sym, .eType = SCION_CORE::Events::EKeyEventType::Released } );
+			EVENT_DISPATCHER().EmitEvent( Scion::Core::Events::KeyEvent{
+				.key = m_Event.key.keysym.sym, .eType = Scion::Core::Events::EKeyEventType::Released } );
 			break;
 		case SDL_MOUSEBUTTONDOWN: mouse.OnBtnPressed( m_Event.button.button ); break;
 		case SDL_MOUSEBUTTONUP: mouse.OnBtnReleased( m_Event.button.button ); break;
@@ -625,8 +625,8 @@ void RuntimeApp::ProcessEvents()
 			int index = inputManager.AddGamepad( m_Event.jdevice.which );
 			if ( index > 0 )
 			{
-				EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::GamepadConnectEvent{
-					.eConnectType = SCION_CORE::Events::EGamepadConnectType::Connected, .index = index } );
+				EVENT_DISPATCHER().EmitEvent( Scion::Core::Events::GamepadConnectEvent{
+					.eConnectType = Scion::Core::Events::EGamepadConnectType::Connected, .index = index } );
 			}
 
 			break;
@@ -636,8 +636,8 @@ void RuntimeApp::ProcessEvents()
 
 			if ( index > 0 )
 			{
-				EVENT_DISPATCHER().EmitEvent( SCION_CORE::Events::GamepadConnectEvent{
-					.eConnectType = SCION_CORE::Events::EGamepadConnectType::Disconnected, .index = index } );
+				EVENT_DISPATCHER().EmitEvent( Scion::Core::Events::GamepadConnectEvent{
+					.eConnectType = Scion::Core::Events::EGamepadConnectType::Disconnected, .index = index } );
 			}
 
 			break;
@@ -667,9 +667,9 @@ void RuntimeApp::Update()
 	coreGlobals.UpdateDeltaTime();
 
 	// Clamp delta time to the target frame rate
-	if ( dt < SCION_CORE::TARGET_FRAME_TIME )
+	if ( dt < Scion::Core::TARGET_FRAME_TIME )
 	{
-		std::this_thread::sleep_for( std::chrono::duration<double>( SCION_CORE::TARGET_FRAME_TIME - dt ) );
+		std::this_thread::sleep_for( std::chrono::duration<double>( Scion::Core::TARGET_FRAME_TIME - dt ) );
 	}
 
 	auto& scriptSystem = mainRegistry.GetContext<std::shared_ptr<ScriptingSystem>>();
@@ -677,17 +677,17 @@ void RuntimeApp::Update()
 
 	if ( coreGlobals.IsPhysicsEnabled() && !coreGlobals.IsPhysicsPaused() )
 	{
-		auto& pPhysicsWorld = mainRegistry.GetContext<SCION_PHYSICS::PhysicsWorld>();
+		auto& pPhysicsWorld = mainRegistry.GetContext<Scion::Physics::PhysicsWorld>();
 		pPhysicsWorld->Step(
-			SCION_CORE::TARGET_FRAME_TIME_F, coreGlobals.GetVelocityIterations(), coreGlobals.GetPositionIterations() );
+			Scion::Core::TARGET_FRAME_TIME_F, coreGlobals.GetVelocityIterations(), coreGlobals.GetPositionIterations() );
 		pPhysicsWorld->ClearForces();
 
-		auto& dispatch = mainRegistry.GetContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>();
+		auto& dispatch = mainRegistry.GetContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>();
 
 		// If there are no listeners for contact events, don't emit event
-		if ( dispatch->HasHandlers<SCION_CORE::Events::ContactEvent>() )
+		if ( dispatch->HasHandlers<Scion::Core::Events::ContactEvent>() )
 		{
-			if ( auto& pContactListener = mainRegistry.GetContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>() )
+			if ( auto& pContactListener = mainRegistry.GetContext<std::shared_ptr<Scion::Physics::ContactListener>>() )
 			{
 				auto pUserDataA = pContactListener->GetUserDataA();
 				auto pUserDataB = pContactListener->GetUserDataB();
@@ -697,11 +697,11 @@ void RuntimeApp::Update()
 				{
 					try
 					{
-						auto ObjectA = std::any_cast<SCION_PHYSICS::ObjectData>( pUserDataA->userData );
-						auto ObjectB = std::any_cast<SCION_PHYSICS::ObjectData>( pUserDataB->userData );
+						auto ObjectA = std::any_cast<Scion::Physics::ObjectData>( pUserDataA->userData );
+						auto ObjectB = std::any_cast<Scion::Physics::ObjectData>( pUserDataB->userData );
 
 						dispatch->EmitEvent(
-							SCION_CORE::Events::ContactEvent{ .objectA = ObjectA, .objectB = ObjectB } );
+							Scion::Core::Events::ContactEvent{ .objectA = ObjectA, .objectB = ObjectB } );
 					}
 					catch ( const std::bad_any_cast& e )
 					{
@@ -765,4 +765,4 @@ void RuntimeApp::CleanUp()
 	SDL_Quit();
 }
 
-} // namespace SCION_ENGINE
+} // namespace Scion::Engine

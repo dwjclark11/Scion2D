@@ -1,18 +1,18 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 namespace ECS
 {
 class Registry;
 }
-} // namespace SCION_CORE
+} // namespace Scion::Core
 
-namespace SCION_CORE::Scripting
+namespace Scion::Core::Scripting
 {
 struct RendererBinder
 {
-	static void CreateRenderingBind( sol::state& lua, SCION_CORE::ECS::Registry& registry );
+	static void CreateRenderingBind( sol::state& lua, Scion::Core::ECS::Registry& registry );
 };
-} // namespace SCION_CORE::Scripting
+} // namespace Scion::Core::Scripting

@@ -10,7 +10,7 @@
 #include "CircleBatchRenderer.h"
 #include "TextBatchRenderer.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class Renderer
 {
@@ -82,4 +82,4 @@ class Renderer
 	std::unique_ptr<SpriteBatchRenderer> m_pSpriteBatch;
 	std::unique_ptr<TextBatchRenderer> m_pTextBatch;
 };
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

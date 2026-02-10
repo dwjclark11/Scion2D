@@ -1,4 +1,4 @@
-#include "TileTool.h"
+#include "editor/tools/TileTool.h"
 #include "Logger/Logger.h"
 #include "editor/utilities/EditorUtilities.h"
 #include "Core/ECS/MainRegistry.h"
@@ -15,9 +15,9 @@
 
 constexpr int MOUSE_SPRITE_LAYER = 10;
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 uint32_t TileTool::CheckForTile( const glm::vec2& position )
 {
@@ -32,7 +32,7 @@ uint32_t TileTool::CheckForTile( const glm::vec2& position )
 		const auto& transform = tile.GetComponent<TransformComponent>();
 		const auto& sprite = tile.GetComponent<SpriteComponent>();
 
-		if ( m_pCurrentScene && m_pCurrentScene->GetMapType() == SCION_CORE::EMapType::Grid )
+		if ( m_pCurrentScene && m_pCurrentScene->GetMapType() == Scion::Core::EMapType::Grid )
 		{
 			if ( position.x >= transform.position.x &&
 				 position.x < transform.position.x + sprite.width * transform.scale.x &&
@@ -64,16 +64,16 @@ uint32_t TileTool::CheckForTile( const glm::vec2& position )
 	return entt::null;
 }
 
-SCION_CORE::ECS::Entity TileTool::CreateEntity()
+Scion::Core::ECS::Entity TileTool::CreateEntity()
 {
 	SCION_ASSERT( m_pRegistry && "The registry must be valid to create an entity." );
-	return SCION_CORE::ECS::Entity{ m_pRegistry, "", "" };
+	return Scion::Core::ECS::Entity{ m_pRegistry, "", "" };
 }
 
-SCION_CORE::ECS::Entity TileTool::CreateEntity( uint32_t id )
+Scion::Core::ECS::Entity TileTool::CreateEntity( uint32_t id )
 {
 	SCION_ASSERT( m_pRegistry && "The registry must be valid to create an entity." );
-	return SCION_CORE::ECS::Entity{ m_pRegistry, static_cast<entt::entity>( id ) };
+	return Scion::Core::ECS::Entity{ m_pRegistry, static_cast<entt::entity>( id ) };
 }
 
 void TileTool::DrawMouseSprite()
@@ -111,7 +111,7 @@ void TileTool::ExamineMousePosition()
 
 	if ( m_bGridSnap )
 	{
-		if ( m_pCurrentScene->GetMapType() == SCION_CORE::EMapType::Grid )
+		if ( m_pCurrentScene->GetMapType() == Scion::Core::EMapType::Grid )
 		{
 			glm::vec2 mouseGrid{ mouseWorldPos.x / ( m_MouseRect.x * transform.scale.x ),
 								 mouseWorldPos.y / ( m_MouseRect.y * transform.scale.y ) };
@@ -134,7 +134,7 @@ void TileTool::ExamineMousePosition()
 			float doubleWidthOver4 = doubleWidth / 4.f;
 			float tileHeightOver4 = canvas.tileHeight / 4.f;
 
-			auto [ cellX, cellY ] = SCION_CORE::ConvertWorldPosToIsoCoords( mouseWorldPos, canvas );
+			auto [ cellX, cellY ] = Scion::Core::ConvertWorldPosToIsoCoords( mouseWorldPos, canvas );
 
 			transform.position.x =
 				( ( doubleWidthOver4 * cellX ) - ( doubleWidthOver4 * cellY ) ) * 2.f /* + canvas.offset.x*/;
@@ -154,13 +154,13 @@ TileTool::TileTool()
 	: AbstractTool()
 	, m_MouseRect{ 16.f }
 	, m_bGridSnap{ true }
-	, m_pBatchRenderer{ std::make_shared<SCION_RENDERING::SpriteBatchRenderer>() }
+	, m_pBatchRenderer{ std::make_shared<Scion::Rendering::SpriteBatchRenderer>() }
 	, m_pMouseTile{ std::make_shared<Tile>() }
 {
 	m_GridCoords = glm::vec2{ 0.f };
 }
 
-void TileTool::Update( SCION_CORE::Canvas& canvas )
+void TileTool::Update( Scion::Core::Canvas& canvas )
 {
 	AbstractTool::Update( canvas );
 	ExamineMousePosition();
@@ -180,14 +180,14 @@ void TileTool::LoadSpriteTextureData( const std::string& textureName )
 	m_pMouseTile->sprite = SpriteComponent{ .sTextureName = textureName,
 											.width = m_MouseRect.x,
 											.height = m_MouseRect.y,
-											.color = SCION_RENDERING::Color{ 255, 255, 255, 255 },
+											.color = Scion::Rendering::Color{ 255, 255, 255, 255 },
 											.start_x = 0,
 											.start_y = 0,
 											.layer = currentLayer };
 
 	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( textureName );
 	SCION_ASSERT( pTexture && "Texture must exist" );
-	SCION_CORE::GenerateUVs( m_pMouseTile->sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+	Scion::Core::GenerateUVs( m_pMouseTile->sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 }
 
 const std::string& TileTool::GetSpriteTexture() const
@@ -215,7 +215,7 @@ void TileTool::SetSpriteRect( const glm::vec2& spriteRect )
 
 	auto pTexture = MAIN_REGISTRY().GetAssetManager().GetTexture( sprite.sTextureName );
 	SCION_ASSERT( pTexture && "Texture Must exist." );
-	SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+	Scion::Core::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 }
 
 const bool TileTool::SpriteValid() const
@@ -228,4 +228,4 @@ const bool TileTool::CanDrawOrCreate() const
 	return IsActivated() && !OutOfBounds() && IsOverTilemapWindow() && SpriteValid() && m_pCurrentScene &&
 		   m_pCurrentScene->HasTileLayers();
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

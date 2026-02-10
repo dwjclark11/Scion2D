@@ -1,6 +1,6 @@
 #include "JSONSerializer.h"
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 template <typename TValue>
 inline JSONSerializer& JSONSerializer::AddKeyValuePair( const std::string& key, const TValue& value )
@@ -39,4 +39,4 @@ inline JSONSerializer& JSONSerializer::AddKeyValuePair( const std::string& key, 
 	return *this;
 }
 
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem

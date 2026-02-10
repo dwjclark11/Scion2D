@@ -3,7 +3,7 @@
 #include "Core/ECS/Registry.h"
 #include <SDL2/SDL.h>
 
-namespace SCION_WINDOWING::Inputs
+namespace Scion::Windowing::Inputs
 {
 class Gamepad;
 class Keyboard;
@@ -12,9 +12,9 @@ class Mouse;
 
 constexpr int MAX_CONTROLLERS = 4;
 
-#define INPUT_MANAGER() SCION_CORE::InputManager::GetInstance()
+#define INPUT_MANAGER() Scion::Core::InputManager::GetInstance()
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 /*
  * @brief InputManager class controls all necessary inputs for the game.
@@ -24,16 +24,16 @@ class InputManager
 {
   public:
 	static InputManager& GetInstance();
-	static void CreateLuaInputBindings( sol::state& lua, SCION_CORE::ECS::Registry& registry );
+	static void CreateLuaInputBindings( sol::state& lua, Scion::Core::ECS::Registry& registry );
 
 	void UpdateInputs();
 	bool GamepadConnected() const;
 	bool GamepadConnected(int location) const;
 
-	inline SCION_WINDOWING::Inputs::Keyboard& GetKeyboard() { return *m_pKeyboard; }
-	inline SCION_WINDOWING::Inputs::Mouse& GetMouse() { return *m_pMouse; }
+	inline Scion::Windowing::Inputs::Keyboard& GetKeyboard() { return *m_pKeyboard; }
+	inline Scion::Windowing::Inputs::Mouse& GetMouse() { return *m_pMouse; }
 
-	inline std::map<int, std::shared_ptr<SCION_WINDOWING::Inputs::Gamepad>>& GetControllers() { return m_mapGameControllers; }
+	inline std::map<int, std::shared_ptr<Scion::Windowing::Inputs::Gamepad>>& GetControllers() { return m_mapGameControllers; }
 
 	
 
@@ -43,7 +43,7 @@ class InputManager
 	 * @return Returns a shared_ptr of the gamepad at the index
 	 * if exists, else returns nullptr;
 	 */
-	std::shared_ptr<SCION_WINDOWING::Inputs::Gamepad> GetController( int index );
+	std::shared_ptr<Scion::Windowing::Inputs::Gamepad> GetController( int index );
 
 	/*
 	 * @brief Adds a new gamepad to the map at the given index.
@@ -105,8 +105,8 @@ class InputManager
 	static void RegisterGamepadBtnNames( sol::state& lua );
 
   private:
-	std::unique_ptr<SCION_WINDOWING::Inputs::Keyboard> m_pKeyboard;
-	std::unique_ptr<SCION_WINDOWING::Inputs::Mouse> m_pMouse;
-	std::map<int, std::shared_ptr<SCION_WINDOWING::Inputs::Gamepad>> m_mapGameControllers;
+	std::unique_ptr<Scion::Windowing::Inputs::Keyboard> m_pKeyboard;
+	std::unique_ptr<Scion::Windowing::Inputs::Mouse> m_pMouse;
+	std::map<int, std::shared_ptr<Scion::Windowing::Inputs::Gamepad>> m_mapGameControllers;
 };
-} // namespace SCION_CORE
+} // namespace Scion::Core

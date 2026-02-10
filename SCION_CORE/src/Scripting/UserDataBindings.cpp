@@ -3,10 +3,10 @@
 #include <Physics/UserData.h>
 #include "Core/ECS/MetaUtilities.h"
 
-using namespace SCION_CORE::Utils;
-using namespace SCION_PHYSICS;
+using namespace Scion::Core::Utils;
+using namespace Scion::Physics;
 
-void SCION_CORE::Scripting::UserDataBinder::CreateLuaUserData( sol::state& lua )
+void Scion::Core::Scripting::UserDataBinder::CreateLuaUserData( sol::state& lua )
 {
 	using namespace entt::literals;
 

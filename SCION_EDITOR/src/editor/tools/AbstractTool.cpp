@@ -1,4 +1,4 @@
-#include "AbstractTool.h"
+#include "editor/tools/AbstractTool.h"
 #include "Logger/Logger.h"
 #include "Core/Scripting/InputManager.h"
 #include "Core/ECS/Registry.h"
@@ -7,9 +7,9 @@
 #include "editor/scene/SceneObject.h"
 #include "Windowing/Inputs/Mouse.h"
 
-using namespace SCION_CORE;
+using namespace Scion::Core;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
 void AbstractTool::UpdateMouseWorldCoords()
@@ -21,7 +21,7 @@ void AbstractTool::UpdateMouseWorldCoords()
 	m_MouseWorldCoords = m_pCamera->ScreenCoordsToWorld( m_MouseScreenCoords );
 }
 
-void AbstractTool::CheckOutOfBounds( const SCION_CORE::Canvas& canvas )
+void AbstractTool::CheckOutOfBounds( const Scion::Core::Canvas& canvas )
 {
 	if ( !m_pCurrentScene )
 	{
@@ -94,13 +94,13 @@ AbstractTool::AbstractTool()
 {
 }
 
-void AbstractTool::Update( SCION_CORE::Canvas& canvas )
+void AbstractTool::Update( Scion::Core::Canvas& canvas )
 {
 	UpdateMouseWorldCoords();
 	CheckOutOfBounds( canvas );
 }
 
-bool AbstractTool::SetupTool( SceneObject* pSceneObject, SCION_RENDERING::Camera2D* pCamera )
+bool AbstractTool::SetupTool( SceneObject* pSceneObject, Scion::Rendering::Camera2D* pCamera )
 {
 	if ( !pSceneObject )
 	{
@@ -128,4 +128,4 @@ bool AbstractTool::SetupTool( SceneObject* pSceneObject, SCION_RENDERING::Camera
 	return true;
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

@@ -1,4 +1,4 @@
-#include "SceneDisplay.h"
+#include "editor/displays/SceneDisplay.h"
 #include "Rendering/Buffers/Framebuffer.h"
 #include "Rendering/Core/Camera2D.h"
 #include "Rendering/Core/Renderer.h"
@@ -42,15 +42,15 @@
 #include <imgui.h>
 #include <thread>
 
-using namespace SCION_CORE::Systems;
-using namespace SCION_CORE::ECS;
-using namespace SCION_RENDERING;
-using namespace SCION_PHYSICS;
+using namespace Scion::Core::Systems;
+using namespace Scion::Core::ECS;
+using namespace Scion::Rendering;
+using namespace Scion::Physics;
 
 constexpr float TARGET_FRAME_TIME_F = 1.f / 60.f;
 constexpr double TARGET_FRAME_TIME = 1.0 / 60.0;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 void SceneDisplay::LoadScene()
 {
@@ -65,17 +65,17 @@ void SceneDisplay::LoadScene()
 	auto pCamera = runtimeRegistry.AddToContext<std::shared_ptr<Camera2D>>(
 		std::make_shared<Camera2D>( canvas.width, canvas.height ) );
 
-	auto pPhysicsWorld = runtimeRegistry.AddToContext<SCION_PHYSICS::PhysicsWorld>(
+	auto pPhysicsWorld = runtimeRegistry.AddToContext<Scion::Physics::PhysicsWorld>(
 		std::make_shared<b2World>( b2Vec2{ 0.f, CORE_GLOBALS().GetGravity() } ) );
 
-	auto pContactListener = runtimeRegistry.AddToContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>(
-		std::make_shared<SCION_PHYSICS::ContactListener>() );
+	auto pContactListener = runtimeRegistry.AddToContext<std::shared_ptr<Scion::Physics::ContactListener>>(
+		std::make_shared<Scion::Physics::ContactListener>() );
 
 	pPhysicsWorld->SetContactListener( pContactListener.get() );
 
 	// Add the temporary event dispatcher
-	runtimeRegistry.AddToContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>(
-		std::make_shared<SCION_CORE::Events::EventDispatcher>() );
+	runtimeRegistry.AddToContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>(
+		std::make_shared<Scion::Core::Events::EventDispatcher>() );
 
 	// Add necessary systems
 	auto scriptSystem =
@@ -97,12 +97,12 @@ void SceneDisplay::LoadScene()
 						 sol::lib::string,
 						 sol::lib::package );
 
-	SCION_CORE::Systems::ScriptingSystem::RegisterLuaBindings( *lua, runtimeRegistry );
-	SCION_CORE::Systems::ScriptingSystem::RegisterLuaFunctions( *lua, runtimeRegistry );
-	SCION_CORE::Systems::ScriptingSystem::RegisterLuaSystems( *lua, runtimeRegistry );
+	Scion::Core::Systems::ScriptingSystem::RegisterLuaBindings( *lua, runtimeRegistry );
+	Scion::Core::Systems::ScriptingSystem::RegisterLuaFunctions( *lua, runtimeRegistry );
+	Scion::Core::Systems::ScriptingSystem::RegisterLuaSystems( *lua, runtimeRegistry );
 	// We need to be able to get the editor events from lua. Pass in the main registry to get the main
 	// event dispatcher.
-	SCION_CORE::Systems::ScriptingSystem::RegisterLuaEvents( *lua, *MAIN_REGISTRY().GetRegistry() );
+	Scion::Core::Systems::ScriptingSystem::RegisterLuaEvents( *lua, *MAIN_REGISTRY().GetRegistry() );
 	LuaCoreBinder::CreateLuaBind( *lua, runtimeRegistry );
 
 	EditorSceneManager::CreateSceneManagerLuaBind( *lua );
@@ -160,8 +160,8 @@ void SceneDisplay::LoadScene()
 	}
 
 	// Get the main script path
-	auto mainScript = runtimeRegistry.AddToContext<MainScriptPtr>( std::make_shared<SCION_CORE::Scripting::MainScriptFunctions>() );
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<SCION_CORE::ProjectInfoPtr>();
+	auto mainScript = runtimeRegistry.AddToContext<MainScriptPtr>( std::make_shared<Scion::Core::Scripting::MainScriptFunctions>() );
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 	if ( !scriptSystem->LoadMainScript( *pProjectInfo, runtimeRegistry, *lua ) )
 	{
 		SCION_ERROR( "Failed to load the main lua script!" );
@@ -177,7 +177,7 @@ void SceneDisplay::LoadScene()
 	mainScript->init();
 
 	// Setup Crash Tests
-	SCION_CORE::Scripting::CrashLoggerTests::CreateLuaBind( *lua );
+	Scion::Core::Scripting::CrashLoggerTests::CreateLuaBind( *lua );
 
 	// Set the lua state for the crash logger.
 	// This is used to log the lua stack trace in case of a crash
@@ -189,8 +189,8 @@ void SceneDisplay::LoadScene()
 
 void SceneDisplay::UnloadScene()
 {
-	EVENT_DISPATCHER().ClearHandlers<SCION_CORE::Events::GamepadConnectEvent>();
-	EVENT_DISPATCHER().ClearHandlers<SCION_CORE::Events::LuaEvent>();
+	EVENT_DISPATCHER().ClearHandlers<Scion::Core::Events::GamepadConnectEvent>();
+	EVENT_DISPATCHER().ClearHandlers<Scion::Core::Events::LuaEvent>();
 
 	m_bPlayScene = false;
 	m_bSceneLoaded = false;
@@ -202,10 +202,10 @@ void SceneDisplay::UnloadScene()
 
 	runtimeRegistry.ClearRegistry();
 	runtimeRegistry.RemoveContext<std::shared_ptr<Camera2D>>();
-	runtimeRegistry.RemoveContext<SCION_PHYSICS::PhysicsWorld>();
-	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_PHYSICS::ContactListener>>();
+	runtimeRegistry.RemoveContext<Scion::Physics::PhysicsWorld>();
+	runtimeRegistry.RemoveContext<std::shared_ptr<Scion::Physics::ContactListener>>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<ScriptingSystem>>();
-	runtimeRegistry.RemoveContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>();
+	runtimeRegistry.RemoveContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>();
 	runtimeRegistry.RemoveContext<MainScriptPtr>();
 	runtimeRegistry.RemoveContext<std::shared_ptr<sol::state>>();
 
@@ -218,7 +218,7 @@ void SceneDisplay::RenderScene() const
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
-	auto& renderer = mainRegistry.GetContext<std::shared_ptr<SCION_RENDERING::Renderer>>();
+	auto& renderer = mainRegistry.GetContext<std::shared_ptr<Scion::Rendering::Renderer>>();
 
 	auto& renderSystem = mainRegistry.GetRenderSystem();
 	auto& renderUISystem = mainRegistry.GetRenderUISystem();
@@ -247,7 +247,7 @@ void SceneDisplay::RenderScene() const
 		renderUISystem.Update( runtimeRegistry );
 
 		// Add Render Script stuff after everything???
-		auto& scriptSystem = runtimeRegistry.GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
+		auto& scriptSystem = runtimeRegistry.GetContext<std::shared_ptr<Scion::Core::Systems::ScriptingSystem>>();
 		scriptSystem->Render( runtimeRegistry );
 	}
 
@@ -255,11 +255,11 @@ void SceneDisplay::RenderScene() const
 	fb->CheckResize();
 }
 
-void SceneDisplay::HandleKeyEvent( const SCION_CORE::Events::KeyEvent keyEvent )
+void SceneDisplay::HandleKeyEvent( const Scion::Core::Events::KeyEvent keyEvent )
 {
 	if ( m_bSceneLoaded )
 	{
-		if ( keyEvent.eType == SCION_CORE::Events::EKeyEventType::Released )
+		if ( keyEvent.eType == Scion::Core::Events::EKeyEventType::Released )
 		{
 			if ( keyEvent.key == SCION_KEY_ESCAPE )
 			{
@@ -276,9 +276,9 @@ void SceneDisplay::HandleKeyEvent( const SCION_CORE::Events::KeyEvent keyEvent )
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 
 	if ( auto* pEventDispatcher =
-			 runtimeRegistry.TryGetContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>() )
+			 runtimeRegistry.TryGetContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>() )
 	{
-		if ( !pEventDispatcher->get()->HasHandlers<SCION_CORE::Events::KeyEvent>() )
+		if ( !pEventDispatcher->get()->HasHandlers<Scion::Core::Events::KeyEvent>() )
 			return;
 
 		pEventDispatcher->get()->EmitEvent( keyEvent );
@@ -341,7 +341,7 @@ SceneDisplay::SceneDisplay()
 	, m_bWindowActive{ false }
 	, m_bSceneLoaded{ false }
 {
-	ADD_EVENT_HANDLER( SCION_CORE::Events::KeyEvent, &SceneDisplay::HandleKeyEvent, *this );
+	ADD_EVENT_HANDLER( Scion::Core::Events::KeyEvent, &SceneDisplay::HandleKeyEvent, *this );
 }
 
 void SceneDisplay::Draw()
@@ -420,7 +420,7 @@ void SceneDisplay::Update()
 		std::this_thread::sleep_for( std::chrono::duration<double>( TARGET_FRAME_TIME - dt ) );
 	}
 
-	auto& camera = runtimeRegistry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
+	auto& camera = runtimeRegistry.GetContext<std::shared_ptr<Scion::Rendering::Camera2D>>();
 	if ( !camera )
 	{
 		SCION_ERROR( "Failed to get the camera from the registry context!" );
@@ -429,20 +429,20 @@ void SceneDisplay::Update()
 
 	camera->Update();
 
-	auto& scriptSystem = runtimeRegistry.GetContext<std::shared_ptr<SCION_CORE::Systems::ScriptingSystem>>();
+	auto& scriptSystem = runtimeRegistry.GetContext<std::shared_ptr<Scion::Core::Systems::ScriptingSystem>>();
 	scriptSystem->Update( runtimeRegistry );
 
 	if ( coreGlobals.IsPhysicsEnabled() )
 	{
-		auto& pPhysicsWorld = runtimeRegistry.GetContext<SCION_PHYSICS::PhysicsWorld>();
+		auto& pPhysicsWorld = runtimeRegistry.GetContext<Scion::Physics::PhysicsWorld>();
 		pPhysicsWorld->Step(
 			TARGET_FRAME_TIME_F, coreGlobals.GetVelocityIterations(), coreGlobals.GetPositionIterations() );
 		pPhysicsWorld->ClearForces();
 
-		auto& dispatch = runtimeRegistry.GetContext<std::shared_ptr<SCION_CORE::Events::EventDispatcher>>();
+		auto& dispatch = runtimeRegistry.GetContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>();
 
 		// If there are no listeners for contact events, don't emit event
-		if ( dispatch->HasHandlers<SCION_CORE::Events::ContactEvent>() )
+		if ( dispatch->HasHandlers<Scion::Core::Events::ContactEvent>() )
 		{
 			if ( auto& pContactListener = runtimeRegistry.GetContext<std::shared_ptr<ContactListener>>() )
 			{
@@ -458,7 +458,7 @@ void SceneDisplay::Update()
 						auto ObjectB = std::any_cast<ObjectData>( pUserDataB->userData );
 
 						dispatch->EmitEvent(
-							SCION_CORE::Events::ContactEvent{ .objectA = ObjectA, .objectB = ObjectB } );
+							Scion::Core::Events::ContactEvent{ .objectA = ObjectA, .objectB = ObjectB } );
 					}
 					catch ( const std::bad_any_cast& e )
 					{
@@ -477,4 +477,4 @@ void SceneDisplay::Update()
 
 	runtimeRegistry.ClearPendingEntities();
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

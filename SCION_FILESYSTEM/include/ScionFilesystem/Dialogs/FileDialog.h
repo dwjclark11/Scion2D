@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 class FileDialog
 {
@@ -36,4 +36,4 @@ class FileDialog
 	 */
 	std::string SelectFolderDialog( const std::string& sTitle = "Select Folder", const std::string& sDefaultPath = "" );
 };
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem

@@ -1,7 +1,7 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 
 enum class UIObjectType
@@ -22,4 +22,4 @@ struct UIComponent
 };
 
 
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

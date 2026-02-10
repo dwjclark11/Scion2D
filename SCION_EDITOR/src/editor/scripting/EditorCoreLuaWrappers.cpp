@@ -1,4 +1,4 @@
-#include "EditorCoreLuaWrappers.h"
+#include "editor/scripting/EditorCoreLuaWrappers.h"
 #include "Core/Scripting/InputManager.h"
 #include "Core/ECS/Registry.h"
 #include "Rendering/Core/Camera2D.h"
@@ -10,14 +10,14 @@
 #include <imgui.h>
 #include <cmath>
 
-using namespace SCION_WINDOWING::Inputs;
+using namespace Scion::Windowing::Inputs;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
-void LuaCoreBinder::CreateLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+void LuaCoreBinder::CreateLuaBind( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
 	auto& mouse = INPUT_MANAGER().GetMouse();
-	auto& camera = registry.GetContext<std::shared_ptr<SCION_RENDERING::Camera2D>>();
+	auto& camera = registry.GetContext<std::shared_ptr<Scion::Rendering::Camera2D>>();
 
 	lua.new_usertype<Mouse>(
 		"Mouse",
@@ -69,4 +69,4 @@ void LuaCoreBinder::CreateLuaBind( sol::state& lua, SCION_CORE::ECS::Registry& r
 	* TODO: Add more editor specific Core bindings here.
 	*/
 }
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

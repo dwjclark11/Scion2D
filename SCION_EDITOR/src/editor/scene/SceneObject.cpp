@@ -1,4 +1,4 @@
-#include "SceneObject.h"
+#include "editor/scene/SceneObject.h"
 
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/ECS/MetaUtilities.h"
@@ -21,21 +21,21 @@
 
 namespace fs = std::filesystem;
 
-using namespace SCION_FILESYSTEM;
-using namespace SCION_CORE;
-using namespace SCION_CORE::ECS;
-using namespace SCION_CORE::Loaders;
+using namespace Scion::Filesystem;
+using namespace Scion::Core;
+using namespace Scion::Core::ECS;
+using namespace Scion::Core::Loaders;
 using namespace entt::literals;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
-SceneObject::SceneObject( const std::string& sceneName, SCION_CORE::EMapType eType )
+SceneObject::SceneObject( const std::string& sceneName, Scion::Core::EMapType eType )
 	: Scene( sceneName, eType )
 	, m_RuntimeRegistry{}
 	, m_pRuntimeData{ nullptr }
 {
-	ADD_EVENT_HANDLER( SCION_EDITOR::Events::NameChangeEvent, &SceneObject::OnEntityNameChanges, *this );
+	ADD_EVENT_HANDLER( Scion::Editor::Events::NameChangeEvent, &SceneObject::OnEntityNameChanges, *this );
 }
 
 SceneObject::SceneObject( const std::string& sceneName, const std::string& sceneData )
@@ -62,7 +62,7 @@ SceneObject::SceneObject( const std::string& sceneName, const std::string& scene
 		SCION_WARN( "Object file [{}] does not exist.", m_sObjectPath );
 	}
 
-	ADD_EVENT_HANDLER( SCION_EDITOR::Events::NameChangeEvent, &SceneObject::OnEntityNameChanges, *this );
+	ADD_EVENT_HANDLER( Scion::Editor::Events::NameChangeEvent, &SceneObject::OnEntityNameChanges, *this );
 }
 
 void SceneObject::CopySceneToRuntime()
@@ -89,7 +89,7 @@ void SceneObject::CopySceneToRuntime()
 			if ( !storage.contains( entityToCopy ) )
 				continue;
 
-			SCION_CORE::Utils::InvokeMetaFunction(
+			Scion::Core::Utils::InvokeMetaFunction(
 				id, "copy_component"_hs, Entity{ &m_Registry, entityToCopy }, Entity{ &m_RuntimeRegistry, newEntity } );
 		}
 	}
@@ -127,7 +127,7 @@ void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
 			if ( !storage.contains( entityToCopy ) )
 				continue;
 
-			SCION_CORE::Utils::InvokeMetaFunction(
+			Scion::Core::Utils::InvokeMetaFunction(
 				id, "copy_component"_hs, Entity{ &registry, entityToCopy }, Entity{ &m_RuntimeRegistry, newEntity } );
 		}
 	}
@@ -139,7 +139,7 @@ void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
 	}
 }
 
-void SceneObject::CopyPlayerStartToRuntimeRegistry( SCION_CORE::ECS::Registry& runtimeRegistry )
+void SceneObject::CopyPlayerStartToRuntimeRegistry( Scion::Core::ECS::Registry& runtimeRegistry )
 {
 	if ( !m_bUsePlayerStart )
 	{
@@ -176,7 +176,7 @@ void SceneObject::AddNewLayer()
 		}
 	}
 
-	const SCION_UTIL::SpriteLayerParams spriteLayerParams{ .sLayerName = fmt::format( "NewLayer_{}", currentLayer ),
+	const Scion::Utilities::SpriteLayerParams spriteLayerParams{ .sLayerName = fmt::format( "NewLayer_{}", currentLayer ),
 														   .layer = static_cast<int>( currentLayer ) };
 
 	m_LayerParams.emplace_back( spriteLayerParams );
@@ -413,7 +413,7 @@ bool SceneObject::UnloadScene( bool bSaveScene )
 }
 
 SceneExportFiles SceneObject::ExportSceneToLua( const std::string& sSceneName, const std::string& sExportPath,
-												SCION_CORE::ECS::Registry& registry )
+												Scion::Core::ECS::Registry& registry )
 {
 	// Get the scene data and load the scene into a separate registry
 	if ( !fs::exists( m_sSceneDataPath ) )
@@ -488,11 +488,11 @@ SceneExportFiles SceneObject::ExportSceneToLua( const std::string& sSceneName, c
 		std::string sMapType = sceneData[ "mapType" ].GetString();
 		if ( sMapType == "grid" )
 		{
-			m_eMapType = SCION_CORE::EMapType::Grid;
+			m_eMapType = Scion::Core::EMapType::Grid;
 		}
 		else if ( sMapType == "iso" )
 		{
-			m_eMapType = SCION_CORE::EMapType::IsoGrid;
+			m_eMapType = Scion::Core::EMapType::IsoGrid;
 		}
 	}
 
@@ -540,7 +540,7 @@ SceneExportFiles SceneObject::ExportSceneToLua( const std::string& sSceneName, c
 	}
 
 	// Export Scene Data
-	std::unique_ptr<SCION_FILESYSTEM::LuaSerializer> pSerializer{ nullptr };
+	std::unique_ptr<Scion::Filesystem::LuaSerializer> pSerializer{ nullptr };
 
 	fs::path sceneDataPath{ exportPath };
 	sceneDataPath /= sSceneName + "_data.lua";
@@ -580,7 +580,7 @@ bool SceneObject::CheckTagName( const std::string& sTagName )
 	return m_mapTagToEntity.contains( sTagName );
 }
 
-void SceneObject::OnEntityNameChanges( SCION_EDITOR::Events::NameChangeEvent& nameChange )
+void SceneObject::OnEntityNameChanges( Scion::Editor::Events::NameChangeEvent& nameChange )
 {
 	if ( nameChange.sNewName.empty() || nameChange.sOldName.empty() || !nameChange.pEntity )
 		return;
@@ -600,11 +600,11 @@ void SceneObject::OnEntityNameChanges( SCION_EDITOR::Events::NameChangeEvent& na
 	if ( nameChange.pEntity->GetEntity() != objItr->second )
 		return;
 
-	if ( !SCION_UTIL::KeyChange( m_mapTagToEntity, nameChange.sOldName, nameChange.sNewName ) )
+	if ( !Scion::Utilities::KeyChange( m_mapTagToEntity, nameChange.sOldName, nameChange.sNewName ) )
 	{
 		SCION_ERROR( "Failed to change entity name." );
 		return;
 	}
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

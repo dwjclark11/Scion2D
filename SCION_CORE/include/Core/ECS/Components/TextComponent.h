@@ -2,7 +2,7 @@
 #include <sol/sol.hpp>
 #include <Rendering/Essentials/Vertex.h>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 struct TextComponent
 {
@@ -19,7 +19,7 @@ struct TextComponent
 	/* The height of the containing text box. */
 	float textBoxHeight{ -1.f };
 	/* Color of the text. Defaults to white. */
-	SCION_RENDERING::Color color{ 255, 255, 255, 255 };
+	Scion::Rendering::Color color{ 255, 255, 255, 255 };
 	/* Should the text be drawn or hidden? */
 	bool bHidden{ false };
 	/* Text Component has been changed, sizes need to be updated. */
@@ -29,4 +29,4 @@ struct TextComponent
 
 	static void CreateLuaTextBindings( sol::state& lua );
 };
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

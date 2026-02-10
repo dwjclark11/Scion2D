@@ -4,9 +4,9 @@
 #include "Logger/Logger.h"
 #include <SDL_mixer.h>
 
-using namespace SCION_RENDERING;
+using namespace Scion::Rendering;
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 void ProjectInfo::SetProjectPath( const fs::path& path )
 {
@@ -166,4 +166,4 @@ void AudioConfigInfo::RemoveChannels( int numChannels )
 	}
 }
 
-} // namespace SCION_CORE
+} // namespace Scion::Core

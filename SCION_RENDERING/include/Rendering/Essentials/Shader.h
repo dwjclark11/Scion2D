@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class Shader
 {
@@ -44,4 +44,4 @@ class Shader
 
 	std::unordered_map<std::string, GLuint> m_UniformLocationMap;
 };
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

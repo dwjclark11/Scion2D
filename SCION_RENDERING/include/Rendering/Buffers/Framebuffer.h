@@ -4,7 +4,7 @@
 
 #include "Rendering/Essentials/Texture.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 class Framebuffer
@@ -40,4 +40,4 @@ class Framebuffer
 	bool m_bUseRbo;
 };
 
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

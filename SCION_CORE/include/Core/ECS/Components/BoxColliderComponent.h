@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <sol/sol.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 struct BoxColliderComponent
 {
@@ -19,4 +19,4 @@ struct BoxColliderComponent
 
 	static void CreateLuaBoxColliderBind( sol::state& lua );
 };
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

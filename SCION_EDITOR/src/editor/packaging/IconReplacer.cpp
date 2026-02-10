@@ -1,4 +1,4 @@
-#include "IconReplacer.h"
+#include "editor/packaging/IconReplacer.h"
 #include "Logger/Logger.h"
 
 #ifdef _WIN32
@@ -75,7 +75,7 @@ struct GRPICONDIRENTRY
 // TODO: add any linux includes as necessary.
 #endif
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 
 class IconReplacer::Impl
@@ -207,4 +207,4 @@ bool IconReplacer::Impl::ReplaceIcon_Linux()
 }
 #endif
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

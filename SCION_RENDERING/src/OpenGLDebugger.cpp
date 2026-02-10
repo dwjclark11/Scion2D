@@ -12,7 +12,7 @@
 #include <GL/glx.h>
 #endif
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 struct Setting
 {
@@ -261,7 +261,7 @@ void glDebugCallback( GLenum p_source, GLenum p_type, unsigned int p_id, GLenum 
 	switch ( p_severity )
 	{
 	case GL_DEBUG_SEVERITY_HIGH:
-		SCION_LOGGER::Logger::GetInstance().Error( ss.str() );
+		Scion::Logger::Logger::GetInstance().Error( ss.str() );
 if(s_settings.breakOnError)
 {
 			#ifdef _WIN32
@@ -273,7 +273,7 @@ if(s_settings.breakOnError)
 		break;
 	case GL_DEBUG_SEVERITY_MEDIUM:
 	case GL_DEBUG_SEVERITY_LOW:
-		SCION_LOGGER::Logger::GetInstance().Warn( ss.str() );
+		Scion::Logger::Logger::GetInstance().Warn( ss.str() );
 
 if(s_settings.breakOnWarning)
 {
@@ -285,11 +285,11 @@ if(s_settings.breakOnWarning)
 }
 		break;
 	case GL_DEBUG_SEVERITY_NOTIFICATION:
-		SCION_LOGGER::Logger::GetInstance().Log( ss.str() );
+		Scion::Logger::Logger::GetInstance().Log( ss.str() );
 		break;
 	default:
 		break;
 	}
 	// clang-format on
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

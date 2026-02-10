@@ -4,10 +4,10 @@
 
 struct lua_State;
 
-#define SCION_CRASH_LOGGER() SCION_LOGGER::CrashLogger::GetInstance()
+#define SCION_CRASH_LOGGER() Scion::Logger::CrashLogger::GetInstance()
 #define SCION_INIT_CRASH_LOGS() SCION_CRASH_LOGGER().Initialize()
 
-namespace SCION_LOGGER
+namespace Scion::Logger
 {
 class CrashLogger
 {
@@ -140,4 +140,4 @@ class CrashLogger
 	/* Stores the line number where the crash occurred. */
 	static inline int CrashLine{ -1 };
 };
-} // namespace SCION_LOGGER
+} // namespace Scion::Logger

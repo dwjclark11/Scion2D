@@ -1,12 +1,12 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_PHYSICS
+namespace Scion::Physics
 {
 struct UserData;
 }
 
-namespace SCION_CORE::Scripting
+namespace Scion::Core::Scripting
 {
 
 struct UserDataBinder
@@ -21,10 +21,10 @@ template <typename DATA>
 auto create_user_data( const sol::table& data, sol::this_state s );
 
 template <typename DATA>
-auto set_user_data( SCION_PHYSICS::UserData* pUserData, const sol::table& data, sol::this_state s );
+auto set_user_data( Scion::Physics::UserData* pUserData, const sol::table& data, sol::this_state s );
 
 template <typename DATA>
-auto get_user_data( SCION_PHYSICS::UserData& userData, sol::this_state s );
+auto get_user_data( Scion::Physics::UserData& userData, sol::this_state s );
 
-} // namespace SCION_CORE::Scripting
+} // namespace Scion::Core::Scripting
 #include "UserDataBindings.inl"

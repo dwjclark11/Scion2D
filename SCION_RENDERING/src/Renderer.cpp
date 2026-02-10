@@ -2,7 +2,7 @@
 #include "Rendering/Essentials/Shader.h"
 #include "Rendering/Core/Camera2D.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 Renderer::Renderer()
@@ -202,4 +202,4 @@ void Renderer::ClearPrimitives()
 	m_Circles.clear();
 	m_Text.clear();
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

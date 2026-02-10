@@ -3,18 +3,18 @@
 #include <rapidjson/document.h>
 #include <sol/sol.hpp>
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 class JSONSerializer;
 class LuaSerializer;
 }
 
 #define SERIALIZE_COMPONENT( serializer, component )                                                                   \
-	SCION_CORE::ECS::ComponentSerializer::Serialize( serializer, component )
+	Scion::Core::ECS::ComponentSerializer::Serialize( serializer, component )
 
-#define DESERIALIZE_COMPONENT( table, compref ) SCION_CORE::ECS::ComponentSerializer::Deserialize( table, compref )
+#define DESERIALIZE_COMPONENT( table, compref ) Scion::Core::ECS::ComponentSerializer::Deserialize( table, compref )
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 class ComponentSerializer
 {
@@ -29,18 +29,18 @@ class ComponentSerializer
 
   private:
 	// JSON serializer
-	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const TransformComponent& transform );
-	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const SpriteComponent& sprite );
-	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const AnimationComponent& animation );
-	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer,
+	static void SerializeComponent( Scion::Filesystem::JSONSerializer& serializer, const TransformComponent& transform );
+	static void SerializeComponent( Scion::Filesystem::JSONSerializer& serializer, const SpriteComponent& sprite );
+	static void SerializeComponent( Scion::Filesystem::JSONSerializer& serializer, const AnimationComponent& animation );
+	static void SerializeComponent( Scion::Filesystem::JSONSerializer& serializer,
 									const BoxColliderComponent& boxCollider );
-	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer,
+	static void SerializeComponent( Scion::Filesystem::JSONSerializer& serializer,
 									const CircleColliderComponent& circleCollider );
-	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const TextComponent& text );
-	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const PhysicsComponent& physics );
-	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const RigidBodyComponent& rigidBody );
-	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const Identification& id);
-	static void SerializeComponent( SCION_FILESYSTEM::JSONSerializer& serializer, const UIComponent& id);
+	static void SerializeComponent( Scion::Filesystem::JSONSerializer& serializer, const TextComponent& text );
+	static void SerializeComponent( Scion::Filesystem::JSONSerializer& serializer, const PhysicsComponent& physics );
+	static void SerializeComponent( Scion::Filesystem::JSONSerializer& serializer, const RigidBodyComponent& rigidBody );
+	static void SerializeComponent( Scion::Filesystem::JSONSerializer& serializer, const Identification& id);
+	static void SerializeComponent( Scion::Filesystem::JSONSerializer& serializer, const UIComponent& id);
 
 	static void DeserializeComponent( const rapidjson::Value& jsonValue, TransformComponent& transform );
 	static void DeserializeComponent( const rapidjson::Value& jsonValue, SpriteComponent& sprite );
@@ -54,18 +54,18 @@ class ComponentSerializer
 	static void DeserializeComponent( const rapidjson::Value& jsonValue, UIComponent& id);
 
 	// LUA serializer
-	static void SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const TransformComponent& transform );
-	static void SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const SpriteComponent& sprite );
-	static void SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const AnimationComponent& animation );
-	static void SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
+	static void SerializeComponent( Scion::Filesystem::LuaSerializer& serializer, const TransformComponent& transform );
+	static void SerializeComponent( Scion::Filesystem::LuaSerializer& serializer, const SpriteComponent& sprite );
+	static void SerializeComponent( Scion::Filesystem::LuaSerializer& serializer, const AnimationComponent& animation );
+	static void SerializeComponent( Scion::Filesystem::LuaSerializer& serializer,
 									const BoxColliderComponent& boxCollider );
-	static void SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer,
+	static void SerializeComponent( Scion::Filesystem::LuaSerializer& serializer,
 									const CircleColliderComponent& circleCollider );
-	static void SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const TextComponent& text );
-	static void SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const PhysicsComponent& physics );
-	static void SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const RigidBodyComponent& rigidBody );
-	static void SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const Identification& id );
-	static void SerializeComponent( SCION_FILESYSTEM::LuaSerializer& serializer, const UIComponent& ui );
+	static void SerializeComponent( Scion::Filesystem::LuaSerializer& serializer, const TextComponent& text );
+	static void SerializeComponent( Scion::Filesystem::LuaSerializer& serializer, const PhysicsComponent& physics );
+	static void SerializeComponent( Scion::Filesystem::LuaSerializer& serializer, const RigidBodyComponent& rigidBody );
+	static void SerializeComponent( Scion::Filesystem::LuaSerializer& serializer, const Identification& id );
+	static void SerializeComponent( Scion::Filesystem::LuaSerializer& serializer, const UIComponent& ui );
 
 	static void DeserializeComponent( const sol::table& table, TransformComponent& transform );
 	static void DeserializeComponent( const sol::table& table, SpriteComponent& sprite );
@@ -79,6 +79,6 @@ class ComponentSerializer
 	static void DeserializeComponent( const sol::table& table, UIComponent& ui );
 };
 
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS
 
 #include "ComponentSerializer.inl"

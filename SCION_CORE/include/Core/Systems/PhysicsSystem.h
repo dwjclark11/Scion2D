@@ -1,11 +1,11 @@
 #pragma once
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 class Registry;
 }
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 class PhysicsSystem
 {
@@ -13,6 +13,6 @@ class PhysicsSystem
 	PhysicsSystem();
 	~PhysicsSystem() = default;
 
-	void Update( SCION_CORE::ECS::Registry& registry );
+	void Update( Scion::Core::ECS::Registry& registry );
 };
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

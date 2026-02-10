@@ -1,7 +1,7 @@
-#include "Packager.h"
-#include "ScriptCompiler.h"
-#include "IconReplacer.h"
-#include "AssetPackager.h"
+#include "editor/packaging/Packager.h"
+#include "editor/packaging/ScriptCompiler.h"
+#include "editor/packaging/IconReplacer.h"
+#include "editor/packaging/AssetPackager.h"
 
 #include "editor/scene/SceneObject.h"
 #include "ScionFilesystem/Serializers/LuaSerializer.h"
@@ -14,8 +14,8 @@
 
 namespace fs = std::filesystem;
 using namespace std::chrono_literals;
-using namespace SCION_FILESYSTEM;
-using namespace SCION_CORE;
+using namespace Scion::Filesystem;
+using namespace Scion::Core;
 
 // clang-format off
 #ifdef _DEBUG
@@ -24,7 +24,7 @@ constexpr std::array<std::string_view, 16> CopyPackageFiles = {
 	"lua.dll",
 	"ogg.dll",
 	"SCION_CRASH_REPORTER.exe",
-	"SCION_ENGINE.exe",
+	"Scion::Engine.exe",
 	"SDL2_imaged.dll",
 	"SDL2_mixerd.dll",
 	"SDL2d.dll",
@@ -43,7 +43,7 @@ constexpr std::array<std::string_view, 16> CopyPackageFiles = {
 	"lua.dll",
 	"ogg.dll",
 	"SCION_CRASH_REPORTER.exe",
-	"SCION_ENGINE.exe",
+	"Scion::Engine.exe",
 	"SDL2_image.dll",
 	"SDL2_mixer.dll",
 	"SDL2.dll",
@@ -60,9 +60,9 @@ constexpr std::array<std::string_view, 16> CopyPackageFiles = {
 
 // clang-format on
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
-Packager::Packager( std::unique_ptr<PackageData> pData, std::shared_ptr<SCION_UTIL::ThreadPool> pThreadPool )
+Packager::Packager( std::unique_ptr<PackageData> pData, std::shared_ptr<Scion::Utilities::ThreadPool> pThreadPool )
 	: m_pPackageData{ std::move( pData ) }
 	, m_bPackaging{ false }
 	, m_bHasError{ false }
@@ -658,7 +658,7 @@ std::vector<std::string> Packager::CreateSceneFiles( const std::string& sTempFil
 		std::string sSceneName{ jsonScene[ "name" ].GetString() };
 		std::string sSceneDataPath{ jsonScene[ "sceneData" ].GetString() };
 		fs::path sceneDataPath = *optContentPath / sSceneDataPath;
-		SCION_CORE::ECS::Registry registry;
+		Scion::Core::ECS::Registry registry;
 		auto pSceneObject = std::make_unique<SceneObject>( sSceneName, sceneDataPath.string() );
 		auto sceneExportFiles =
 			pSceneObject->ExportSceneToLua( sSceneName, m_pPackageData->sTempDataPath, registry );
@@ -749,10 +749,10 @@ void Packager::CopyFilesToDestination()
 			}
 		}
 
-		// Replace the SCION_ENGINE.exe name with the game name and change the icon if available.
+		// Replace the Scion::Engine.exe name with the game name and change the icon if available.
 		for ( const auto& entry : fs::directory_iterator( destination ) )
 		{
-			if ( entry.path().filename().string() == "SCION_ENGINE.exe" )
+			if ( entry.path().filename().string() == "Scion::Engine.exe" )
 			{
 				if ( auto optFileIconPath = m_pPackageData->pProjectInfo->GetFileIconPath() )
 				{
@@ -838,4 +838,4 @@ void Packager::CopyAssetsToDestination()
 	}
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

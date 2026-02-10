@@ -2,12 +2,12 @@
 
 namespace fs = std::filesystem;
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class Texture;
 }
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 
 // clang-format off
@@ -167,7 +167,7 @@ class ProjectInfo
 	 * @brief Gets the pointer to the loaded icon texture, if available.
 	 * @return Raw pointer to the texture object.
 	 */
-	inline const SCION_RENDERING::Texture* GetIconTexturePtr() const { return m_pIconTexture.get(); }
+	inline const Scion::Rendering::Texture* GetIconTexturePtr() const { return m_pIconTexture.get(); }
 
 	/** @brief Sets the project name. */
 	inline void SetProjectName( const std::string& sProjectName ) { m_sProjectName = sProjectName; }
@@ -225,7 +225,7 @@ class ProjectInfo
 	/** @brief Copyright or license notice. */
 	std::string m_sCopyRightNotice{};
 	/** @brief Shared texture pointer for the icon. */
-	std::shared_ptr<SCION_RENDERING::Texture> m_pIconTexture{ nullptr };
+	std::shared_ptr<Scion::Rendering::Texture> m_pIconTexture{ nullptr };
 
 	AudioConfigInfo m_AudioConfig{};
 
@@ -289,4 +289,4 @@ struct GameConfig
 	}
 };
 
-} // namespace SCION_CORE
+} // namespace Scion::Core

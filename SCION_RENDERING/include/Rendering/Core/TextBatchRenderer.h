@@ -2,7 +2,7 @@
 #include "Batcher.h"
 #include "Rendering/Essentials/BatchTypes.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 class TextBatchRenderer : public Batcher<TextBatch, TextGlyph>
 {
@@ -21,4 +21,4 @@ class TextBatchRenderer : public Batcher<TextBatch, TextGlyph>
 	void Initialize();
 	virtual void GenerateBatches() override;
 };
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering

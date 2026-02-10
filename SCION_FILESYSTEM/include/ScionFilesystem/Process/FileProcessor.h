@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-namespace SCION_FILESYSTEM
+namespace Scion::Filesystem
 {
 class FileProcessor
 {
@@ -21,4 +21,4 @@ class FileProcessor
 	}
 
 };
-} // namespace SCION_FILESYSTEM
+} // namespace Scion::Filesystem

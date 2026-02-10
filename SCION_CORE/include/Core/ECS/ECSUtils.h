@@ -1,10 +1,10 @@
 #pragma once
 #include <entt/entt.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 class Registry;
 
 entt::entity FindEntityByTag( Registry& registry, const std::string& sTag );
 
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

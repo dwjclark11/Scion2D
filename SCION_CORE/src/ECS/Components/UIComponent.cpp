@@ -1,7 +1,7 @@
 #include "Core/ECS/Components/UIComponent.h"
 #include <entt/entt.hpp>
 
-namespace SCION_CORE::ECS
+namespace Scion::Core::ECS
 {
 void UIComponent::CreateLuaBind( sol::state& lua )
 {
@@ -23,4 +23,4 @@ void UIComponent::CreateLuaBind( sol::state& lua )
 								   "type",
 								   &UIComponent::eType );
 }
-} // namespace SCION_CORE::ECS
+} // namespace Scion::Core::ECS

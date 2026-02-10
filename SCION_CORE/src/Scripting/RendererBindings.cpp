@@ -7,10 +7,10 @@
 #include "Core/ECS/Registry.h"
 #include <Logger/Logger.h>
 
-using namespace SCION_RENDERING;
+using namespace Scion::Rendering;
 using namespace SCION_RESOURCES;
 
-void SCION_CORE::Scripting::RendererBinder::CreateRenderingBind( sol::state& lua, SCION_CORE::ECS::Registry& registry )
+void Scion::Core::Scripting::RendererBinder::CreateRenderingBind( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
 	// Get the Asset Manager
 	auto& mainRegistry = MAIN_REGISTRY();

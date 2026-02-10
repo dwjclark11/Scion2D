@@ -1,4 +1,4 @@
-#include "ScaleGizmo.h"
+#include "editor/tools/gizmos/ScaleGizmo.h"
 #include "editor/utilities/EditorUtilities.h"
 #include "Rendering/Core/BatchRenderer.h"
 #include "Rendering/Core/Camera2D.h"
@@ -14,12 +14,12 @@
 
 #include "Logger/Logger.h"
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
 // TODO: Add a scaling factor to the editor for all gizmos.
 constexpr float SCALING_FACTOR = 0.1f;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
 ScaleGizmo::ScaleGizmo()
 	: Gizmo()
@@ -27,7 +27,7 @@ ScaleGizmo::ScaleGizmo()
 	Init( "S2D_x_axis_scale", "S2D_y_axis_scale" );
 }
 
-void ScaleGizmo::Update( SCION_CORE::Canvas& canvas )
+void ScaleGizmo::Update( Scion::Core::Canvas& canvas )
 {
 	Gizmo::Update( canvas );
 
@@ -56,7 +56,7 @@ void ScaleGizmo::Update( SCION_CORE::Canvas& canvas )
 	ExamineMousePosition();
 }
 
-void ScaleGizmo::Draw( SCION_RENDERING::Camera2D* pCamera )
+void ScaleGizmo::Draw( Scion::Rendering::Camera2D* pCamera )
 {
 	if ( m_bHidden )
 		return;
@@ -126,4 +126,4 @@ void ScaleGizmo::Draw( SCION_RENDERING::Camera2D* pCamera )
 	pShader->Disable();
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

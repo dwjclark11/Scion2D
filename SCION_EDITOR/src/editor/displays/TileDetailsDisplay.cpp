@@ -1,4 +1,4 @@
-#include "TileDetailsDisplay.h"
+#include "editor/displays/TileDetailsDisplay.h"
 
 #include "editor/utilities/imgui/ImGuiUtils.h"
 #include "editor/utilities/DrawComponentUtils.h"
@@ -20,11 +20,11 @@
 
 #include <imgui.h>
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-namespace SCION_EDITOR
+namespace Scion::Editor
 {
-void TileDetailsDisplay::DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& sprite, SCION_CORE::Scene* pScene )
+void TileDetailsDisplay::DrawSpriteComponent( Scion::Core::ECS::SpriteComponent& sprite, Scion::Core::Scene* pScene )
 {
 	bool bChanged{ false };
 
@@ -100,7 +100,7 @@ void TileDetailsDisplay::DrawSpriteComponent( SCION_CORE::ECS::SpriteComponent& 
 			if ( !pTexture )
 				return;
 
-			SCION_CORE::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
+			Scion::Core::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 		}
 	}
 }
@@ -372,4 +372,4 @@ void TileDetailsDisplay::Draw()
 	}
 }
 
-} // namespace SCION_EDITOR
+} // namespace Scion::Editor

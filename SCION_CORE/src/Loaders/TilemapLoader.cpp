@@ -8,14 +8,14 @@
 #include <rapidjson/error/en.h>
 #include <filesystem>
 
-using namespace SCION_FILESYSTEM;
-using namespace SCION_CORE::ECS;
+using namespace Scion::Filesystem;
+using namespace Scion::Core::ECS;
 
 namespace fs = std::filesystem;
 
-namespace SCION_CORE::Loaders
+namespace Scion::Core::Loaders
 {
-bool TilemapLoader::SaveTilemapJSON( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile )
+bool TilemapLoader::SaveTilemapJSON( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile )
 {
 	std::unique_ptr<JSONSerializer> pSerializer{ nullptr };
 
@@ -85,7 +85,7 @@ bool TilemapLoader::SaveTilemapJSON( SCION_CORE::ECS::Registry& registry, const 
 	return pSerializer->EndDocument();
 }
 
-bool TilemapLoader::LoadTilemapJSON( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile )
+bool TilemapLoader::LoadTilemapJSON( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile )
 {
 	std::ifstream mapFile;
 	mapFile.open( sTilemapFile );
@@ -178,7 +178,7 @@ bool TilemapLoader::LoadTilemapJSON( SCION_CORE::ECS::Registry& registry, const 
 	return true;
 }
 
-bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile )
+bool TilemapLoader::SaveObjectMapJSON( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile )
 {
 	std::unique_ptr<JSONSerializer> pSerializer{ nullptr };
 
@@ -314,7 +314,7 @@ bool TilemapLoader::SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 	return pSerializer->EndDocument();
 }
 
-bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile )
+bool TilemapLoader::LoadObjectMapJSON( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile )
 {
 	std::ifstream mapFile;
 	mapFile.open( sObjectMapFile );
@@ -490,7 +490,7 @@ bool TilemapLoader::LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, cons
 	return true;
 }
 
-bool TilemapLoader::SaveTilemapLua( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile )
+bool TilemapLoader::SaveTilemapLua( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile )
 {
 	std::unique_ptr<LuaSerializer> pSerializer{ nullptr };
 
@@ -562,7 +562,7 @@ bool TilemapLoader::SaveTilemapLua( SCION_CORE::ECS::Registry& registry, const s
 	return pSerializer->FinishStream();
 }
 
-bool TilemapLoader::LoadTilemapLua( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile )
+bool TilemapLoader::LoadTilemapLua( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile )
 {
 	sol::state lua;
 	try
@@ -637,7 +637,7 @@ bool TilemapLoader::LoadTilemapLua( SCION_CORE::ECS::Registry& registry, const s
 	return true;
 }
 
-bool TilemapLoader::SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile )
+bool TilemapLoader::SaveObjectMapLua( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile )
 {
 	std::unique_ptr<LuaSerializer> pSerializer{ nullptr };
 
@@ -773,7 +773,7 @@ bool TilemapLoader::SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 	return pSerializer->FinishStream();
 }
 
-bool TilemapLoader::LoadObjectMapLua( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile )
+bool TilemapLoader::LoadObjectMapLua( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile )
 {
 	sol::state lua;
 	try
@@ -924,29 +924,29 @@ bool TilemapLoader::LoadObjectMapLua( SCION_CORE::ECS::Registry& registry, const
 	return true;
 }
 
-bool TilemapLoader::SaveTilemap( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON )
+bool TilemapLoader::SaveTilemap( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON )
 {
 	return bUseJSON ? SaveTilemapJSON( registry, sTilemapFile ) : SaveTilemapLua( registry, sTilemapFile );
 }
 
-bool TilemapLoader::LoadTilemap( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON )
+bool TilemapLoader::LoadTilemap( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON )
 {
 	return bUseJSON ? LoadTilemapJSON( registry, sTilemapFile ) : LoadTilemapLua( registry, sTilemapFile );
 }
 
-bool TilemapLoader::LoadGameObjects( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile,
+bool TilemapLoader::LoadGameObjects( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile,
 									 bool bUseJSON )
 {
 	return bUseJSON ? LoadObjectMapJSON( registry, sObjectMapFile ) : LoadObjectMapLua( registry, sObjectMapFile );
 }
 
-bool TilemapLoader::SaveGameObjects( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile,
+bool TilemapLoader::SaveGameObjects( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile,
 									 bool bUseJSON )
 {
 	return bUseJSON ? SaveObjectMapJSON( registry, sObjectMapFile ) : SaveObjectMapLua( registry, sObjectMapFile );
 }
 
-bool TilemapLoader::LoadTilemapFromLuaTable( SCION_CORE::ECS::Registry& registry, const sol::table& sTilemapTable )
+bool TilemapLoader::LoadTilemapFromLuaTable( Scion::Core::ECS::Registry& registry, const sol::table& sTilemapTable )
 {
 	if ( !sTilemapTable.valid() || sTilemapTable.get_type() != sol::type::table )
 	{
@@ -1016,7 +1016,7 @@ bool TilemapLoader::LoadTilemapFromLuaTable( SCION_CORE::ECS::Registry& registry
 	return true;
 }
 
-bool TilemapLoader::LoadGameObjectsFromLuaTable( SCION_CORE::ECS::Registry& registry, const sol::table& sObjectTable )
+bool TilemapLoader::LoadGameObjectsFromLuaTable( Scion::Core::ECS::Registry& registry, const sol::table& sObjectTable )
 {
 	if ( !sObjectTable.valid() || sObjectTable.get_type() != sol::type::table )
 	{
@@ -1110,4 +1110,4 @@ bool TilemapLoader::LoadGameObjectsFromLuaTable( SCION_CORE::ECS::Registry& regi
 }
 
 
-} // namespace SCION_CORE::Loaders
+} // namespace Scion::Core::Loaders

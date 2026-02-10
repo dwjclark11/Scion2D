@@ -1,15 +1,15 @@
 #pragma once
 #include <sol/sol.hpp>
 
-namespace SCION_CORE
+namespace Scion::Core
 {
 namespace ECS
 {
 class Registry;
 }
-} // namespace SCION_CORE
+} // namespace Scion::Core
 
-namespace SCION_CORE::Loaders
+namespace Scion::Core::Loaders
 {
 
 class TilemapLoader
@@ -28,7 +28,7 @@ class TilemapLoader
 	 * @param bUseJSON        Flag indicating whether to use JSON format.
 	 * @return true if the tilemap was saved successfully, false otherwise.
 	 */
-	bool SaveTilemap( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON = false );
+	bool SaveTilemap( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON = false );
 
 	/**
 	 * @brief Loads tilemap data using the specified serialization format.
@@ -40,7 +40,7 @@ class TilemapLoader
 	 * @param bUseJSON        Flag indicating whether to use JSON format.
 	 * @return true if the tilemap was loaded successfully, false otherwise.
 	 */
-	bool LoadTilemap( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON = false );
+	bool LoadTilemap( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile, bool bUseJSON = false );
 
 	/**
 	 * @brief Loads game object data using the specified serialization format.
@@ -52,7 +52,7 @@ class TilemapLoader
 	 * @param bUseJSON          Flag indicating whether to use JSON format.
 	 * @return true if the game objects were loaded successfully, false otherwise.
 	 */
-	bool LoadGameObjects( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile,
+	bool LoadGameObjects( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile,
 						  bool bUseJSON = false );
 
 	/**
@@ -65,11 +65,11 @@ class TilemapLoader
 	 * @param bUseJSON          Flag indicating whether to use JSON format.
 	 * @return true if the game objects were saved successfully, false otherwise.
 	 */
-	bool SaveGameObjects( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile,
+	bool SaveGameObjects( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile,
 						  bool bUseJSON = false );
 
-	bool LoadTilemapFromLuaTable( SCION_CORE::ECS::Registry& registry, const sol::table& sTilemapTable );
-	bool LoadGameObjectsFromLuaTable( SCION_CORE::ECS::Registry& registry, const sol::table& sObjectTable );
+	bool LoadTilemapFromLuaTable( Scion::Core::ECS::Registry& registry, const sol::table& sTilemapTable );
+	bool LoadGameObjectsFromLuaTable( Scion::Core::ECS::Registry& registry, const sol::table& sObjectTable );
 
   private:
 	/**
@@ -82,7 +82,7 @@ class TilemapLoader
 	 * @param sTilemapFile    The destination JSON file path to save the tilemap data.
 	 * @return true if the tilemap was saved successfully, false otherwise.
 	 */
-	bool SaveTilemapJSON( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile );
+	bool SaveTilemapJSON( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile );
 
 	/**
 	 * @brief Deserializes tile entities from a JSON tilemap file into the ECS registry.
@@ -94,7 +94,7 @@ class TilemapLoader
 	 * @param sTilemapFile    The source JSON file path containing the tilemap data.
 	 * @return true if the tilemap was loaded successfully, false otherwise.
 	 */
-	bool LoadTilemapJSON( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile );
+	bool LoadTilemapJSON( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile );
 
 	/**
 	 * @brief Serializes all non-tile, non-uneditable game objects from the ECS registry to a JSON file.
@@ -106,7 +106,7 @@ class TilemapLoader
 	 * @param sObjectMapFile    The destination JSON file path to save the game objects.
 	 * @return true if the game objects were saved successfully, false otherwise.
 	 */
-	bool SaveObjectMapJSON( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile );
+	bool SaveObjectMapJSON( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile );
 
 	/**
 	 * @brief Deserializes game objects from a JSON file into the ECS registry, including hierarchy.
@@ -118,14 +118,14 @@ class TilemapLoader
 	 * @param sObjectMapFile    The source JSON file path containing the game object data.
 	 * @return true if game objects were loaded successfully, false otherwise.
 	 */
-	bool LoadObjectMapJSON( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile );
+	bool LoadObjectMapJSON( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile );
 
 	// Save and load functions for lua serializer
-	bool SaveTilemapLua( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile );
-	bool LoadTilemapLua( SCION_CORE::ECS::Registry& registry, const std::string& sTilemapFile );
+	bool SaveTilemapLua( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile );
+	bool LoadTilemapLua( Scion::Core::ECS::Registry& registry, const std::string& sTilemapFile );
 
-	bool SaveObjectMapLua( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile );
-	bool LoadObjectMapLua( SCION_CORE::ECS::Registry& registry, const std::string& sObjectMapFile );
+	bool SaveObjectMapLua( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile );
+	bool LoadObjectMapLua( Scion::Core::ECS::Registry& registry, const std::string& sObjectMapFile );
 };
 
 /*
@@ -141,4 +141,4 @@ struct SaveRelationship
 	std::string sFirstChild{};
 };
 
-} // namespace SCION_CORE::Loaders
+} // namespace Scion::Core::Loaders

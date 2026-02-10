@@ -7,16 +7,16 @@
 #include "Core/CoreUtilities/CoreEngineData.h"
 #include <Logger/Logger.h>
 
-using namespace SCION_CORE::ECS;
+using namespace Scion::Core::ECS;
 
-namespace SCION_CORE::Systems
+namespace Scion::Core::Systems
 {
 
 PhysicsSystem::PhysicsSystem()
 {
 }
 
-void PhysicsSystem::Update( SCION_CORE::ECS::Registry& registry )
+void PhysicsSystem::Update( Scion::Core::ECS::Registry& registry )
 {
 	auto boxView = registry.GetRegistry().view<PhysicsComponent, TransformComponent, BoxColliderComponent>();
 	auto& coreEngine = CoreEngineData::GetInstance();
@@ -81,4 +81,4 @@ void PhysicsSystem::Update( SCION_CORE::ECS::Registry& registry )
 			transform.rotation = glm::degrees( pRigidBody->GetAngle() );
 	}
 }
-} // namespace SCION_CORE::Systems
+} // namespace Scion::Core::Systems

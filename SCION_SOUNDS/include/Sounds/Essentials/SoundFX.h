@@ -2,7 +2,7 @@
 #include "SoundParams.h"
 #include <ScionUtilities/SDL_Wrappers.h>
 
-namespace SCION_SOUNDS
+namespace Scion::Sounds
 {
 class SoundFX
 {
@@ -25,4 +25,4 @@ class SoundFX
 	SoundParams m_Params;
 	SoundFxPtr m_pSoundFx;
 };
-} // namespace SCION_SOUNDS
+} // namespace Scion::Sounds

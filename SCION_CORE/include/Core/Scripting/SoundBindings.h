@@ -1,14 +1,14 @@
 #pragma once
 #include <sol/sol.hpp>
-namespace SCION_CORE
+namespace Scion::Core
 {
 namespace ECS
 {
 class Registry;
 }
-} // namespace SCION_CORE
+} // namespace Scion::Core
 
-namespace SCION_CORE::Scripting
+namespace Scion::Core::Scripting
 {
 /*
  * @brief Binds the MusicPlayer and the SoundPlayer to Lua using Sol2.
@@ -17,4 +17,4 @@ struct SoundBinder
 {
 	static void CreateSoundBind( sol::state& lua );
 };
-} // namespace SCION_CORE::Scripting
+} // namespace Scion::Core::Scripting

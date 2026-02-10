@@ -1,7 +1,7 @@
 #include "Rendering/Core/CircleBatchRenderer.h"
 #include "Rendering/Essentials/Primitives.h"
 
-namespace SCION_RENDERING
+namespace Scion::Rendering
 {
 
 void CircleBatchRenderer::GenerateBatches()
@@ -160,4 +160,4 @@ void CircleBatchRenderer::Render()
 
 	DisableVAO();
 }
-} // namespace SCION_RENDERING
+} // namespace Scion::Rendering
