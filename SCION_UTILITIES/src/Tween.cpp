@@ -122,7 +122,7 @@ constexpr auto ElasticIn =
 	float a = change;
 	float s = p / 4.f;
 
-	return -(a * powf(2.f, -10 * (current-=1)) * sin((current * duration - s) * SCION_MATH::TwoPI / p)) + start;
+	return -(a * powf(2.f, -10 * (current-=1.f)) * sinf((current * duration - s) * SCION_MATH::TwoPI / p)) + start;
 };
 
 // Elastic easing: [OUT] - Oscillates around the end position.
@@ -138,7 +138,7 @@ constexpr auto ElasticOut =
 	float a = change;
 	float s = p / 4.f;
 
-	return -(a * powf(2.f, -10 * current) * sin((current * duration - s) * SCION_MATH::TwoPI / p)) + change + start;
+	return -(a * powf(2.f, -10.f * current) * sinf((current * duration - s) * SCION_MATH::TwoPI / p)) + change + start;
 };
 
 // Elastic easing: [IN-OUT] - Oscillates around the end position.
@@ -155,9 +155,9 @@ constexpr auto ElasticInOut =
 	float s = p / 4.f;
 
 	if (current < 1.f)
-		return -0.5f * (a * powf(2.f, -10 * (current-=1)) * sin((current * duration - s) * SCION_MATH::TwoPI / p)) + start;
+		return -0.5f * (a * powf(2.f, -10.f * (current-=1.f)) * sinf((current * duration - s) * SCION_MATH::TwoPI / p)) + start;
 
-	return (a * powf(2.f, -10 * (current -= 1.f)) * sin((current * duration - s) * SCION_MATH::TwoPI / p)) * 0.5f + change + start;
+	return (a * powf(2.f, -10.f * (current -= 1.f)) * sinf((current * duration - s) * SCION_MATH::TwoPI / p)) * 0.5f + change + start;
 };
 
 // Exponential easing: 2^t

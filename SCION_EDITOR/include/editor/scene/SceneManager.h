@@ -74,4 +74,4 @@ class EditorSceneManager : public Scion::Core::SceneManager
 				continue;                                                                                              \
 			pDispatcher->AddHandler<Event, Func>( Handler );                                                           \
 		}                                                                                                              \
-	}\
+	}

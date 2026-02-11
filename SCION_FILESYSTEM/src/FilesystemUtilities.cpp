@@ -6,7 +6,7 @@
 
 namespace Scion::Filesystem
 {
-std::string Scion::Filesystem::ExecCmdWithErrorOutput( const std::string& sCmd )
+std::string ExecCmdWithErrorOutput( const std::string& sCmd )
 {
 	std::array<char, 128> buffer;
 	std::string sResult{};
