@@ -155,8 +155,10 @@ Note for linux users: this is currently working only on nVidia GPUs.
 | -------- | ---------- | ------------------ |
 | Windows  | MSVC 2019+ | ✅ Fully Supported |
 | Windows  | MinGW/GCC  | 🔧 To be tested    |
-| Linux    | GCC 10+    | ✅ Partially Supported |
+| Linux    | GCC 10+    | ✅ Fully Supported |
 | Linux    | Clang 12+  | 🔧 To be tested    |
+
+* Linux GCC build has warnings but builds successfully.
 
 ## 📝 License
 

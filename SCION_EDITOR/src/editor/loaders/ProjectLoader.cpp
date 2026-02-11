@@ -150,7 +150,10 @@ bool ProjectLoader::LoadProject( const std::string& sFilepath )
 		fs::path fullPath{ projectPath / subDir };
 		if ( !fs::exists( fullPath, ec ) )
 		{
-			SCION_ERROR( "Failed to load project: Failed to setup project folders. [{}] - {}", ec.message() );
+			SCION_ERROR( "Failed to load project: Failed to setup project folders. [{}] - {}",
+				fullPath.string(), ec.message()
+			);
+
 			return false;
 		}
 
