@@ -12,6 +12,7 @@ namespace Scion::Editor
 	  public:
 		AssetDisplayUtils() = delete;
 		static std::vector<const char*> GetAssetFileFilters( Scion::Utilities::AssetType eAssetType );
+		static const char* GetAssetDescriptionByType( Scion::Utilities::AssetType eAssetType );
 		static std::string AddAssetBasedOnType( Scion::Utilities::AssetType eAssetType );
 		static void OpenAddAssetModalBasedOnType( Scion::Utilities::AssetType eAssetType, bool* pbOpen );
 	};

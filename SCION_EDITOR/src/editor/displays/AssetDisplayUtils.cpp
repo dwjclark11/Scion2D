@@ -20,6 +20,11 @@ namespace fs = std::filesystem;
 
 #define SOUNDFX_FILTERS std::vector<const char*>{ "*.mp3", "*.wav", "*.ogg" }
 
+constexpr const char* IMAGE_DESC = "Image Files (*.png, *.bmp, *.jpg)";
+constexpr const char* FONT_DESC = "Fonts (*.ttf)";
+constexpr const char* MUSIC_DESC = "Music Files (*.mp3, *.wav, *.ogg)";
+constexpr const char* SOUNDFX_DESC = "Soundfx Files (*.mp3, *.wav, *.ogg)";
+
 using namespace Scion::Filesystem;
 using namespace Scion::Editor;
 
@@ -172,7 +177,11 @@ class AssetModalCreator
 			{
 				FileDialog fd{};
 				sFilepath =
-					fd.OpenFileDialog( "Open", "", Scion::Editor::AssetDisplayUtils::GetAssetFileFilters( eAssetType ) );
+					fd.OpenFileDialog(
+						"Open", BASE_PATH, 
+						Scion::Editor::AssetDisplayUtils::GetAssetFileFilters( eAssetType ),
+						Scion::Editor::AssetDisplayUtils::GetAssetDescriptionByType( eAssetType )
+					);
 
 				if ( !sFilepath.empty() )
 				{
@@ -254,6 +263,20 @@ std::vector<const char*> AssetDisplayUtils::GetAssetFileFilters( Scion::Utilitie
 
 	return {};
 }
+
+const char* AssetDisplayUtils::GetAssetDescriptionByType( Scion::Utilities::AssetType eAssetType )
+{
+	switch ( eAssetType )
+	{
+	case Scion::Utilities::AssetType::TEXTURE: return IMAGE_DESC;
+	case Scion::Utilities::AssetType::FONT: return FONT_DESC;
+	case Scion::Utilities::AssetType::SOUNDFX: return SOUNDFX_DESC;
+	case Scion::Utilities::AssetType::MUSIC: return MUSIC_DESC;
+	}
+
+	return "Files";
+}
+
 std::string AssetDisplayUtils::AddAssetBasedOnType( Scion::Utilities::AssetType eAssetType )
 {
 	switch ( eAssetType )

@@ -66,10 +66,10 @@ void MenuDisplay::Draw()
 
 			ImGui::SeparatorText( "Scenes" );
 
-			if (auto pCurrentScene = sceneManager.GetCurrentScene())
+			if ( auto pCurrentScene = sceneManager.GetCurrentScene() )
 			{
 				ImGui::InlineLabel( ICON_FA_SAVE, 32.f );
-				if (ImGui::MenuItem("Save Current Scene As..."))
+				if ( ImGui::MenuItem( "Save Current Scene As..." ) )
 				{
 					// TODO: Save a copy of the scene and all of it's entities under a new name.
 				}
@@ -80,10 +80,12 @@ void MenuDisplay::Draw()
 			if ( ImGui::MenuItem( "Import Tiled Map" ) )
 			{
 				Scion::Filesystem::FileDialog fd{};
-				const auto sFilepath = fd.OpenFileDialog( "Import Tiled Map", BASE_PATH, { "*.lua", "*.tmx" } );
+				const auto sFilepath =
+					fd.OpenFileDialog( "Import Tiled Map", BASE_PATH, { "*.lua", "*.tmx" }, "Tiled Map Files (*.lua, *.tmx)" );
+
 				if ( !sFilepath.empty() )
 				{
-					if (!TiledMapImporter::ImportTilemapFromTiled(&SCENE_MANAGER(), sFilepath ) )
+					if ( !TiledMapImporter::ImportTilemapFromTiled( &SCENE_MANAGER(), sFilepath ) )
 					{
 						SCION_ERROR( "Failed to import tiled map as new scene." );
 					}

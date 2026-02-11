@@ -202,7 +202,7 @@ ProjectSettingsDisplay::SettingCategory ProjectSettingsDisplay::CreateGeneralSet
 						FileDialog fd{};
 
 						std::string sOpenIcoPath = fd.OpenFileDialog(
-							"Open Icon File", optContentPath->string(), { "*.ico" }, "Ico Files" );
+							"Open Icon File", optContentPath->string(), { "*.ico" }, "Ico Files (*.ico)" );
 
 						if ( !sOpenIcoPath.empty() )
 						{

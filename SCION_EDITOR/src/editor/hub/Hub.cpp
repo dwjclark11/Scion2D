@@ -255,7 +255,7 @@ void Hub::DrawOpenProject()
 	if ( ImGui::Button( "Browse" ) )
 	{
 		Scion::Filesystem::FileDialog fd{};
-		const auto sFilepath = fd.OpenFileDialog( "Open", "", { "*.s2dprj" } );
+		const auto sFilepath = fd.OpenFileDialog( "Open", BASE_PATH, { "*.s2dprj" }, "Scion2D Project (*.s2dproj)" );
 		if ( !sFilepath.empty() )
 		{
 #ifdef _WIN32
