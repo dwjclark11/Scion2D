@@ -24,7 +24,7 @@ constexpr std::array<std::string_view, 16> CopyPackageFiles = {
 	"lua.dll",
 	"ogg.dll",
 	"SCION_CRASH_REPORTER.exe",
-	"Scion::Engine.exe",
+	"SCION_ENGINE.exe",
 	"SDL2_imaged.dll",
 	"SDL2_mixerd.dll",
 	"SDL2d.dll",
@@ -43,7 +43,7 @@ constexpr std::array<std::string_view, 16> CopyPackageFiles = {
 	"lua.dll",
 	"ogg.dll",
 	"SCION_CRASH_REPORTER.exe",
-	"Scion::Engine.exe",
+	"SCION_ENGINE.exe",
 	"SDL2_image.dll",
 	"SDL2_mixer.dll",
 	"SDL2.dll",
@@ -749,10 +749,10 @@ void Packager::CopyFilesToDestination()
 			}
 		}
 
-		// Replace the Scion::Engine.exe name with the game name and change the icon if available.
+		// Replace the SCION_ENGINE.exe name with the game name and change the icon if available.
 		for ( const auto& entry : fs::directory_iterator( destination ) )
 		{
-			if ( entry.path().filename().string() == "Scion::Engine.exe" )
+			if ( entry.path().filename().string() == "SCION_ENGINE.exe" )
 			{
 				if ( auto optFileIconPath = m_pPackageData->pProjectInfo->GetFileIconPath() )
 				{
