@@ -12,6 +12,10 @@
 #include <GL/glx.h>
 #endif
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 namespace Scion::Rendering
 {
 struct Setting

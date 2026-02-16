@@ -4,20 +4,6 @@
 #include <iostream>
 #include <sstream>
 
-#ifdef _WIN32
-#include <Windows.h>
-constexpr WORD GREEN = 2;
-constexpr WORD RED = 4;
-constexpr WORD YELLOW = 6;
-constexpr WORD WHITE = 7;
-#else
-static const char* GREEN = "\033[0;32m";
-static const char* YELLOW = "\033[0;33m";
-static const char* RED = "\033[0;31m";
-static const char* WHITE = "\033[0;30m";
-static const char* CLOSE = "\022[0m";
-#endif
-
 namespace Scion::Logger
 {
 template <typename... Args>
@@ -37,14 +23,7 @@ void Logger::Log( const std::string_view message, Args&&... args )
 
 	if ( m_bConsoleLog )
 	{
-#ifdef _WIN32
-		HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );
-		SetConsoleTextAttribute( hConsole, GREEN );
-		std::cout << ss.str() << "\n";
-		SetConsoleTextAttribute( hConsole, WHITE );
-#else
-		std::cout << GREEN << ss.str() << CLOSE << "\n";
-#endif
+		WriteConsoleLog( ss.str(), LogEntry::LogType::INFO );
 	}
 
 	if ( m_bRetainLogs )
@@ -70,14 +49,7 @@ void Logger::Warn( const std::string_view message, Args&&... args )
 
 	if ( m_bConsoleLog )
 	{
-#ifdef _WIN32
-		HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );
-		SetConsoleTextAttribute( hConsole, YELLOW );
-		std::cout << ss.str() << "\n";
-		SetConsoleTextAttribute( hConsole, WHITE );
-#else
-		std::cout << YELLOW << ss.str() << CLOSE << "\n";
-#endif
+		WriteConsoleLog( ss.str(), LogEntry::LogType::WARN );
 	}
 
 	if ( m_bRetainLogs )
@@ -104,14 +76,7 @@ void Logger::Error( std::source_location location, const std::string_view messag
 
 	if ( m_bConsoleLog )
 	{
-#ifdef _WIN32
-		HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );
-		SetConsoleTextAttribute( hConsole, RED );
-		std::cout << ss.str();
-		SetConsoleTextAttribute( hConsole, WHITE );
-#else
-		std::cout << RED << ss.str() << CLOSE << "\n\n";
-#endif
+		WriteConsoleLog( ss.str(), LogEntry::LogType::ERR );
 	}
 
 	if ( m_bRetainLogs )
@@ -137,14 +102,7 @@ void Logger::Error( const std::string_view message, Args&&... args )
 
 	if ( m_bConsoleLog )
 	{
-#ifdef _WIN32
-		HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );
-		SetConsoleTextAttribute( hConsole, RED );
-		std::cout << ss.str();
-		SetConsoleTextAttribute( hConsole, WHITE );
-#else
-		std::cout << RED << ss.str() << CLOSE << "\n\n";
-#endif
+		WriteConsoleLog( ss.str(), LogEntry::LogType::ERR );
 	}
 
 	if ( m_bRetainLogs )

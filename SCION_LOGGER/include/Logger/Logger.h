@@ -84,6 +84,10 @@ class Logger
 	inline const std::vector<LogEntry>& GetLogs() { return m_LogEntries; }
 
   private:
+	std::string CurrentDateTime();
+	void WriteConsoleLog( std::string_view sv, LogEntry::LogType eType );
+
+  private:
 	std::mutex m_Mutex;
 	std::vector<LogEntry> m_LogEntries;
 	bool m_bInitialized{ false };
@@ -98,7 +102,6 @@ class Logger
 		LogTime( const std::string& date );
 	};
 
-	std::string CurrentDateTime();
 };
 } // namespace Scion::Logger
 
