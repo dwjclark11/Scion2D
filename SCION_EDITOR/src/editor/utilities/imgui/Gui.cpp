@@ -37,18 +37,20 @@ bool Gui::InitImGui( Scion::Windowing::Window* pWindow )
 
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
-	ImFont* pDefaultFont = io.Fonts->AddFontDefault();
-	ImGui::AddFont( "default", pDefaultFont, 13.f );
-
 	float baseFontSize = 16.0f;
-	float iconFontSize = baseFontSize * 2.0f / 3.0f;
+
+	// Load actual TTF as the default - explicit size, no ImplicitRefSize flag
+	ImFont* pDefaultFont = io.Fonts->AddFontFromMemoryTTF(
+		SCION_RESOURCES::CoreFonts::g_RobotoBoldFont, SCION_RESOURCES::CoreFonts::g_RobotoBoldFontSize, baseFontSize );
+
+	ImGui::AddFont( "default", pDefaultFont, baseFontSize );
 
 	// merge in icons from Font Awesome
 	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
 	ImFontConfig icons_config;
 	icons_config.MergeMode = true;
 	icons_config.PixelSnapH = true;
-	icons_config.GlyphMinAdvanceX = iconFontSize;
+	icons_config.GlyphMinAdvanceX = baseFontSize;
 	icons_config.GlyphOffset = ImVec2{ 0.f, 2.f };
 	io.Fonts->AddFontFromMemoryTTF(
 		EditorFonts::g_FaSolid900, EditorFonts::g_FaSolid900Size, baseFontSize, &icons_config, icons_ranges );
