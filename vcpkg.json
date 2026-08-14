@@ -1,0 +1,28 @@
+{
+	"name": "scion2d",
+	"version": "0.1.0",
+	"builtin-baseline": "cc73782a88db48af17f8bfb8328d4cab3d4c246f",
+	"dependencies": [
+		"lua",
+		"sol2",
+		"rapidjson",
+		"fmt",
+		"glad",
+		"soil2",
+		"sdl3",
+		"sdl3-image",
+		"entt",
+		"glm",
+		"tinyfiledialogs",
+		"libzippp",
+		"mpg123",
+		"libvorbis",
+		"libogg",
+		"libpng",
+		"zlib",
+		"freetype",
+		"tinyxml2",
+		"gtest",
+		"stb"
+	]
+}

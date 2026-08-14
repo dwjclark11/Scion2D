@@ -9,5 +9,5 @@ if(SCION_ENABLE_TRACY)
 	)
 
 	FetchContent_MakeAvailable(tracy)
-	target_include_directories(TracyClient PUBLIC ${LUA_INCLUDE_DIR})
+	target_include_directories(TracyClient PRIVATE ${LUA_INCLUDE_DIR})
 endif()
