@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Scene/Scene.h"
 #include "editor/utilities/EditorUtilities.h"
+#include "editor/scene/SceneFolderManager.h"
 
 namespace Scion::Editor::Events
 {
@@ -157,9 +158,19 @@ class SceneObject : public Scion::Core::Scene
 	 */
 	bool CheckTagName( const std::string& sTagName );
 
+	const entt::entity* GetHandleByTag( const std::string& tag ) const;
+
 	inline const std::string& GetName() { return m_sSceneName; }
 	inline SceneRuntimeData* GetRuntimeData() { return m_pRuntimeData.get(); }
 	inline Scion::Core::ECS::Registry& GetRuntimeRegistry() { return m_RuntimeRegistry; }
+
+	// Foldering
+	SceneFolderManager& GetFolderManager() { return m_FolderManager; }
+	const SceneFolderManager& GetFolderManager() const { return m_FolderManager; }
+
+  protected:
+	virtual bool LoadSceneData() override;
+	virtual bool SaveSceneData( bool bOverride = false ) override;
 
   private:
 	void OnEntityNameChanges( Scion::Editor::Events::NameChangeEvent& nameChange );
@@ -171,6 +182,8 @@ class SceneObject : public Scion::Core::Scene
 
 	std::unique_ptr<SceneRuntimeData> m_pRuntimeData;
 	std::map<std::string, entt::entity> m_mapTagToEntity;
+
+	SceneFolderManager m_FolderManager;
 };
 
 } // namespace Scion::Editor

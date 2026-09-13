@@ -24,6 +24,8 @@ class JSONSerializer
 
 	template <typename TValue>
 	JSONSerializer& AddKeyValuePair( const std::string& key, const TValue& value );
+	template <typename TValue>
+	JSONSerializer& AddValue( const TValue& value );
 
   private:
 	std::fstream m_Filestream;

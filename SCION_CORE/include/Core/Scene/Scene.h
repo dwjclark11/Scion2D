@@ -94,8 +94,9 @@ class Scene
 	static void CreateLuaBind( sol::state& lua );
 
   protected:
-	bool LoadSceneData();
-	bool SaveSceneData(bool bOverride = false);
+	virtual bool LoadSceneData();
+	virtual bool SaveSceneData( bool bOverride = false );
+
 	void SetCanvasOffset();
 	
   protected:

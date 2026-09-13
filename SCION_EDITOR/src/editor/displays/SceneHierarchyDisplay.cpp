@@ -432,6 +432,249 @@ void SceneHierarchyDisplay::OnAddComponent( Scion::Editor::Events::AddComponentE
 	}
 }
 
+void SceneHierarchyDisplay::DrawFolder( SceneFolder& folder, SceneObject* pCurrentScene )
+{
+	bool bRenamingFolder{ false };
+	auto& folderManager = pCurrentScene->GetFolderManager();
+
+	if ( m_RenamingFolderId == folder.id )
+	{
+		DrawFolderRenameInline( folderManager, folder );
+		bRenamingFolder = true;
+	}
+
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_FramePadding |
+							   ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+
+	ImGui::PushID( static_cast<int>( folder.id ) );
+
+	if ( !bRenamingFolder )
+	{
+		const bool bHasChildren = !folder.entityNames.empty() || !folderManager.GetChildFolders( folder.id ).empty();
+
+		if ( !bHasChildren )
+			flags |= ImGuiTreeNodeFlags_Leaf;
+
+		// If the folder selected is the current node, highlight the selected node
+		bool bSelected{ m_SelectedEntityFolderId && *m_SelectedEntityFolderId == folder.id };
+		if ( bSelected )
+		{
+			flags |= ImGuiTreeNodeFlags_Selected;
+		}
+
+		if ( folder.bPendingOpen )
+		{
+			ImGui::SetNextItemOpen( true, ImGuiCond_Always );
+			folder.bPendingOpen = false;
+		}
+		else
+		{
+			ImGui::SetNextItemOpen( folder.bExpanded, ImGuiCond_Once );
+		}
+
+		const std::string nodeLabel = fmt::format( "##folder_{}", folder.id );
+		const ImGuiID nodeId = ImGui::GetID( nodeLabel.c_str() );
+		const bool bIsOpen = ImGui::GetStateStorage()->GetInt( nodeId ) != 0;
+		const char* icon = bIsOpen ? ICON_FA_FOLDER_OPEN : ICON_FA_FOLDER;
+
+		ImGui::PushStyleColor( ImGuiCol_Text, ImVec4{ 1.f, 0.85f, 0.3f, 1.0f } );
+		folder.bExpanded = ImGui::TreeNodeEx( nodeLabel.c_str(), flags, "%s %s", icon, folder.name.c_str() );
+		ImGui::PopStyleColor();
+	}
+
+	auto& editorReg = pCurrentScene->GetRegistry();
+
+	if ( ImGui::IsItemClicked() )
+	{
+		m_pSelectedEntity.reset();
+		m_SelectedEntityFolderId = folder.id;
+	}
+
+	if ( !bRenamingFolder && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked( ImGuiMouseButton_Left ) )
+	{
+		m_RenamingFolderId = folder.id;
+		std::strncpy( m_RenameBuffer, folder.name.c_str(), sizeof( m_RenameBuffer ) - 1 );
+	}
+
+	// ----------------------------------------------------------------------
+	// Drag source - Folders can be dragged to reparent
+	// ----------------------------------------------------------------------
+	if ( !bRenamingFolder && ImGui::BeginDragDropSource() )
+	{
+		ImGui::SetDragDropPayload( "SceneFolder", &folder.id, sizeof( folder.id ) );
+		ImGui::Text( folder.name.c_str() );
+		ImGui::EndDragDropSource();
+	}
+
+	// ----------------------------------------------------------------------
+	// Drag target - accepts entities and other folders
+	// ----------------------------------------------------------------------
+	if ( !bRenamingFolder && ImGui::BeginDragDropTarget() )
+	{
+		// Entity dropped onto folder
+		if ( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "SceneHierarchy" ) )
+		{
+			SCION_ASSERT( payload->DataSize == sizeof( entt::entity ) );
+			entt::entity dropped = *static_cast<const entt::entity*>( payload->Data );
+			if ( editorReg.IsValid( dropped ) )
+			{
+				Entity droppedEnt{ &editorReg, dropped };
+				const auto& id = droppedEnt.GetComponent<Identification>();
+				folderManager.MoveEntityToFolder( id.name, folder.id );
+
+				// Force folder open so the new member is immediately visible
+				folder.bPendingOpen = true;
+			}
+		}
+
+		// Folder dropped onto folder - reparent
+		if ( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "SceneFolder" ) )
+		{
+			SCION_ASSERT( payload->DataSize == sizeof( SceneFolder::Id ) );
+			SceneFolder::Id draggedId = *static_cast<const SceneFolder::Id*>( payload->Data );
+			folderManager.MoveFolderToParent( draggedId, folder.id );
+
+			if ( auto* pParentFolder = folderManager.GetFolder( draggedId ) )
+				pParentFolder->bPendingOpen = true;
+
+			// Force folder open so the moved child folder is immediately visible
+			folder.bPendingOpen = true;
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+
+	OpenFolderContext( folder, pCurrentScene );
+
+	if ( folder.bExpanded )
+	{
+		// -- Child folders first (recursion)
+		for ( auto* pChild : folderManager.GetChildFolders( folder.id ) )
+		{
+			DrawFolder( *pChild, pCurrentScene );
+		}
+
+		// -- Member entities
+		for ( const auto& entityName : folder.entityNames )
+		{
+			// Resolve name -> handle via tag map each frame
+			auto optEnt = editorReg.GetRegistry().view<Identification>() | std::views::filter( [ & ]( entt::entity e ) {
+							  return editorReg.GetRegistry().get<Identification>( e ).name == entityName;
+						  } );
+
+			for ( auto entity : optEnt )
+			{
+				if ( !editorReg.IsValid( entity ) )
+					continue;
+
+				Entity ent{ &editorReg, entity };
+				if ( !m_TextFilter.PassFilter( ent.GetName().c_str() ) )
+					continue;
+
+				const auto& rel = ent.GetComponent<Relationship>();
+				if ( rel.parent != entt::null )
+					continue; // Only root members
+
+				if ( OpenTreeNode( ent ) )
+					ImGui::TreePop();
+			}
+		}
+
+		// If we are renaming the folder, it is not currently a node, it is an input text widget
+		if ( !bRenamingFolder )
+			ImGui::TreePop();
+	}
+
+	ImGui::PopID();
+}
+
+void SceneHierarchyDisplay::DrawFolderRenameInline( SceneFolderManager& folderManager, SceneFolder& folder )
+{
+	ImGui::SetNextItemWidth( -1.f );
+	std::string renameCheck{ m_RenameBuffer };
+
+	bool bFolderExists = folderManager.FolderExists( renameCheck );
+
+	ImGui::SetKeyboardFocusHere();
+	if ( ImGui::InputText( "##folderRename",
+						   m_RenameBuffer,
+						   sizeof( m_RenameBuffer ),
+						   ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll ) )
+	{
+		if ( !bFolderExists )
+		{
+			if ( m_RenameBuffer[ 0 ] != '\0' )
+			{
+				folder.name = m_RenameBuffer;
+			}
+
+			m_RenamingFolderId = 0;
+		}
+	}
+
+	if ( bFolderExists )
+	{
+		ImGui::TextColored( ImVec4{ 1.f, 0.f, 0.f, 1.f }, "Folder [%s] already exists.", renameCheck.c_str() );
+	}
+
+	// Check to see if the user has clicked away, if so, cancel
+	if ( !ImGui::IsItemActive() && !ImGui::IsItemHovered() && ImGui::IsMouseClicked( 0 ) )
+		m_RenamingFolderId = 0;
+}
+
+void SceneHierarchyDisplay::OpenFolderContext( SceneFolder& folder, SceneObject* pCurrentScene )
+{
+	const std::string popupId = fmt::format( "##FolderCtx_{}", folder.id );
+
+	if ( ImGui::BeginPopupContextItem( popupId.c_str() ) )
+	{
+		if ( ImGui::Selectable( "Rename" ) )
+		{
+			m_RenamingFolderId = folder.id;
+			std::strncpy( m_RenameBuffer, folder.name.c_str(), sizeof( m_RenameBuffer ) - 1 );
+		}
+
+		if ( m_pSelectedEntity )
+		{
+			const bool bAlreadyIn = folder.ContainsByName( m_pSelectedEntity->GetName() );
+
+			if ( !bAlreadyIn && ImGui::Selectable( "Move Selected Entity Here" ) )
+			{
+				pCurrentScene->GetFolderManager().MoveEntityToFolder( m_pSelectedEntity->GetName(), folder.id );
+			}
+
+			if ( bAlreadyIn && ImGui::Selectable( "Remove Selected Entity from Folder" ) )
+			{
+				pCurrentScene->GetFolderManager().MoveEntityToFolder( m_pSelectedEntity->GetName(), 0 );
+			}
+		}
+
+		ImGui::Separator();
+
+		if ( ImGui::Selectable( "Delete Folder" ) )
+		{
+			// Entities are NOT deleted — they just become unfoldered
+			m_FolderToDeleteId = folder.id;
+			ImGui::EndPopup();
+			return;
+		}
+
+		ImGui::EndPopup();
+	}
+}
+
+void SceneHierarchyDisplay::DeleteSelectedFolder()
+{
+	if ( m_FolderToDeleteId.has_value() )
+	{
+		if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject() )
+		{
+			pCurrentScene->GetFolderManager().DeleteFolder( *m_FolderToDeleteId );
+			m_FolderToDeleteId.reset();
+		}
+	}
+}
+
 void SceneHierarchyDisplay::OpenContext( SceneObject* pCurrentScene )
 {
 	if ( !pCurrentScene )
@@ -475,6 +718,11 @@ void SceneHierarchyDisplay::OpenContext( SceneObject* pCurrentScene )
 	{
 		if ( ImGui::BeginPopupContextWindow( "##SceneHierarchyContext" ) )
 		{
+			if ( ImGui::Selectable( "Add New Folder" ) )
+			{
+				pCurrentScene->GetFolderManager().CreateFolder( "New Folder" );
+			}
+
 			if ( ImGui::Selectable( "Add New Game Object" ) )
 			{
 				if ( !pCurrentScene->AddGameObject() )
@@ -505,6 +753,7 @@ SceneHierarchyDisplay::~SceneHierarchyDisplay() = default;
 
 void SceneHierarchyDisplay::Update()
 {
+	DeleteSelectedFolder();
 }
 
 void SceneHierarchyDisplay::Draw()
@@ -527,11 +776,42 @@ void SceneHierarchyDisplay::Draw()
 	ImGui::AddSpaces( 1 );
 	ImGui::Separator();
 
+	auto& folderManager = pCurrentScene->GetFolderManager();
+	auto& editorReg = pCurrentScene->GetRegistry();
+
+	// Collect all entity handles that belong to at least one folder
+	std::unordered_set<entt::entity> folderedEntities{};
+
+	for ( const auto& [ _, folder ] : folderManager.GetFolders() )
+	{
+		for ( const auto& sName : folder.entityNames )
+		{
+			if ( auto* pEntity = pCurrentScene->GetHandleByTag( sName ) )
+			{
+				folderedEntities.insert( *pEntity );
+			}
+		}
+	}
+
+	// Draw the folders -- Only draw the root-level folders, children are drawn recursively
+	for ( auto& [ _, folder ] : folderManager.GetFolders() )
+	{
+		if ( folder.parentId != SceneFolder::NoParent )
+			continue;
+
+		DrawFolder( folder, pCurrentScene );
+	}
+
+
 	auto& registry = pCurrentScene->GetRegistry();
 	auto sceneEntities = registry.GetRegistry().view<entt::entity>( entt::exclude<TileComponent, ScriptComponent> );
 
 	for ( auto entity : sceneEntities )
 	{
+		// We need to skip the entities that are in folders
+		if ( folderedEntities.contains( entity ) )
+			continue;
+
 		Entity ent{ &registry, entity };
 		if ( !m_TextFilter.PassFilter( ent.GetName().c_str() ) )
 			continue;
@@ -545,6 +825,35 @@ void SceneHierarchyDisplay::Draw()
 				ImGui::TreePop();
 			}
 		}
+	}
+
+	ImVec2 avail = ImGui::GetContentRegionAvail();
+	if ( avail.y < 24.f )
+		avail.y = 24.f;
+
+	ImGui::InvisibleButton( "##HierarchyRootDropZone", avail );
+	if ( ImGui::BeginDragDropTarget() )
+	{
+		if ( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "SceneHierarchy" ) )
+		{
+			SCION_ASSERT( payload->DataSize == sizeof( entt::entity ) );
+			entt::entity dropped = *static_cast<const entt::entity*>( payload->Data );
+			if ( editorReg.IsValid( dropped ) )
+			{
+				Entity droppedEnt{ &editorReg, dropped };
+				const auto& id = droppedEnt.GetComponent<Identification>();
+				folderManager.MoveEntityToFolder( id.name, SceneFolder::NullId );
+			}
+		}
+
+		if ( const ImGuiPayload* payload = ImGui::AcceptDragDropPayload( "SceneFolder" ) )
+		{
+			SCION_ASSERT( payload->DataSize == sizeof( SceneFolder::Id ) );
+			SceneFolder::Id draggedId = *static_cast<const SceneFolder::Id*>( payload->Data );
+			folderManager.MoveFolderToParent( draggedId, SceneFolder::NoParent );
+		}
+
+		ImGui::EndDragDropTarget();
 	}
 
 	ImGui::End();

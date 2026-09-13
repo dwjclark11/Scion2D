@@ -356,6 +356,7 @@ bool SceneObject::DeleteGameObjectByTag( const std::string& sTag )
 	for ( const auto& sTag : removedEntities )
 	{
 		m_mapTagToEntity.erase( sTag );
+		m_FolderManager.OnEntityDeleted( sTag );
 	}
 
 	return true;
@@ -385,6 +386,7 @@ bool SceneObject::DeleteGameObjectById( entt::entity entity )
 	for ( const auto& sTag : removedEntities )
 	{
 		m_mapTagToEntity.erase( sTag );
+		m_FolderManager.OnEntityDeleted( sTag );
 	}
 
 	return true;
@@ -579,6 +581,265 @@ bool SceneObject::CheckTagName( const std::string& sTagName )
 {
 	return m_mapTagToEntity.contains( sTagName );
 }
+
+const entt::entity* SceneObject::GetHandleByTag( const std::string& tag ) const
+{
+	auto it = m_mapTagToEntity.find( tag );
+	return it != m_mapTagToEntity.end() ? &( it->second ) : nullptr;
+}
+
+bool SceneObject::LoadSceneData()
+{
+	std::error_code ec;
+	if ( !fs::exists( m_sSceneDataPath, ec ) )
+	{
+		SCION_ERROR( "Failed to load scene data. Error: {}", ec.message() );
+		return false;
+	}
+
+	std::ifstream sceneDataFile;
+	sceneDataFile.open( m_sSceneDataPath );
+
+	if ( !sceneDataFile.is_open() )
+	{
+		SCION_ERROR( "Failed to open tilemap file [{}]", m_sSceneDataPath );
+		return false;
+	}
+
+	// The sceneData file could be empty if just created
+	if ( sceneDataFile.peek() == std::ifstream::traits_type::eof() )
+	{
+		// If the sceneData is an empty file, return true. must not have made any changes yet.
+		return true;
+	}
+
+	std::stringstream ss;
+	ss << sceneDataFile.rdbuf();
+	std::string contents = ss.str();
+	rapidjson::StringStream jsonStr{ contents.c_str() };
+
+	rapidjson::Document doc;
+	doc.ParseStream( jsonStr );
+
+	if ( doc.HasParseError() || !doc.IsObject() )
+	{
+		SCION_ERROR( "Failed to load tilemap: File: [{}] is not valid JSON. - {} - {}",
+					 m_sSceneDataPath,
+					 rapidjson::GetParseError_En( doc.GetParseError() ),
+					 doc.GetErrorOffset() );
+		return false;
+	}
+
+	SCION_ASSERT( doc.HasMember( "scene_data" ) && "scene_data member is necessary." );
+
+	const rapidjson::Value& sceneData = doc[ "scene_data" ];
+
+	auto& pProjectInfo = MAIN_REGISTRY().GetContext<ProjectInfoPtr>();
+	auto optScenesPath = pProjectInfo->TryGetFolderPath( EProjectFolderType::Scenes );
+	SCION_ASSERT( optScenesPath && "Scenes folder path must exist." );
+
+	if ( m_sTilemapPath.empty() )
+	{
+		const std::string sRelativeTilemap = sceneData[ "tilemapPath" ].GetString();
+		fs::path tilemapPath = *optScenesPath / sRelativeTilemap;
+		if ( !fs::exists( tilemapPath ) )
+		{
+			SCION_ERROR( "Failed to set tilemap path: [{}] does not exist.", tilemapPath.string() );
+			return false;
+		}
+
+		m_sTilemapPath = tilemapPath.string();
+	}
+
+	if ( m_sObjectPath.empty() )
+	{
+		const std::string sRelativeObjectPath = sceneData[ "objectmapPath" ].GetString();
+		fs::path objectPath = *optScenesPath / sRelativeObjectPath;
+		if ( !fs::exists( objectPath ) )
+		{
+			SCION_ERROR( "Failed to set tilemap path: [{}] does not exist.", objectPath.string() );
+			return false;
+		}
+		m_sObjectPath = objectPath.string();
+	}
+
+	if ( sceneData.HasMember( "canvas" ) )
+	{
+		const rapidjson::Value& canvas = sceneData[ "canvas" ];
+
+		m_Canvas.width = canvas[ "width" ].GetInt();
+		m_Canvas.height = canvas[ "height" ].GetInt();
+		m_Canvas.tileWidth = canvas[ "tileWidth" ].GetInt();
+		m_Canvas.tileHeight = canvas[ "tileHeight" ].GetInt();
+	}
+
+	if ( sceneData.HasMember( "mapType" ) )
+	{
+		std::string sMapType = sceneData[ "mapType" ].GetString();
+		if ( sMapType == "grid" )
+		{
+			m_eMapType = Scion::Core::EMapType::Grid;
+		}
+		else if ( sMapType == "iso" )
+		{
+			m_eMapType = Scion::Core::EMapType::IsoGrid;
+			SetCanvasOffset();
+		}
+	}
+
+	if ( sceneData.HasMember( "playerStart" ) )
+	{
+		const rapidjson::Value& playerStart = sceneData[ "playerStart" ];
+		if ( playerStart.HasMember( "enabled" ) )
+		{
+			m_bUsePlayerStart = playerStart[ "enabled" ].GetBool();
+		}
+		else
+		{
+			m_bUsePlayerStart = false;
+		}
+
+		std::string sPlayerStartPrefab = sceneData[ "playerStart" ][ "character" ].GetString();
+		if ( sPlayerStartPrefab != "default" )
+		{
+			m_PlayerStart.Load( sPlayerStartPrefab );
+		}
+
+		if ( m_bUsePlayerStart && !m_PlayerStart.IsPlayerStartCreated() )
+		{
+			m_PlayerStart.LoadVisualEntity();
+		}
+
+		// Do not set the position if we are not using the player start.
+		if ( m_bUsePlayerStart )
+		{
+			m_PlayerStart.SetPosition( glm::vec2{ sceneData[ "playerStart" ][ "position" ][ "x" ].GetFloat(),
+												  sceneData[ "playerStart" ][ "position" ][ "y" ].GetFloat() } );
+		}
+	}
+
+	if ( sceneData.HasMember( "defaultMusic" ) )
+	{
+		m_sDefaultMusic = sceneData[ "defaultMusic" ].GetString();
+	}
+
+	SCION_ASSERT( sceneData.HasMember( "sprite_layers" ) && "Sprite layers must be a part of scene data" );
+	const rapidjson::Value& spriteLayers = sceneData[ "sprite_layers" ];
+	for ( const auto& layer : spriteLayers.GetArray() )
+	{
+		std::string sLayerName = layer[ "layerName" ].GetString();
+		bool bVisible = layer[ "bVisible" ].GetBool();
+
+		AddLayer( sLayerName, bVisible );
+	}
+
+	if ( sceneData.HasMember( "sceneFolders" ) )
+	{
+		m_FolderManager.LoadFromJSON( sceneData[ "sceneFolders" ] );
+	}
+
+	return true;
+}
+
+bool SceneObject::SaveSceneData( bool bOverride )
+{
+	/*
+	 * Scenes that have not been loaded do not need to be re-saved. They would have been
+	 * saved when unloading the scene previously. Only save loaded scenes.
+	 */
+	if ( !m_bSceneLoaded && !bOverride )
+	{
+		return true;
+	}
+
+	// Check to see if the scene data exists
+	fs::path tilemapPath{ m_sSceneDataPath };
+	if ( !fs::exists( tilemapPath ) )
+	{
+		SCION_ERROR( "Failed to save scene data - Filepath does not exist [{}]", m_sSceneDataPath );
+		return false;
+	}
+
+	std::unique_ptr<JSONSerializer> pSerializer{ nullptr };
+
+	try
+	{
+		pSerializer = std::make_unique<JSONSerializer>( m_sSceneDataPath );
+	}
+	catch ( const std::exception& ex )
+	{
+		SCION_ERROR( "Failed to save scene data [{}] - [{}]", m_sSceneDataPath, ex.what() );
+		return false;
+	}
+
+	pSerializer->StartDocument();
+	pSerializer->StartNewObject( "scene_data" );
+
+	std::string sTilemapPath = m_sTilemapPath.substr( m_sTilemapPath.find( m_sSceneName ) );
+	std::string sObjectPath = m_sObjectPath.substr( m_sObjectPath.find( m_sSceneName ) );
+
+	glm::vec2 playerStartPosition = m_bUsePlayerStart ? m_PlayerStart.GetPosition() : glm::vec2{ 0.f };
+
+	pSerializer->AddKeyValuePair( "name", m_sSceneName )
+		.AddKeyValuePair( "tilemapPath", sTilemapPath )
+		.AddKeyValuePair( "objectmapPath", sObjectPath )
+		.AddKeyValuePair( "defaultMusic", m_sDefaultMusic )
+		.StartNewObject( "canvas" )
+		.AddKeyValuePair( "width", m_Canvas.width )
+		.AddKeyValuePair( "height", m_Canvas.height )
+		.AddKeyValuePair( "tileWidth", m_Canvas.tileWidth )
+		.AddKeyValuePair( "tileHeight", m_Canvas.tileHeight )
+		.EndObject(); // Canvas
+
+	pSerializer
+		->AddKeyValuePair(
+			"mapType", ( m_eMapType == Scion::Core::EMapType::Grid ? std::string{ "grid" } : std::string{ "iso" } ) )
+		.StartNewObject( "playerStart" )
+		.AddKeyValuePair( "enabled", m_bUsePlayerStart )
+		.AddKeyValuePair( "character", m_bUsePlayerStart ? m_PlayerStart.GetCharacterName() : std::string{ "default" } )
+		.StartNewObject( "position" )
+		.AddKeyValuePair( "x", playerStartPosition.x )
+		.AddKeyValuePair( "y", playerStartPosition.y )
+		.EndObject() // Player start position
+		.EndObject() // Player Start
+		.StartNewArray( "sprite_layers" );
+
+	for ( const auto& layer : m_LayerParams )
+	{
+		pSerializer->StartNewObject()
+			.AddKeyValuePair( "layerName", layer.sLayerName )
+			.AddKeyValuePair( "bVisible", layer.bVisible )
+			.EndObject();
+	}
+
+	pSerializer->EndArray(); // Sprite Layers
+
+	m_FolderManager.SaveToJSON( *pSerializer );
+
+	pSerializer->EndObject(); // Scene data
+
+	bool bSuccess{ true };
+	if ( !pSerializer->EndDocument() )
+	{
+		bSuccess = false;
+	}
+
+	// Try to Save the tilemap
+	auto pTilemapLoader = std::make_unique<TilemapLoader>();
+	if ( !pTilemapLoader->SaveTilemap( m_Registry, m_sTilemapPath, true ) )
+	{
+		bSuccess = false;
+	}
+
+	// Try to Save scene game objects
+	if ( !pTilemapLoader->SaveGameObjects( m_Registry, m_sObjectPath, true ) )
+	{
+		bSuccess = false;
+	}
+
+	return bSuccess;
+}
+
 
 void SceneObject::OnEntityNameChanges( Scion::Editor::Events::NameChangeEvent& nameChange )
 {
