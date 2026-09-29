@@ -41,8 +41,8 @@ struct PhysicsAttributes
 	bool bFixedRotation{ true };
 	/* A sensor shape generates overlap events but never generates a collision response. */
 	bool bIsSensor{ false };
-	/* Treat this body as high speed object that performs continuous collision detection against dynamic and kinematic bodies,
-	but not other bullet bodies.*/
+	/* Treat this body as high speed object that performs continuous collision detection against dynamic and kinematic
+	bodies, but not other bullet bodies.*/
 	bool bIsBullet{ false };
 	/* Do we want to actually use filters with this body? */
 	bool bUseFilters{ false };
@@ -63,11 +63,6 @@ struct PhysicsAttributes
 
 class PhysicsComponent
 {
-  private:
-	std::shared_ptr<b2Body> m_pRigidBody;
-	std::shared_ptr<Scion::Physics::UserData> m_pUserData;
-	PhysicsAttributes m_InitialAttribs;
-
   public:
 	PhysicsComponent();
 	PhysicsComponent( const PhysicsAttributes& physicsAttr );
@@ -86,15 +81,20 @@ class PhysicsComponent
 	void SetGroupIndex( int index );
 	void SetGroupIndex();
 
-	bool UseFilters() const { return m_InitialAttribs.bUseFilters;  }
+	bool UseFilters() const { return m_InitialAttribs.bUseFilters; }
 
 	inline b2Body* GetBody() { return m_pRigidBody.get(); }
 	inline Scion::Physics::UserData* GetUserData() { return m_pUserData.get(); }
-	
+
 	/* The attributes may have changed. we need to make a function that will refill the attributes */
 	inline const PhysicsAttributes& GetAttributes() const { return m_InitialAttribs; }
 	inline PhysicsAttributes& GetChangableAttributes() { return m_InitialAttribs; }
-	
+
 	static void CreatePhysicsLuaBind( sol::state& lua, entt::registry& registry );
+
+  private:
+	std::shared_ptr<Scion::Physics::UserData> m_pUserData;
+	std::shared_ptr<b2Body> m_pRigidBody;
+	PhysicsAttributes m_InitialAttribs;
 };
 } // namespace Scion::Core::ECS
