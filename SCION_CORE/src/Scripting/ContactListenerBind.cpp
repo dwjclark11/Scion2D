@@ -36,7 +36,7 @@ std::tuple<sol::object, sol::object> ContactListenerBinder::GetUserData(
 
 void ContactListenerBinder::CreateLuaContactListener( sol::state& lua, entt::registry& registry )
 {
-	auto& contactListener = registry.ctx().get<std::shared_ptr<Scion::Physics::ContactListener>>();
+	auto& contactListener = registry.ctx().get<std::unique_ptr<Scion::Physics::ContactListener>>();
 	if ( !contactListener )
 	{
 		SCION_ERROR( "Failed to create the contact listener lua bind - Contact listener is not in the registry!" );
