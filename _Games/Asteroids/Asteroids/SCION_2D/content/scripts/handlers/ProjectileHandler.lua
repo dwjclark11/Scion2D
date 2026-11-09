@@ -2,83 +2,55 @@
 Copyright 2025 @JADE-ite Games Studios. All rights reserved 
 --]]
 
-
---[[
-@class ProjectileHandler
------------------
-@brief Manages all active projectiles in the game. 
-Handles creation, updates, destruction, and reset of projectile entities.
-
-Responsibilities:
-- Track all active projectiles
-- Update projectile state each frame
-- Remove expired or invalid projectiles
-- Destroy projectiles by ID
-- Clear all projectiles when needed
-]]
+-- Tracks all active projectiles, keyed by entity id
 ProjectileHandler = S2D_Class("ProjectileHandler")
 
------------------------------------------------------------------------------------------------------------------
--- @brief Initialize the projectile handler with an empty projectile list
------------------------------------------------------------------------------------------------------------------
 function ProjectileHandler:Init()
 	self.projectiles = {}
+	self.count = 0
+	self.clock = Timer()
+	self.clock:start()
 end
 
------------------------------------------------------------------------------------------------------------------
--- @brief Get the number of active projectiles
--- @return Integer count of current projectiles
------------------------------------------------------------------------------------------------------------------
 function ProjectileHandler:NumProjectiles()
-	return #self.projectiles 
+	return self.count
 end
 
------------------------------------------------------------------------------------------------------------------
--- @brief Add a new projectile to the handler
--- @param projectile The projectile object to register
------------------------------------------------------------------------------------------------------------------
 function ProjectileHandler:AddProjectile(projectile)
-	table.insert(self.projectiles, projectile)
+	projectile.expireTime = self.clock:elapsed_ms() + projectile.projectileLifetime
+	self.projectiles[projectile:GetID()] = projectile
+	self.count = self.count + 1
 end
 
------------------------------------------------------------------------------------------------------------------
--- @brief Update all projectiles
--- Removes and destroys projectiles whose time has expired or that failed to update
------------------------------------------------------------------------------------------------------------------
+-- Removes projectiles that expired or left the window
 function ProjectileHandler:Update()
-	for k, v in pairs(self.projectiles) do
-		if v:TimesUp() or not v:Update() then 
-			v:Destroy()
-			self.projectiles[k] = nil
+	local now = self.clock:elapsed_ms()
+
+	for id, projectile in pairs(self.projectiles) do
+		if projectile:TimesUp(now) or not projectile:Update() then
+			projectile:Destroy()
+			self.projectiles[id] = nil
+			self.count = self.count - 1
 		end
 	end
 end
 
------------------------------------------------------------------------------------------------------------------
--- @brief Reset the projectile handler
--- Destroys and clears all remaining projectiles
------------------------------------------------------------------------------------------------------------------
 function ProjectileHandler:Reset()
-	for k, v in pairs(self.projectiles) do 
-		v:Destroy()
-		self.projectiles[k] = nil
+	for id, projectile in pairs(self.projectiles) do
+		projectile:Destroy()
+		self.projectiles[id] = nil
 	end
+
+	self.count = 0
 end
 
------------------------------------------------------------------------------------------------------------------
--- @brief Destroy a specific projectile by ID
--- @param projectile_id The entity ID of the projectile to destroy
------------------------------------------------------------------------------------------------------------------
 function ProjectileHandler:DestroyProjectile(projectile_id)
-	for k, v in pairs(self.projectiles) do 
-		if v:GetID() == projectile_id then 
-			v:Destroy()
-			self.projectiles[k] = nil 
-		end
+	local projectile = self.projectiles[projectile_id]
+	if projectile then
+		projectile:Destroy()
+		self.projectiles[projectile_id] = nil
+		self.count = self.count - 1
 	end
 end
 
-----------------------------------------------------------------------------------------------------------------
--- @brief Global instance of the ProjectileHandler
------------------------------------------------------------------------------------------------------------------
 gProjectileHandler = ProjectileHandler:Create()

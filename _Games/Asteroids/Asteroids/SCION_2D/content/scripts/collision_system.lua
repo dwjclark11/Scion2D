@@ -2,221 +2,128 @@
 Copyright 2025 @JADE-ite Games Studios. All rights reserved 
 --]]
 
--------------------------------------------------------------------
--- @class CollisionData
--- @brief Represents information about a collision event.
--- Stores entity ID, damage amount, and destruction flag.
--------------------------------------------------------------------
+-- Holds the id and damage of an entity involved in a collision
 CollisionData = S2D_Class("CollisionData")
 
--------------------------------------------------------------------
--- @brief Initializes a new CollisionData object.
--- @param params table Table containing collision data parameters:
---   - id (integer) Entity ID involved in the collision.
---   - damage (integer) Optional damage value (default = 10).
---   - bDestroy (boolean) Whether entity should be destroyed (default = false).
--------------------------------------------------------------------
 function CollisionData:Init(params)
 	self.id = params.id
 	self.damage = params.damage or 10
 	self.bDestroy = params.bDestroy or false
 end
 
--------------------------------------------------------------------
--- @class CollisionSystem
--- @brief Manages collision detection and resolution.
--- Handles asteroid, projectile, ship, and pickup interactions.
--------------------------------------------------------------------
+-- Detects and resolves collisions between projectiles, asteroids, ships and pickups
 CollisionSystem = S2D_Class("CollisionSystem")
 
+local SHIP_ASTEROID_DAMAGE = 25
 
--------------------------------------------------------------------
--- @brief Initializes the collision system.
--- @param params table Optional parameters (currently unused).
--------------------------------------------------------------------
 function CollisionSystem:Init(params)
 	params = params or {}
-	
-	self.collisionEventDispatcher = EventDispatcher(DispatcherType.Lua)
-	self.collisionHandler = LuaEventHandler( function(event) self:HandleEvent(event) end )
-	self.pickupHandler = LuaEventHandler( function (event) self:HandlePickups(event) end )
-	self.collisionEventDispatcher:addHandler(self.collisionHandler, LuaEvent)
-	self.collisionEventDispatcher:addHandler(self.pickupHandler, LuaEvent)
-	self.entitiesToDestroy = {}
 end
 
--------------------------------------------------------------------
--- @brief Updates the collision system.
--- Runs circle collision detection for all relevant entities.
--------------------------------------------------------------------
 function CollisionSystem:Update()
-	self:UpdateCircleCollision()
+	local deadAsteroids = {}
+	local hitAsteroidIDs = {}
+	local hitProjectileIDs = {}
+
+	self:DetectProjectileHits(deadAsteroids, hitAsteroidIDs, hitProjectileIDs)
+
+	local shipHits = {}
+	local pickupHits = {}
+	self:DetectShipHits(deadAsteroids, shipHits, pickupHits)
+
+	for i = 1, #hitProjectileIDs do
+		gProjectileHandler:DestroyProjectile(hitProjectileIDs[i])
+	end
+
+	for i = 1, #hitAsteroidIDs do
+		gAsteroidHandler:DestroyAsteroid(hitAsteroidIDs[i])
+	end
+
+	for i = 1, #shipHits do
+		gShipHandler:TakeDamage(shipHits[i])
+	end
+
+	for i = 1, #pickupHits do
+		local hit = pickupHits[i]
+		gPickupHandler:OnHandlePickup(hit.pickupID, hit.ship)
+	end
 end
 
--------------------------------------------------------------------
--- @brief Detects and processes circle collider collisions.
--- Iterates through entities, checks intersections, and dispatches events.
--------------------------------------------------------------------
-function CollisionSystem:UpdateCircleCollision()
-	local reg = Registry()
-	local entities = reg:getEntities( CircleCollider )
-	self.entitiesToDestroy = {}
-	entities:for_each(
-		function(entity_a)	
-			entities:for_each(
-				function(entity_b)
-					if entity_a:id() == entity_b:id() then
-						goto continue
-					end
-			
-					if self:Intersect(entity_a, entity_b) then 
-						self.collisionEventDispatcher:emitEvent( LuaEvent( { entityA = entity_a:id(), entityB = entity_b:id() } ))
-					end
-					
-					::continue::
+-- Projectile vs asteroid. One asteroid per projectile and one projectile per asteroid
+function CollisionSystem:DetectProjectileHits(deadAsteroids, hitAsteroidIDs, hitProjectileIDs)
+	local asteroids = gAsteroidHandler.asteroids
+	local projectiles = gProjectileHandler.projectiles
+
+	for projectileID, projectile in pairs(projectiles) do
+		local px = projectile.cx
+		local py = projectile.cy
+		local pr = projectile.radius
+
+		for asteroidID, asteroid in pairs(asteroids) do
+			if not deadAsteroids[asteroidID] then
+				local dx = px - asteroid.cx
+				local dy = py - asteroid.cy
+				local radSum = pr + asteroid.radius
+
+				if (dx * dx + dy * dy) <= (radSum * radSum) then
+					deadAsteroids[asteroidID] = true
+					hitAsteroidIDs[#hitAsteroidIDs + 1] = asteroidID
+					hitProjectileIDs[#hitProjectileIDs + 1] = projectileID
+					break
 				end
-			)
-		end
-	)
-		
-	for k, v in pairs(self.entitiesToDestroy) do 
-		local entity = Entity(v.id)
-		if entity:group() == "asteroids" then 
-			gAsteroidHandler:DestroyAsteroid(entity:id())
-		elseif entity:group() == "projectiles" then 
-			gProjectileHandler:DestroyProjectile(entity:id())
-		elseif entity:name() == "PlayerShip" then 
-			gShipHandler:TakeDamage(v)
+			end
 		end
 	end
-	
-	-- Handle enqueued events
-	self.collisionEventDispatcher:update()
 end
 
--------------------------------------------------------------------
--- @brief Gets the center position of an entity for collision checks.
--- @param entity Entity The entity whose center is calculated.
--- @return vec2 The center position of the entity.
--------------------------------------------------------------------
-function CollisionSystem:GetCenter(entity)
-	local transform = entity:getComponent(Transform)
-	local sprite = entity:getComponent(Sprite)
+-- Ship vs asteroid and ship vs pickup. A ship that is already colliding is skipped
+function CollisionSystem:DetectShipHits(deadAsteroids, shipHits, pickupHits)
+	local asteroids = gAsteroidHandler.asteroids
+	local pickups = gPickupHandler.pickups
 
-	local centerSprite = vec2(sprite.width / 2, sprite.height / 2)
-	local center = transform.position + centerSprite
-	return center
-end
+	for _, ship in pairs(gShipHandler.ships) do
+		local shipEntity = Entity(ship:GetID())
+		local collider = shipEntity:getComponent(CircleCollider)
 
--------------------------------------------------------------------
--- @brief Checks if two entities intersect using circle colliders.
--- @param entity_a Entity First entity.
--- @param entity_b Entity Second entity.
--- @return boolean True if entities intersect, false otherwise.
--------------------------------------------------------------------
-function CollisionSystem:Intersect(entity_a, entity_b)
-	
-	local a_center = self:GetCenter(entity_a)
-	local b_center = self:GetCenter(entity_b)
+		if collider and not collider.bColliding then
+			local position = shipEntity:getComponent(Transform).position
+			local sprite = shipEntity:getComponent(Sprite)
+			local sx = position.x + sprite.width * 0.5
+			local sy = position.y + sprite.height * 0.5
+			local sr = collider.radius
+			local bHit = false
 
-	local difference = a_center - b_center
+			for asteroidID, asteroid in pairs(asteroids) do
+				if not deadAsteroids[asteroidID] then
+					local dx = sx - asteroid.cx
+					local dy = sy - asteroid.cy
+					local radSum = sr + asteroid.radius
 
-	-- Calculate the distance squared
-	local distanceSq = difference:lengthSq()
+					if (dx * dx + dy * dy) <= (radSum * radSum) then
+						collider.bColliding = true
+						shipHits[#shipHits + 1] = CollisionData:Create({ id = ship:GetID(), damage = SHIP_ASTEROID_DAMAGE })
+						bHit = true
+						break
+					end
+				end
+			end
 
-	-- Get the circle collider for the radius
-	local circle_a = entity_a:getComponent(CircleCollider)
-	local circle_b = entity_b:getComponent(CircleCollider)
+			if not bHit then
+				for _, pickup in pairs(pickups) do
+					local pickupEntity = pickup.pickup
+					local pickupPos = pickupEntity:getComponent(Transform).position
+					local pickupSprite = pickupEntity:getComponent(Sprite)
+					local pickupCollider = pickupEntity:getComponent(CircleCollider)
 
-	local radSum = circle_a.radius + circle_b.radius
-	local radSqr = radSum * radSum
-	
-	return distanceSq <= radSqr
-end
+					local dx = sx - (pickupPos.x + pickupSprite.width * 0.5)
+					local dy = sy - (pickupPos.y + pickupSprite.height * 0.5)
+					local radSum = sr + pickupCollider.radius
 
--------------------------------------------------------------------
--- @brief Handles collision events between entities.
--- @param event LuaEvent The collision event containing entity IDs.
--------------------------------------------------------------------
-function CollisionSystem:HandleEvent(event)
-	
-	local entityA = Entity(event.data.entityA)
-	local entityB = Entity(event.data.entityB)
-	local group_a = entityA:group()
-	local group_b = entityB:group()
-	
-	if group_a == group_b then
-		return
-	end
-	
-	local collider_a = entityA:getComponent(CircleCollider)
-	local collider_b = entityB:getComponent(CircleCollider)
-	
-	if collider_a.bColliding or collider_b.bColliding then
-		return
-	end
-	
-	local name_a = entityA:name()
-	local name_b = entityB:name()
-	
-	if group_a == "projectiles" and group_b == "asteroids" then 
-		collider_a.bColliding = true 
-		collider_b.bColliding = true
-		S2D_InsertUnique(self.entitiesToDestroy, 
-			CollisionData:Create({ id = entityB:id(), bDestroy = true })
-		)
-		S2D_InsertUnique(self.entitiesToDestroy, 
-			CollisionData:Create({ id = entityA:id(), bDestroy = true })
-		)
-	elseif group_b == "projectiles" and group_a == "asteroids" then 
-		collider_a.bColliding = true 
-		collider_b.bColliding = true
-		S2D_InsertUnique(self.entitiesToDestroy, 
-			CollisionData:Create({ id = entityA:id(), bDestroy = true })
-		)
-		S2D_InsertUnique(self.entitiesToDestroy, 
-			CollisionData:Create({ id = entityB:id(), bDestroy = true })
-		)
-	elseif name_a == "PlayerShip" and group_b == "asteroids" then 
-		collider_a.bColliding = true 
-		S2D_InsertUnique(self.entitiesToDestroy, 
-			CollisionData:Create({ id = entityA:id(), damage = 25 })
-		)
-	elseif name_b == "PlayerShip" and group_a == "asteroids" then 
-		collider_b.bColliding = true 
-		S2D_InsertUnique(self.entitiesToDestroy, 
-			CollisionData:Create({ id = entityB:id(), damage = 25 })
-		)
-	elseif name_a == "PlayerShip" and group_b == "pickups" then 
-		self.collisionEventDispatcher:enqueueEvent( 
-			LuaEvent( 
-				{ bIsPickup = true, shipID = entityA:id(), pickupID = entityB:id() } 
-			)
-		)
-	elseif name_b == "PlayerShip" and group_a == "pickups" then 
-		self.collisionEventDispatcher:enqueueEvent( 
-			LuaEvent( 
-				{ bIsPickup = true, shipID = entityB:id(), pickupID = entityA:id() } 
-			)
-		)
+					if (dx * dx + dy * dy) <= (radSum * radSum) then
+						pickupHits[#pickupHits + 1] = { pickupID = pickup:GetID(), ship = ship }
+					end
+				end
+			end
+		end
 	end
 end
-
--------------------------------------------------------------------
--- @brief Handles pickup collision events.
--- @param event LuaEvent Event containing ship and pickup IDs.
--------------------------------------------------------------------
-function CollisionSystem:HandlePickups(event)
-	if not event.data.bIsPickup then 
-		return 
-	end 
-	
-	local ship = gShipHandler:GetShipByID(event.data.shipID)
-	if not ship then 
-		S2D_warn("Failed to handle pickup. Ship is not valid")
-		return 
-	end 
-	
-	gPickupHandler:OnHandlePickup(event.data.pickupID, ship)
-end
-

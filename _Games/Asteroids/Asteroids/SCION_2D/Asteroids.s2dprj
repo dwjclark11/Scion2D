@@ -15,6 +15,24 @@
         "assets": {
             "textures": [
                 {
+                    "name": "ship",
+                    "path": "assets\\textures\\ship.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "powerup_star_blue",
+                    "path": "assets\\textures\\pickups\\powerupBlue_star.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "powerup_bolt_yellow",
+                    "path": "assets\\textures\\pickups\\powerupYellow_bolt.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
                     "name": "ScionAsteroidsLogo",
                     "path": "assets\\textures\\ScionAsteroidsLogo.png",
                     "bPixelArt": false,
@@ -33,6 +51,18 @@
                     "bTilemap": false
                 },
                 {
+                    "name": "status_bars",
+                    "path": "assets\\textures\\status_bars.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
+                    "name": "game_over",
+                    "path": "assets\\textures\\game_over.png",
+                    "bPixelArt": true,
+                    "bTilemap": false
+                },
+                {
                     "name": "dark_purple_bg",
                     "path": "assets\\textures\\dark_purple_bg.png",
                     "bPixelArt": true,
@@ -45,32 +75,14 @@
                     "bTilemap": false
                 },
                 {
-                    "name": "game_over",
-                    "path": "assets\\textures\\game_over.png",
-                    "bPixelArt": true,
-                    "bTilemap": false
-                },
-                {
                     "name": "lives",
                     "path": "assets\\textures\\lives_ship.png",
                     "bPixelArt": true,
                     "bTilemap": false
                 },
                 {
-                    "name": "powerup_bolt_yellow",
-                    "path": "assets\\textures\\pickups\\powerupYellow_bolt.png",
-                    "bPixelArt": true,
-                    "bTilemap": false
-                },
-                {
                     "name": "powerup_shield_green",
                     "path": "assets\\textures\\pickups\\powerupGreen_shield.png",
-                    "bPixelArt": true,
-                    "bTilemap": false
-                },
-                {
-                    "name": "powerup_star_blue",
-                    "path": "assets\\textures\\pickups\\powerupBlue_star.png",
                     "bPixelArt": true,
                     "bTilemap": false
                 },
@@ -93,12 +105,6 @@
                     "bTilemap": false
                 },
                 {
-                    "name": "ship",
-                    "path": "assets\\textures\\ship.png",
-                    "bPixelArt": true,
-                    "bTilemap": false
-                },
-                {
                     "name": "ship_explosion",
                     "path": "assets\\textures\\ship_explosion.png",
                     "bPixelArt": true,
@@ -109,15 +115,21 @@
                     "path": "assets\\textures\\status_bar_fill.png",
                     "bPixelArt": false,
                     "bTilemap": false
-                },
-                {
-                    "name": "status_bars",
-                    "path": "assets\\textures\\status_bars.png",
-                    "bPixelArt": true,
-                    "bTilemap": false
                 }
             ],
             "soundfx": [
+                {
+                    "name": "final_death",
+                    "path": "assets\\soundfx\\final_death.ogg"
+                },
+                {
+                    "name": "complete",
+                    "path": "assets\\soundfx\\complete.ogg"
+                },
+                {
+                    "name": "off",
+                    "path": "assets\\soundfx\\off.ogg"
+                },
                 {
                     "name": "big_ast_explosion",
                     "path": "assets\\soundfx\\big_ast_explosion.wav"
@@ -127,16 +139,8 @@
                     "path": "assets\\soundfx\\collect_1.mp3"
                 },
                 {
-                    "name": "complete",
-                    "path": "assets\\soundfx\\complete.ogg"
-                },
-                {
                     "name": "crack_screen",
                     "path": "assets\\soundfx\\crack_screen.ogg"
-                },
-                {
-                    "name": "final_death",
-                    "path": "assets\\soundfx\\final_death.ogg"
                 },
                 {
                     "name": "health_increase",
@@ -149,10 +153,6 @@
                 {
                     "name": "laser",
                     "path": "assets\\soundfx\\laser.wav"
-                },
-                {
-                    "name": "off",
-                    "path": "assets\\soundfx\\off.ogg"
                 },
                 {
                     "name": "on",
@@ -201,12 +201,12 @@
                     "path": "assets\\music\\game_over.mp3"
                 },
                 {
-                    "name": "space",
-                    "path": "assets\\music\\space.wav"
-                },
-                {
                     "name": "title",
                     "path": "assets\\music\\title.wav"
+                },
+                {
+                    "name": "space",
+                    "path": "assets\\music\\space.wav"
                 }
             ],
             "fonts": [

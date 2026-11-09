@@ -19,6 +19,7 @@
                 "y": 0.0
             }
         },
-        "sprite_layers": []
+        "sprite_layers": [],
+        "sceneFolders": []
     }
 }

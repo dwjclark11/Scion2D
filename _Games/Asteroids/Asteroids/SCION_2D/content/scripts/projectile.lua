@@ -2,90 +2,81 @@
 Copyright 2025 @JADE-ite Games Studios. All rights reserved 
 --]]
 
---[[
-Projectile
-----------
-Represents a projectile entity (e.g., laser, bullet, missile) fired by ships. 
-Handles initialization from a projectile definition, movement, lifetime tracking, 
-and destruction when expired.
-
-Responsibilities:
-- Initialize projectile properties from definitions
-- Move the projectile each frame in a given direction
-- Track projectile lifetime with a timer
-- Destroy itself when its lifetime is up
-]]
+-- Projectile fired by a ship. Position and radius are tracked in Lua numbers so
+-- the collision system never has to read components. The lifetime is checked by
+-- the ProjectileHandler against its shared clock (see AddProjectile).
 Projectile = S2D_Class("Projectile")
 
--- Initialize a projectile instance
--- params: table containing { def, dir, start_pos, rotation }
+-- params: { def, dir, start_pos, rotation, color }
 function Projectile:Init(params)
 	params = params or {}
-	
-	self.def = params.def				-- Name of the projectile definition
-	self.dir = params.dir				-- Movement direction vector
-	self.startPos = params.start_pos	-- Starting world position
-	self.rotation = params.rotation		-- Starting rotation angle
-	
-	-- Load projectile definition
+
+	self.def = params.def
+	self.dir = params.dir
+	self.startPos = params.start_pos
+	self.rotation = params.rotation
+
 	local projectile = ProjectileDefs[self.def]
 	assert(projectile)
 
-	-- Create entity from definition
+	local sprite = projectile.components.sprite
+
+	self.projectileLifetime = projectile.life_time or 2000
+	self.speed = projectile.proj_speed or 10
+	self.expireTime = 0
+	self.vx = self.dir.x * self.speed
+	self.vy = self.dir.y * self.speed
+	self.halfWidth = sprite.width * 0.5
+	self.halfHeight = sprite.height * 0.5
+	self.radius = projectile.components.circle_collider.radius
+	self.x = self.startPos.x
+	self.y = self.startPos.y
+	self.cx = self.x + self.halfWidth
+	self.cy = self.y + self.halfHeight
+
 	self.entityID = LoadEntity(projectile)
+	self.entity = Entity(self.entityID)
 
-	-- Apply properties from definition
-	self.projectileLifetime = projectile.life_time or 2000	-- ms before despawn
-	self.speed = projectile.proj_speed or 10				-- Movement speed
-	self.lifeTimer = Timer()								-- Lifetime tracker
-
-	-- Set transform on entity
-	local projectEnt = Entity(self.entityID)
-	local transform = projectEnt:getComponent(Transform)
+	local transform = self.entity:getComponent(Transform)
 	transform.position = self.startPos
 	transform.rotation = self.rotation
-	
-	-- Set projectile color 
-	if params.color then 
-		local sprite = projectEnt:getComponent(Sprite)
-		sprite.color = params.color
+
+	if params.color then
+		local entitySprite = self.entity:getComponent(Sprite)
+		entitySprite.color = params.color
 	end
-		
-	-- Start lifetime countdown
-	self.lifeTimer:start()
 end
 
--- Update projectile each frame
--- Moves in its direction at its speed
+-- Returns false when the projectile leaves the window
 function Projectile:Update()
-	local projectEnt = Entity(self.entityID)
-	local transform = projectEnt:getComponent(Transform)
-	transform.position = transform.position + self.dir * self.speed
-	
-	-- If the projectile is outside the window boundaries, return false. 
-	-- This will allow any handler to destroy this projectile if desired
-	if transform.position.x < 0 or transform.position.x > S2D_WindowWidth() or 
-		transform.position.y < 0 or transform.position.y > S2D_WindowHeight() then
+	local x = self.x + self.vx
+	local y = self.y + self.vy
+
+	self.x = x
+	self.y = y
+	self.cx = x + self.halfWidth
+	self.cy = y + self.halfHeight
+
+	local position = self.entity:getComponent(Transform).position
+	position.x = x
+	position.y = y
+
+	if x < 0 or x > WINDOW_WIDTH or y < 0 or y > WINDOW_HEIGHT then
 		return false
 	end
-	
+
 	return true
 end
 
--- Get the unique entity ID of this projectile
-function Projectile:GetID() 
+function Projectile:GetID()
 	return self.entityID
 end
 
--- Check if projectile lifetime has expired
--- Returns true if the projectile should be destroyed
-function Projectile:TimesUp()
-	return self.lifeTimer:elapsed_ms() >= self.projectileLifetime
+-- now is the handler clock time in ms
+function Projectile:TimesUp(now)
+	return now >= self.expireTime
 end
 
--- Destroy the projectile entity
--- Removes it from the game world
 function Projectile:Destroy()
-	local projectile = Entity(self.entityID)
-	projectile:destroy()
+	self.entity:destroy()
 end
