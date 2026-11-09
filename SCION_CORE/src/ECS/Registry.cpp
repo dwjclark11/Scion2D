@@ -98,7 +98,7 @@ void Registry::CreateLuaRegistryBind( sol::state& lua, Registry& registry )
 				if ( !type.valid() )
 					continue;
 
-				InvokeMetaFunction( GetIdType( type ), "exclude_component_from_view"_hs, &registry, &view );
+				InvokeMetaFunction( GetIdType( type ), "exclude_component_from_view"_hs, pRegistry, &view );
 			}
 
 			return view;

@@ -13,12 +13,6 @@
 
 #include <Sounds/AudioPlayer/AudioPlayer.hpp>
 
-// Systems not needed outside of the editor
-#ifdef IN_SCION_EDITOR
-#include "Core/Systems/RenderPickingSystem.h"
-#endif
-// End Editor only systems
-
 namespace Scion::Core::ECS
 {
 
@@ -33,8 +27,7 @@ bool MainRegistry::Initialize( bool bEnableFilewatcher )
 	m_pMainRegistry = std::make_unique<Registry>();
 	SCION_ASSERT( m_pMainRegistry && "Failed to initialize main registry." );
 
-	auto pAssetManager = std::make_shared<SCION_RESOURCES::AssetManager>( bEnableFilewatcher );
-	m_pMainRegistry->AddToContext<std::shared_ptr<SCION_RESOURCES::AssetManager>>( std::move( pAssetManager ) );
+	AddToContext( std::make_unique<SCION_RESOURCES::AssetManager>( bEnableFilewatcher ) );
 
 	SDL_AudioSpec spec;
 	SDL_zero( spec );
@@ -42,26 +35,13 @@ bool MainRegistry::Initialize( bool bEnableFilewatcher )
 	spec.format = SDL_AUDIO_F32;
 	spec.channels = 2;
 
-	m_pMainRegistry->AddToContext<std::shared_ptr<Scion::Sounds::AudioPlayer>>(
-		std::make_shared<Scion::Sounds::AudioPlayer>( 32, spec ) );
-
-	auto renderer = std::make_shared<Scion::Rendering::Renderer>();
+	m_pMainRegistry->AddToContext( std::make_unique<Scion::Sounds::AudioPlayer>( 32, spec ) );
+	auto& renderer = AddToContext( std::make_unique<Scion::Rendering::Renderer>() );
 
 	// Enable Alpha Blending
 	renderer->SetCapability( Scion::Rendering::Renderer::GLCapability::BLEND, true );
 	renderer->SetBlendCapability( Scion::Rendering::Renderer::BlendingFactors::SRC_ALPHA,
 								  Scion::Rendering::Renderer::BlendingFactors::ONE_MINUS_SRC_ALPHA );
-
-	// Currently we only need the depth test in the editor.
-#ifdef IN_SCION_EDITOR
-	renderer->SetCapability( Scion::Rendering::Renderer::GLCapability::DEPTH_TEST, true );
-#endif
-
-	if ( !AddToContext<std::shared_ptr<Scion::Rendering::Renderer>>( renderer ) )
-	{
-		SCION_ERROR( "Failed to add the renderer to the registry context!" );
-		return false;
-	}
 
 	m_bInitialized = RegisterMainSystems();
 
@@ -70,59 +50,12 @@ bool MainRegistry::Initialize( bool bEnableFilewatcher )
 
 bool MainRegistry::RegisterMainSystems()
 {
-	auto renderSystem = std::make_shared<Scion::Core::Systems::RenderSystem>();
-	if ( !renderSystem )
-	{
-		SCION_ERROR( "Failed to create the render system!" );
-		return false;
-	}
-
-	if ( !AddToContext<std::shared_ptr<Scion::Core::Systems::RenderSystem>>( renderSystem ) )
-	{
-		SCION_ERROR( "Failed to add the render system to the registry context!" );
-		return false;
-	}
-
-	auto renderUISystem = std::make_shared<Scion::Core::Systems::RenderUISystem>();
-	if ( !renderUISystem )
-	{
-		SCION_ERROR( "Failed to create the render UI system!" );
-		return false;
-	}
-
-	if ( !AddToContext<std::shared_ptr<Scion::Core::Systems::RenderUISystem>>( renderUISystem ) )
-	{
-		SCION_ERROR( "Failed to add the render UI system to the registry context!" );
-		return false;
-	}
-
-	auto renderShapeSystem = std::make_shared<Scion::Core::Systems::RenderShapeSystem>();
-	if ( !renderShapeSystem )
-	{
-		SCION_ERROR( "Failed to create the render Shape system!" );
-		return false;
-	}
-
-	if ( !AddToContext<std::shared_ptr<Scion::Core::Systems::RenderShapeSystem>>( renderShapeSystem ) )
-	{
-		SCION_ERROR( "Failed to add the render Shape system to the registry context!" );
-		return false;
-	}
-
-	AddToContext<std::shared_ptr<Scion::Core::Systems::PhysicsSystem>>(
-		std::make_shared<Scion::Core::Systems::PhysicsSystem>() );
-
-	AddToContext<std::shared_ptr<Scion::Core::Systems::AnimationSystem>>(
-		std::make_shared<Scion::Core::Systems::AnimationSystem>() );
-
-	AddToContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>(
-		std::make_shared<Scion::Core::Events::EventDispatcher>() );
-
-#ifdef IN_SCION_EDITOR
-	AddToContext<std::shared_ptr<Scion::Core::Systems::RenderPickingSystem>>(
-		std::make_shared<Scion::Core::Systems::RenderPickingSystem>() );
-	SCION_LOG( "Added Render Picking System to Main Registry." );
-#endif
+	AddToContext( std::make_unique<Scion::Core::Systems::RenderSystem>() );
+	AddToContext( std::make_unique<Scion::Core::Systems::RenderUISystem>() );
+	AddToContext( std::make_unique<Scion::Core::Systems::RenderShapeSystem>() );
+	AddToContext( std::make_unique<Scion::Core::Systems::PhysicsSystem>() );
+	AddToContext( std::make_unique<Scion::Core::Systems::AnimationSystem>() );
+	AddToContext( std::make_unique<Scion::Core::Events::EventDispatcher>() );
 
 	return true;
 }
@@ -130,55 +63,55 @@ bool MainRegistry::RegisterMainSystems()
 Scion::Core::Events::EventDispatcher& MainRegistry::GetEventDispatcher()
 {
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
-	return *m_pMainRegistry->GetContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>();
+	return *m_pMainRegistry->GetContext<std::unique_ptr<Scion::Core::Events::EventDispatcher>>();
 }
 
 SCION_RESOURCES::AssetManager& MainRegistry::GetAssetManager()
 {
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
-	return *m_pMainRegistry->GetContext<std::shared_ptr<SCION_RESOURCES::AssetManager>>();
+	return *m_pMainRegistry->GetContext<std::unique_ptr<SCION_RESOURCES::AssetManager>>();
 }
 
 Scion::Sounds::AudioPlayer& MainRegistry::GetAudioPlayer()
 {
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
-	return *m_pMainRegistry->GetContext<std::shared_ptr<Scion::Sounds::AudioPlayer>>();
+	return *m_pMainRegistry->GetContext<std::unique_ptr<Scion::Sounds::AudioPlayer>>();
 }
 
 Scion::Rendering::Renderer& MainRegistry::GetRenderer()
 {
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
-	return *m_pMainRegistry->GetContext<std::shared_ptr<Scion::Rendering::Renderer>>();
+	return *m_pMainRegistry->GetContext<std::unique_ptr<Scion::Rendering::Renderer>>();
 }
 
 Scion::Core::Systems::RenderSystem& MainRegistry::GetRenderSystem()
 {
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
-	return *m_pMainRegistry->GetContext<std::shared_ptr<Scion::Core::Systems::RenderSystem>>();
+	return *m_pMainRegistry->GetContext<std::unique_ptr<Scion::Core::Systems::RenderSystem>>();
 }
 
 Scion::Core::Systems::RenderUISystem& MainRegistry::GetRenderUISystem()
 {
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
-	return *m_pMainRegistry->GetContext<std::shared_ptr<Scion::Core::Systems::RenderUISystem>>();
+	return *m_pMainRegistry->GetContext<std::unique_ptr<Scion::Core::Systems::RenderUISystem>>();
 }
 
 Scion::Core::Systems::RenderShapeSystem& MainRegistry::GetRenderShapeSystem()
 {
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
-	return *m_pMainRegistry->GetContext<std::shared_ptr<Scion::Core::Systems::RenderShapeSystem>>();
+	return *m_pMainRegistry->GetContext<std::unique_ptr<Scion::Core::Systems::RenderShapeSystem>>();
 }
 
 Scion::Core::Systems::AnimationSystem& MainRegistry::GetAnimationSystem()
 {
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
-	return *m_pMainRegistry->GetContext<std::shared_ptr<Scion::Core::Systems::AnimationSystem>>();
+	return *m_pMainRegistry->GetContext<std::unique_ptr<Scion::Core::Systems::AnimationSystem>>();
 }
 
 Scion::Core::Systems::PhysicsSystem& MainRegistry::GetPhysicsSystem()
 {
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
-	return *m_pMainRegistry->GetContext<std::shared_ptr<Scion::Core::Systems::PhysicsSystem>>();
+	return *m_pMainRegistry->GetContext<std::unique_ptr<Scion::Core::Systems::PhysicsSystem>>();
 }
 
 Registry* MainRegistry::GetRegistry()
@@ -194,6 +127,5 @@ bool MainRegistry::CleanUp()
 	m_pMainRegistry.reset( nullptr );
 	return m_pMainRegistry == nullptr;
 }
-
 
 } // namespace Scion::Core::ECS

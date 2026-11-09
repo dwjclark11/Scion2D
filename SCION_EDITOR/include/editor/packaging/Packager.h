@@ -32,7 +32,7 @@ struct PackagingProgress
 class Packager
 {
   public:
-	Packager( std::unique_ptr<PackageData> pData, std::shared_ptr<Scion::Utilities::ThreadPool> pThreadPool );
+	Packager( std::unique_ptr<PackageData> pData, Scion::Utilities::ThreadPool& threadPool );
 	~Packager();
 
 	bool Completed() const;
@@ -52,14 +52,13 @@ class Packager
 	void CopyAssetsToDestination();
 
   private:
+	Scion::Utilities::ThreadPool& m_ThreadPool;
 	std::unique_ptr<PackageData> m_pPackageData;
 	std::thread m_PackageThread;
 	std::atomic_bool m_bPackaging;
 	std::atomic_bool m_bHasError;
 	mutable std::shared_mutex m_ProgressMutex;
 	PackagingProgress m_Progress;
-
-	std::shared_ptr<Scion::Utilities::ThreadPool> m_pThreadPool;
 };
 
 } // namespace Scion::Editor

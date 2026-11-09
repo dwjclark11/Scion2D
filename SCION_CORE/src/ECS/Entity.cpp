@@ -48,12 +48,11 @@ Entity::Entity( const Entity& other )
 	, m_sName{ other.m_sName }
 	, m_sGroup{ other.m_sGroup }
 {
-
 }
 
 Entity& Entity::operator=( const Entity& other )
 {
-	if (this != &other)
+	if ( this != &other )
 	{
 		this->m_Registry = other.m_Registry;
 		this->m_Entity = other.m_Entity;
@@ -67,8 +66,8 @@ Entity& Entity::operator=( const Entity& other )
 Entity::Entity( Entity&& other ) noexcept
 	: m_Registry{ other.m_Registry }
 	, m_Entity{ other.m_Entity }
-	, m_sName{ std::move(other.m_sName) }
-	, m_sGroup{ std::move(other.m_sGroup)}
+	, m_sName{ std::move( other.m_sName ) }
+	, m_sGroup{ std::move( other.m_sGroup ) }
 {
 	other.m_Registry = nullptr;
 	other.m_Entity = entt::null;
@@ -78,22 +77,27 @@ Entity::Entity( Entity&& other ) noexcept
 
 Entity& Entity::operator=( Entity&& other ) noexcept
 {
-	if (this != &other)
+	if ( this != &other )
 	{
-
+		m_Registry = other.m_Registry;
+		m_Entity = other.m_Entity;
+		m_sName = std::move( other.m_sName );
+		m_sGroup = std::move( other.m_sGroup );
+		other.m_Registry = nullptr;
+		other.m_Entity = entt::null;
+		other.m_sName.clear();
+		other.m_sGroup.clear();
 	}
 
 	return *this;
 }
 
-Entity::~Entity() {
-
-}
+Entity::~Entity() = default;
 
 bool Entity::AddChild( entt::entity child, bool bSetLocal )
 {
 	auto& registry = m_Registry->GetRegistry();
-	if (auto* pChildUneditable = registry.try_get<UneditableComponent>(child))
+	if ( auto* pChildUneditable = registry.try_get<UneditableComponent>( child ) )
 	{
 		SCION_WARN( "Failed to add child. Child is an uneditable entity." );
 		return false;
@@ -235,14 +239,13 @@ void Entity::UpdateTransform()
 	auto& relations = GetComponent<Relationship>();
 	auto& transform = GetComponent<TransformComponent>();
 
-	//glm::vec2 parentPosition{ 0.f };
 	auto parent = relations.parent;
 	if ( parent != entt::null )
 	{
 		Entity ent{ m_Registry, parent };
 		const auto& parentTransform = ent.GetComponent<TransformComponent>();
 		transform.position = parentTransform.position + transform.localPosition;
-		transform.rotation = parentTransform.rotation + transform.localRotation; 
+		transform.rotation = parentTransform.rotation + transform.localRotation;
 	}
 
 	if ( relations.firstChild == entt::null )

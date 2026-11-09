@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/ECS/Registry.h"
+#include <utility>
 
 #define MAIN_REGISTRY() Scion::Core::ECS::MainRegistry::GetInstance()
 #define ASSET_MANAGER() MAIN_REGISTRY().GetAssetManager()
@@ -14,7 +15,6 @@ namespace Scion::Sounds
 {
 class AudioPlayer;
 } // namespace Scion::Sounds
-
 
 namespace Scion::Core::Events
 {
@@ -49,9 +49,10 @@ class MainRegistry
 	Scion::Rendering::Renderer& GetRenderer();
 
 	template <typename TContext>
-	TContext AddToContext( TContext context )
+	std::remove_cvref_t<TContext>& AddToContext( TContext&& context )
 	{
-		return m_pMainRegistry->AddToContext<TContext>( context );
+		using Type = std::remove_cvref_t<TContext>;
+		return m_pMainRegistry->AddToContext<Type>( std::forward<TContext>( context ) );
 	}
 
 	template <typename TContext>

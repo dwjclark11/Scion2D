@@ -27,7 +27,7 @@ constexpr std::array<std::string_view, 16> CopyPackageFiles = {
 	"SCION_ENGINE.exe",
 	"SDL3_imaged.dll",
 	"SDL3_mixerd.dll",
-	"SDL3d.dll",
+	"SDL3.dll",
 	"vorbis.dll",
 	"vorbisfile.dll",
 	"wavpackdll.dll",
@@ -62,11 +62,11 @@ constexpr std::array<std::string_view, 16> CopyPackageFiles = {
 
 namespace Scion::Editor
 {
-Packager::Packager( std::unique_ptr<PackageData> pData, std::shared_ptr<Scion::Utilities::ThreadPool> pThreadPool )
-	: m_pPackageData{ std::move( pData ) }
+Packager::Packager( std::unique_ptr<PackageData> pData, Scion::Utilities::ThreadPool& threadPool )
+	: m_ThreadPool{ threadPool }
+	, m_pPackageData{ std::move( pData ) }
 	, m_bPackaging{ false }
 	, m_bHasError{ false }
-	, m_pThreadPool{ pThreadPool }
 {
 	m_PackageThread = std::thread( [ this ] { RunPackager(); } );
 }
@@ -271,7 +271,7 @@ void Packager::RunPackager()
 				.sDestinationPath = m_pPackageData->sFinalDestination + PATH_SEPARATOR + "assets",
 				.sProjectPath = m_pPackageData->pProjectInfo->GetProjectPath().string() };
 
-			AssetPackager assetPackager{ assetPackagerParams, m_pThreadPool };
+			AssetPackager assetPackager{ assetPackagerParams, m_ThreadPool };
 
 			assetPackager.PackageAssets( assets );
 		}

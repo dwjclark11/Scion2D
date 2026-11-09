@@ -14,6 +14,7 @@
 
 #include <Core/Scripting/InputManager.h>
 #include <Core/CoreUtilities/EngineShaders.h>
+#include <Core/Systems/RenderPickingSystem.h>
 
 #include <Windowing/Inputs/Keyboard.h>
 #include <Windowing/Inputs/Mouse.h>
@@ -201,8 +202,10 @@ bool Application::Initialize()
 		return false;
 	}
 
-	mainRegistry.AddToContext<Scion::Core::ProjectInfoPtr>( std::make_shared<Scion::Core::ProjectInfo>() );
-	mainRegistry.AddToContext<EditorStatePtr>( std::make_shared<EditorState>() );
+	mainRegistry.AddToContext( std::make_unique<Scion::Core::Systems::RenderPickingSystem>() );
+	mainRegistry.AddToContext( std::make_unique<Scion::Core::ProjectInfo>() );
+	mainRegistry.AddToContext( std::make_unique<EditorState>() );
+
 	m_pHub = std::make_unique<Hub>( *m_pWindow );
 
 	return true;
@@ -228,19 +231,9 @@ bool Application::InitApp()
 		return false;
 	}
 
-	auto pEditorFramebuffers = std::make_shared<EditorFramebuffers>();
+	auto& mainRegistry = MAIN_REGISTRY();
 
-	if ( !pEditorFramebuffers )
-	{
-		SCION_ERROR( "Failed to create editor frame buffers!" );
-		return false;
-	}
-
-	if ( !MAIN_REGISTRY().AddToContext<std::shared_ptr<EditorFramebuffers>>( pEditorFramebuffers ) )
-	{
-		SCION_ERROR( "Failed add the editor frame buffers to registry context!" );
-		return false;
-	}
+	auto& pEditorFramebuffers = mainRegistry.AddToContext( std::make_unique<EditorFramebuffers>() );
 
 	pEditorFramebuffers->mapFramebuffers.emplace( FramebufferType::SCENE,
 												  std::make_shared<Scion::Rendering::Framebuffer>( 640, 480, false ) );
@@ -248,30 +241,10 @@ bool Application::InitApp()
 	pEditorFramebuffers->mapFramebuffers.emplace( FramebufferType::TILEMAP,
 												  std::make_shared<Scion::Rendering::Framebuffer>( 640, 480, false ) );
 
-	if ( !MAIN_REGISTRY().AddToContext<std::shared_ptr<GridSystem>>( std::make_shared<GridSystem>() ) )
-	{
-		SCION_ERROR( "Failed add the grid system registry context!" );
-		return false;
-	}
-
-	if ( !MAIN_REGISTRY().AddToContext<EditorRenderSystemPtr>( std::make_shared<EditorRenderSystem>() ) )
-	{
-		SCION_ERROR( "Failed add the editor render system registry context!" );
-		return false;
-	}
-
-	auto pPickingTexture = std::make_shared<Scion::Rendering::PickingTexture>( 640, 480 );
-	if ( !pPickingTexture )
-	{
-		SCION_ERROR( "Failed to create the picking texture." );
-		return false;
-	}
-
-	if ( !MAIN_REGISTRY().AddToContext<std::shared_ptr<Scion::Rendering::PickingTexture>>( pPickingTexture ) )
-	{
-		SCION_ERROR( "Failed to add the picking texture to the registry context!" );
-		return false;
-	}
+	mainRegistry.AddToContext( std::make_unique<GridSystem>() );
+	mainRegistry.AddToContext( std::make_unique<EditorRenderSystem>() );
+	mainRegistry.AddToContext( std::make_unique<Scion::Rendering::PickingTexture>( 640, 480 ) );
+	
 
 	ADD_EVENT_HANDLER( Scion::Editor::Events::CloseEditorEvent, &Application::OnCloseEditor, *this );
 
@@ -281,10 +254,10 @@ bool Application::InitApp()
 
 	// We can now set the Crash Logger path to the running project
 	const auto& sProjectPath = CORE_GLOBALS().GetProjectPath();
-	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
+	auto& pProjectInfo = mainRegistry.GetContext<Scion::Core::ProjectInfoPtr>();
 	SCION_CRASH_LOGGER().SetProjectPath( pProjectInfo->GetProjectPath().string() );
 
-	MAIN_REGISTRY().AddToContext<SharedThreadPool>( std::make_shared<Scion::Utilities::ThreadPool>( 6 ) );
+	mainRegistry.AddToContext( std::make_unique<Scion::Utilities::ThreadPool>( 6 ) );
 
 	return true;
 }
@@ -576,7 +549,7 @@ void Application::ProcessEvents()
 void Application::Update()
 {
 	auto& mainRegistry = MAIN_REGISTRY();
-	auto& displayHolder = mainRegistry.GetContext<std::shared_ptr<DisplayHolder>>();
+	auto& displayHolder = mainRegistry.GetContext<std::unique_ptr<DisplayHolder>>();
 
 	for ( const auto& pDisplay : displayHolder->displays )
 	{
@@ -627,102 +600,20 @@ bool Application::CreateDisplays()
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 
-	auto pDisplayHolder = std::make_shared<DisplayHolder>();
+	auto& pDisplayHolder = mainRegistry.AddToContext( std::make_unique<DisplayHolder>() );
+	
+	pDisplayHolder->displays.push_back( std::make_unique<MenuDisplay>() );
+	pDisplayHolder->displays.push_back( std::make_unique<SceneDisplay>() );
+	pDisplayHolder->displays.push_back( std::make_unique<SceneHierarchyDisplay>() );
+	pDisplayHolder->displays.push_back( std::make_unique<LogDisplay>() );
+	pDisplayHolder->displays.push_back( std::make_unique<TilesetDisplay>() );
+	pDisplayHolder->displays.push_back( std::make_unique<TilemapDisplay>() );
+	pDisplayHolder->displays.push_back( std::make_unique<TileDetailsDisplay>() );
+	pDisplayHolder->displays.push_back( std::make_unique<AssetDisplay>() );
+	pDisplayHolder->displays.push_back( std::make_unique<ContentDisplay>() );
+	pDisplayHolder->displays.push_back( std::make_unique<ScriptDisplay>() );
+	pDisplayHolder->displays.push_back( std::make_unique<PackageGameDisplay>() );
 
-	if ( !mainRegistry.AddToContext<std::shared_ptr<DisplayHolder>>( pDisplayHolder ) )
-	{
-		SCION_ERROR( "Failed to add the display holder to the main registry." );
-		return false;
-	}
-
-	auto pMenuDisplay = std::make_unique<MenuDisplay>();
-	if ( !pMenuDisplay )
-	{
-		SCION_ERROR( "Failed to Create Menu Display!" );
-		return false;
-	}
-
-	auto pSceneDisplay = std::make_unique<SceneDisplay>();
-	if ( !pSceneDisplay )
-	{
-		SCION_ERROR( "Failed to Create Scene Display!" );
-		return false;
-	}
-
-	auto pSceneHierarchyDisplay = std::make_unique<SceneHierarchyDisplay>();
-	if ( !pSceneHierarchyDisplay )
-	{
-		SCION_ERROR( "Failed to Create pSceneHierarchyDisplay !" );
-		return false;
-	}
-
-	auto pLogDisplay = std::make_unique<LogDisplay>();
-	if ( !pLogDisplay )
-	{
-		SCION_ERROR( "Failed to Create Log Display!" );
-		return false;
-	}
-
-	auto pTilesetDisplay = std::make_unique<TilesetDisplay>();
-	if ( !pTilesetDisplay )
-	{
-		SCION_ERROR( "Failed to Create TilesetDisplay!" );
-		return false;
-	}
-
-	auto pTilemapDisplay = std::make_unique<TilemapDisplay>();
-	if ( !pTilemapDisplay )
-	{
-		SCION_ERROR( "Failed to Create TilemapDisplay!" );
-		return false;
-	}
-
-	auto pTileDetailsDisplay = std::make_unique<TileDetailsDisplay>();
-	if ( !pTileDetailsDisplay )
-	{
-		SCION_ERROR( "Failed to Create TileDetailsDisplay!" );
-		return false;
-	}
-
-	auto pAssetDisplay = std::make_unique<AssetDisplay>();
-	if ( !pAssetDisplay )
-	{
-		SCION_ERROR( "Failed to Create AssetDisplay!" );
-		return false;
-	}
-
-	auto pContentDisplay = std::make_unique<ContentDisplay>();
-	if ( !pContentDisplay )
-	{
-		SCION_ERROR( "Failed to Create Content Display!" );
-		return false;
-	}
-
-	auto pScriptDisplay = std::make_unique<ScriptDisplay>();
-	if ( !pScriptDisplay )
-	{
-		SCION_ERROR( "Failed to Create Script Display!" );
-		return false;
-	}
-
-	auto pPackageDisplay = std::make_unique<PackageGameDisplay>();
-	if ( !pPackageDisplay )
-	{
-		SCION_ERROR( "Failed to Create Script Display!" );
-		return false;
-	}
-
-	pDisplayHolder->displays.push_back( std::move( pMenuDisplay ) );
-	pDisplayHolder->displays.push_back( std::move( pSceneDisplay ) );
-	pDisplayHolder->displays.push_back( std::move( pSceneHierarchyDisplay ) );
-	pDisplayHolder->displays.push_back( std::move( pLogDisplay ) );
-	pDisplayHolder->displays.push_back( std::move( pTileDetailsDisplay ) );
-	pDisplayHolder->displays.push_back( std::move( pTilesetDisplay ) );
-	pDisplayHolder->displays.push_back( std::move( pTilemapDisplay ) );
-	pDisplayHolder->displays.push_back( std::move( pAssetDisplay ) );
-	pDisplayHolder->displays.push_back( std::move( pContentDisplay ) );
-	pDisplayHolder->displays.push_back( std::move( pScriptDisplay ) );
-	pDisplayHolder->displays.push_back( std::move( pPackageDisplay ) );
 	pDisplayHolder->displays.push_back( std::make_unique<ProjectSettingsDisplay>() );
 	pDisplayHolder->displays.push_back( std::make_unique<ProfilerDisplay>() );
 
@@ -813,7 +704,7 @@ void Application::RenderDisplays()
 	InitDisplays();
 
 	auto& mainRegistry = MAIN_REGISTRY();
-	auto& pDisplayHolder = mainRegistry.GetContext<std::shared_ptr<DisplayHolder>>();
+	auto& pDisplayHolder = mainRegistry.GetContext<std::unique_ptr<DisplayHolder>>();
 
 	for ( const auto& pDisplay : pDisplayHolder->displays )
 	{

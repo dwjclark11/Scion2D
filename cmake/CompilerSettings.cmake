@@ -13,7 +13,7 @@ if( WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" )
 						/MP
 #						/arch:AVX
 #						/arch:AVX2
-						/W1					# warning level: /W0, /W1, /W2, /W3, /W4
+						/W4					# warning level: /W0, /W1, /W2, /W3, /W4
 #						/Wall
 #						/WX-				# treat linker warnings as errors
 #						/permissive-
@@ -60,11 +60,8 @@ endif()
 if( UNIX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
 	set( CXX_COMPILE_FLAGS
 						-std=c++23
-						-no-pie
-						-fno-pie
 						-ffunction-sections
 						-fdata-sections
-						-msse4.1
 						-fPIC
 						-pthread
 #						-W
@@ -106,10 +103,8 @@ endif()
 if( UNIX AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
 	set( CXX_COMPILE_FLAGS
 						-std=c++23
-						-fno-pie
 						-ffunction-sections
 						-fdata-sections
-						-msse4.1
 						-fPIC
 						-pthread
 #						-W

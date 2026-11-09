@@ -86,7 +86,7 @@ void Scion::Core::Scripting::RendererBinder::CreateRenderingBind( sol::state& lu
 		&Text::color );
 
 	// Bind the renderer
-	auto& renderer = mainRegistry.GetContext<std::shared_ptr<Renderer>>();
+	auto& renderer = mainRegistry.GetContext<std::unique_ptr<Renderer>>();
 	if ( !renderer )
 	{
 		SCION_ERROR( "Failed to bind the Renderer to Lua! Not in the registry context!" );
@@ -116,7 +116,7 @@ void Scion::Core::Scripting::RendererBinder::CreateRenderingBind( sol::state& lu
 
 	lua.set_function( "DrawText", [ & ]( const Text& text ) { renderer->DrawText2D( text ); } );
 
-	auto& camera = registry.GetContext<std::shared_ptr<Camera2D>>();
+	auto& camera = registry.GetContext<std::unique_ptr<Camera2D>>();
 	if ( !camera )
 	{
 		SCION_ERROR( "Failed to bind the camera to lua - Failed to get the camera from the registry context!" );

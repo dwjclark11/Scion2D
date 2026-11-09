@@ -17,7 +17,7 @@ namespace Scion::Editor
 void LuaCoreBinder::CreateLuaBind( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
 	auto& mouse = INPUT_MANAGER().GetMouse();
-	auto& camera = registry.GetContext<std::shared_ptr<Scion::Rendering::Camera2D>>();
+	auto& camera = registry.GetContext<std::unique_ptr<Scion::Rendering::Camera2D>>();
 
 	lua.new_usertype<Mouse>(
 		"Mouse",
@@ -30,7 +30,7 @@ void LuaCoreBinder::CreateLuaBind( sol::state& lua, Scion::Core::ECS::Registry& 
 		[ & ]( int btn ) { return mouse.IsBtnPressed( btn ); },
 		"screenPosition",
 		[ & ]() {
-			const auto& mouseInfo = registry.GetContext<std::shared_ptr<MouseGuiInfo>>();
+			const auto& mouseInfo = registry.GetContext<std::unique_ptr<MouseGuiInfo>>();
 			// If the mouse info is invalid, return the mouse screen position from SDL.
 			// This does not take into account ImGui::Docking, windowsize, relative position, etc.
 			if (!mouseInfo)
@@ -43,7 +43,7 @@ void LuaCoreBinder::CreateLuaBind( sol::state& lua, Scion::Core::ECS::Registry& 
 		},
 		"worldPosition",
 		[ & ]() {
-			const auto& mouseInfo = registry.GetContext<std::shared_ptr<MouseGuiInfo>>();
+			const auto& mouseInfo = registry.GetContext<std::unique_ptr<MouseGuiInfo>>();
 			// If the mouse info is invalid, return the mouse screen position from SDL.
 			// This does not take into account ImGui::Docking, windowsize, relative position, etc.
 			if (!mouseInfo)

@@ -1,6 +1,8 @@
 #pragma once
 #include <entt/entt.hpp>
 #include <sol/sol.hpp>
+#include <type_traits>
+#include <utility>
 
 namespace Scion::Core::ECS
 {
@@ -54,7 +56,7 @@ class Registry
 	 * @return Returns a reference to the newly added context.
 	 */
 	template <typename TContext>
-	TContext AddToContext( TContext context );
+	std::remove_cvref_t<TContext>& AddToContext( TContext&& context );
 
 	/*
 	 * @brief Checks the map for the desired context variable and returns

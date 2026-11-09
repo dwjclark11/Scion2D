@@ -318,7 +318,7 @@ void MenuDisplay::Draw()
 void MenuDisplay::DrawDisplayItem( EditorState& editorState, const std::string& sDisplayName, const EDisplay eDisplay )
 {
 	bool bDisplayEnabled{ editorState.IsDisplayOpen( eDisplay ) };
-	if ( ImGui::Selectable( sDisplayName.c_str(), false, ImGuiSelectableFlags_DontClosePopups ) )
+	if ( ImGui::Selectable( sDisplayName.c_str(), false, ImGuiSelectableFlags_NoAutoClosePopups ) )
 	{
 		bDisplayEnabled = !bDisplayEnabled;
 		editorState.SetDisplay( eDisplay, bDisplayEnabled );

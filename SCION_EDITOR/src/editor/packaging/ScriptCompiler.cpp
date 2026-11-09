@@ -6,14 +6,126 @@
 
 #include <sol/sol.hpp>
 
-#ifdef _WIN32
-constexpr const std::string_view FIND_LUAC_COMMAND = "where luac";
-#else
-constexpr const std::string_view FIND_LUAC_COMMAND = "which luac";
-#endif
+#include <algorithm>
+#include <array>
+#include <cstdio>
+#include <cstdlib>
+#include <filesystem>
+#include <memory>
+#include <sstream>
+#include <system_error>
+#include <vector>
 
 namespace Scion::Editor
 {
+
+namespace
+{
+std::vector<std::string> ReadCommandLines( const std::string& sCommand )
+{
+	std::vector<std::string> lines{};
+
+#ifdef _WIN32
+	std::unique_ptr<FILE, decltype( &_pclose )> pipe( _popen( sCommand.c_str(), "r" ), _pclose );
+#else
+	std::unique_ptr<FILE, decltype( &pclose )> pipe( popen( sCommand.c_str(), "r" ), pclose );
+#endif
+
+	if ( !pipe )
+		return lines;
+
+	std::array<char, 512> buffer;
+
+	while ( fgets( buffer.data(), static_cast<int>( buffer.size() ), pipe.get() ) != nullptr )
+	{
+		std::string sLine{ buffer.data() };
+		sLine.erase( sLine.find_last_not_of( " \n\r" ) + 1 );
+
+		if ( !sLine.empty() )
+			lines.push_back( sLine );
+	}
+
+	return lines;
+}
+
+std::vector<std::string> BuildLuacNames()
+{
+	const std::string sMajor{ LUA_VERSION_MAJOR };
+	const std::string sMinor{ LUA_VERSION_MINOR };
+
+	return { "luac" + sMajor + sMinor,
+			 "luac" + sMajor + "." + sMinor,
+			 "luac-" + sMajor + "." + sMinor,
+			 "luac" + sMajor + "-" + sMinor,
+			 "luac" };
+}
+
+std::string GetPathEnv()
+{
+#ifdef _WIN32
+	char* pBuffer{ nullptr };
+	std::size_t size{ 0 };
+
+	if ( _dupenv_s( &pBuffer, &size, "PATH" ) != 0 || pBuffer == nullptr )
+		return {};
+
+	std::string sPath{ pBuffer };
+	free( pBuffer );
+	return sPath;
+#else
+	const char* pPath{ std::getenv( "PATH" ) };
+	return pPath ? std::string{ pPath } : std::string{};
+#endif
+}
+
+std::vector<std::string> FindLuacCandidates()
+{
+	std::vector<std::string> found{};
+
+	const std::string sPathEnv{ GetPathEnv() };
+
+	if ( sPathEnv.empty() )
+		return found;
+
+#ifdef _WIN32
+	constexpr char cSeparator{ ';' };
+	const std::vector<std::string> extensions{ ".exe", "" };
+#else
+	constexpr char cSeparator{ ':' };
+	const std::vector<std::string> extensions{ "" };
+#endif
+
+	const auto names{ BuildLuacNames() };
+
+	std::stringstream ss{ sPathEnv };
+	std::string sDir{};
+
+	while ( std::getline( ss, sDir, cSeparator ) )
+	{
+		if ( sDir.empty() )
+			continue;
+
+		for ( const auto& sName : names )
+		{
+			for ( const auto& sExt : extensions )
+			{
+				std::error_code ec{};
+				const fs::path path{ fs::path{ sDir } / ( sName + sExt ) };
+
+				if ( !fs::is_regular_file( path, ec ) )
+					continue;
+
+				const std::string sFull{ path.string() };
+
+				if ( std::find( found.begin(), found.end(), sFull ) == found.end() )
+					found.push_back( sFull );
+			}
+		}
+	}
+
+	return found;
+}
+} // namespace
 
 ScriptCompiler::ScriptCompiler()
 	: m_sOutFile{}
@@ -24,8 +136,13 @@ ScriptCompiler::ScriptCompiler()
 	if ( !m_sLuacPath )
 	{
 		throw std::runtime_error(
-			"ScriptCompiler Error: Lua Compiler (luac) not found on system.\n"
-			"Please install the luac compiler and add to your environment, so the editor can find it." );
+			fmt::format( "ScriptCompiler Error: Lua Compiler (luac) for Lua {}.{} not found on system.\n"
+						 "Please install a matching luac (luac{}{} or luac) and add it to your environment, "
+						 "so the editor can find it.",
+						 LUA_VERSION_MAJOR,
+						 LUA_VERSION_MINOR,
+						 LUA_VERSION_MAJOR,
+						 LUA_VERSION_MINOR ) );
 	}
 }
 
@@ -43,7 +160,7 @@ bool ScriptCompiler::AddScripts( const std::string& sScriptList )
 
 	try
 	{
-		auto result = lua.safe_script_file( sScriptList );
+		auto result = lua.safe_script_file( sScriptList, sol::script_pass_on_error );
 		if ( !result.valid() )
 		{
 			sol::error error = result;
@@ -57,7 +174,8 @@ bool ScriptCompiler::AddScripts( const std::string& sScriptList )
 			return false;
 		}
 
-		const std::string sContentPath = fmt::format( "{}{}content{}", CORE_GLOBALS().GetProjectPath(), PATH_SEPARATOR, PATH_SEPARATOR );
+		const std::string sContentPath =
+			fmt::format( "{}{}content{}", CORE_GLOBALS().GetProjectPath(), PATH_SEPARATOR, PATH_SEPARATOR );
 
 		for ( const auto& [ _, script ] : *optScriptList )
 		{
@@ -109,17 +227,19 @@ void ScriptCompiler::Compile()
 	}
 
 #ifdef _WIN32
-	std::string sCommand = fmt::format( "cmd /C \"\"{}\" \"-o\" \"{}\"", *m_sLuacPath, m_sOutFile );
+	std::string sCommand = fmt::format( "cmd /C \"\"{}\" -o \"{}\"", *m_sLuacPath, m_sOutFile );
 #else
-	std::string sCommand = fmt::format( "\"\"{}\" \"-o\" \"{}\"", *m_sLuacPath, m_sOutFile );
+	std::string sCommand = fmt::format( "\"{}\" -o \"{}\"", *m_sLuacPath, m_sOutFile );
 #endif // _WIN32
 
 	for ( const auto& file : m_LuaFiles )
 	{
-		sCommand += " " + std::string{ "\"" + file + "\"" };
+		sCommand += " \"" + file + "\"";
 	}
 
+#ifdef _WIN32
 	sCommand += "\"";
+#endif // _WIN32
 
 	const std::string sError = Scion::Filesystem::ExecCmdWithErrorOutput( sCommand );
 
@@ -133,25 +253,23 @@ void ScriptCompiler::Compile()
 
 std::optional<std::string> ScriptCompiler::FindLuaCompiler()
 {
+	const std::string sWanted{ std::string{ "Lua " } + LUA_VERSION_MAJOR + "." + LUA_VERSION_MINOR };
+
+	for ( const auto& sPath : FindLuacCandidates() )
+	{
 #ifdef _WIN32
-	std::unique_ptr<FILE, decltype( &_pclose )> pipe( _popen( std::string{ FIND_LUAC_COMMAND }.c_str(), "r" ),
-													  _pclose );
+		const std::string sCommand{ "\"\"" + sPath + "\" -v 2>&1\"" };
 #else
-	std::unique_ptr<FILE, decltype( &pclose )> pipe( popen( std::string{ FIND_LUAC_COMMAND }.c_str(), "r" ), pclose );
+		const std::string sCommand{ "\"" + sPath + "\" -v 2>&1" };
 #endif
 
-	if ( !pipe )
-		return std::nullopt;
+		const auto output{ ReadCommandLines( sCommand ) };
 
-	std::string sResult{};
-	std::array<char, 256> buffer;
-
-	if ( fgets( buffer.data(), buffer.size(), pipe.get() ) != nullptr )
-	{
-		sResult = buffer.data();
-		sResult.erase( sResult.find_last_not_of( " \n\r" ) + 1 );
+		if ( !output.empty() && output.front().rfind( sWanted, 0 ) == 0 )
+			return sPath;
 	}
 
-	return sResult.empty() ? std::nullopt : std::optional<std::string>{ sResult };
+	return std::nullopt;
 }
+
 } // namespace Scion::Editor

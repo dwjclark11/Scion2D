@@ -97,7 +97,7 @@ void FollowCamera::CreateLuaFollowCamera( sol::state& lua, ECS::Registry& regist
 		"springback",
 		&FollowCamParams::springback );
 
-	auto& camera = registry.GetContext<std::shared_ptr<Scion::Rendering::Camera2D>>();
+	auto& camera = registry.GetContext<std::unique_ptr<Scion::Rendering::Camera2D>>();
 
 	lua.new_usertype<FollowCamera>( "FollowCamera",
 									sol::call_constructor,

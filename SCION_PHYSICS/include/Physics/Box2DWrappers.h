@@ -4,7 +4,7 @@
 
 namespace Scion::Physics
 {
-using PhysicsWorld = std::shared_ptr<b2World>;
+using PhysicsWorld = std::unique_ptr<b2World>;
 
 /*
  * BodyDestroyer

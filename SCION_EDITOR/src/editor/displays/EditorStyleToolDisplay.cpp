@@ -118,9 +118,9 @@ void EditorStyleToolDisplay::DrawColorPicker()
 	ImGui::ColorEdit4( "Resize Grip Active", &colors[ ImGuiCol_ResizeGripActive ].x );
 	ImGui::ColorEdit4( "Tab", &colors[ ImGuiCol_Tab ].x );
 	ImGui::ColorEdit4( "Tab Hovered", &colors[ ImGuiCol_TabHovered ].x );
-	ImGui::ColorEdit4( "Tab Active", &colors[ ImGuiCol_TabActive ].x );
-	ImGui::ColorEdit4( "Tab Unfocused", &colors[ ImGuiCol_TabUnfocused ].x );
-	ImGui::ColorEdit4( "Tab Unfocused Active", &colors[ ImGuiCol_TabUnfocusedActive ].x );
+	ImGui::ColorEdit4( "Tab Active", &colors[ ImGuiCol_TabSelected ].x );
+	ImGui::ColorEdit4( "Tab Unfocused", &colors[ ImGuiCol_TabDimmed ].x );
+	ImGui::ColorEdit4( "Tab Unfocused Active", &colors[ ImGuiCol_TabDimmedSelected ].x );
 	ImGui::ColorEdit4( "Docking Preview", &colors[ ImGuiCol_DockingPreview ].x );
 	ImGui::ColorEdit4( "Docking Empty BG", &colors[ ImGuiCol_DockingEmptyBg ].x );
 	ImGui::ColorEdit4( "Plot Lines", &colors[ ImGuiCol_PlotLines ].x );

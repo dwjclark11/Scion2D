@@ -116,3 +116,4 @@ class ThreadPool
 } // namespace Scion::Utilities
 
 using SharedThreadPool = std::shared_ptr<Scion::Utilities::ThreadPool>;
+using UniqueThreadPool = std::unique_ptr<Scion::Utilities::ThreadPool>;

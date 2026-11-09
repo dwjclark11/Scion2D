@@ -198,7 +198,7 @@ void ScriptingSystem::Update( Scion::Core::ECS::Registry& registry )
 		SCION_ERROR( "Error running the Update script: {0}", err.what() );
 	}
 
-	if ( auto* pLua = registry.TryGetContext<std::shared_ptr<sol::state>>() )
+	if ( auto* pLua = registry.TryGetContext<std::unique_ptr<sol::state>>() )
 	{
 		( *pLua )->collect_garbage();
 	}
@@ -220,7 +220,7 @@ void ScriptingSystem::Render( Scion::Core::ECS::Registry& registry )
 		SCION_ERROR( "Error running the Render script: {0}", err.what() );
 	}
 
-	if ( auto* pLua = registry.TryGetContext<std::shared_ptr<sol::state>>() )
+	if ( auto* pLua = registry.TryGetContext<std::unique_ptr<sol::state>>() )
 	{
 		( *pLua )->collect_garbage();
 	}
@@ -556,7 +556,7 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, Scion::Core::ECS::R
 		&Scion::Utilities::RandomFloatGenerator::GetValue );
 
 	lua.set_function( "S2D_EntityInView", [ & ]( const TransformComponent& transform, float width, float height ) {
-		auto& camera = registry.GetContext<std::shared_ptr<Scion::Rendering::Camera2D>>();
+		auto& camera = registry.GetContext<std::unique_ptr<Scion::Rendering::Camera2D>>();
 		return Scion::Core::EntityInView( transform, width, height, *camera );
 	} );
 
@@ -565,7 +565,7 @@ void ScriptingSystem::RegisterLuaFunctions( sol::state& lua, Scion::Core::ECS::R
 
 void ScriptingSystem::RegisterLuaEvents( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
-	auto* pDispatcher = registry.TryGetContext<std::shared_ptr<EventDispatcher>>();
+	auto* pDispatcher = registry.TryGetContext<std::unique_ptr<EventDispatcher>>();
 	SCION_ASSERT( pDispatcher && "There must be at least one registered dispatcher." );
 
 	LuaEventBinder::CreateLuaEventBindings( lua );

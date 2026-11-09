@@ -62,31 +62,26 @@ void SceneDisplay::LoadScene()
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 
 	const auto& canvas = pCurrentScene->GetCanvas();
-	auto pCamera = runtimeRegistry.AddToContext<std::shared_ptr<Camera2D>>(
-		std::make_shared<Camera2D>( canvas.width, canvas.height ) );
+	auto& pCamera = runtimeRegistry.AddToContext( std::make_unique<Camera2D>( canvas.width, canvas.height ) );
 
-	auto pPhysicsWorld = runtimeRegistry.AddToContext<Scion::Physics::PhysicsWorld>(
-		std::make_shared<b2World>( b2Vec2{ 0.f, CORE_GLOBALS().GetGravity() } ) );
+	auto& pPhysicsWorld =
+		runtimeRegistry.AddToContext( std::make_unique<b2World>( b2Vec2{ 0.f, CORE_GLOBALS().GetGravity() } ) );
 
-	auto pContactListener = runtimeRegistry.AddToContext<std::shared_ptr<Scion::Physics::ContactListener>>(
-		std::make_shared<Scion::Physics::ContactListener>() );
-
+	auto& pContactListener = runtimeRegistry.AddToContext( std::make_unique<Scion::Physics::ContactListener>() );
 	pPhysicsWorld->SetContactListener( pContactListener.get() );
 
 	// Add the temporary event dispatcher
-	runtimeRegistry.AddToContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>(
-		std::make_shared<Scion::Core::Events::EventDispatcher>() );
+	runtimeRegistry.AddToContext( std::make_unique<Scion::Core::Events::EventDispatcher>() );
 
 	// Add necessary systems
-	auto scriptSystem =
-		runtimeRegistry.AddToContext<std::shared_ptr<ScriptingSystem>>( std::make_shared<ScriptingSystem>() );
-	runtimeRegistry.AddToContext<std::shared_ptr<MouseGuiInfo>>( std::make_shared<MouseGuiInfo>() );
+	auto& scriptSystem = runtimeRegistry.AddToContext( std::make_unique<ScriptingSystem>() );
+	runtimeRegistry.AddToContext( std::make_unique<MouseGuiInfo>() );
 
-	auto lua = runtimeRegistry.AddToContext<std::shared_ptr<sol::state>>( std::make_shared<sol::state>() );
+	auto& lua = runtimeRegistry.AddToContext( std::make_unique<sol::state>() );
 
 	if ( !lua )
 	{
-		lua = std::make_shared<sol::state>();
+		lua = std::make_unique<sol::state>();
 	}
 
 	lua->open_libraries( sol::lib::base,
@@ -100,11 +95,11 @@ void SceneDisplay::LoadScene()
 	Scion::Core::Systems::ScriptingSystem::RegisterLuaBindings( *lua, runtimeRegistry );
 	Scion::Core::Systems::ScriptingSystem::RegisterLuaFunctions( *lua, runtimeRegistry );
 	Scion::Core::Systems::ScriptingSystem::RegisterLuaSystems( *lua, runtimeRegistry );
+
 	// We need to be able to get the editor events from lua. Pass in the main registry to get the main
 	// event dispatcher.
 	Scion::Core::Systems::ScriptingSystem::RegisterLuaEvents( *lua, *MAIN_REGISTRY().GetRegistry() );
 	LuaCoreBinder::CreateLuaBind( *lua, runtimeRegistry );
-
 	EditorSceneManager::CreateSceneManagerLuaBind( *lua );
 
 	// We need to initialize all of the physics entities
@@ -160,7 +155,9 @@ void SceneDisplay::LoadScene()
 	}
 
 	// Get the main script path
-	auto mainScript = runtimeRegistry.AddToContext<MainScriptPtr>( std::make_shared<Scion::Core::Scripting::MainScriptFunctions>() );
+	auto& mainScript =
+		runtimeRegistry.AddToContext<MainScriptPtr>( std::make_unique<Scion::Core::Scripting::MainScriptFunctions>() );
+
 	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 	if ( !scriptSystem->LoadMainScript( *pProjectInfo, runtimeRegistry, *lua ) )
 	{
@@ -168,7 +165,7 @@ void SceneDisplay::LoadScene()
 		return;
 	}
 
-	if (!mainScript->init.valid())
+	if ( !mainScript->init.valid() )
 	{
 		SCION_ERROR( "Failed to initialize main script. init() function is invalid." );
 		return;
@@ -201,13 +198,13 @@ void SceneDisplay::UnloadScene()
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 
 	runtimeRegistry.ClearRegistry();
-	runtimeRegistry.RemoveContext<std::shared_ptr<Camera2D>>();
+	runtimeRegistry.RemoveContext<std::unique_ptr<Camera2D>>();
 	runtimeRegistry.RemoveContext<Scion::Physics::PhysicsWorld>();
-	runtimeRegistry.RemoveContext<std::shared_ptr<Scion::Physics::ContactListener>>();
-	runtimeRegistry.RemoveContext<std::shared_ptr<ScriptingSystem>>();
-	runtimeRegistry.RemoveContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>();
+	runtimeRegistry.RemoveContext<std::unique_ptr<Scion::Physics::ContactListener>>();
+	runtimeRegistry.RemoveContext<std::unique_ptr<ScriptingSystem>>();
+	runtimeRegistry.RemoveContext<std::unique_ptr<Scion::Core::Events::EventDispatcher>>();
 	runtimeRegistry.RemoveContext<MainScriptPtr>();
-	runtimeRegistry.RemoveContext<std::shared_ptr<sol::state>>();
+	runtimeRegistry.RemoveContext<std::unique_ptr<sol::state>>();
 
 	auto& mainRegistry = MAIN_REGISTRY();
 	mainRegistry.GetAudioPlayer().StopAllTracks();
@@ -216,8 +213,8 @@ void SceneDisplay::UnloadScene()
 void SceneDisplay::RenderScene() const
 {
 	auto& mainRegistry = MAIN_REGISTRY();
-	auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
-	auto& renderer = mainRegistry.GetContext<std::shared_ptr<Scion::Rendering::Renderer>>();
+	auto& editorFramebuffers = mainRegistry.GetContext<std::unique_ptr<EditorFramebuffers>>();
+	auto& renderer = mainRegistry.GetContext<std::unique_ptr<Scion::Rendering::Renderer>>();
 
 	auto& renderSystem = mainRegistry.GetRenderSystem();
 	auto& renderUISystem = mainRegistry.GetRenderUISystem();
@@ -235,7 +232,7 @@ void SceneDisplay::RenderScene() const
 	if ( pCurrentScene && m_bPlayScene )
 	{
 		auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
-		auto& camera = runtimeRegistry.GetContext<std::shared_ptr<Camera2D>>();
+		auto& camera = runtimeRegistry.GetContext<std::unique_ptr<Camera2D>>();
 		renderSystem.Update( runtimeRegistry, *camera );
 
 		if ( CORE_GLOBALS().RenderCollidersEnabled() )
@@ -246,7 +243,7 @@ void SceneDisplay::RenderScene() const
 		renderUISystem.Update( runtimeRegistry );
 
 		// Add Render Script stuff after everything???
-		auto& scriptSystem = runtimeRegistry.GetContext<std::shared_ptr<Scion::Core::Systems::ScriptingSystem>>();
+		auto& scriptSystem = runtimeRegistry.GetContext<std::unique_ptr<Scion::Core::Systems::ScriptingSystem>>();
 		scriptSystem->Render( runtimeRegistry );
 	}
 
@@ -275,7 +272,7 @@ void SceneDisplay::HandleKeyEvent( const Scion::Core::Events::KeyEvent keyEvent 
 	auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
 
 	if ( auto* pEventDispatcher =
-			 runtimeRegistry.TryGetContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>() )
+			 runtimeRegistry.TryGetContext<std::unique_ptr<Scion::Core::Events::EventDispatcher>>() )
 	{
 		if ( !pEventDispatcher->get()->HasHandlers<Scion::Core::Events::KeyEvent>() )
 			return;
@@ -360,7 +357,7 @@ void SceneDisplay::Draw()
 	{
 		m_bWindowActive = ImGui::IsWindowFocused();
 
-		auto& editorFramebuffers = MAIN_REGISTRY().GetContext<std::shared_ptr<EditorFramebuffers>>();
+		auto& editorFramebuffers = MAIN_REGISTRY().GetContext<std::unique_ptr<EditorFramebuffers>>();
 		const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];
 
 		if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject() )
@@ -369,7 +366,7 @@ void SceneDisplay::Draw()
 			// We need to set the relative mouse window so that any scripts scripts will
 			// take into account the position of the imgui window relative to the actual window
 			// position, size, etc.
-			if ( auto* pMouseInfo = runtimeRegistry.TryGetContext<std::shared_ptr<MouseGuiInfo>>() )
+			if ( auto* pMouseInfo = runtimeRegistry.TryGetContext<std::unique_ptr<MouseGuiInfo>>() )
 			{
 				ImGuiIO io = ImGui::GetIO();
 				auto relativePos = ImGui::GetCursorScreenPos();
@@ -419,7 +416,7 @@ void SceneDisplay::Update()
 		std::this_thread::sleep_for( std::chrono::duration<double>( TARGET_FRAME_TIME - dt ) );
 	}
 
-	auto& camera = runtimeRegistry.GetContext<std::shared_ptr<Scion::Rendering::Camera2D>>();
+	auto& camera = runtimeRegistry.GetContext<std::unique_ptr<Scion::Rendering::Camera2D>>();
 	if ( !camera )
 	{
 		SCION_ERROR( "Failed to get the camera from the registry context!" );
@@ -428,7 +425,7 @@ void SceneDisplay::Update()
 
 	camera->Update();
 
-	auto& scriptSystem = runtimeRegistry.GetContext<std::shared_ptr<Scion::Core::Systems::ScriptingSystem>>();
+	auto& scriptSystem = runtimeRegistry.GetContext<std::unique_ptr<Scion::Core::Systems::ScriptingSystem>>();
 	scriptSystem->Update( runtimeRegistry );
 
 	if ( coreGlobals.IsPhysicsEnabled() )
@@ -438,12 +435,12 @@ void SceneDisplay::Update()
 			TARGET_FRAME_TIME_F, coreGlobals.GetVelocityIterations(), coreGlobals.GetPositionIterations() );
 		pPhysicsWorld->ClearForces();
 
-		auto& dispatch = runtimeRegistry.GetContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>();
+		auto& dispatch = runtimeRegistry.GetContext<std::unique_ptr<Scion::Core::Events::EventDispatcher>>();
 
 		// If there are no listeners for contact events, don't emit event
 		if ( dispatch->HasHandlers<Scion::Core::Events::ContactEvent>() )
 		{
-			if ( auto& pContactListener = runtimeRegistry.GetContext<std::shared_ptr<ContactListener>>() )
+			if ( auto& pContactListener = runtimeRegistry.GetContext<std::unique_ptr<ContactListener>>() )
 			{
 				auto pUserDataA = pContactListener->GetUserDataA();
 				auto pUserDataB = pContactListener->GetUserDataB();

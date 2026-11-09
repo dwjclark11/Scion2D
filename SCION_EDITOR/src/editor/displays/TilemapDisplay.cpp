@@ -64,8 +64,8 @@ void TilemapDisplay::RenderTilemap()
 {
 	auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
 	auto& mainRegistry = MAIN_REGISTRY();
-	auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
-	auto& renderer = mainRegistry.GetContext<std::shared_ptr<Scion::Rendering::Renderer>>();
+	auto& editorFramebuffers = mainRegistry.GetContext<std::unique_ptr<EditorFramebuffers>>();
+	auto& renderer = mainRegistry.GetContext<std::unique_ptr<Scion::Rendering::Renderer>>();
 
 	auto& renderSystem = mainRegistry.GetContext<EditorRenderSystemPtr>();
 	auto& renderUISystem = mainRegistry.GetRenderUISystem();
@@ -77,11 +77,11 @@ void TilemapDisplay::RenderTilemap()
 	if ( pActiveGizmo && pActiveGizmo->IsOverTilemapWindow() && !pActiveGizmo->OverGizmo() &&
 		 !ImGui::GetDragDropPayload() && mouse.IsBtnJustPressed( SCION_MOUSE_LEFT ) )
 	{
-		auto& renderPickingSystem = mainRegistry.GetContext<std::shared_ptr<RenderPickingSystem>>();
+		auto& renderPickingSystem = mainRegistry.GetContext<std::unique_ptr<RenderPickingSystem>>();
 		// Handle the picking texture/system
 		if ( renderPickingSystem && pCurrentScene )
 		{
-			auto& pPickingTexture = mainRegistry.GetContext<std::shared_ptr<PickingTexture>>();
+			auto& pPickingTexture = mainRegistry.GetContext<std::unique_ptr<PickingTexture>>();
 			if ( pPickingTexture )
 			{
 				renderer->SetCapability( Renderer::GLCapability::BLEND, false );
@@ -132,7 +132,7 @@ void TilemapDisplay::RenderTilemap()
 		return;
 	}
 
-	auto& gridSystem = mainRegistry.GetContext<std::shared_ptr<GridSystem>>();
+	auto& gridSystem = mainRegistry.GetContext<std::unique_ptr<GridSystem>>();
 	gridSystem->Update( *pCurrentScene, *m_pTilemapCam );
 
 	renderSystem->Update( pCurrentScene->GetRegistry(), *m_pTilemapCam, pCurrentScene->GetLayerParams() );
@@ -557,7 +557,7 @@ void TilemapDisplay::Draw()
 	{
 		m_bWindowActive = ImGui::IsWindowFocused();
 
-		auto& editorFramebuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
+		auto& editorFramebuffers = mainRegistry.GetContext<std::unique_ptr<EditorFramebuffers>>();
 		const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::TILEMAP ];
 
 		ImVec2 imageSize{ static_cast<float>( fb->Width() ), static_cast<float>( fb->Height() ) };
@@ -614,7 +614,7 @@ void TilemapDisplay::Draw()
 		{
 			fb->Resize( static_cast<int>( windowSize.x ), static_cast<int>( windowSize.y ) );
 
-			auto& pPickingTexture = mainRegistry.GetContext<std::shared_ptr<PickingTexture>>();
+			auto& pPickingTexture = mainRegistry.GetContext<std::unique_ptr<PickingTexture>>();
 			if ( pPickingTexture )
 			{
 				pPickingTexture->Resize( static_cast<int>( windowSize.x ), static_cast<int>( windowSize.y ) );

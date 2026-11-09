@@ -237,7 +237,7 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, Scion::Core::ECS::Re
 
 	auto& inputManager = GetInstance();
 	auto& keyboard = inputManager.GetKeyboard();
-	auto& camera = registry.GetContext<std::shared_ptr<Scion::Rendering::Camera2D>>();
+	auto& camera = registry.GetContext<std::unique_ptr<Scion::Rendering::Camera2D>>();
 
 	lua.new_usertype<Keyboard>(
 		"Keyboard",

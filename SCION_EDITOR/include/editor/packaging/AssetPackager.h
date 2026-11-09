@@ -34,7 +34,7 @@ struct AssetConversionData
 class AssetPackager
 {
   public:
-	AssetPackager( const AssetPackagerParams& params, std::shared_ptr<Scion::Utilities::ThreadPool> pThreadPool );
+	AssetPackager( const AssetPackagerParams& params, Scion::Utilities::ThreadPool& threadPool );
 	~AssetPackager();
 
 	void PackageAssets( const rapidjson::Value& assets );
@@ -59,8 +59,8 @@ class AssetPackager
 											  Scion::Utilities::AssetType eAssetType );
 
   private:
+	Scion::Utilities::ThreadPool& m_ThreadPool;
 	AssetPackagerParams m_Params;
-	std::shared_ptr<Scion::Utilities::ThreadPool> m_pThreadPool;
 };
 
 } // namespace Scion::Editor

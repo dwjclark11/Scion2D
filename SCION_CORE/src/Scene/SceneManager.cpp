@@ -106,7 +106,7 @@ void SceneManager::CreateLuaBind( sol::state& lua, ECS::Registry& registry )
 		"setCurrentScene",
 		[ &registry ]( const std::string& sSceneName )
 		{
-			auto* pSceneManagerData = registry.TryGetContext<std::shared_ptr<SceneManagerData>>();
+			auto* pSceneManagerData = registry.TryGetContext<std::unique_ptr<SceneManagerData>>();
 			if (!pSceneManagerData)
 			{
 				SCION_ERROR( "Scene manager data was not set correctly." );
@@ -117,7 +117,7 @@ void SceneManager::CreateLuaBind( sol::state& lua, ECS::Registry& registry )
 		},
 		"changeScene",
 		[ & ]( const std::string& sSceneName ) {
-			auto* pSceneManagerData = registry.TryGetContext<std::shared_ptr<SceneManagerData>>();
+			auto* pSceneManagerData = registry.TryGetContext<std::unique_ptr<SceneManagerData>>();
 			if ( !pSceneManagerData )
 			{
 				SCION_ERROR( "Scene manager data was not set correctly." );
@@ -143,7 +143,7 @@ void SceneManager::CreateLuaBind( sol::state& lua, ECS::Registry& registry )
 		},
 		"getCanvas", // Returns the canvas of the current scene or an empty canvas object.
 		[ & ] {
-			auto* pSceneManagerData = registry.TryGetContext<std::shared_ptr<SceneManagerData>>();
+			auto* pSceneManagerData = registry.TryGetContext<std::unique_ptr<SceneManagerData>>();
 			if ( !pSceneManagerData )
 			{
 				SCION_ERROR( "Scene manager data was not set correctly." );
@@ -166,7 +166,7 @@ void SceneManager::CreateLuaBind( sol::state& lua, ECS::Registry& registry )
 		},
 		"getDefaultMusic",
 		[ & ] {
-			auto* pSceneManagerData = registry.TryGetContext<std::shared_ptr<SceneManagerData>>();
+			auto* pSceneManagerData = registry.TryGetContext<std::unique_ptr<SceneManagerData>>();
 			if ( !pSceneManagerData )
 			{
 				SCION_ERROR( "Scene manager data was not set correctly." );
@@ -191,7 +191,7 @@ void SceneManager::CreateLuaBind( sol::state& lua, ECS::Registry& registry )
 		},
 		"getCurrentSceneName",
 		[ & ] {
-			auto* pSceneManagerData = registry.TryGetContext<std::shared_ptr<SceneManagerData>>();
+			auto* pSceneManagerData = registry.TryGetContext<std::unique_ptr<SceneManagerData>>();
 			if ( !pSceneManagerData )
 			{
 				SCION_ERROR( "Scene manager data was not set correctly." );

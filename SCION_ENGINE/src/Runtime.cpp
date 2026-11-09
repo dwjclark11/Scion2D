@@ -39,6 +39,8 @@
 #include "Core/Loaders/TilemapLoader.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
 
+#include "Sounds/Essentials/Audio.hpp"
+
 #include <SDL3/SDL.h>
 #include <sol/sol.hpp>
 #include <glad/glad.h>
@@ -111,7 +113,7 @@ void RuntimeApp::Initialize()
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 	SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 );
 
-	auto pLuaState = std::make_shared<sol::state>();
+	auto pLuaState = std::make_unique<sol::state>();
 	pLuaState->open_libraries( sol::lib::base,
 							   sol::lib::math,
 							   sol::lib::os,
@@ -121,15 +123,14 @@ void RuntimeApp::Initialize()
 							   sol::lib::package,
 							   sol::lib::coroutine );
 
+	// Set the lua state for the crash logger.
+	// This is used to log the lua stack trace in case of a crash
+	SCION_CRASH_LOGGER().SetLuaState( pLuaState->lua_state() );
+
 	if ( !pLuaState || !LoadConfig( *pLuaState ) )
 	{
 		throw std::runtime_error( "Failed to initialize the game configuration." );
 	}
-
-
-	// Set the lua state for the crash logger.
-	// This is used to log the lua stack trace in case of a crash
-	SCION_CRASH_LOGGER().SetLuaState( pLuaState->lua_state() );
 
 	// Setup Crash Tests
 	Scion::Core::Scripting::CrashLoggerTests::CreateLuaBind( *pLuaState );
@@ -137,12 +138,12 @@ void RuntimeApp::Initialize()
 	auto& coreGlobals = CORE_GLOBALS();
 
 	// Create the Window
-	m_pWindow = std::make_unique<Scion::Windowing::Window>( m_pGameConfig->sGameName.c_str(),
-															m_pGameConfig->windowWidth,
-															m_pGameConfig->windowHeight,
-															true,
-															m_pGameConfig->windowFlags | SDL_WINDOW_OPENGL |
-																SDL_WINDOW_HIGH_PIXEL_DENSITY );
+	m_pWindow = std::make_unique<Scion::Windowing::Window>(
+		m_pGameConfig->sGameName.c_str(),
+		m_pGameConfig->windowWidth,
+		m_pGameConfig->windowHeight,
+		true,
+		static_cast<Uint32>( m_pGameConfig->windowFlags | SDL_WINDOW_OPENGL | SDL_WINDOW_HIGH_PIXEL_DENSITY ) );
 
 	// Create the openGL context
 	m_pWindow->SetGLContext( SDL_GL_CreateContext( m_pWindow->GetWindow().get() ) );
@@ -159,13 +160,18 @@ void RuntimeApp::Initialize()
 		throw std::runtime_error( fmt::format( "Failed to create OpenGL context: {}", error ) );
 	}
 
-	if ( ( SDL_GL_MakeCurrent( m_pWindow->GetWindow().get(), m_pWindow->GetGLContext() ) ) != 0 )
+	if ( !SDL_GL_MakeCurrent( m_pWindow->GetWindow().get(), m_pWindow->GetGLContext() ) )
 	{
 		std::string error = SDL_GetError();
 		throw std::runtime_error( fmt::format( "Failed to make OpenGL context current: {}", error ) );
 	}
 
 	SDL_GL_SetSwapInterval( 1 );
+
+	if ( !MIX_Init() )
+	{
+		SCION_ERROR( "MIX_Init failed: {}", SDL_GetError() );
+	}
 
 	auto& mainRegistry = MAIN_REGISTRY();
 	if ( !mainRegistry.Initialize() )
@@ -184,8 +190,9 @@ void RuntimeApp::Initialize()
 		throw std::runtime_error( "Failed to create default fonts." );
 	}
 
-	mainRegistry.AddToContext<std::shared_ptr<sol::state>>( std::move( pLuaState ) );
-	auto mainScript = mainRegistry.AddToContext<MainScriptPtr>( std::make_shared<Scion::Core::Scripting::MainScriptFunctions>() );
+	auto& mainScript = mainRegistry.AddToContext( std::make_unique<Scion::Core::Scripting::MainScriptFunctions>() );
+	auto& lua = mainRegistry.AddToContext( std::move( pLuaState ) );
+
 	if ( !LoadShaders() )
 	{
 		throw std::runtime_error( "Failed to Load game shaders." );
@@ -193,6 +200,7 @@ void RuntimeApp::Initialize()
 
 	LoadRegistryContext();
 	LoadBindings();
+
 	Scion::Core::CoreEngineData::RegisterMetaFunctions();
 
 	if ( m_pGameConfig->bPackageAssets && !LoadZip() )
@@ -205,11 +213,10 @@ void RuntimeApp::Initialize()
 		throw std::runtime_error( "Failed to load game scripts. " );
 	}
 
-	auto pSceneManagerData = mainRegistry.AddToContext<std::shared_ptr<Scion::Core::SceneManagerData>>(
-		std::make_shared<Scion::Core::SceneManagerData>() );
+	auto& pSceneManagerData = mainRegistry.AddToContext( std::make_unique<Scion::Core::SceneManagerData>() );
 
 	Scion::Core::Loaders::TilemapLoader tl{};
-	auto& lua = mainRegistry.GetContext<std::shared_ptr<sol::state>>();
+
 	tl.LoadTilemapFromLuaTable( *mainRegistry.GetRegistry(), ( *lua )[ m_pGameConfig->sStartupScene + "_tilemap" ] );
 	tl.LoadGameObjectsFromLuaTable( *mainRegistry.GetRegistry(),
 									( *lua )[ m_pGameConfig->sStartupScene + "_objects" ] );
@@ -275,12 +282,11 @@ bool RuntimeApp::LoadConfig( sol::state& lua )
 		return false;
 	}
 
-	try
+	sol::protected_function_result result{ lua.safe_script_file( sConfigFile, sol::script_pass_on_error ) };
+
+	if ( !result.valid() )
 	{
-		lua.safe_script_file( sConfigFile );
-	}
-	catch ( const sol::error& err )
-	{
+		sol::error err{ result.get<sol::error>() };
 		throw std::runtime_error( fmt::format( "Failed to load configuration: {}", err.what() ) );
 	}
 
@@ -336,9 +342,9 @@ bool RuntimeApp::LoadConfig( sol::state& lua )
 	m_pGameConfig->bPackageAssets = ( *maybeConfig )[ "bPackageAssets" ].get_or( false );
 
 	sol::optional<sol::table> maybeAudio = ( *maybeConfig )[ "AudioParams" ];
-	if (maybeAudio)
+	if ( maybeAudio )
 	{
-		if ((*maybeAudio)["allocatedChannels"].valid())
+		if ( ( *maybeAudio )[ "allocatedChannels" ].valid() )
 		{
 			int allocatedChannels = m_pGameConfig->audioConfig.GetAllocatedChannelCount();
 			int newAllocatedChannels = ( *maybeAudio )[ "allocatedChannels" ].get_or( 0 );
@@ -355,21 +361,18 @@ bool RuntimeApp::LoadRegistryContext()
 	auto& mainRegistry = MAIN_REGISTRY();
 	// Right now we will make the camera use the window width/height; however, we should add a
 	// way to change this through the game config tile.
-	mainRegistry.AddToContext<std::shared_ptr<Camera2D>>(
-		std::make_shared<Camera2D>( coreGlobals.WindowWidth(), coreGlobals.WindowHeight() ) );
+	mainRegistry.AddToContext( std::make_unique<Camera2D>( coreGlobals.WindowWidth(), coreGlobals.WindowHeight() ) );
 
 	if ( coreGlobals.IsPhysicsEnabled() )
 	{
-		auto pPhysicsWorld = mainRegistry.AddToContext<Scion::Physics::PhysicsWorld>(
-			std::make_shared<b2World>( b2Vec2{ 0.f, coreGlobals.GetGravity() } ) );
+		auto& pPhysicsWorld =
+			mainRegistry.AddToContext( std::make_unique<b2World>( b2Vec2{ 0.f, coreGlobals.GetGravity() } ) );
 
-		auto pContactListener = mainRegistry.AddToContext<std::shared_ptr<Scion::Physics::ContactListener>>(
-			std::make_shared<Scion::Physics::ContactListener>() );
-
+		auto& pContactListener = mainRegistry.AddToContext( std::make_unique<Scion::Physics::ContactListener>() );
 		pPhysicsWorld->SetContactListener( pContactListener.get() );
 	}
 
-	mainRegistry.AddToContext<std::shared_ptr<ScriptingSystem>>( std::make_shared<ScriptingSystem>() );
+	mainRegistry.AddToContext( std::make_unique<ScriptingSystem>() );
 
 	return false;
 }
@@ -378,9 +381,9 @@ void RuntimeApp::LoadBindings()
 {
 	auto& mainRegistry = MAIN_REGISTRY();
 
-	auto& pLuaState = mainRegistry.GetContext<std::shared_ptr<sol::state>>();
+	auto& pLuaState = mainRegistry.GetContext<std::unique_ptr<sol::state>>();
 	auto* pRegistry = mainRegistry.GetRegistry();
-	
+
 	ScriptingSystem::RegisterLuaBindings( *pLuaState, *pRegistry );
 	ScriptingSystem::RegisterLuaFunctions( *pLuaState, *pRegistry );
 	ScriptingSystem::RegisterLuaEvents( *pLuaState, *pRegistry );
@@ -392,8 +395,8 @@ void RuntimeApp::LoadBindings()
 bool RuntimeApp::LoadScripts()
 {
 	auto& mainRegistry = MAIN_REGISTRY();
-	auto& scriptSystem = mainRegistry.GetContext<std::shared_ptr<ScriptingSystem>>();
-	auto& lua = mainRegistry.GetContext<std::shared_ptr<sol::state>>();
+	auto& scriptSystem = mainRegistry.GetContext<std::unique_ptr<ScriptingSystem>>();
+	auto& lua = mainRegistry.GetContext<std::unique_ptr<sol::state>>();
 
 	return scriptSystem->LoadMainScript( "assets/scripts/master.luac", *mainRegistry.GetRegistry(), *lua );
 }
@@ -404,7 +407,7 @@ bool RuntimeApp::LoadPhysics()
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto* pRegistry = mainRegistry.GetRegistry();
 	auto& pPhysicsWorld = mainRegistry.GetContext<Scion::Physics::PhysicsWorld>();
-	auto& pCamera = mainRegistry.GetContext<std::shared_ptr<Camera2D>>();
+	auto& pCamera = mainRegistry.GetContext<std::unique_ptr<Camera2D>>();
 
 	// We need to initialize all of the physics entities
 	auto physicsEntities = pRegistry->GetRegistry().view<PhysicsComponent>();
@@ -548,11 +551,13 @@ bool RuntimeApp::LoadZip()
 			}
 			break;
 		}
-		/*case AssetType::MUSIC: {
+		case AssetType::MUSIC: {
 			for ( const auto& pMusicAsset : assets )
 			{
-				if ( !assetManager.AddMusicFromMemory(
-						 pMusicAsset->sName, pMusicAsset->assetData.data(), pMusicAsset->assetSize ) )
+				if ( !assetManager.AddAudioFromMemory( pMusicAsset->sName,
+													   pMusicAsset->assetData.data(),
+													   pMusicAsset->assetSize,
+													   Scion::Sounds::AudioType::Music ) )
 				{
 					SCION_ERROR( "Failed to add music [{}] from memory.", pMusicAsset->sName );
 				}
@@ -562,14 +567,16 @@ bool RuntimeApp::LoadZip()
 		case AssetType::SOUNDFX: {
 			for ( const auto& pSoundfxAsset : assets )
 			{
-				if ( !assetManager.AddSoundFxFromMemory(
-						 pSoundfxAsset->sName, pSoundfxAsset->assetData.data(), pSoundfxAsset->assetSize ) )
+				if ( !assetManager.AddAudioFromMemory( pSoundfxAsset->sName,
+													   pSoundfxAsset->assetData.data(),
+													   pSoundfxAsset->assetSize,
+													   Scion::Sounds::AudioType::Music ) )
 				{
 					SCION_ERROR( "Failed to add music [{}] from memory.", pSoundfxAsset->sName );
 				}
 			}
 			break;
-		}*/
+		}
 		case AssetType::FONT: {
 			for ( const auto& pFontAsset : assets )
 			{
@@ -667,22 +674,23 @@ void RuntimeApp::Update()
 		std::this_thread::sleep_for( std::chrono::duration<double>( Scion::Core::TARGET_FRAME_TIME - dt ) );
 	}
 
-	auto& scriptSystem = mainRegistry.GetContext<std::shared_ptr<ScriptingSystem>>();
+	auto& scriptSystem = mainRegistry.GetContext<std::unique_ptr<ScriptingSystem>>();
 	scriptSystem->Update( *registry );
 
 	if ( coreGlobals.IsPhysicsEnabled() && !coreGlobals.IsPhysicsPaused() )
 	{
 		auto& pPhysicsWorld = mainRegistry.GetContext<Scion::Physics::PhysicsWorld>();
-		pPhysicsWorld->Step(
-			Scion::Core::TARGET_FRAME_TIME_F, coreGlobals.GetVelocityIterations(), coreGlobals.GetPositionIterations() );
+		pPhysicsWorld->Step( Scion::Core::TARGET_FRAME_TIME_F,
+							 coreGlobals.GetVelocityIterations(),
+							 coreGlobals.GetPositionIterations() );
 		pPhysicsWorld->ClearForces();
 
-		auto& dispatch = mainRegistry.GetContext<std::shared_ptr<Scion::Core::Events::EventDispatcher>>();
+		auto& dispatch = mainRegistry.GetContext<std::unique_ptr<Scion::Core::Events::EventDispatcher>>();
 
 		// If there are no listeners for contact events, don't emit event
 		if ( dispatch->HasHandlers<Scion::Core::Events::ContactEvent>() )
 		{
-			if ( auto& pContactListener = mainRegistry.GetContext<std::shared_ptr<Scion::Physics::ContactListener>>() )
+			if ( auto& pContactListener = mainRegistry.GetContext<std::unique_ptr<Scion::Physics::ContactListener>>() )
 			{
 				auto pUserDataA = pContactListener->GetUserDataA();
 				auto pUserDataB = pContactListener->GetUserDataB();
@@ -710,7 +718,7 @@ void RuntimeApp::Update()
 		pPhysicsSystem.Update( *registry );
 	}
 
-	auto& camera = mainRegistry.GetContext<std::shared_ptr<Camera2D>>();
+	auto& camera = mainRegistry.GetContext<std::unique_ptr<Camera2D>>();
 	mainRegistry.GetAnimationSystem().Update( *registry, *camera );
 
 #ifdef _DEBUG
@@ -740,7 +748,7 @@ void RuntimeApp::Render()
 	renderer.SetClearColor( 0.0f, 0.0f, 0.0f, 1.f );
 	renderer.ClearBuffers( true, true, false );
 
-	auto& camera = mainRegistry.GetContext<std::shared_ptr<Camera2D>>();
+	auto& camera = mainRegistry.GetContext<std::unique_ptr<Camera2D>>();
 	mainRegistry.GetRenderSystem().Update( *mainRegistry.GetRegistry(), *camera );
 	mainRegistry.GetRenderUISystem().Update( *mainRegistry.GetRegistry() );
 
@@ -749,7 +757,7 @@ void RuntimeApp::Render()
 		mainRegistry.GetRenderShapeSystem().Update( *mainRegistry.GetRegistry(), *camera );
 	}
 
-	auto& scriptSystem = mainRegistry.GetContext<std::shared_ptr<ScriptingSystem>>();
+	auto& scriptSystem = mainRegistry.GetContext<std::unique_ptr<ScriptingSystem>>();
 	scriptSystem->Render( *registry );
 
 	SDL_GL_SwapWindow( m_pWindow->GetWindow().get() );

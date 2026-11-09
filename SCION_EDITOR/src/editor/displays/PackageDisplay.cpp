@@ -298,10 +298,10 @@ void PackageGameDisplay::Draw()
 			pPackageData->sFinalDestination = sFullDestination;
 			pPackageData->sAssetFilepath = pPackageData->sTempDataPath + PATH_SEPARATOR + "assetDefs.lua";
 
-			auto& pThreadPool = MAIN_REGISTRY().GetContext<SharedThreadPool>();
+			auto& pThreadPool = MAIN_REGISTRY().GetContext<UniqueThreadPool>();
 			SCION_ASSERT( pThreadPool && "Thread pool must exist and be valid." );
 
-			m_pPackager = std::make_unique<Packager>( std::move( pPackageData ), pThreadPool );
+			m_pPackager = std::make_unique<Packager>( std::move( pPackageData ), *pThreadPool );
 
 			ImGui::End();
 

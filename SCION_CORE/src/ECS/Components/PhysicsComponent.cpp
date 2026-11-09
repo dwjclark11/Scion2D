@@ -18,7 +18,7 @@ PhysicsComponent::PhysicsComponent( const PhysicsAttributes& physicsAttr )
 {
 }
 
-void PhysicsComponent::Init( Scion::Physics::PhysicsWorld pPhysicsWorld, int windowWidth, int windowHeight )
+void PhysicsComponent::Init( Scion::Physics::PhysicsWorld& pPhysicsWorld, int windowWidth, int windowHeight )
 {
 	if ( !pPhysicsWorld )
 	{

@@ -68,7 +68,7 @@ class PhysicsComponent
 	PhysicsComponent( const PhysicsAttributes& physicsAttr );
 	~PhysicsComponent() = default;
 
-	void Init( Scion::Physics::PhysicsWorld pPhysicsWorld, int windowWidth, int windowHeight );
+	void Init( Scion::Physics::PhysicsWorld& pPhysicsWorld, int windowWidth, int windowHeight );
 	const bool IsSensor() const;
 	Scion::Physics::ObjectData CastRay( const b2Vec2& point1, const b2Vec2& point2 ) const;
 	std::vector<Scion::Physics::ObjectData> BoxTrace( const b2Vec2& lowerBounds, const b2Vec2& upperBounds ) const;

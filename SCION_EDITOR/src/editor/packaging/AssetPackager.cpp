@@ -13,9 +13,9 @@ namespace fs = std::filesystem;
 
 namespace Scion::Editor
 {
-AssetPackager::AssetPackager( const AssetPackagerParams& params, std::shared_ptr<Scion::Utilities::ThreadPool> pThreadPool )
-	: m_Params{ params }
-	, m_pThreadPool{ pThreadPool }
+AssetPackager::AssetPackager( const AssetPackagerParams& params, Scion::Utilities::ThreadPool& threadPool )
+	: m_ThreadPool{ threadPool }
+	, m_Params{ params }
 {
 }
 
@@ -134,19 +134,22 @@ void AssetPackager::CreateLuaAssetFiles( const std::string& sProjectPath, const 
 	}
 
 	std::vector<std::future<AssetPackageStatus>> assetFutures;
-	assetFutures.emplace_back( m_pThreadPool->Enqueue( [ & ] {
-		return SerializeAssetsByType( assets, tempAssetPath, "textures", sContentPath, Scion::Utilities::AssetType::TEXTURE );
+	assetFutures.emplace_back( m_ThreadPool.Enqueue( [ & ] {
+		return SerializeAssetsByType(
+			assets, tempAssetPath, "textures", sContentPath, Scion::Utilities::AssetType::TEXTURE );
 	} ) );
 
-	assetFutures.emplace_back( m_pThreadPool->Enqueue( [ & ] {
-		return SerializeAssetsByType( assets, tempAssetPath, "soundfx", sContentPath, Scion::Utilities::AssetType::SOUNDFX );
+	assetFutures.emplace_back( m_ThreadPool.Enqueue( [ & ] {
+		return SerializeAssetsByType(
+			assets, tempAssetPath, "soundfx", sContentPath, Scion::Utilities::AssetType::SOUNDFX );
 	} ) );
 
-	assetFutures.emplace_back( m_pThreadPool->Enqueue( [ & ] {
-		return SerializeAssetsByType( assets, tempAssetPath, "music", sContentPath, Scion::Utilities::AssetType::MUSIC );
+	assetFutures.emplace_back( m_ThreadPool.Enqueue( [ & ] {
+		return SerializeAssetsByType(
+			assets, tempAssetPath, "music", sContentPath, Scion::Utilities::AssetType::MUSIC );
 	} ) );
 
-	assetFutures.emplace_back( m_pThreadPool->Enqueue( [ & ] {
+	assetFutures.emplace_back( m_ThreadPool.Enqueue( [ & ] {
 		return SerializeAssetsByType( assets, tempAssetPath, "fonts", sContentPath, Scion::Utilities::AssetType::FONT );
 	} ) );
 
@@ -330,16 +333,16 @@ AssetPackager::AssetPackageStatus AssetPackager::SerializeAssetsByType( const ra
 				AssetConversionData conversionData{
 					.sInAssetFile = sPath, .sAssetName = jsonValue[ "name" ].GetString(), .eType = eAssetType };
 
-				if (eAssetType == Scion::Utilities::AssetType::FONT && jsonValue.HasMember("fontSize"))
+				if ( eAssetType == Scion::Utilities::AssetType::FONT && jsonValue.HasMember( "fontSize" ) )
 				{
 					conversionData.optFontSize = jsonValue[ "fontSize" ].GetFloat();
 				}
-				else if (eAssetType == Scion::Utilities::AssetType::TEXTURE && jsonValue.HasMember("bPixelArt"))
+				else if ( eAssetType == Scion::Utilities::AssetType::TEXTURE && jsonValue.HasMember( "bPixelArt" ) )
 				{
 					conversionData.optPixelArt = jsonValue[ "bPixelArt" ].GetBool();
 				}
 
-				ConvertAssetToLuaTable( *pLuaSerializer, conversionData);
+				ConvertAssetToLuaTable( *pLuaSerializer, conversionData );
 			}
 		}
 		catch ( const std::exception& ex )

@@ -41,4 +41,4 @@ class EditorRenderSystem
 };
 } // namespace Scion::Editor
 
-using EditorRenderSystemPtr = std::shared_ptr<Scion::Editor::EditorRenderSystem>;
+using EditorRenderSystemPtr = std::unique_ptr<Scion::Editor::EditorRenderSystem>;

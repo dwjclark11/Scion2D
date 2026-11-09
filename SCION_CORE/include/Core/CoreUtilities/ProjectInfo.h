@@ -241,7 +241,7 @@ class ProjectInfo
 	bool m_bAllowHighDPI{ false };
 };
 
-using ProjectInfoPtr = std::shared_ptr<ProjectInfo>;
+using ProjectInfoPtr = std::unique_ptr<ProjectInfo>;
 
 struct GameConfig
 {

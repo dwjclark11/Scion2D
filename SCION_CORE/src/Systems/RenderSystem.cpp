@@ -101,7 +101,7 @@ void RenderSystem::Update( Scion::Core::ECS::Registry& registry, Scion::Renderin
 
 void RenderSystem::CreateRenderSystemLuaBind( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
-	auto& pCamera = registry.GetContext<std::shared_ptr<Camera2D>>();
+	auto& pCamera = registry.GetContext<std::unique_ptr<Camera2D>>();
 
 	SCION_ASSERT( pCamera && "A camera must exist in the current scene!" );
 

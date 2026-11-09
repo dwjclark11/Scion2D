@@ -18,7 +18,7 @@ class Entity
 	Entity& operator=( Entity&& other ) noexcept;
 
 	virtual ~Entity();
-	
+
 	/*
 	 * @brief Adds a new child to the entity.
 	 * @param underlying entity of the child to add.
@@ -41,7 +41,7 @@ class Entity
 	 * this Entity, trying to access an entity that does not exist can cause problems.
 	 */
 	void Destroy();
-	
+
 	/*
 	 * @brief Gets the actual entity.
 	 * @return Returns the underlying entt::entity.
@@ -55,6 +55,7 @@ class Entity
 	inline entt::registry& GetEnttRegistry() { return m_Registry->GetRegistry(); }
 
 	inline Registry& GetRegistry() { return *m_Registry; }
+	[[nodiscard]] bool IsValid() const noexcept { return m_Registry && m_Registry->IsValid( m_Entity ); }
 
 	static void CreateLuaEntityBind( sol::state& lua, Registry& registry );
 

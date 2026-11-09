@@ -3,9 +3,11 @@
 namespace Scion::Core::ECS
 {
 template <typename TContext>
-inline TContext Registry::AddToContext( TContext context )
+std::remove_cvref_t<TContext>& Registry::AddToContext( TContext&& context )
 {
-	return m_Registry.ctx().emplace<TContext>( context );
+	using Type = std::remove_cvref_t<TContext>;
+
+	return m_Registry.ctx().emplace<Type>( std::forward<TContext>( context ) );
 }
 
 template <typename TContext>
@@ -35,7 +37,7 @@ bool Registry::HasContext()
 template <typename... Excludes>
 inline void Registry::DestroyEntities()
 {
-	auto view = m_Registry.view<entt::entity>( entt::exclude<Excludes ...> );
+	auto view = m_Registry.view<entt::entity>( entt::exclude<Excludes...> );
 	for ( auto entity : view )
 	{
 		m_Registry.destroy( entity );

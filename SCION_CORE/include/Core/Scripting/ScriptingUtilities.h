@@ -91,4 +91,4 @@ struct ScriptingHelpers
 
 } // namespace Scion::Core::Scripting
 
-using MainScriptPtr = std::shared_ptr<Scion::Core::Scripting::MainScriptFunctions>;
+using MainScriptPtr = std::unique_ptr<Scion::Core::Scripting::MainScriptFunctions>;

@@ -67,6 +67,6 @@ struct EditorState
 	static bool CreateEditorStateFile( Scion::Core::ProjectInfo& projectInfo );
 };
 
-using EditorStatePtr = std::shared_ptr<EditorState>;
+using EditorStatePtr = std::unique_ptr<EditorState>;
 
 } // namespace Scion::Editor
