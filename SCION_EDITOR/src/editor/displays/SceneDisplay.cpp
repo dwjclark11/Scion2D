@@ -360,6 +360,8 @@ void SceneDisplay::Draw()
 		auto& editorFramebuffers = MAIN_REGISTRY().GetContext<std::unique_ptr<EditorFramebuffers>>();
 		const auto& fb = editorFramebuffers->mapFramebuffers[ FramebufferType::SCENE ];
 
+		const ImVec2 childSize = ImGui::GetContentRegionAvail();
+
 		if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject() )
 		{
 			auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
@@ -373,12 +375,14 @@ void SceneDisplay::Draw()
 				ImVec2 windowSize{ ImGui::GetWindowSize() };
 
 				( *pMouseInfo )->position = glm::vec2{ io.MousePos.x - relativePos.x, io.MousePos.y - relativePos.y };
-				( *pMouseInfo )->windowSize = glm::vec2{ fb->Width(), fb->Height() };
+				//( *pMouseInfo )->windowSize = glm::vec2{ fb->Width(), fb->Height() };
+				( *pMouseInfo )->windowSize = glm::vec2{ childSize.x, childSize.y };
 			}
 		}
 
 		ImGui::Image( (ImTextureID)(intptr_t)fb->GetTextureID(),
-					  ImVec2{ static_cast<float>( fb->Width() ), static_cast<float>( fb->Height() ) },
+					  //ImVec2{ static_cast<float>( fb->Width() ), static_cast<float>( fb->Height() ) },
+					  childSize,	
 					  ImVec2{ 0.f, 1.f },
 					  ImVec2{ 1.f, 0.f } );
 

@@ -7,6 +7,9 @@
 #include "Core/Events/EventDispatcher.h"
 
 #include "Core/CoreUtilities/ProjectInfo.h"
+#include "Core/CoreUtilities/CoreEngineData.h"
+#include "Rendering/Core/Camera2D.h"
+
 #include "editor/events/EditorEventTypes.h"
 #include "editor/commands/CommandManager.h"
 
@@ -115,7 +118,7 @@ void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
 	auto& registry = sceneToCopy.GetRegistry();
 	auto& registryToCopy = registry.GetRegistry();
 
-	m_RuntimeRegistry.DestroyEntities();
+	m_RuntimeRegistry.DestroyEntities<PersistentComponent, UIComponent>();
 
 	for ( auto entityToCopy : registryToCopy.view<entt::entity>( entt::exclude<UneditableComponent> ) )
 	{
@@ -136,6 +139,57 @@ void SceneObject::CopySceneToRuntime( SceneObject& sceneToCopy )
 	if ( sceneToCopy.IsPlayerStartEnabled() )
 	{
 		sceneToCopy.CopyPlayerStartToRuntimeRegistry( m_RuntimeRegistry );
+	}
+
+	auto& pPhysicsWorld = m_RuntimeRegistry.GetContext<Scion::Physics::PhysicsWorld>();
+	
+	auto physicsEntities =
+		m_RuntimeRegistry.GetRegistry().view<PhysicsComponent>( /*entt::exclude<PersistentComponent> */);
+
+	auto& pCamera = m_RuntimeRegistry.GetContext<std::unique_ptr<Scion::Rendering::Camera2D>>();
+
+	for ( auto entity : physicsEntities )
+	{
+		Entity ent{ &m_RuntimeRegistry, entity };
+
+		const bool bBoxCollider{ ent.HasComponent<BoxColliderComponent>() };
+		const bool bCircleCollider{ ent.HasComponent<CircleColliderComponent>() };
+
+		if ( !bBoxCollider && !bCircleCollider )
+		{
+			SCION_ERROR( "Entity must have a box or circle collider component to initialize physics on it." );
+			continue;
+		}
+
+		auto& physics = ent.GetComponent<PhysicsComponent>();
+		auto& physicsAttributes = physics.GetChangableAttributes();
+
+		if ( bBoxCollider )
+		{
+			const auto& boxCollider = ent.GetComponent<BoxColliderComponent>();
+			physicsAttributes.boxSize = glm::vec2{ boxCollider.width, boxCollider.height };
+			physicsAttributes.offset = boxCollider.offset;
+		}
+		else
+		{
+			const auto& circleCollider = ent.GetComponent<CircleColliderComponent>();
+			physicsAttributes.radius = circleCollider.radius;
+			physicsAttributes.offset = circleCollider.offset;
+		}
+
+		const auto& transform = ent.GetComponent<TransformComponent>();
+		physicsAttributes.position = transform.position;
+		physicsAttributes.scale = transform.scale;
+		physicsAttributes.objectData.entityID = static_cast<std::int32_t>( entity );
+
+		physics.Init( pPhysicsWorld, pCamera->GetWidth(), pCamera->GetHeight() );
+
+		if ( physics.UseFilters() )
+		{
+			physics.SetFilterCategory();
+			physics.SetFilterMask();
+			physics.SetGroupIndex();
+		}
 	}
 }
 
@@ -176,8 +230,7 @@ void SceneObject::AddNewLayer()
 		}
 	}
 
-	const Scion::Utilities::SpriteLayerParams spriteLayerParams{ .sLayerName = fmt::format( "NewLayer_{}", currentLayer ),
-														   .layer = static_cast<int>( currentLayer ) };
+	const Scion::Utilities::SpriteLayerParams spriteLayerParams{ .sLayerName = fmt::format( "NewLayer_{}", currentLayer ), .layer = static_cast<int>( m_LayerParams.size() ) };
 
 	m_LayerParams.emplace_back( spriteLayerParams );
 
@@ -204,6 +257,7 @@ bool SceneObject::DeleteLayer( int layer )
 			spriteLayer.layer -= 1;
 		}
 	}
+
 	std::vector<Tile> removedTiles{};
 	auto view = m_Registry.GetRegistry().view<TileComponent, SpriteComponent>();
 	for ( auto entity : view )

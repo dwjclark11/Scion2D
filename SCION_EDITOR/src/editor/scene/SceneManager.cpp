@@ -256,13 +256,11 @@ void EditorSceneManager::CreateSceneManagerLuaBind( sol::state& lua )
 			if ( !pSceneObject )
 			{
 				SCION_ERROR( "Failed to load scene [{}] - Scene is not a valid SceneObject.", sSceneName );
-
-				return pScene->UnloadScene( false );
+				return false;
 			}
 
 			pCurrentScene->CopySceneToRuntime( *pSceneObject );
-
-			return pScene->UnloadScene( false );
+			return true;
 		},
 		"getCanvas", // Returns the canvas of the current scene or an empty canvas object.
 		[ & ] {
