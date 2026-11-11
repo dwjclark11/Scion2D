@@ -56,7 +56,7 @@ void Registry::CreateLuaRegistryBind( sol::state& lua, Registry& registry )
 		sol::no_constructor,
 		"for_each",
 		sol::overload(
-			[ & ]( const entt::runtime_view& view, const sol::function& callback, sol::this_state s ) {
+			[ & ]( const entt::runtime_view& view, const sol::function& callback ) {
 				if ( !callback.valid() )
 					return;
 
@@ -66,7 +66,7 @@ void Registry::CreateLuaRegistryBind( sol::state& lua, Registry& registry )
 					callback( ent );
 				}
 			},
-			[]( const entt::runtime_view& view, Registry& reg, const sol::function& callback, sol::this_state s ) {
+			[]( const entt::runtime_view& view, Registry& reg, const sol::function& callback ) {
 				if ( !callback.valid() )
 					return;
 

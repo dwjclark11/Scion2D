@@ -761,8 +761,7 @@ void DrawComponentsUtil::DrawImGuiComponent( Scion::Core::ECS::Entity& entity,
 	{
 		std::string sError{  };
 		std::string sNameBuffer{ identification.name };
-		bool bNameError{ false };
-
+		
 		ImGui::InlineLabel( "name" );
 		if ( ImGui::InputText(
 				 "##_name", sNameBuffer.data(), sizeof( char ) * 255, ImGuiInputTextFlags_EnterReturnsTrue ) )

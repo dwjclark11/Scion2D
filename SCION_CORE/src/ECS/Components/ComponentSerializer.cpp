@@ -238,12 +238,12 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 		}
 	}
 
-	if (jsonValue.HasMember("color"))
+	if ( jsonValue.HasMember( "color" ) )
 	{
-		sprite.color.r = jsonValue[ "color" ][ "r" ].GetUint();
-		sprite.color.g = jsonValue[ "color" ][ "g" ].GetUint();
-		sprite.color.b = jsonValue[ "color" ][ "b" ].GetUint();
-		sprite.color.a = jsonValue[ "color" ][ "a" ].GetUint();
+		sprite.color.r = static_cast<GLubyte>( jsonValue[ "color" ][ "r" ].GetUint() );
+		sprite.color.g = static_cast<GLubyte>( jsonValue[ "color" ][ "g" ].GetUint() );
+		sprite.color.b = static_cast<GLubyte>( jsonValue[ "color" ][ "b" ].GetUint() );
+		sprite.color.a = static_cast<GLubyte>( jsonValue[ "color" ][ "a" ].GetUint() );
 	}
 }
 
@@ -279,9 +279,9 @@ void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValu
 	text.bHidden = jsonValue[ "bHidden" ].GetBool();
 
 	text.color = Scion::Rendering::Color{ .r = static_cast<GLubyte>( jsonValue[ "color" ][ "r" ].GetInt() ),
-										 .g = static_cast<GLubyte>( jsonValue[ "color" ][ "g" ].GetInt() ),
-										 .b = static_cast<GLubyte>( jsonValue[ "color" ][ "b" ].GetInt() ),
-										 .a = static_cast<GLubyte>( jsonValue[ "color" ][ "a" ].GetInt() ) };
+										  .g = static_cast<GLubyte>( jsonValue[ "color" ][ "g" ].GetInt() ),
+										  .b = static_cast<GLubyte>( jsonValue[ "color" ][ "b" ].GetInt() ),
+										  .a = static_cast<GLubyte>( jsonValue[ "color" ][ "a" ].GetInt() ) };
 }
 
 void ComponentSerializer::DeserializeComponent( const rapidjson::Value& jsonValue, PhysicsComponent& physics )
@@ -586,13 +586,13 @@ void ComponentSerializer::DeserializeComponent( const sol::table& table, TextCom
 	text.sTextStr = table[ "text" ].get_or( std::string{ "" } );
 	text.sFontName = table[ "fontName" ].get_or( std::string{ "" } );
 	text.padding = table[ "padding" ].get_or( 0 );
-	text.wrap = table[ "wrap" ].get_or( 0 );
+	text.wrap = table[ "wrap" ].get_or( 0.f );
 	text.bHidden = table[ "bHidden" ].get_or( false );
 
 	text.color = Scion::Rendering::Color{ .r = static_cast<GLubyte>( table[ "color" ][ "r" ].get_or( 255U ) ),
-										 .g = static_cast<GLubyte>( table[ "color" ][ "g" ].get_or( 255U ) ),
-										 .b = static_cast<GLubyte>( table[ "color" ][ "b" ].get_or( 255U ) ),
-										 .a = static_cast<GLubyte>( table[ "color" ][ "a" ].get_or( 255U ) ) };
+										  .g = static_cast<GLubyte>( table[ "color" ][ "g" ].get_or( 255U ) ),
+										  .b = static_cast<GLubyte>( table[ "color" ][ "b" ].get_or( 255U ) ),
+										  .a = static_cast<GLubyte>( table[ "color" ][ "a" ].get_or( 255U ) ) };
 }
 
 void ComponentSerializer::DeserializeComponent( const sol::table& table, PhysicsComponent& physics )

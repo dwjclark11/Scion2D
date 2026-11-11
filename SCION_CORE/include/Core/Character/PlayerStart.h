@@ -12,7 +12,7 @@ class Scene;
 class PlayerStart
 {
   public:
-	PlayerStart( Scion::Core::ECS::Registry& registry, Scene& sceneRef );
+	PlayerStart( Scene& sceneRef );
 
 	void CreatePlayer( Scion::Core::ECS::Registry& registry );
 	std::string GetCharacterName();
@@ -32,7 +32,7 @@ class PlayerStart
 
 	inline bool IsCharacterSet() const { return m_pCharacterPrefab != nullptr; }
 	inline bool IsPlayerStartCreated() const { return m_bVisualEntityCreated; }
-	
+
   private:
 	Scene& m_SceneRef;
 	std::shared_ptr<Scion::Core::ECS::Entity> m_pVisualEntity;

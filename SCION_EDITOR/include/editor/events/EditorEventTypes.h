@@ -26,7 +26,7 @@ struct FileEvent
 
 struct CloseEditorEvent
 {
-	//
+	bool bClose{ true };
 };
 
 struct SwitchEntityEvent

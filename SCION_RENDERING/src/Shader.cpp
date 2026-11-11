@@ -15,7 +15,7 @@ GLuint Shader::GetUniformLocation( const std::string& uniformName )
 	if ( location == GL_INVALID_INDEX )
 	{
 		SCION_ERROR( "Uniform [{0}] not found in the shader!", uniformName );
-		return -1;
+		return 0;
 	}
 
 	m_UniformLocationMap.emplace( uniformName, location );

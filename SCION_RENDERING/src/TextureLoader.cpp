@@ -8,7 +8,7 @@
 namespace Scion::Rendering
 {
 
-bool TextureLoader::LoadTexture( const std::string& filepath, GLuint& id, int& width, int& height, bool blended )
+bool TextureLoader::LoadTexture( const std::string& filepath, int& width, int& height, bool blended )
 {
 	int channels = 0;
 
@@ -84,7 +84,7 @@ bool TextureLoader::LoadFBTexture( GLuint& id, int& width, int& height )
 bool TextureLoader::LoadTextureFromMemory( const unsigned char* imageData, size_t length, GLuint& id, int& width,
 										   int& height, bool blended )
 {
-	id = SOIL_load_OGL_texture_from_memory( imageData, length, SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, NULL );
+	id = SOIL_load_OGL_texture_from_memory( imageData, static_cast<int>( length ), SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, NULL );
 
 	if ( id == 0 )
 	{
@@ -227,8 +227,8 @@ std::unique_ptr<Texture> TextureLoader::Create( Texture::TextureType type, const
 	bool bLoadSuccessful{ false };
 	switch ( type )
 	{
-	case Texture::TextureType::PIXEL: bLoadSuccessful = LoadTexture( texturePath, id, width, height, false ); break;
-	case Texture::TextureType::BLENDED: bLoadSuccessful = LoadTexture( texturePath, id, width, height, true ); break;
+	case Texture::TextureType::PIXEL: bLoadSuccessful = LoadTexture( texturePath, width, height, false ); break;
+	case Texture::TextureType::BLENDED: bLoadSuccessful = LoadTexture( texturePath, width, height, true ); break;
 	case Texture::TextureType::ICON: bLoadSuccessful = LoadIconTexture( texturePath, id, width, height ); break;
 	default: assert( false && "The current type is not defined, Please use a defined texture type!" ); return nullptr;
 	}

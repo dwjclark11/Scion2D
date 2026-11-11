@@ -253,7 +253,6 @@ bool Application::InitApp()
 	Scion::Core::CoreEngineData::RegisterMetaFunctions();
 
 	// We can now set the Crash Logger path to the running project
-	const auto& sProjectPath = CORE_GLOBALS().GetProjectPath();
 	auto& pProjectInfo = mainRegistry.GetContext<Scion::Core::ProjectInfoPtr>();
 	SCION_CRASH_LOGGER().SetProjectPath( pProjectInfo->GetProjectPath().string() );
 
@@ -729,8 +728,7 @@ void Application::RegisterEditorMetaFunctions()
 
 void Application::OnCloseEditor( Scion::Editor::Events::CloseEditorEvent& close )
 {
-	// TODO: Maybe add a check for save??
-	m_bIsRunning = false;
+	m_bIsRunning = close.bClose;
 }
 
 Application::Application()

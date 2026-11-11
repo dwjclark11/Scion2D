@@ -45,7 +45,7 @@ void EventDispatcher::CreateEventDispatcherLuaBind( sol::state& lua, EventDispat
 	lua.new_usertype<EventDispatcher>(
 		"EventDispatcher",
 		sol::call_constructor,
-		sol::factories( [ & ]( EDispatcherType eType, sol::this_state s )
+		sol::factories( [ &dispatcher ]( EDispatcherType eType )
 			{
 			if ( eType == EDispatcherType::LUA_DISPATCHER )
 				return EventDispatcher{};

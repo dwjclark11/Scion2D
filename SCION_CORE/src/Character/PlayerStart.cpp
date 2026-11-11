@@ -17,7 +17,7 @@ constexpr const std::string_view PlayerStartTag = "S2D_PlayerStart";
 namespace Scion::Core
 {
 
-PlayerStart::PlayerStart( Scion::Core::ECS::Registry& registry, Scene& sceneRef )
+PlayerStart::PlayerStart( Scene& sceneRef )
 	: m_SceneRef{ sceneRef }
 	, m_pVisualEntity{ nullptr }
 	, m_pCharacterPrefab{ nullptr }
@@ -26,7 +26,6 @@ PlayerStart::PlayerStart( Scion::Core::ECS::Registry& registry, Scene& sceneRef 
 	, m_bCharacterLoaded{ false }
 	, m_bVisualEntityCreated{ false }
 {
-	
 }
 
 void PlayerStart::CreatePlayer( Scion::Core::ECS::Registry& registry )
@@ -166,7 +165,7 @@ void PlayerStart::LoadVisualEntity()
 		return;
 	}
 
-	if ( !m_pVisualEntity)
+	if ( !m_pVisualEntity )
 	{
 		m_pVisualEntity =
 			std::make_shared<Entity>( Entity{ m_SceneRef.GetRegistryPtr(), std::string{ PlayerStartTag }, "" } );

@@ -42,7 +42,7 @@ void Scion::Core::ECS::AnimationComponent::CreateAnimationLuaBind( sol::state& l
 		"reset",
 		[]( AnimationComponent& anim ) {
 			anim.currentFrame = 0;
-			anim.startTime = SDL_GetTicks();
+			anim.startTime = static_cast<int>( SDL_GetTicks() );
 		},
 		"toString",
 		&AnimationComponent::to_string );

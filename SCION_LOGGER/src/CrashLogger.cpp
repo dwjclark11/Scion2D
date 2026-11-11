@@ -84,7 +84,6 @@ void CrashLogger::SetProjectPath( const std::string& sProjectPath )
 	if ( !fs::exists( fs::path{ sLogPath } ) )
 	{
 		// Create the logs folder if it does not exist
-		std::error_code ec;
 		if ( !fs::create_directory( sLogPath, ec ) )
 		{
 			SCION_ERROR( "Failed to create crash logs directory.", ec.message() );

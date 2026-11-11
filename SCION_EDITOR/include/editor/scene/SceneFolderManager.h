@@ -17,7 +17,7 @@ struct SceneFolder
 	Id id{ NullId };
 	Id parentId{ NoParent }; // 0 = root level folder
 
-	std::string name{};
+	std::string sName{};
 	/** @brief Used in scene hierarchy to show all children. */
 	bool bExpanded{ true };
 	/** @brief Used in scene hierarchy to open the node if folder/entity is added. */

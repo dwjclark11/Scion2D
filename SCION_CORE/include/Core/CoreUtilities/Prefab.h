@@ -86,6 +86,8 @@ class PrefabCreator
 	static std::unique_ptr<Scion::Core::ECS::Entity> AddPrefabToScene( const Prefab& prefab,
 																	  Scion::Core::ECS::Registry& registry );
 	static bool DeletePrefab( Prefab& prefabToDelete );
+
+	static void CreateLuaBind( sol::state& lua );
 };
 
 } // namespace Scion::Core

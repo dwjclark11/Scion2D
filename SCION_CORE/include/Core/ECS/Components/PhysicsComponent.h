@@ -78,7 +78,7 @@ class PhysicsComponent
 	void SetFilterCategory();
 	void SetFilterMask( uint16_t mask );
 	void SetFilterMask();
-	void SetGroupIndex( int index );
+	void SetGroupIndex( int16_t index );
 	void SetGroupIndex();
 	void SetCurrentObjectData( const Scion::Physics::ObjectData& objectData );
 

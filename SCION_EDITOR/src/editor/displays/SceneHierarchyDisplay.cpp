@@ -80,7 +80,6 @@ bool SceneHierarchyDisplay::OpenTreeNode( Scion::Core::ECS::Entity& entity )
 		{
 			SCION_ASSERT( payload->DataSize == sizeof( entity.GetEntity() ) );
 			entt::entity* ent = (entt::entity*)payload->Data;
-			auto entID = static_cast<int32_t>( *ent );
 			entity.AddChild( *ent );
 		}
 
@@ -478,7 +477,7 @@ void SceneHierarchyDisplay::DrawFolder( SceneFolder& folder, SceneObject* pCurre
 		const char* icon = bIsOpen ? ICON_FA_FOLDER_OPEN : ICON_FA_FOLDER;
 
 		ImGui::PushStyleColor( ImGuiCol_Text, ImVec4{ 1.f, 0.85f, 0.3f, 1.0f } );
-		folder.bExpanded = ImGui::TreeNodeEx( nodeLabel.c_str(), flags, "%s %s", icon, folder.name.c_str() );
+		folder.bExpanded = ImGui::TreeNodeEx( nodeLabel.c_str(), flags, "%s %s", icon, folder.sName.c_str() );
 		ImGui::PopStyleColor();
 	}
 
@@ -493,7 +492,7 @@ void SceneHierarchyDisplay::DrawFolder( SceneFolder& folder, SceneObject* pCurre
 	if ( !bRenamingFolder && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked( ImGuiMouseButton_Left ) )
 	{
 		m_RenamingFolderId = folder.id;
-		std::strncpy( m_RenameBuffer, folder.name.c_str(), sizeof( m_RenameBuffer ) - 1 );
+		std::strncpy( m_RenameBuffer, folder.sName.c_str(), sizeof( m_RenameBuffer ) - 1 );
 	}
 
 	// ----------------------------------------------------------------------
@@ -502,7 +501,7 @@ void SceneHierarchyDisplay::DrawFolder( SceneFolder& folder, SceneObject* pCurre
 	if ( !bRenamingFolder && ImGui::BeginDragDropSource() )
 	{
 		ImGui::SetDragDropPayload( "SceneFolder", &folder.id, sizeof( folder.id ) );
-		ImGui::Text( folder.name.c_str() );
+		ImGui::Text( folder.sName.c_str() );
 		ImGui::EndDragDropSource();
 	}
 
@@ -605,7 +604,7 @@ void SceneHierarchyDisplay::DrawFolderRenameInline( SceneFolderManager& folderMa
 		{
 			if ( m_RenameBuffer[ 0 ] != '\0' )
 			{
-				folder.name = m_RenameBuffer;
+				folder.sName = m_RenameBuffer;
 			}
 
 			m_RenamingFolderId = 0;
@@ -631,7 +630,7 @@ void SceneHierarchyDisplay::OpenFolderContext( SceneFolder& folder, SceneObject*
 		if ( ImGui::Selectable( "Rename" ) )
 		{
 			m_RenamingFolderId = folder.id;
-			std::strncpy( m_RenameBuffer, folder.name.c_str(), sizeof( m_RenameBuffer ) - 1 );
+			std::strncpy( m_RenameBuffer, folder.sName.c_str(), sizeof( m_RenameBuffer ) - 1 );
 		}
 
 		if ( m_pSelectedEntity )

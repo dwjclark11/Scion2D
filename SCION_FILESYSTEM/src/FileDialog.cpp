@@ -8,7 +8,7 @@ std::string FileDialog::OpenFileDialog( const std::string& sTitle, const std::st
 										const std::vector<const char*>& filters, const std::string& sFilterDesc )
 {
 	const char* file = tinyfd_openFileDialog(
-		sTitle.c_str(), sDefaultPath.c_str(), filters.size(), filters.data(), sFilterDesc.c_str(), 1 );
+		sTitle.c_str(), sDefaultPath.c_str(), static_cast<int>( filters.size() ), filters.data(), sFilterDesc.c_str(), 1 );
 
 	if ( !file )
 		return std::string{};
@@ -20,7 +20,7 @@ std::string FileDialog::SaveFileDialog( const std::string& sTitle, const std::st
 										const std::vector<const char*>& filters, const std::string& sFilterDesc )
 {
 	const char* file = tinyfd_saveFileDialog(
-		sTitle.c_str(), sDefaultPath.c_str(), filters.size(), filters.data(), sFilterDesc.c_str() );
+		sTitle.c_str(), sDefaultPath.c_str(), static_cast<int>( filters.size() ), filters.data(), sFilterDesc.c_str() );
 
 	if ( !file )
 		return std::string{};

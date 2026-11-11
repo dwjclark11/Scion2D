@@ -21,6 +21,7 @@
 #include "Core/CoreUtilities/CoreUtilities.h"
 #include "Core/CoreUtilities/FollowCamera.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
+#include "Core/CoreUtilities/Prefab.h"
 
 #include "Core/States/State.h"
 #include "Core/States/StateStack.h"
@@ -154,7 +155,7 @@ bool ScriptingSystem::LoadMainScript( Scion::Core::ProjectInfo& projectInfo, Sci
 				try
 				{
 					fs::path scriptPath = *optContentPath / script.as<std::string>();
-					auto result = lua.safe_script_file( scriptPath.string() );
+					result = lua.safe_script_file( scriptPath.string() );
 					if (!result.valid())
 					{
 						sol::error error = result;
@@ -414,7 +415,7 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, Scion::Core::ECS::Re
 	Scion::Core::Scripting::UserDataBinder::CreateLuaUserData( lua );
 	Scion::Core::Scripting::LuaFilesystem::CreateLuaFileSystemBind( lua );
 	Scion::Core::Scripting::ScriptingHelpers::CreateLuaHelpers( lua );
-
+	Scion::Core::PrefabCreator::CreateLuaBind( lua );
 	Scion::Core::FollowCamera::CreateLuaFollowCamera( lua, registry );
 	Scion::Core::Character::CreateCharacterLuaBind( lua, registry );
 

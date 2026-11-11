@@ -403,7 +403,6 @@ bool RuntimeApp::LoadScripts()
 
 bool RuntimeApp::LoadPhysics()
 {
-	auto& coreGlobals = CORE_GLOBALS();
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto* pRegistry = mainRegistry.GetRegistry();
 	auto& pPhysicsWorld = mainRegistry.GetContext<Scion::Physics::PhysicsWorld>();
@@ -467,8 +466,7 @@ bool RuntimeApp::LoadPhysics()
 bool RuntimeApp::LoadZip()
 {
 	auto& assetManager = MAIN_REGISTRY().GetAssetManager();
-	auto& coreGlobals = CORE_GLOBALS();
-
+	
 	const std::string zipAssetsPath{ fmt::format( "{}{}{}", "assets", PATH_SEPARATOR, "ScionAssets.zip" ) };
 
 	if ( !fs::exists( fs::path{ zipAssetsPath } ) )

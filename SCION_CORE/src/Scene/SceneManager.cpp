@@ -181,7 +181,6 @@ void SceneManager::CreateLuaBind( sol::state& lua, ECS::Registry& registry )
 					for (const auto& [key, value] : *optSceneData)
 					{
 						std::string sKey = key.as<std::string>();
-						int x{};
 					}
 					( *pSceneManagerData )->sDefaultMusic = ( *optSceneData )[ "default_music" ].get_or( std::string{} );
 				}

@@ -23,7 +23,7 @@ SceneFolder& SceneFolderManager::CreateFolder( const std::string& name, SceneFol
 		}
 	}
 
-	folder.name = std::move( sCopy );
+	folder.sName = std::move( sCopy );
 	folder.parentId = parentId;
 	return folder;
 }
@@ -169,7 +169,7 @@ void SceneFolderManager::SaveToJSON( Scion::Filesystem::JSONSerializer& serializ
 		serializer.StartNewObject()
 			.AddKeyValuePair( "id", folder.id )
 			.AddKeyValuePair( "parentId", folder.parentId )
-			.AddKeyValuePair( "name", folder.name )
+			.AddKeyValuePair( "name", folder.sName )
 			.AddKeyValuePair( "bExpanded", folder.bExpanded );
 
 		// Entity membership - Stored by Identification::name, not entt::entity handle
@@ -194,7 +194,7 @@ void SceneFolderManager::LoadFromJSON( const rapidjson::Value& foldersArray )
 		SceneFolder folder{};
 		folder.id = obj[ "id" ].GetUint();
 		folder.parentId = obj[ "parentId" ].GetUint();
-		folder.name = obj[ "name" ].GetString();
+		folder.sName = obj[ "name" ].GetString();
 		folder.bExpanded = obj.HasMember( "bExpanded" ) && obj[ "bExpanded" ].GetBool();
 
 		// Associate all entities now
@@ -214,7 +214,7 @@ void SceneFolderManager::LoadFromJSON( const rapidjson::Value& foldersArray )
 bool SceneFolderManager::FolderExists( const std::string& folderName ) const
 {
 	auto it = std::ranges::find_if(
-		m_mapFolders, [ &folderName ]( const auto& folder ) { return folder.second.name == folderName; } );
+		m_mapFolders, [ &folderName ]( const auto& folder ) { return folder.second.sName == folderName; } );
 	return it != m_mapFolders.end();
 }
 

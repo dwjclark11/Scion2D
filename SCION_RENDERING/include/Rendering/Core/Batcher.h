@@ -32,7 +32,7 @@ class Batcher
 	GLuint m_Offset;
 
   protected:
-	void SetVertexAttribute( GLuint layoutPosition, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset,
+	void SetVertexAttribute( GLuint layoutPosition, GLuint numComponents, GLenum type, GLsizei stride, void* offset,
 							 GLboolean normalized = GL_FALSE );
 
 	void SetVertexIAttribute( GLuint layoutPosition, GLuint numComponents, GLenum type, GLsizei stride, void* offset );
@@ -101,7 +101,7 @@ inline void Batcher<TBatch, TGlyph>::Initialize()
 
 template <typename TBatch, typename TGlyph>
 inline void Batcher<TBatch, TGlyph>::SetVertexAttribute( GLuint layoutPosition, GLuint numComponents, GLenum type,
-														 GLsizeiptr stride, void* offset, GLboolean normalized )
+														 GLsizei stride, void* offset, GLboolean normalized )
 {
 	glBindVertexArray( m_VAO );
 	glVertexAttribPointer( layoutPosition, numComponents, type, normalized, stride, offset );

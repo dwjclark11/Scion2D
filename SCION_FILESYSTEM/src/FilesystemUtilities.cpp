@@ -23,7 +23,7 @@ std::string ExecCmdWithErrorOutput( const std::string& sCmd )
 		throw std::runtime_error( "popen() failed" );
 	}
 
-	while ( fgets( buffer.data(), buffer.size(), pipe.get() ) != nullptr )
+	while ( fgets( buffer.data(), static_cast<int>( buffer.size() ), pipe.get() ) != nullptr )
 	{
 		sResult += buffer.data();
 	}

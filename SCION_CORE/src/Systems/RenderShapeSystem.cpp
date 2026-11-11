@@ -47,16 +47,17 @@ void RenderShapeSystem::Update( Scion::Core::ECS::Registry& registry, Scion::Ren
 		const auto& transform = boxView.get<TransformComponent>( entity );
 		const auto& boxCollider = boxView.get<BoxColliderComponent>( entity );
 
-		if ( !Scion::Core::EntityInView( transform,
-										static_cast<float>( boxCollider.width ),
-										static_cast<float>( boxCollider.height ),
-										camera ) )
+		float boxWidth = static_cast<float>( boxCollider.width );
+		float boxHeight = static_cast<float>( boxCollider.height );
+
+		if ( !Scion::Core::EntityInView( transform, boxWidth, boxHeight, camera ) )
 			continue;
 
-		glm::mat4 model = Scion::Core::RSTModel( transform, boxCollider.width, boxCollider.height );
+		glm::mat4 model = Scion::Core::RSTModel( transform, boxWidth, boxHeight );
 
 		auto color = Color{ 255, 0, 0, 135 };
-		bool bUseIso{ false }; // We need another way to determine if we are using iso coords. The user might want to use their own physics
+		bool bUseIso{ false }; // We need another way to determine if we are using iso coords. The user might want to
+							   // use their own physics
 		if ( registry.GetRegistry().all_of<PhysicsComponent>( entity ) )
 		{
 			auto& physics = registry.GetRegistry().get<PhysicsComponent>( entity );

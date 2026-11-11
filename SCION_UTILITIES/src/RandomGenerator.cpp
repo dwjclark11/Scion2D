@@ -22,7 +22,7 @@ RandomIntGenerator::RandomIntGenerator( uint32_t min, uint32_t max )
 
 int RandomIntGenerator::GetValue()
 {
-	return static_cast<int>(m_IntDistribution( m_RandomEngine ));
+	return static_cast<int>( m_IntDistribution( m_RandomEngine ) );
 }
 
 void RandomFloatGenerator::Initialize()
@@ -44,7 +44,7 @@ RandomFloatGenerator::RandomFloatGenerator( float min, float max )
 
 float RandomFloatGenerator::GetValue()
 {
-	return m_RealDistribution( m_RandomEngine );
+	return static_cast<float>( m_RealDistribution( m_RandomEngine ) );
 }
 
 } // namespace Scion::Utilities

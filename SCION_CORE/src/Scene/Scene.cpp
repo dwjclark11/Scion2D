@@ -36,7 +36,7 @@ Scene::Scene()
 	, m_bUsePlayerStart{ false }
 	, m_Canvas{}
 	, m_eMapType{ EMapType::Grid }
-	, m_PlayerStart{ m_Registry, *this }
+	, m_PlayerStart{ *this }
 {
 	// Empty Scene
 }
@@ -52,7 +52,7 @@ Scene::Scene( const std::string& sceneName, EMapType eType )
 	, m_bUsePlayerStart{ false }
 	, m_Canvas{}
 	, m_eMapType{ eType }
-	, m_PlayerStart{ m_Registry, *this }
+	, m_PlayerStart{ *this }
 {
 	auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 	auto optScenesPath = pProjectInfo->TryGetFolderPath( Scion::Core::EProjectFolderType::Scenes );

@@ -5,6 +5,7 @@
 #include "Core/ECS/Components/ComponentSerializer.h"
 #include "Core/CoreUtilities/ProjectInfo.h"
 #include "Core/CoreUtilities/CoreUtilities.h"
+#include "Core/CoreUtilities/CoreEngineData.h"
 #include "Core/Scene/Scene.h"
 
 #include "Core/Resources/AssetManager.h"
@@ -460,11 +461,11 @@ std::unique_ptr<Scion::Core::ECS::Entity> PrefabCreator::AddPrefabToScene( const
 	std::string sCheckTag{ sTag };
 	int current{ 0 };
 
-	entt::entity hasEntity = FindEntityByTag( registry, sTag );
+	entt::entity hasEntity = FindEntityByTag( registry, sCheckTag );
 	while (hasEntity != entt::null)
 	{
 		sCheckTag = sTag + std::to_string( current );
-		hasEntity = FindEntityByTag( registry, sTag );
+		hasEntity = FindEntityByTag( registry, sCheckTag );
 		++current;
 	}
 
@@ -537,6 +538,74 @@ bool PrefabCreator::DeletePrefab( Prefab& prefabToDelete )
 	}
 
 	return true;
+}
+
+void PrefabCreator::CreateLuaBind( sol::state& lua )
+{
+	// clang-format off
+	lua.new_usertype<PrefabCreator>(
+		"PrefabCreator",
+		sol::no_constructor,
+		"addPrefabToScene",
+		[]( Registry& reg, const std::string& sPrefab, sol::optional<sol::table> optParams, sol::this_state s )
+			-> sol::object
+		{
+			auto* pPrefab = ASSET_MANAGER().GetPrefab( sPrefab );
+			if ( !pPrefab )
+			{
+				SCION_ERROR( "Failed to add prefab to scene. Prefab [{}] does not exist.", sPrefab );
+				return sol::lua_nil_t{};
+			}
+
+			auto pNewEntity = PrefabCreator::AddPrefabToScene( *pPrefab, reg );
+			if ( !pNewEntity )
+			{
+				SCION_ERROR( "Failed to add prefab to scene. Could not create entity for [{}].", sPrefab );
+				return sol::lua_nil_t{};
+			}
+
+			if ( optParams )
+			{
+				auto& rootTransform = pNewEntity->GetComponent<TransformComponent>();
+				rootTransform.position.x = optParams->get_or( "x", rootTransform.position.x );
+				rootTransform.position.y = optParams->get_or( "y", rootTransform.position.y );
+			}
+
+			if ( CORE_GLOBALS().IsPhysicsEnabled() )
+			{
+				auto& physicsWorld = reg.GetContext<Scion::Physics::PhysicsWorld>();
+
+				RelationshipUtils::ApplyFunctionToHierarchy(
+					reg.GetRegistry(),
+					pNewEntity->GetEntity(),
+					[ &physicsWorld, &reg ]( entt::entity ent )
+					{
+						Entity entity{ &reg, ent };
+						auto* pPhysics = entity.TryGetComponent<PhysicsComponent>();
+						if ( !pPhysics )
+						{
+							return;
+						}
+
+						const auto& transform = entity.GetComponent<TransformComponent>();
+						auto& attributes = pPhysics->GetChangableAttributes();
+						attributes.position = transform.position;
+						attributes.objectData.entityID = static_cast<std::int32_t>( ent );
+
+						pPhysics->Init( physicsWorld, 640, 480 );
+
+						if ( pPhysics->UseFilters() )
+						{
+							pPhysics->SetFilterCategory();
+							pPhysics->SetFilterMask();
+							pPhysics->SetGroupIndex();
+						}
+					} );
+			}
+
+			return sol::make_object( s, Entity{ *pNewEntity } );
+		} );
+	// clang-format on
 }
 
 } // namespace Scion::Core

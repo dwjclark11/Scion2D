@@ -140,8 +140,7 @@ Scion::Physics::ObjectData PhysicsComponent::CastRay( const b2Vec2& point1, cons
 
 	auto& coreGlobals = CORE_GLOBALS();
 	const auto& M2P = coreGlobals.MetersToPixels();
-	const auto& P2M = coreGlobals.PixelsToMeters();
-
+	
 	const auto& scaledWidth = coreGlobals.ScaledWidth();
 	const auto& scaledHeight = coreGlobals.ScaledHeight();
 
@@ -192,7 +191,6 @@ std::vector<Scion::Physics::ObjectData> PhysicsComponent::BoxTrace( const b2Vec2
 
 	auto& coreGlobals = CORE_GLOBALS();
 	const auto& M2P = coreGlobals.MetersToPixels();
-	const auto& P2M = coreGlobals.PixelsToMeters();
 
 	const auto& scaledWidth = coreGlobals.ScaledWidth();
 	const auto& scaledHeight = coreGlobals.ScaledHeight();
@@ -305,7 +303,7 @@ void PhysicsComponent::SetFilterMask()
 	SetFilterMask( m_InitialAttribs.filterMask );
 }
 
-void PhysicsComponent::SetGroupIndex( int index )
+void PhysicsComponent::SetGroupIndex( int16_t index )
 {
 	if ( !m_pRigidBody )
 	{
@@ -613,8 +611,16 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			body->SetTransform( b2Vec2{ bx, by }, 0.f );
 		},
 		"getTransform",
-		[]( const PhysicsComponent& pc ) {
+		[]( PhysicsComponent& pc ) {
+			auto body = pc.GetBody();
+			if ( !body )
+			{
+				// TODO: Add Error
+				return glm::vec2{ 0 };
+			}
 
+			b2Transform transform = body->GetTransform();
+			return glm::vec2{ transform.p.x, transform.p.y };
 		},
 		"setBodyType",
 		[ & ]( PhysicsComponent& pc, RigidBodyType type ) {

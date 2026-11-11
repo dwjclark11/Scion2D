@@ -275,6 +275,7 @@ void GLMBindings::CreateGLMBindings( sol::state& lua )
 	CreateVec2Bind( lua );
 	CreateVec3Bind( lua );
 	CreateVec4Bind( lua );
+	CreateQuaternionLuaBind( lua );
 
 	MathFreeFunctions( lua );
 	MathConstants( lua );
