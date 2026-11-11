@@ -14,7 +14,7 @@ inline auto create_user_data( const sol::table& data, sol::this_state s )
 
 	UserData userData{};
 	userData.userData = newData;
-	userData.type_id = entt::type_hash<DATA>::value();
+	userData.typeId = entt::type_hash<DATA>::value();
 
 	return sol::make_reference( s, userData );
 }
@@ -26,7 +26,7 @@ inline auto set_user_data( Scion::Physics::UserData* pUserData, const sol::table
 
 	pUserData->userData.reset();
 	pUserData->userData = newData;
-	pUserData->type_id = entt::type_hash<DATA>::value();
+	pUserData->typeId = entt::type_hash<DATA>::value();
 
 	return sol::make_reference( s, std::any_cast<DATA>( pUserData->userData ) );
 }

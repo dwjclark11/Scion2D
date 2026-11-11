@@ -18,15 +18,15 @@ std::tuple<sol::object, sol::object> ContactListenerBinder::GetUserData(
 	if ( !pUserDataA || !pUserDataB )
 		return std::make_tuple( sol::lua_nil_t{}, sol::lua_nil_t{} );
 
-	SCION_ASSERT( pUserDataA->type_id != 0 && pUserDataB->type_id != 0 && "User Data Type id must be set!" );
+	SCION_ASSERT( pUserDataA->typeId != 0 && pUserDataB->typeId != 0 && "User Data Type id must be set!" );
 
 	using namespace entt::literals;
 
 	const auto maybe_any_a =
-		InvokeMetaFunction( static_cast<entt::id_type>( pUserDataA->type_id ), "get_user_data"_hs, *pUserDataA, s );
+		InvokeMetaFunction( static_cast<entt::id_type>( pUserDataA->typeId ), "get_user_data"_hs, *pUserDataA, s );
 
 	const auto maybe_any_b =
-		InvokeMetaFunction( static_cast<entt::id_type>( pUserDataB->type_id ), "get_user_data"_hs, *pUserDataB, s );
+		InvokeMetaFunction( static_cast<entt::id_type>( pUserDataB->typeId ), "get_user_data"_hs, *pUserDataB, s );
 
 	if ( !maybe_any_a || !maybe_any_b )
 		return std::make_tuple( sol::lua_nil_t{}, sol::lua_nil_t{} );

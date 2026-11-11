@@ -88,7 +88,7 @@ void PhysicsComponent::Init( Scion::Physics::PhysicsWorld& pPhysicsWorld, int wi
 	// Create the user data
 	m_pUserData = std::make_shared<UserData>();
 	m_pUserData->userData = m_InitialAttribs.objectData;
-	m_pUserData->type_id = entt::type_hash<ObjectData>::value();
+	m_pUserData->typeId = entt::type_hash<ObjectData>::value();
 
 	// Create the fixture def
 	b2FixtureDef fixtureDef{};
@@ -330,8 +330,36 @@ void PhysicsComponent::SetGroupIndex()
 	SetGroupIndex( m_InitialAttribs.groupIndex );
 }
 
+void PhysicsComponent::SetCurrentObjectData( const Scion::Physics::ObjectData& objectData )
+{
+	SCION_ASSERT( m_pRigidBody );
+	if ( !m_pRigidBody )
+	{
+		return;
+	}
+
+	auto& userData = m_pRigidBody->GetFixtureList()->GetUserData();
+	UserData* pData = reinterpret_cast<UserData*>( userData.pointer );
+	if ( !pData )
+	{
+		SCION_ERROR( "Failed to set object data - fixture user data pointer is null" );
+		return;
+	}
+
+	pData->userData = objectData;
+}
+
+
 void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& registry )
 {
+	lua.new_usertype<ContactImpulseInfo>( "ContactImpulseInfo",
+										  "count",
+										  &ContactImpulseInfo::count,
+										  "normalImpulses",
+										  &ContactImpulseInfo::normalImpulses,
+										  "tangentImpulses",
+										  &ContactImpulseInfo::tangentImpulses );
+
 	lua.new_usertype<ObjectData>(
 		"ObjectData",
 		"type_id",
@@ -649,8 +677,31 @@ void PhysicsComponent::CreatePhysicsLuaBind( sol::state& lua, entt::registry& re
 			return vecObjectData.empty() ? sol::lua_nil_t{} : sol::make_object( s, vecObjectData );
 		},
 		"objectData",
-		[]( PhysicsComponent& pc ) { return pc.GetCurrentObjectData(); }
+		[]( PhysicsComponent& pc ) { return pc.GetCurrentObjectData(); },
+		"setOnPreSolve",
+		[]( PhysicsComponent& pc, sol::protected_function func ) {
+			if ( !func.valid() )
+			{
+				SCION_WARN( "Failed to set OnPreSolve. Function is not valid." );
+				return;
+			}
 
+			auto objectData = pc.GetCurrentObjectData();
+			objectData.onPreSolve = func;
+			pc.SetCurrentObjectData( objectData );
+		},
+		"setOnPostSolve",
+		[]( PhysicsComponent& pc, sol::protected_function func ) {
+			if ( !func.valid() )
+			{
+				SCION_WARN( "Failed to set OnPostSolve. Function is not valid." );
+				return;
+			}
+
+			auto objectData = pc.GetCurrentObjectData();
+			objectData.onPostSolve = func;
+			pc.SetCurrentObjectData( objectData );
+		}
 	);
 }
 } // namespace Scion::Core::ECS

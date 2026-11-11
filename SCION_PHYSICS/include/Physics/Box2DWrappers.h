@@ -21,7 +21,7 @@ struct BodyDestroyer
  * @param Takes in a pointer to a b2Body to convert.
  * @return Returns an std::shared_ptr of the passed in body.
  */
-static std::shared_ptr<b2Body> MakeSharedBody( b2Body* body )
+inline std::shared_ptr<b2Body> MakeSharedBody( b2Body* body )
 {
 	return std::shared_ptr<b2Body>( body, BodyDestroyer{} );
 }

@@ -5,13 +5,14 @@
 #include <sstream>
 #include <vector>
 #include <entt/entt.hpp>
+#include <sol/sol.hpp>
 
 namespace Scion::Physics
 {
 struct UserData
 {
 	std::any userData{};
-	std::uint32_t type_id{ 0 };
+	std::uint32_t typeId{ 0 };
 };
 
 /*
@@ -47,6 +48,9 @@ struct ObjectData
 	bool bTrigger{ false };
 	bool bIsFriendly{ false };
 	std::uint32_t entityID{};
+	sol::protected_function onPreSolve{ sol::lua_nil };
+	sol::protected_function onPostSolve{ sol::lua_nil };
+	sol::object userData{ sol::lua_nil };
 
 	ObjectData() = default;
 	ObjectData( const std::string& tag, const std::string& group, bool collider, bool trigger, bool friendly,
@@ -67,4 +71,12 @@ struct ObjectData
   private:
 	std::vector<const ObjectData*> contactEntities;
 };
+
+struct ContactImpulseInfo
+{
+	std::vector<float> normalImpulses;
+	std::vector<float> tangentImpulses;
+	int32_t count;
+};
+
 } // namespace Scion::Physics

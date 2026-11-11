@@ -80,6 +80,7 @@ class PhysicsComponent
 	void SetFilterMask();
 	void SetGroupIndex( int index );
 	void SetGroupIndex();
+	void SetCurrentObjectData( const Scion::Physics::ObjectData& objectData );
 
 	bool UseFilters() const { return m_InitialAttribs.bUseFilters; }
 

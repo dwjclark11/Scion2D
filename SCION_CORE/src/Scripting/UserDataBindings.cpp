@@ -41,7 +41,7 @@ void Scion::Core::Scripting::UserDataBinder::CreateLuaUserData( sol::state& lua 
 		"getUserData",
 		[]( UserData& userData, sol::this_state s ) {
 			const auto maybe_any =
-				InvokeMetaFunction( static_cast<entt::id_type>( userData.type_id ), "get_user_data"_hs, userData, s );
+				InvokeMetaFunction( static_cast<entt::id_type>( userData.typeId ), "get_user_data"_hs, userData, s );
 
 			return maybe_any ? maybe_any.cast<sol::reference>() : sol::lua_nil_t{};
 		} );

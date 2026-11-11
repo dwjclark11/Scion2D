@@ -4,7 +4,7 @@
 namespace Scion::Core
 {
 
-struct ProjectInfo;
+class ProjectInfo;
 
 namespace ECS
 {
