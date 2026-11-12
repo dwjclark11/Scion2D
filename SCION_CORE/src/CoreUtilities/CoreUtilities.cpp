@@ -13,29 +13,50 @@ using namespace Scion::Core::ECS;
 namespace Scion::Core
 {
 
-bool EntityInView( const TransformComponent& transform, float width, float height,
+bool EntityInView( const TransformComponent& transform, float entityWidth, float entityHeight,
 				   const Scion::Rendering::Camera2D& camera )
 {
-	const glm::vec2 cameraPos = camera.GetPosition() - camera.GetScreenOffset();
-	const int cameraWidth = camera.GetWidth();
-	const int cameraHeight = camera.GetHeight();
-	const float cameraScale = camera.GetScale();
-	const float invCameraScale = 1.f / cameraScale;
+	// --- 1. Camera AABB in world space ---
+	const float invScale = 1.f / camera.GetScale();
 
-	const float cameraLeft = ( cameraPos.x - ( width * transform.scale.x * cameraScale ) ) * invCameraScale;
-	const float cameraRight = ( cameraPos.x + cameraWidth ) * invCameraScale;
-	const float cameraTop = ( cameraPos.y - ( height * transform.scale.y * cameraScale ) ) * invCameraScale;
-	const float cameraBottom = ( cameraPos.y + cameraHeight ) * invCameraScale;
+	// Top-left of camera in world space
+	const glm::vec2 cameraTopLeft = camera.GetPosition() - camera.GetScreenOffset();
 
-	if ( ( transform.position.x <= cameraLeft || transform.position.x >= cameraRight ) ||
-		 ( transform.position.y <= cameraTop || transform.position.y >= cameraBottom ) )
+	// Camera view dimensions in world space
+	const float camWorldWidth = camera.GetWidth() * invScale;
+	const float camWorldHeight = camera.GetHeight() * invScale;
+
+	// Entity dimensions in world space
+	const float entWorldWidth = entityWidth * transform.scale.x;
+	const float entWorldHeight = entityHeight * transform.scale.y;
+
+	// Expand camera bounds so we only cull when NO part of the entity is visible.
+	// An entity is still partially visible if its far edge reaches cameraLeft, etc.
+	const float cameraLeft = cameraTopLeft.x - entWorldWidth;
+	const float cameraRight = cameraTopLeft.x + camWorldWidth;
+	const float cameraTop = cameraTopLeft.y - entWorldHeight;
+	const float cameraBottom = cameraTopLeft.y + camWorldHeight;
+
+	// --- 2. Entity AABB in world space ---
+	const float entityMinX = transform.position.x;
+	const float entityMaxX = transform.position.x + entWorldWidth;
+	const float entityMinY = transform.position.y;
+	const float entityMaxY = transform.position.y + entWorldHeight;
+
+	// --- 3. AABB overlap test ---
+	// Cull only when the entity is FULLY outside on at least one axis.
+	// Two AABBs do NOT overlap if one is entirely to the left/right/above/below the other.
+	if ( entityMaxX < cameraLeft ||	 // entity entirely left of camera
+		 entityMinX > cameraRight || // entity entirely right of camera
+		 entityMaxY < cameraTop ||	 // entity entirely above camera
+		 entityMinY > cameraBottom ) // entity entirely below camera
 	{
-		return false;
+		return false; // Fully outside, cull it
 	}
 
-	// Entity is at least partially in view
-	return true;
+	return true; // At least partially in view
 }
+
 
 glm::mat4 RSTModel( const TransformComponent& transform, float width, float height )
 {

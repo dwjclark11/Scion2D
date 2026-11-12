@@ -212,7 +212,10 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 
 	if ( mouse.IsBtnPressed( SCION_MOUSE_MIDDLE ) )
 	{
-		screenOffset += ( mousePos - startPosition );
+		glm::vec2 worldDelta =
+			m_pTilemapCam->ScreenCoordsToWorld( mousePos ) - m_pTilemapCam->ScreenCoordsToWorld( startPosition );
+
+		screenOffset += worldDelta;
 		bOffsetChanged = true;
 
 		if ( auto* pCursor = ASSET_MANAGER().GetCursor( "ZZ_S2D_PanningCursor" ) )
@@ -239,7 +242,7 @@ void TilemapDisplay::PanZoomCamera( const glm::vec2& mousePos )
 
 	if ( bScaledChanged )
 	{
-		scale = std::clamp( scale, 1.f, 10.f );
+		scale = std::clamp( scale, 0.1f, 20.f );
 		m_pTilemapCam->SetScale( scale );
 	}
 

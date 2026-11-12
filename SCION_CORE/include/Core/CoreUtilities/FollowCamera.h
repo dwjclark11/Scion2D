@@ -22,6 +22,8 @@ class FollowCamera
 	Scion::Rendering::Camera2D& m_Camera;
 	FollowCamParams m_Params;
 	ECS::Entity m_Entity;
+	bool bEnabled;
+	bool m_bSnap{ true };
 
   public:
 	FollowCamera( Scion::Rendering::Camera2D& camera, const ECS::Entity& entity, const FollowCamParams& params );
