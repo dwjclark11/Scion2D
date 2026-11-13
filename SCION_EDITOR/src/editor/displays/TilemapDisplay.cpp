@@ -339,7 +339,7 @@ void TilemapDisplay::AddPrefabbedEntityToScene( const Scion::Core::PrefabbedEnti
 		newEnt.AddComponent<PhysicsComponent>( prefabbed.physics.value() );
 	}
 
-	pCurrentScene->AddGameObjectByTag( sTag, newEnt.GetEntity() );
+	pCurrentScene->AddGameObjectByTag( sTag, newEnt.GetHandle() );
 }
 
 void TilemapDisplay::DrawToolbar()

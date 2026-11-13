@@ -61,7 +61,7 @@ void RemoveTileLayerCmd::undo()
 		Entity ent{ pRegistry, "", "" };
 		ent.AddComponent<TransformComponent>( tile.transform );
 		ent.AddComponent<SpriteComponent>( tile.sprite );
-		ent.AddComponent<TileComponent>( static_cast<std::uint32_t>( ent.GetEntity() ) );
+		ent.AddComponent<TileComponent>( static_cast<std::uint32_t>( ent.GetHandle() ) );
 
 		if ( tile.bCollider )
 		{

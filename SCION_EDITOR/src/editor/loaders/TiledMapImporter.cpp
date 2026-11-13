@@ -200,7 +200,7 @@ bool TiledMapImporter::ImportFromTMXFile( EditorSceneManager* pSceneManager, con
 							Scion::Physics::ObjectData objectData{};
 							objectData.tag = pObject->sName;
 							objectData.group = pObject->sType;
-							objectData.entityID = static_cast<uint32_t>( newTile.GetEntity() );
+							objectData.entityID = static_cast<uint32_t>( newTile.GetHandle() );
 
 							newTile.AddComponent<PhysicsComponent>( PhysicsComponent{ physAttr } );
 						}
@@ -230,7 +230,7 @@ bool TiledMapImporter::ImportFromTMXFile( EditorSceneManager* pSceneManager, con
 					Scion::Core::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 
 					newTile.AddComponent<TileComponent>(
-						TileComponent{ .id = static_cast<uint32_t>( newTile.GetEntity() ) } );
+						TileComponent{ .id = static_cast<uint32_t>( newTile.GetHandle() ) } );
 				}
 			}
 		}
@@ -392,7 +392,7 @@ bool TiledMapImporter::ImportFromLuaFile( EditorSceneManager* pSceneManager, con
 								Scion::Physics::ObjectData objectData{};
 								objectData.tag = pObject->sName;
 								objectData.group = pObject->sType;
-								objectData.entityID = static_cast<uint32_t>( newTile.GetEntity() );
+								objectData.entityID = static_cast<uint32_t>( newTile.GetHandle() );
 
 								newTile.AddComponent<PhysicsComponent>( PhysicsComponent{ physAttr } );
 							}
@@ -422,7 +422,7 @@ bool TiledMapImporter::ImportFromLuaFile( EditorSceneManager* pSceneManager, con
 						Scion::Core::GenerateUVs( sprite, pTexture->GetWidth(), pTexture->GetHeight() );
 
 						newTile.AddComponent<TileComponent>(
-							TileComponent{ .id = static_cast<uint32_t>( newTile.GetEntity() ) } );
+							TileComponent{ .id = static_cast<uint32_t>( newTile.GetHandle() ) } );
 					}
 				}
 			}

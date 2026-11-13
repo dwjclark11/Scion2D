@@ -1,12 +1,11 @@
-
 ![new_logo](https://github.com/user-attachments/assets/1c6b585d-6b34-4f38-a9e3-84af16954a2c)
 
 
 # 🎮 Scion2D – A Simple 2D Game Engine for Learning and Teaching
 
-Scion2D is a lightweight, educational 2D game engine built with the goal of **learning by doing** 🧠💡. It's part of my journey to understand game development from the ground up — and share everything I learn through my [YouTube channel]([https://www.youtube.com/](https://www.youtube.com/playlist?list=PL3HUvSWOJR7XRDwVVQqqWO-zyyscb8L-v)) 📺✨.
+Scion2D is a lightweight, educational 2D game engine built with the goal of **learning by doing** 🧠💡. It's part of my journey to understand game development from the ground up and share everything I learn through my [YouTube channel]([https://www.youtube.com/](https://www.youtube.com/playlist?list=PL3HUvSWOJR7XRDwVVQqqWO-zyyscb8L-v)) 📺✨.
 
-> This engine isn’t meant to compete with big names like Unity or Godot — and that’s okay!  
+> This engine isn’t meant to compete with big names like Unity or Godot - and that’s okay!  
 > It’s about exploring, building, breaking things, and **growing as a developer** 🚀.
 
 Whether you're here to learn alongside me, peek at the source, or just curious about making your own engine, welcome! 👋
@@ -28,7 +27,7 @@ Whether you're here to learn alongside me, peek at the source, or just curious a
 
 ## 🚀 Features
 -  **Cross-Platform**: Builds on Windows and Linux. Currently Mac is not supported.
--  **Modern C++20**: Use of modern c++ standards and functionality.
+-  **Modern C++23**: Use of modern c++ standards and functionality.
 -  **Integrated Tilemap Editor**: Ability to create tilemaps, create game objects, and more.
 
 ---- 
@@ -44,62 +43,64 @@ Whether you're here to learn alongside me, peek at the source, or just curious a
 
 # Build
 ----
-Requires [CMake 3.26](https://cmake.org/) and [vcpkg](https://github.com/microsoft/vcpkg)
-## Get VCPKG:
-```ps
-git clone https://github.com/microsoft/vcpkg
-./vcpkg/bootstrap-vcpkg.bat -disableMetrics
+Requires [CMake 3.26+](https://cmake.org/), a C++23 capable compiler, [Git](https://git-scm.com/) and [vcpkg](https://github.com/microsoft/vcpkg).
+
+Dependencies are declared in the `vcpkg.json` manifest at the root of the repository. vcpkg runs in manifest mode, so the packages are downloaded and built automatically the first time you configure the project. You do **not** need to run `vcpkg install` or `vcpkg integrate install`, and nothing has to be installed globally except the Linux system packages listed below.
+
+## Get VCPKG
 ```
-### Make sure the following environment variables are set:
+git clone https://github.com/microsoft/vcpkg
+```
+- Windows
+	```
+	./vcpkg/bootstrap-vcpkg.bat -disableMetrics
+	```
+- Linux
+	```
+	./vcpkg/bootstrap-vcpkg.sh -disableMetrics
+	```
+	vcpkg needs `curl zip unzip tar` on Linux:
+	```
+	sudo apt install curl zip unzip tar
+	```
+
+### Set the environment variables
+The root `CMakeLists.txt` picks up `$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake` as the toolchain file automatically, so `VCPKG_ROOT` is the only variable that is required.
 ```
 VCPKG_ROOT=[path_to_vcpkg]
-VCPKG_DEFAULT_TRIPLET=x64-windows
+```
+Optionally set the default triplet:
+```
+VCPKG_DEFAULT_TRIPLET=x64-windows   (Windows)
+VCPKG_DEFAULT_TRIPLET=x64-linux     (Linux)
 ```
 
 - Windows
 
-	Add the following line in your Path environnment variable:
+	Add `VCPKG_ROOT` through the System Environment Variables dialog, or from a terminal:
 	```
-	<path_to_vcpkg_installation_folder>
-	```
-
-	Open a terminal and type the following:
-	```
-	vcpkg integrate install
-	vcpkg integrate powershell
+	setx VCPKG_ROOT "<path_to_vcpkg_installation_folder>"
 	```
 
 - Linux
 
-	Edit your profile's bashrc file:
+	Add the following lines at the end of your `~/.bashrc`:
 	```
-	nano ~/.bashrc
-	```
-	Add the following lines at the end:
-	```
-	export PATH=<path_to_vcpkg_installation_folder>:$PATH
 	export VCPKG_ROOT=<path_to_vcpkg_installation_folder>
-	export VCPKG_DEFAULT_TRIPLET=x64-linux
+	export PATH=$VCPKG_ROOT:$PATH
 	```
 	Apply changes:
 	```
 	source ~/.bashrc
 	```
 
-	Open a terminal and type the following:
-	```
-	vcpkg integrate install
-	vcpkg integrate bash
-	```
-	
-## Install dependencies 
-- Windows
-	```
-	vcpkg install fmt glm entt glad soil2 sdl3 sdl3-image lua sol2 stb tinyfiledialogs rapidjson libzippp tinyxml2
-	```
+Restart your terminal or IDE after changing environment variables.
+
+## Linux system packages
+These are the only things that still need to be installed by hand, because they are system libraries the vcpkg ports (mainly SDL3) rely on.
 - Linux[debian based]
 	```
-	sudo apt install python-jinja2 autoconf automake libtool pkg-config libibus-1.0-dev
+	sudo apt install python3-jinja2 autoconf automake libtool pkg-config libibus-1.0-dev
 	```
 	* if[Xorg]
 		 ```
@@ -113,27 +114,36 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 		```
 		sudo apt install build-essential
 		```
-	```
-	vcpkg install fmt glm entt glad soil2 sdl3 sdl3-image lua sol2 stb tinyfiledialogs rapidjson libzippp tinyxml2
-	```
 
-## Clone the repository 
+Windows does not need any extra system packages.
+
+## Clone and build the repository
 ```
 git clone https://github.com/dwjclark11/Scion2D.git
 cd Scion2D
 cmake -S . -B build
+cmake --build build
 ```
- 
+The first configure takes a while because vcpkg builds every dependency listed in `vcpkg.json`. The built packages are cached, so later configures are fast.
+
+In-source builds are not allowed, always use a separate build directory such as `build`.
+
+### Visual Studio
+Open the repository folder directly (File > Open > Folder). Visual Studio reads `CMakeSettings.json` and the vcpkg manifest, and restores the packages on its own as long as `VCPKG_ROOT` is set.
+
+### Adding a dependency
+Add the package name to the `dependencies` list in `vcpkg.json` and re-run the CMake configure step. Do not run `vcpkg install <package>`.
+
 ## Use the built-in OpenGL debugger
 Note: this requires a graphics adapter with OpenGL version >= 4.3 capabilities.
 
 In Scion2D/CMakeLists.txt:
 * Set the variable ```SCION_OPENGL_DEBUG_CALLBACK``` to ```ON```.
-* Optionnaly, set the variable ```SCION_OPENGL_DEBUG_FORWARD_COMPATIBILITY``` to ```ON``` in order to enable warnings about deprecated OpenGL functions.
+* Optionally, set the variable ```SCION_OPENGL_DEBUG_FORWARD_COMPATIBILITY``` to ```ON``` in order to enable warnings about deprecated OpenGL functions.
 
 Activate the debugger in your code as soon as you have a valid OpenGL context made current:
 * ```Scion::Rendering::OpenGLDebugger::init()```.
-* Optionnaly, you can opt out a list of warning wy doing the following:
+* Optionally, you can opt out a list of warning wy doing the following:
 	```
 	std::vector<unsigned int> ignore{ 1281, 131169, 131185, 131204, 31218 };
 	Scion::Rendering::OpenGLDebugger::init( ignore );

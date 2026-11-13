@@ -46,21 +46,22 @@ class Entity
 	 * @brief Gets the actual entity.
 	 * @return Returns the underlying entt::entity.
 	 */
-	inline entt::entity& GetEntity() { return m_Entity; }
+	inline entt::entity& GetHandle() { return m_Entity; }
 
 	/*
 	 * @brief All entities have a reference to the registry that they were created in.
 	 * @return Returns the actual underlying entt::registry as a reference.
 	 */
 	inline entt::registry& GetEnttRegistry() { return m_Registry->GetRegistry(); }
-
 	inline Registry& GetRegistry() { return *m_Registry; }
+	inline Registry* GetRegistryPtr() { return m_Registry; }
+
 	[[nodiscard]] bool IsValid() const noexcept { return m_Registry && m_Registry->IsValid( m_Entity ); }
 
 	static void CreateLuaEntityBind( sol::state& lua, Registry& registry );
 
 	template <typename TComponent>
-	static void RegisterMetaComponent();
+	static void RegisterMetaComponent( const char* sCategory = "General", int32_t nOrder = 999 );
 
 	/*
 	 * @brief Add a component to entity.

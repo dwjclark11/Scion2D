@@ -6,7 +6,7 @@ namespace Scion::Core::ECS
 bool RelationshipUtils::IsAParentOf( Entity& entityA, Entity& entityB )
 {
 	auto& registry = entityA.GetEnttRegistry();
-	auto entity = entityB.GetEntity();
+	auto entity = entityB.GetHandle();
 	const auto& relations = entityA.GetComponent<Relationship>();
 
 	// Get a copy to the parent entity
@@ -31,7 +31,7 @@ void RelationshipUtils::SetSiblingLinks( Entity& firstChild, Relationship& child
 	// we want to get a copy of the parentChild here so we can move to the next one
 	auto& registry = firstChild.GetEnttRegistry();
 
-	auto parentChild = registry.get<Relationship>( firstChild.GetEntity() );
+	auto parentChild = registry.get<Relationship>( firstChild.GetHandle() );
 
 	while ( parentChild.nextSibling != entt::null )
 	{
@@ -100,7 +100,7 @@ void RelationshipUtils::RemoveAndDelete( Entity& entityToRemove, std::vector<std
 	}
 
 	// Now that the links have been adjusted, we can delete the entity
-	//SCION_LOG( "JUST Destroyed: {}", static_cast<std::uint32_t>( entityToRemove.GetEntity() ) );
+	//SCION_LOG( "JUST Destroyed: {}", static_cast<std::uint32_t>( entityToRemove.GetHandle() ) );
 	entitiesRemoved.emplace_back( entityToRemove.GetName() );
 	entityToRemove.Destroy();
 }

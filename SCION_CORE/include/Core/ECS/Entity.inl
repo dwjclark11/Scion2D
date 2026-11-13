@@ -1,6 +1,7 @@
 #pragma once
 #include "Entity.h"
 #include "Logger/Logger.h"
+#include "Components/ComponentMetaTraits.h"
 
 namespace Scion::Core::ECS
 {
@@ -93,11 +94,13 @@ auto copy_component( Entity& entityToCopy, Entity& entityThatCopies )
 }
 
 template <typename TComponent>
-inline void Entity::RegisterMetaComponent()
+inline void Entity::RegisterMetaComponent( const char* sCategory, int32_t nOrder )
 {
 	using namespace entt::literals;
 	entt::meta_factory<TComponent>()
 		.type( entt::type_hash<TComponent>::value() )
+		.traits( EMetaTraits::IsComponent )
+		.template custom<ComponentMetaInfo>( sCategory, nOrder )
 		.template func<&add_component<TComponent>>( "add_component"_hs )
 		.template func<&add_component_default<TComponent>>( "add_component_default"_hs )
 		.template func<&has_component<TComponent>>( "has_component"_hs )

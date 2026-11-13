@@ -541,7 +541,7 @@ void ContentDisplay::OpenDeletePopup()
 
 	ImGui::OpenPopup( "Delete" );
 
-	if ( ImGui::BeginPopupModal( "Delete" ) )
+	if ( ImGui::BeginPopupModal( "Delete", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
 		ImGui::Text( "This cannot be undone. Are you sure?" );
 		if ( ImGui::Button( "Ok" ) )
@@ -567,7 +567,7 @@ void ContentDisplay::OpenCreateFolderPopup()
 
 	ImGui::OpenPopup( "Create Folder" );
 
-	if ( ImGui::BeginPopupModal( "Create Folder" ) )
+	if ( ImGui::BeginPopupModal( "Create Folder", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
 		static std::string newFolderStr{};
 		char temp[ 256 ];
@@ -640,7 +640,7 @@ void ContentDisplay::OpenCreateLuaClassPopup()
 
 	ImGui::OpenPopup( "Create Lua Class" );
 
-	if ( ImGui::BeginPopupModal( "Create Lua Class" ) )
+	if ( ImGui::BeginPopupModal( "Create Lua Class", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
 		char buffer[ 256 ];
 		static std::string className{};
@@ -730,7 +730,7 @@ void ContentDisplay::OpenCreateLuaStateClassPopup()
 
 	ImGui::OpenPopup( "Create Lua State Class" );
 
-	if ( ImGui::BeginPopupModal( "Create Lua State Class" ) )
+	if ( ImGui::BeginPopupModal( "Create Lua State Class", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
 		static std::string className{};
 		static std::string stateName{};
@@ -845,7 +845,7 @@ void ContentDisplay::OpenCreateLuaTablePopup()
 
 	ImGui::OpenPopup( "Create Lua Table" );
 
-	if ( ImGui::BeginPopupModal( "Create Lua Table" ) )
+	if ( ImGui::BeginPopupModal( "Create Lua Table", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
 		char buffer[ 256 ];
 		static std::string tableName{};
@@ -922,7 +922,7 @@ void ContentDisplay::OpenCreateEmptyLuaFilePopup()
 
 	ImGui::OpenPopup( "Create Lua File" );
 
-	if ( ImGui::BeginPopupModal( "Create Lua File" ) )
+	if ( ImGui::BeginPopupModal( "Create Lua File", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
 		char buffer[ 256 ];
 		static std::string tableName{};

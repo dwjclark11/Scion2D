@@ -64,7 +64,7 @@ void RectToolAddTilesCmd::redo()
 
 		addedTile.AddComponent<TransformComponent>( tile.transform );
 		addedTile.AddComponent<SpriteComponent>( tile.sprite );
-		addedTile.AddComponent<TileComponent>( static_cast<std::uint32_t>( addedTile.GetEntity() ) );
+		addedTile.AddComponent<TileComponent>( static_cast<std::uint32_t>( addedTile.GetHandle() ) );
 
 		if ( tile.bAnimation )
 		{
@@ -104,7 +104,7 @@ void RectToolRemoveTilesCmd::undo()
 
 		addedTile.AddComponent<TransformComponent>( tile.transform );
 		addedTile.AddComponent<SpriteComponent>( tile.sprite );
-		addedTile.AddComponent<TileComponent>( static_cast<std::uint32_t>( addedTile.GetEntity() ) );
+		addedTile.AddComponent<TileComponent>( static_cast<std::uint32_t>( addedTile.GetHandle() ) );
 
 		if ( tile.bAnimation )
 		{

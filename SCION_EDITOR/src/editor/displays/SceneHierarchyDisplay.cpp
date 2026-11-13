@@ -3,8 +3,10 @@
 #include "editor/scene/SceneObject.h"
 #include "editor/utilities/fonts/IconsFontAwesome5.h"
 #include "editor/utilities/imgui/ImGuiUtils.h"
+#include "editor/utilities/ComponentPickerUtils.h"
 
 #include "editor/tools/ToolManager.h"
+#include "editor/commands/CommandManager.h"
 
 #include "Core/Scripting/InputManager.h"
 
@@ -38,7 +40,7 @@ bool SceneHierarchyDisplay::OpenTreeNode( Scion::Core::ECS::Entity& entity )
 {
 	const auto& name = entity.GetName();
 
-	ImGui::PushID( static_cast<int32_t>( entity.GetEntity() ) );
+	ImGui::PushID( static_cast<int32_t>( entity.GetHandle() ) );
 
 	ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_FramePadding |
 								   ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -48,7 +50,7 @@ bool SceneHierarchyDisplay::OpenTreeNode( Scion::Core::ECS::Entity& entity )
 	auto curr = relations.firstChild;
 
 	// If the selected entity is the current node, highlight the selected node
-	bool bSelected{ m_pSelectedEntity && m_pSelectedEntity->GetEntity() == entity.GetEntity() };
+	bool bSelected{ m_pSelectedEntity && m_pSelectedEntity->GetHandle() == entity.GetHandle() };
 	if ( bSelected )
 		nodeFlags |= ImGuiTreeNodeFlags_Selected;
 
@@ -59,15 +61,15 @@ bool SceneHierarchyDisplay::OpenTreeNode( Scion::Core::ECS::Entity& entity )
 
 	if ( ImGui::IsItemClicked() )
 	{
-		m_pSelectedEntity = std::make_shared<Entity>( pCurrentScene->GetRegistryPtr(), entity.GetEntity() );
-		TOOL_MANAGER().SetSelectedEntity( entity.GetEntity() );
+		m_pSelectedEntity = std::make_shared<Entity>( pCurrentScene->GetRegistryPtr(), entity.GetHandle() );
+		TOOL_MANAGER().SetSelectedEntity( entity.GetHandle() );
 	}
 
 	ImGui::PopID();
 
 	if ( ImGui::BeginDragDropSource() )
 	{
-		ImGui::SetDragDropPayload( "SceneHierarchy", &( entity.GetEntity() ), sizeof( entity.GetEntity() ) );
+		ImGui::SetDragDropPayload( "SceneHierarchy", &( entity.GetHandle() ), sizeof( entity.GetHandle() ) );
 		ImGui::Text( entity.GetName().c_str() );
 		ImGui::EndDragDropSource();
 	}
@@ -78,7 +80,7 @@ bool SceneHierarchyDisplay::OpenTreeNode( Scion::Core::ECS::Entity& entity )
 
 		if ( payload )
 		{
-			SCION_ASSERT( payload->DataSize == sizeof( entity.GetEntity() ) );
+			SCION_ASSERT( payload->DataSize == sizeof( entity.GetHandle() ) );
 			entt::entity* ent = (entt::entity*)payload->Data;
 			entity.AddChild( *ent );
 		}
@@ -106,42 +108,32 @@ void SceneHierarchyDisplay::AddComponent( Scion::Core::ECS::Entity& entity, bool
 	if ( *bAddComponent )
 		ImGui::OpenPopup( "Add Component" );
 
-	if ( ImGui::BeginPopupModal( "Add Component" ) )
+	if ( ImGui::BeginPopupModal( "Add Component", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 	{
 		auto& registry = entity.GetEnttRegistry();
 
-		// Get all of the reflected types from entt::meta
-		std::map<entt::id_type, std::string> componentMap;
-
-		for ( auto&& [ id, type ] : entt::resolve() )
-		{
-			const auto& info = type.info();
-			auto pos = info.name().find_last_of( ':' ) + 1;
-			auto name = info.name().substr( pos );
-			componentMap[ id ] = std::string{ name };
-		}
-
-		static std::string componentStr{};
-		static std::string componentStrPrev{};
-		static entt::id_type id_type{ 0 };
+		static std::string sSearchBuf{};
+		static std::string sSelectedName{};
+		static entt::id_type selectedId{ 0 };
 		static bool bError{ false };
 
-		if ( ImGui::BeginCombo( "Choose Component", componentStr.c_str() ) )
+		if ( !m_ComponentList.has_value() )
+			m_ComponentList = BuildComponentList();
+
+
+		entt::id_type chosen =
+			DrawComponentPicker( "##add_component_combo", *m_ComponentList, sSearchBuf, sSelectedName );
+		if ( chosen != 0 )
 		{
-			for ( const auto& [ id, name ] : componentMap )
+			for ( const auto& entry : *m_ComponentList )
 			{
-				if ( ImGui::Selectable( name.c_str(), name == componentStr ) )
+				if ( entry.typeId == chosen )
 				{
-					componentStr = name;
-					id_type = id;
+					sSelectedName = entry.sDisplayName;
+					break;
 				}
 			}
-			ImGui::EndCombo();
-		}
-
-		if ( componentStr != componentStrPrev )
-		{
-			componentStrPrev = componentStr;
+			selectedId = chosen;
 			bError = false;
 		}
 
@@ -149,22 +141,22 @@ void SceneHierarchyDisplay::AddComponent( Scion::Core::ECS::Entity& entity, bool
 		{
 			ImGui::TextColored(
 				ImVec4{ 1.f, 0.f, 0.f, 1.f },
-				fmt::format( "Game Object already has [{}] - Please make another selection.", componentStr ).c_str() );
+				fmt::format( "Game Object already has [{}] - Please make another selection.", sSelectedName ).c_str() );
 		}
 
 		if ( ImGui::Button( "Ok" ) && !bError )
 		{
-			if ( !componentStr.empty() )
+			if ( !sSelectedName.empty() )
 			{
 				for ( auto&& [ id, storage ] : registry.storage() )
 				{
-					if ( id != id_type )
+					if ( id != selectedId )
 						continue;
 
-					if ( storage.contains( entity.GetEntity() ) )
+					if ( storage.contains( entity.GetHandle() ) )
 					{
 						bError = true;
-						SCION_ERROR( "Entity already has component [{}]", componentStr );
+						SCION_ERROR( "Entity already has component [{}]", sSelectedName );
 						break;
 					}
 
@@ -173,20 +165,21 @@ void SceneHierarchyDisplay::AddComponent( Scion::Core::ECS::Entity& entity, bool
 				}
 			}
 
-			if ( !bError && id_type != 0 )
+			if ( !bError && selectedId != 0 )
 			{
-				auto&& storage = registry.storage( id_type );
+				auto&& storage = registry.storage( selectedId );
 				if ( !storage )
 				{
 					const auto addComponent =
-						Scion::Core::Utils::InvokeMetaFunction( id_type, "add_component_default"_hs, entity );
+						Scion::Core::Utils::InvokeMetaFunction( selectedId, "add_component_default"_hs, entity );
 
 					if ( addComponent )
 					{
 						EVENT_DISPATCHER().EmitEvent( Events::AddComponentEvent{
-							.pEntity = &entity, .eType = Events::GetComponentTypeFromStr( componentStr ) } );
+							.pEntity = &entity, .eType = Events::GetComponentTypeFromStr( sSelectedName ) } );
 
 						*bAddComponent = false;
+
 						ImGui::CloseCurrentPopup();
 					}
 					else
@@ -200,12 +193,14 @@ void SceneHierarchyDisplay::AddComponent( Scion::Core::ECS::Entity& entity, bool
 				}
 				else
 				{
-					storage->push( entity.GetEntity() );
+					storage->push( entity.GetHandle() );
 
 					EVENT_DISPATCHER().EmitEvent( Events::AddComponentEvent{
-						.pEntity = &entity, .eType = Events::GetComponentTypeFromStr( componentStr ) } );
+						.pEntity = &entity, .eType = Events::GetComponentTypeFromStr( sSelectedName ) } );
 
 					*bAddComponent = false;
+					sSelectedName.clear();
+					selectedId = 0;
 					ImGui::CloseCurrentPopup();
 				}
 			}
@@ -215,6 +210,9 @@ void SceneHierarchyDisplay::AddComponent( Scion::Core::ECS::Entity& entity, bool
 		if ( ImGui::Button( "Cancel" ) )
 		{
 			bError = false;
+			sSelectedName.clear();
+			selectedId = 0;
+			sSearchBuf.clear();
 			*bAddComponent = false;
 			ImGui::CloseCurrentPopup();
 		}
@@ -291,7 +289,7 @@ void SceneHierarchyDisplay::DrawEntityComponents()
 
 	for ( const auto&& [ id, storage ] : registry.storage() )
 	{
-		if ( !storage.contains( m_pSelectedEntity->GetEntity() ) )
+		if ( !storage.contains( m_pSelectedEntity->GetHandle() ) )
 			continue;
 
 		// Do not draw tile or relationship components
@@ -307,7 +305,7 @@ void SceneHierarchyDisplay::DrawEntityComponents()
 			ImGui::PushID( id );
 			if ( ImGui::Button( "remove" ) )
 			{
-				storage.remove( m_pSelectedEntity->GetEntity() );
+				storage.remove( m_pSelectedEntity->GetHandle() );
 			}
 			ImGui::PopID();
 		}
@@ -329,7 +327,7 @@ bool SceneHierarchyDisplay::DeleteSelectedEntity()
 			return false;
 		}
 
-		if ( !pCurrentScene->DeleteGameObjectById( m_pSelectedEntity->GetEntity() ) )
+		if ( !pCurrentScene->DeleteGameObjectById( m_pSelectedEntity->GetHandle() ) )
 		{
 			SCION_ERROR( "Failed to delete selected entity." );
 			return false;
@@ -353,7 +351,7 @@ bool SceneHierarchyDisplay::DuplicateSelectedEntity()
 
 	if ( auto pCurrentScene = SCENE_MANAGER().GetCurrentSceneObject() )
 	{
-		if ( !pCurrentScene->DuplicateGameObject( m_pSelectedEntity->GetEntity() ) )
+		if ( !pCurrentScene->DuplicateGameObject( m_pSelectedEntity->GetHandle() ) )
 		{
 			SCION_ERROR( "Failed to duplicate selected entity." );
 			return false;
@@ -383,14 +381,14 @@ void SceneHierarchyDisplay::OnEntityChanged( Scion::Editor::Events::SwitchEntity
 	}
 
 	// Ensure that the entity is valid
-	if ( !pCurrentScene->GetRegistry().IsValid( swEntEvent.pEntity->GetEntity() ) )
+	if ( !pCurrentScene->GetRegistry().IsValid( swEntEvent.pEntity->GetHandle() ) )
 	{
 		SCION_ERROR( "Failed to change entity. Entity was invaild." );
 		return;
 	}
 
 	m_pSelectedEntity =
-		std::make_shared<Scion::Core::ECS::Entity>( pCurrentScene->GetRegistryPtr(), swEntEvent.pEntity->GetEntity() );
+		std::make_shared<Scion::Core::ECS::Entity>( pCurrentScene->GetRegistryPtr(), swEntEvent.pEntity->GetHandle() );
 
 	SCION_ASSERT( m_pSelectedEntity && "Entity must be valid here!" );
 }

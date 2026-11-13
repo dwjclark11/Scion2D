@@ -120,7 +120,7 @@ class AssetModalCreator
 		if ( *pbOpen )
 			ImGui::OpenPopup( "Add New Scene" );
 
-		if ( ImGui::BeginPopupModal( "Add New Scene" ) )
+		if ( ImGui::BeginPopupModal( "Add New Scene", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 		{
 			ImGui::InlineLabel( "Name" );
 			static std::string sAssetName{};
@@ -198,7 +198,7 @@ class AssetModalCreator
 		if ( *pbOpen )
 			ImGui::OpenPopup( sAssetType.c_str() );
 
-		if ( ImGui::BeginPopupModal( sAssetType.c_str() ) )
+		if ( ImGui::BeginPopupModal( sAssetType.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 		{
 			if ( m_AddAssetParams.eAssetType != eAssetType )
 			{

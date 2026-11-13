@@ -325,7 +325,7 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 		"destroy",
 		&Entity::Destroy,
 		"addChild",
-		[]( Entity& entity, Entity& child ) { entity.AddChild( child.GetEntity() ); },
+		[]( Entity& entity, Entity& child ) { entity.AddChild( child.GetHandle() ); },
 		"updateTransform",
 		&Entity::UpdateTransform,
 		"updateIsoSorting",
@@ -343,6 +343,6 @@ void Entity::CreateLuaEntityBind( sol::state& lua, Registry& registry )
 			}
 		},
 		"id",
-		[]( Entity& entity ) { return static_cast<uint32_t>( entity.GetEntity() ); } );
+		[]( Entity& entity ) { return static_cast<uint32_t>( entity.GetHandle() ); } );
 }
 } // namespace Scion::Core::ECS

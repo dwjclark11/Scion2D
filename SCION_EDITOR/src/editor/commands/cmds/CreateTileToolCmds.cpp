@@ -78,7 +78,7 @@ void CreateTileToolAddCmd::redo()
 	Entity tile{ pRegistry, "", "" };
 	tile.AddComponent<TransformComponent>( pTile->transform );
 	tile.AddComponent<SpriteComponent>( pTile->sprite );
-	tile.AddComponent<TileComponent>( static_cast<std::uint32_t>( tile.GetEntity() ) );
+	tile.AddComponent<TileComponent>( static_cast<std::uint32_t>( tile.GetHandle() ) );
 
 	if ( pTile->bAnimation )
 	{
@@ -122,7 +122,7 @@ void CreateTileToolRemoveCmd::undo()
 	Entity tile{ pRegistry, "", "" };
 	tile.AddComponent<TransformComponent>( pTile->transform );
 	tile.AddComponent<SpriteComponent>( pTile->sprite );
-	tile.AddComponent<TileComponent>( static_cast<std::uint32_t>( tile.GetEntity() ) );
+	tile.AddComponent<TileComponent>( static_cast<std::uint32_t>( tile.GetHandle() ) );
 
 	if ( pTile->bAnimation )
 	{

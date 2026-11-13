@@ -58,7 +58,7 @@ void CreateTileTool::CreateNewTile()
 		tile.AddComponent<PhysicsComponent>( m_pMouseTile->physics );
 	}
 
-	tile.AddComponent<TileComponent>( static_cast<uint32_t>( tile.GetEntity() ) );
+	tile.AddComponent<TileComponent>( static_cast<uint32_t>( tile.GetHandle() ) );
 
 	auto createToolAddCmd =
 		UndoableCommands{ CreateTileToolAddCmd{ .pRegistry = SCENE_MANAGER().GetCurrentScene()->GetRegistryPtr(),

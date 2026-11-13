@@ -336,7 +336,7 @@ void TileDetailsDisplay::Draw()
 			ImGui::OpenPopup( "Delete Layer" );
 		}
 
-		if ( ImGui::BeginPopupModal( "Delete Layer" ) )
+		if ( ImGui::BeginPopupModal( "Delete Layer", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) )
 		{
 			ImGui::TextColored( ImVec4{ 1.f, 1.f, 0.f, 1.f },
 								"Are you sure?\nThis will delete all tiles at this layer." );

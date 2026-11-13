@@ -128,19 +128,29 @@ const std::unordered_map<EGameType, std::string>& CoreEngineData::GetGameTypesMa
 
 void CoreEngineData::RegisterMetaFunctions()
 {
-	Entity::RegisterMetaComponent<Identification>();
-	Entity::RegisterMetaComponent<TransformComponent>();
-	Entity::RegisterMetaComponent<SpriteComponent>();
-	Entity::RegisterMetaComponent<AnimationComponent>();
-	Entity::RegisterMetaComponent<BoxColliderComponent>();
-	Entity::RegisterMetaComponent<CircleColliderComponent>();
-	Entity::RegisterMetaComponent<PhysicsComponent>();
-	Entity::RegisterMetaComponent<TextComponent>();
-	Entity::RegisterMetaComponent<RigidBodyComponent>();
-	Entity::RegisterMetaComponent<TileComponent>();
+	// General Components
+	Entity::RegisterMetaComponent<Identification>( "General", 1 );
 	Entity::RegisterMetaComponent<Relationship>();
-	Entity::RegisterMetaComponent<UIComponent>();
+	Entity::RegisterMetaComponent<TransformComponent>( "Transform", 1 );
 
+	// Rendering Components
+	Entity::RegisterMetaComponent<SpriteComponent>( "Rendering", 1 );
+	Entity::RegisterMetaComponent<AnimationComponent>( "Rendering", 2 );
+	Entity::RegisterMetaComponent<TextComponent>( "Rendering", 3 );
+	
+
+	// Physics Components
+	Entity::RegisterMetaComponent<BoxColliderComponent>( "Physics", 1 );
+	Entity::RegisterMetaComponent<CircleColliderComponent>( "Physics", 2 );
+	Entity::RegisterMetaComponent<PhysicsComponent>( "Physics", 3 );
+	Entity::RegisterMetaComponent<RigidBodyComponent>( "Physics", 4 );
+	
+	Entity::RegisterMetaComponent<TileComponent>( "Misc", 1 );
+	Entity::RegisterMetaComponent<ScriptComponent>( "Misc", 2 );
+	
+	// UI Components
+	Entity::RegisterMetaComponent<UIComponent>( "UI", 1 );
+	
 	Registry::RegisterMetaComponent<Identification>();
 	Registry::RegisterMetaComponent<TransformComponent>();
 	Registry::RegisterMetaComponent<SpriteComponent>();

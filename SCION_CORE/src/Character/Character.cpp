@@ -226,11 +226,11 @@ void Character::CreateCharacterLuaBind( sol::state& lua, Scion::Core::ECS::Regis
 		"kill",
 		&Character::Destroy,
 		"addChild",
-		[]( Character& character, Entity& child ) { character.AddChild( child.GetEntity() ); },
+		[]( Character& character, Entity& child ) { character.AddChild( child.GetHandle() ); },
 		"updateTransform",
 		&Character::UpdateTransform,
 		"id",
-		[]( Character& character ) { return static_cast<uint32_t>( character.GetEntity() ); },
+		[]( Character& character ) { return static_cast<uint32_t>( character.GetHandle() ); },
 		"getStateMachine",
 		[]( Character& character ) { return character.GetStateMachine(); }
 

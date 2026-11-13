@@ -577,7 +577,7 @@ void PrefabCreator::CreateLuaBind( sol::state& lua )
 
 				RelationshipUtils::ApplyFunctionToHierarchy(
 					reg.GetRegistry(),
-					pNewEntity->GetEntity(),
+					pNewEntity->GetHandle(),
 					[ &physicsWorld, &reg ]( entt::entity ent )
 					{
 						Entity entity{ &reg, ent };

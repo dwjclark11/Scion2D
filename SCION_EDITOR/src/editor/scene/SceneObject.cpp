@@ -332,7 +332,7 @@ bool SceneObject::AddGameObject()
 	}
 
 	newObject.ChangeName( sTag );
-	m_mapTagToEntity.emplace( sTag, newObject.GetEntity() );
+	m_mapTagToEntity.emplace( sTag, newObject.GetHandle() );
 
 	return true;
 }
@@ -912,7 +912,7 @@ void SceneObject::OnEntityNameChanges( Scion::Editor::Events::NameChangeEvent& n
 		return;
 	}
 
-	if ( nameChange.pEntity->GetEntity() != objItr->second )
+	if ( nameChange.pEntity->GetHandle() != objItr->second )
 		return;
 
 	if ( !Scion::Utilities::KeyChange( m_mapTagToEntity, nameChange.sOldName, nameChange.sNewName ) )

@@ -171,7 +171,7 @@ bool TilemapLoader::LoadTilemapJSON( Scion::Core::ECS::Registry& registry, const
 			DESERIALIZE_COMPONENT( jsonPhysics, physics );
 		}
 
-		newTile.AddComponent<TileComponent>( TileComponent{ .id = static_cast<uint32_t>( newTile.GetEntity() ) } );
+		newTile.AddComponent<TileComponent>( TileComponent{ .id = static_cast<uint32_t>( newTile.GetHandle() ) } );
 	}
 
 	mapFile.close();
@@ -436,7 +436,7 @@ bool TilemapLoader::LoadObjectMapJSON( Scion::Core::ECS::Registry& registry, con
 			saveRelations.sPrevSibling = relations[ "prevSibling" ].GetString();
 			saveRelations.sFirstChild = relations[ "firstChild" ].GetString();
 
-			mapEntityToRelationship.emplace( gameObject.GetEntity(), saveRelations );
+			mapEntityToRelationship.emplace( gameObject.GetHandle(), saveRelations );
 		}
 	}
 
@@ -631,7 +631,7 @@ bool TilemapLoader::LoadTilemapLua( Scion::Core::ECS::Registry& registry, const 
 			DESERIALIZE_COMPONENT( *luaPhysics, physics );
 		}
 
-		newTile.AddComponent<TileComponent>( TileComponent{ .id = static_cast<uint32_t>( newTile.GetEntity() ) } );
+		newTile.AddComponent<TileComponent>( TileComponent{ .id = static_cast<uint32_t>( newTile.GetHandle() ) } );
 	}
 
 	return true;
@@ -871,7 +871,7 @@ bool TilemapLoader::LoadObjectMapLua( Scion::Core::ECS::Registry& registry, cons
 			saveRelations.sPrevSibling = ( *luaRelations )[ "prevSibling" ].get_or( std::string{ "" } );
 			saveRelations.sFirstChild = ( *luaRelations )[ "firstChild" ].get_or( std::string{ "" } );
 
-			mapEntityToRelationship.emplace( gameObject.GetEntity(), saveRelations );
+			mapEntityToRelationship.emplace( gameObject.GetHandle(), saveRelations );
 		}
 	}
 
@@ -1010,7 +1010,7 @@ bool TilemapLoader::LoadTilemapFromLuaTable( Scion::Core::ECS::Registry& registr
 			DESERIALIZE_COMPONENT( *luaPhysics, physics );
 		}
 
-		newTile.AddComponent<TileComponent>( TileComponent{ .id = static_cast<uint32_t>( newTile.GetEntity() ) } );
+		newTile.AddComponent<TileComponent>( TileComponent{ .id = static_cast<uint32_t>( newTile.GetHandle() ) } );
 	}
 
 	return true;

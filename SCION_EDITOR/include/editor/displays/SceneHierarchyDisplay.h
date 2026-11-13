@@ -23,6 +23,7 @@ namespace Scion::Editor
 {
 
 class SceneObject;
+struct ComponentPickerEntry;
 
 class SceneHierarchyDisplay : public IDisplay
 {
@@ -72,5 +73,7 @@ class SceneHierarchyDisplay : public IDisplay
 
 	std::optional<SceneFolder::Id> m_SelectedEntityFolderId{ std::nullopt };
 	std::optional<SceneFolder::Id> m_FolderToDeleteId{ std::nullopt };
+
+	std::optional<std::vector<Scion::Editor::ComponentPickerEntry>> m_ComponentList;
 };
 } // namespace Scion::Editor

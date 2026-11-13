@@ -86,7 +86,7 @@ void RectFillTool::CreateTiles()
 				createdTile.bPhysics = true;
 			}
 
-			tile.AddComponent<TileComponent>( static_cast<uint32_t>( tile.GetEntity() ) );
+			tile.AddComponent<TileComponent>( static_cast<uint32_t>( tile.GetHandle() ) );
 			createdTiles.push_back( createdTile );
 		}
 	}
