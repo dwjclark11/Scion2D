@@ -250,7 +250,6 @@ void PackageGameDisplay::Draw()
 		{
 			// We want to ensure we are packaging the most current data.
 			// Save all files, before packaging.
-			auto& pProjectInfo = MAIN_REGISTRY().GetContext<Scion::Core::ProjectInfoPtr>();
 			SCION_ASSERT( pProjectInfo && "Project Info must exist!" );
 			// Save entire project
 			ProjectLoader pl{};

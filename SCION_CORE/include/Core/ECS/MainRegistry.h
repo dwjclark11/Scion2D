@@ -7,7 +7,7 @@
 #define EVENT_DISPATCHER() MAIN_REGISTRY().GetEventDispatcher()
 #define ADD_EVENT_HANDLER( Event, Func, Handler ) EVENT_DISPATCHER().AddHandler<Event, Func>( Handler );
 
-namespace SCION_RESOURCES
+namespace Scion::Resources
 {
 class AssetManager;
 }
@@ -44,7 +44,7 @@ class MainRegistry
 	bool Initialize( bool bEnableFilewatcher = false );
 
 	Scion::Core::Events::EventDispatcher& GetEventDispatcher();
-	SCION_RESOURCES::AssetManager& GetAssetManager();
+	Scion::Resources::AssetManager& GetAssetManager();
 	Scion::Sounds::AudioPlayer& GetAudioPlayer();
 	Scion::Rendering::Renderer& GetRenderer();
 

@@ -5,7 +5,7 @@ namespace Scion::Editor
 {
 
 enum class EDisplay : uint64_t;
-class EditorState;
+struct EditorState;
 
 class MenuDisplay : public IDisplay
 {

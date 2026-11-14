@@ -1,79 +1,106 @@
 #include "Rendering/Essentials/Font.h"
-#include <stb_truetype.h>
-#include <iostream>
+
+#include <cmath>
+#include <utility>
 
 namespace Scion::Rendering
 {
 
-Font::Font( GLuint fontAtlasID, int width, int height, float fontSize, void* data, float fontAscent,
-			const std::string& sFilename )
+Font::Font( GLuint fontAtlasID, int width, int height, float fontSize, BakedCharacters bakedCharacters,
+			float fontAscent, std::string filename )
 	: m_FontAtlasID{ fontAtlasID }
 	, m_Width{ width }
 	, m_Height{ height }
 	, m_FontSize{ fontSize }
 	, m_FontAscent{ fontAscent }
-	, m_pData{ std::move( data ) }
-	, m_sFilename{ sFilename }
+	, m_BakedCharacters{ std::move( bakedCharacters ) }
+	, m_sFilename{ std::move( filename ) }
 {
-	float x{ 0.f }, y{ 0.f };
+	float totalPaddingX{ 0.f };
+	float totalPaddingY{ 0.f };
 
-	for ( int i = 32; i < 128; i++ )
+	for ( std::size_t i = 0; i < CharacterCount; ++i )
 	{
-		stbtt_aligned_quad quad;
-		stbtt_GetBakedQuad( (stbtt_bakedchar*)( m_pData ), m_Width, m_Height, i - 32, &x, &y, &quad, 1 );
+		// Keep each measurement independent of preceding glyph advances.
+		float x{ 0.f };
+		float y{ 0.f };
+		stbtt_aligned_quad quad{};
+		stbtt_GetBakedQuad( m_BakedCharacters.data(), m_Width, m_Height, static_cast<int>( i ), &x, &y, &quad, 1 );
 
-		m_mapPaddingInfo.emplace( static_cast<char>( i ),
-								  PaddingInfo{ .paddingX = m_FontSize - ( quad.x1 - quad.x0 ),
-											   .paddingY = m_FontSize - ( quad.y1 - quad.y0 ) } );
+		auto& padding = m_PaddingInfo[ i ];
+		padding.paddingX = m_FontSize - ( quad.x1 - quad.x0 );
+		padding.paddingY = m_FontSize - ( quad.y1 - quad.y0 );
+		totalPaddingX += padding.paddingX;
+		totalPaddingY += padding.paddingY;
 	}
 
-	float paddingX{ 0.f }, paddingY{ 0.f };
-	for ( const auto& [ c, paddingInfo ] : m_mapPaddingInfo )
-	{
-		paddingX += paddingInfo.paddingX;
-		paddingY += paddingInfo.paddingY;
-	}
-
-	m_AveragePadding.paddingX = std::floor( paddingX / m_mapPaddingInfo.size() );
-	m_AveragePadding.paddingY = std::floor( paddingY / m_mapPaddingInfo.size() );
+	const float count = static_cast<float>( CharacterCount );
+	m_AveragePadding.paddingX = std::floor( totalPaddingX / count );
+	m_AveragePadding.paddingY = std::floor( totalPaddingY / count );
 }
 
 Font::~Font()
 {
 	if ( m_FontAtlasID != 0 )
-		glDeleteTextures( 1, &m_FontAtlasID );
-
-	if ( m_pData )
 	{
-		typedef stbtt_bakedchar( stbtt_bakedchar )[ 96 ];
-		delete[] (stbtt_bakedchar*)m_pData;
+		// The owning OpenGL context must still be current when Font is destroyed.
+		glDeleteTextures( 1, &m_FontAtlasID );
 	}
 }
 
-FontGlyph Font::GetGlyph( char c, glm::vec2& pos )
+FontGlyph Font::GetGlyph( char c, glm::vec2& pos ) const
 {
 	FontGlyph glyph{};
-	float y = pos.y + m_FontAscent;
-
-	if ( c >= 32 && c < 128 )
+	const auto codepoint = static_cast<unsigned char>( c );
+	if ( codepoint < FirstCharacter || codepoint >= FirstCharacter + CharacterCount )
 	{
-		stbtt_aligned_quad quad;
-		stbtt_GetBakedQuad( (stbtt_bakedchar*)( m_pData ), m_Width, m_Height, c - 32, &pos.x, &y, &quad, 1 );
-
-		glyph.min = Vertex{ .position = glm::vec2{ quad.x0, quad.y0 }, .uvs = glm::vec2{ quad.s0, quad.t0 } };
-
-		glyph.max = Vertex{ .position = glm::vec2{ quad.x1, quad.y1 }, .uvs = glm::vec2{ quad.s1, quad.t1 } };
+		return glyph;
 	}
 
+	float y = pos.y + m_FontAscent;
+	stbtt_aligned_quad quad{};
+	stbtt_GetBakedQuad( m_BakedCharacters.data(),
+						m_Width,
+						m_Height,
+						static_cast<int>( codepoint - FirstCharacter ),
+						&pos.x,
+						&y,
+						&quad,
+						1 );
+
+	glyph.min = Vertex{ .position = glm::vec2{ quad.x0, quad.y0 }, .uvs = glm::vec2{ quad.s0, quad.t0 } };
+	glyph.max = Vertex{ .position = glm::vec2{ quad.x1, quad.y1 }, .uvs = glm::vec2{ quad.s1, quad.t1 } };
 	return glyph;
 }
 
-void Font::GetNextCharPos( char c, glm::vec2& pos )
+void Font::GetNextCharPos( char c, glm::vec2& pos ) const
 {
-	if ( c >= 32 && c < 128 )
+	const auto codepoint = static_cast<unsigned char>( c );
+	if ( codepoint < FirstCharacter || codepoint >= FirstCharacter + CharacterCount )
 	{
-		stbtt_aligned_quad quad;
-		stbtt_GetBakedQuad( (stbtt_bakedchar*)( m_pData ), m_Width, m_Height, c - 32, &pos.x, &pos.y, &quad, 1 );
+		return;
 	}
+
+	stbtt_aligned_quad quad{};
+	stbtt_GetBakedQuad( m_BakedCharacters.data(),
+						m_Width,
+						m_Height,
+						static_cast<int>( codepoint - FirstCharacter ),
+						&pos.x,
+						&pos.y,
+						&quad,
+						1 );
 }
+
+const PaddingInfo& Font::GetPaddingInfoForChar( char c ) const noexcept
+{
+	const auto codepoint = static_cast<unsigned char>( c );
+	if ( codepoint < FirstCharacter || codepoint >= FirstCharacter + CharacterCount )
+	{
+		return m_AveragePadding;
+	}
+
+	return m_PaddingInfo[ codepoint - FirstCharacter ];
+}
+
 } // namespace Scion::Rendering

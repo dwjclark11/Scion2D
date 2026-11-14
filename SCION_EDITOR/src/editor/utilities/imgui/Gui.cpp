@@ -41,7 +41,7 @@ bool Gui::InitImGui( Scion::Windowing::Window* pWindow )
 
 	// Load actual TTF as the default - explicit size, no ImplicitRefSize flag
 	ImFont* pDefaultFont = io.Fonts->AddFontFromMemoryTTF(
-		SCION_RESOURCES::CoreFonts::g_RobotoBoldFont, SCION_RESOURCES::CoreFonts::g_RobotoBoldFontSize, baseFontSize );
+		Scion::Resources::CoreFonts::g_RobotoBoldFont, Scion::Resources::CoreFonts::g_RobotoBoldFontSize, baseFontSize );
 
 	ImGui::AddFont( "default", pDefaultFont, baseFontSize );
 
@@ -56,13 +56,13 @@ bool Gui::InitImGui( Scion::Windowing::Window* pWindow )
 		EditorFonts::g_FaSolid900, EditorFonts::g_FaSolid900Size, baseFontSize, &icons_config, icons_ranges );
 
 	ImGui::AddFontFromMemory( "roboto-bold-14",
-							  SCION_RESOURCES::CoreFonts::g_RobotoBoldFont,
-							  SCION_RESOURCES::CoreFonts::g_RobotoBoldFontSize,
+							  Scion::Resources::CoreFonts::g_RobotoBoldFont,
+							  Scion::Resources::CoreFonts::g_RobotoBoldFontSize,
 							  14.f );
 
 	ImGui::AddFontFromMemory( "roboto-bold-24",
-							  SCION_RESOURCES::CoreFonts::g_RobotoBoldFont,
-							  SCION_RESOURCES::CoreFonts::g_RobotoBoldFontSize,
+							  Scion::Resources::CoreFonts::g_RobotoBoldFont,
+							  Scion::Resources::CoreFonts::g_RobotoBoldFontSize,
 							  24.f );
 
 	if ( !ImGui_ImplSDL3_InitForOpenGL( pWindow->GetWindow().get(), pWindow->GetGLContext() ) )

@@ -5,7 +5,7 @@
 #include <Rendering/Essentials/Texture.h>
 #include <Logger/Logger.h>
 
-using namespace SCION_RESOURCES;
+using namespace Scion::Resources;
 
 std::string Scion::Core::ECS::SpriteComponent::to_string() const
 {

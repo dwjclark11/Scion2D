@@ -158,9 +158,9 @@ int Scene::AddLayer( const std::string& sLayerName, bool bVisible )
 		return static_cast<int>( m_LayerParams.size() );
 	}
 
-	auto& spriteLayer =
-		m_LayerParams.emplace_back( Scion::Utilities::SpriteLayerParams{ .sLayerName = sLayerName, .bVisible = bVisible } );
-	spriteLayer.layer = m_LayerParams.size() - 1;
+	auto& spriteLayer = m_LayerParams.emplace_back(
+		Scion::Utilities::SpriteLayerParams{ .sLayerName = sLayerName, .bVisible = bVisible } );
+	spriteLayer.layer = static_cast<int>( m_LayerParams.size() ) - 1;
 
 	return static_cast<int>( m_LayerParams.size() );
 }
@@ -172,7 +172,7 @@ int Scene::AddLayer( const Scion::Utilities::SpriteLayerParams& layerParam )
 
 	SCION_ASSERT( layerItr == m_LayerParams.end() && "Layer already exists!" );
 
-	if (layerItr != m_LayerParams.end())
+	if ( layerItr != m_LayerParams.end() )
 	{
 		SCION_ERROR( "The layer [{]] already exists", layerParam.sLayerName );
 		return -1;
@@ -187,9 +187,9 @@ int Scene::AddLayer( const Scion::Utilities::SpriteLayerParams& layerParam )
 
 bool Scene::CheckLayerName( const std::string& sLayerName )
 {
-	return Scion::Utilities::CheckContainsValue( m_LayerParams, [ & ]( Scion::Utilities::SpriteLayerParams& spriteLayer ) {
-		return spriteLayer.sLayerName == sLayerName;
-	} );
+	return Scion::Utilities::CheckContainsValue(
+		m_LayerParams,
+		[ & ]( Scion::Utilities::SpriteLayerParams& spriteLayer ) { return spriteLayer.sLayerName == sLayerName; } );
 }
 
 bool Scene::LoadSceneData()

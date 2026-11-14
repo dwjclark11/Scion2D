@@ -138,13 +138,8 @@ bool AssetDisplay::DoRenameAsset( const std::string& sOldName, const std::string
 	{
 		return SCENE_MANAGER().ChangeSceneName( sOldName, sNewName );
 	}
-	else
-	{
-		return ASSET_MANAGER().ChangeAssetName( sOldName, sNewName, m_eSelectedType );
-	}
-
-	SCION_ASSERT( false && "How did it get here??" );
-	return false;
+	
+	return ASSET_MANAGER().ChangeAssetName( sOldName, sNewName, m_eSelectedType );
 }
 
 void AssetDisplay::CheckRename( const std::string& sCheckName ) const
@@ -553,10 +548,6 @@ void AssetDisplay::Update()
 
 void AssetDisplay::DrawToolbar()
 {
-
-	auto& mainRegistry = MAIN_REGISTRY();
-	auto& assetManager = mainRegistry.GetAssetManager();
-
 	ImGui::Separator();
 	ImGui::PushStyleColor( ImGuiCol_Button, BLACK_TRANSPARENT );
 	ImGui::PushStyleColor( ImGuiCol_ButtonHovered, BLACK_TRANSPARENT );
@@ -580,7 +571,9 @@ void AssetDisplay::DrawToolbar()
 			}
 
 			if ( bIsSelected )
+			{
 				ImGui::SetItemDefaultFocus();
+			}
 		}
 
 		ImGui::EndCombo();

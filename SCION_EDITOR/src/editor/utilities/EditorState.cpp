@@ -119,7 +119,94 @@ bool EditorState::Load( Scion::Core::ProjectInfo& projectInfo )
 
 bool EditorState::ImportState( const std::string& sImportedStateFile, Scion::Core::ProjectInfo& projectInfo )
 {
-	return false;
+	const fs::path importPath{ sImportedStateFile };
+	if ( sImportedStateFile.empty() || !fs::exists( importPath ) || !fs::is_regular_file( importPath ) )
+	{
+		SCION_ERROR( "Failed to import editor state. File [{}] does not exist.", sImportedStateFile );
+		return false;
+	}
+
+	std::ifstream importFile{ importPath };
+	if ( !importFile.is_open() )
+	{
+		SCION_ERROR( "Failed to open editor state file [{}] for import.", sImportedStateFile );
+		return false;
+	}
+
+	std::stringstream ss;
+	ss << importFile.rdbuf();
+	const std::string contents = ss.str();
+
+	rapidjson::Document doc;
+	doc.Parse( contents.c_str() );
+
+	if ( doc.HasParseError() || !doc.IsObject() )
+	{
+		SCION_ERROR( "Failed to import editor state: File: [{}] is not valid JSON. - {} - {}",
+					 sImportedStateFile,
+					 rapidjson::GetParseError_En( doc.GetParseError() ),
+					 doc.GetErrorOffset() );
+		return false;
+	}
+
+	if ( !doc.HasMember( "editor_state" ) || !doc[ "editor_state" ].IsObject() )
+	{
+		SCION_ERROR( "Failed to import editor state: File [{}] - Expecting \"editor_state\" object.",
+					 sImportedStateFile );
+		return false;
+	}
+
+	const rapidjson::Value& editorState = doc[ "editor_state" ];
+
+	// Start from the current values so missing members keep their current setting.
+	// Nothing is applied to this state until the whole file has been validated.
+	EditorState imported{ *this };
+
+	if ( editorState.HasMember( "active_displays" ) )
+	{
+		if ( !editorState[ "active_displays" ].IsUint64() )
+		{
+			SCION_ERROR( "Failed to import editor state: File [{}] - \"active_displays\" must be an unsigned integer.",
+						 sImportedStateFile );
+			return false;
+		}
+
+		imported.activeDisplays = editorState[ "active_displays" ].GetUint64();
+	}
+
+	const auto readBool = [ & ]( const char* pKey, bool& bValue ) {
+		if ( !editorState.HasMember( pKey ) )
+		{
+			return true;
+		}
+
+		if ( !editorState[ pKey ].IsBool() )
+		{
+			SCION_ERROR(
+				"Failed to import editor state: File [{}] - \"{}\" must be a boolean.", sImportedStateFile, pKey );
+			return false;
+		}
+
+		bValue = editorState[ pKey ].GetBool();
+		return true;
+	};
+
+	if ( !readBool( "showAnimations", imported.bShowAnimations ) ||
+		 !readBool( "showCollisions", imported.bShowCollisions ) || !readBool( "gridSnap", imported.bEnableGridsnap ) )
+	{
+		return false;
+	}
+
+	// Save into the project's editor config first so a failed write leaves the live state unchanged.
+	if ( !imported.Save( projectInfo ) )
+	{
+		SCION_ERROR( "Failed to import editor state: Could not save the imported state to the project." );
+		return false;
+	}
+
+	*this = imported;
+	SCION_LOG( "Imported editor state from [{}]", sImportedStateFile );
+	return true;
 }
 
 bool EditorState::CreateEditorStateFile( Scion::Core::ProjectInfo& projectInfo )

@@ -27,7 +27,7 @@ bool MainRegistry::Initialize( bool bEnableFilewatcher )
 	m_pMainRegistry = std::make_unique<Registry>();
 	SCION_ASSERT( m_pMainRegistry && "Failed to initialize main registry." );
 
-	AddToContext( std::make_unique<SCION_RESOURCES::AssetManager>( bEnableFilewatcher ) );
+	AddToContext( std::make_unique<Scion::Resources::AssetManager>( bEnableFilewatcher ) );
 
 	SDL_AudioSpec spec;
 	SDL_zero( spec );
@@ -66,10 +66,10 @@ Scion::Core::Events::EventDispatcher& MainRegistry::GetEventDispatcher()
 	return *m_pMainRegistry->GetContext<std::unique_ptr<Scion::Core::Events::EventDispatcher>>();
 }
 
-SCION_RESOURCES::AssetManager& MainRegistry::GetAssetManager()
+Scion::Resources::AssetManager& MainRegistry::GetAssetManager()
 {
 	SCION_ASSERT( m_bInitialized && "Main Registry must be initialized before use." );
-	return *m_pMainRegistry->GetContext<std::unique_ptr<SCION_RESOURCES::AssetManager>>();
+	return *m_pMainRegistry->GetContext<std::unique_ptr<Scion::Resources::AssetManager>>();
 }
 
 Scion::Sounds::AudioPlayer& MainRegistry::GetAudioPlayer()

@@ -5,14 +5,15 @@ entt::id_type Scion::Core::Utils::GetIdType( const sol::table& comp )
 	if ( !comp.valid() )
 	{
 		SCION_ERROR( "Failed to get the type id -- Component has not been exposed to lua!" );
-		assert( comp.valid() && "Failed to get the type id -- Component has not been exposed to lua!" );
-		return -1;
+		SCION_ASSERT( comp.valid() && "Failed to get the type id -- Component has not been exposed to lua!" );
+		return entt::id_type{};
 	}
 
 	const auto func = comp[ "type_id" ].get<sol::function>();
-	assert( func.valid() && "[type_id()] - function has not been exposed to lua!"
+
+	SCION_ASSERT( func.valid() && "[type_id()] - function has not been exposed to lua!"
 							"\nPlease ensure all components and types have a type_id function"
 							"\nwhen creating the new usertype" );
 
-	return func.valid() ? func().get<entt::id_type>() : -1;
+	return func.valid() ? func().get<entt::id_type>() : entt::id_type{};
 }

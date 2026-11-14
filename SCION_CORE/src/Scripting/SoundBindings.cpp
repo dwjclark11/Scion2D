@@ -8,7 +8,7 @@
 #include <Logger/Logger.h>
 
 using namespace Scion::Sounds;
-using namespace SCION_RESOURCES;
+using namespace Scion::Resources;
 
 void Scion::Core::Scripting::SoundBinder::CreateSoundBind( sol::state& lua )
 {

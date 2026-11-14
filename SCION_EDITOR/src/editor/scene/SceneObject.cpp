@@ -407,10 +407,10 @@ bool SceneObject::DeleteGameObjectByTag( const std::string& sTag )
 
 	RelationshipUtils::RemoveAndDelete( ent, removedEntities );
 
-	for ( const auto& sTag : removedEntities )
+	for ( const auto& sEntityTag : removedEntities )
 	{
-		m_mapTagToEntity.erase( sTag );
-		m_FolderManager.OnEntityDeleted( sTag );
+		m_mapTagToEntity.erase( sEntityTag );
+		m_FolderManager.OnEntityDeleted( sEntityTag );
 	}
 
 	return true;

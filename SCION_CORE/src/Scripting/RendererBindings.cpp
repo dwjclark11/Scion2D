@@ -8,7 +8,7 @@
 #include <Logger/Logger.h>
 
 using namespace Scion::Rendering;
-using namespace SCION_RESOURCES;
+using namespace Scion::Resources;
 
 void Scion::Core::Scripting::RendererBinder::CreateRenderingBind( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {

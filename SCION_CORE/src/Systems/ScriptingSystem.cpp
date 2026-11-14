@@ -50,7 +50,7 @@
 namespace fs = std::filesystem;
 
 using namespace Scion::Core::ECS;
-using namespace SCION_RESOURCES;
+using namespace Scion::Resources;
 using namespace Scion::Core::Events;
 
 namespace Scion::Core::Systems
@@ -409,7 +409,7 @@ void ScriptingSystem::RegisterLuaBindings( sol::state& lua, Scion::Core::ECS::Re
 {
 	Scion::Core::Scripting::GLMBindings::CreateGLMBindings( lua );
 	Scion::Core::InputManager::CreateLuaInputBindings( lua, registry );
-	SCION_RESOURCES::AssetManager::CreateLuaAssetManager( lua );
+	Scion::Resources::AssetManager::CreateLuaAssetManager( lua );
 	Scion::Core::Scripting::SoundBinder::CreateSoundBind( lua );
 	Scion::Core::Scripting::RendererBinder::CreateRenderingBind( lua, registry );
 	Scion::Core::Scripting::UserDataBinder::CreateLuaUserData( lua );

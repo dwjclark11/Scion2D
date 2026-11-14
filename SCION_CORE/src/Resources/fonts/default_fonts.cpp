@@ -1,6 +1,6 @@
 #include "Core/Resources/fonts/default_fonts.h"
 
-namespace SCION_RESOURCES::CoreFonts
+namespace Scion::Resources::CoreFonts
 {
 
 /*
@@ -14113,4 +14113,4 @@ const size_t g_PixelFontSize = pixel_font_size;
 unsigned char* g_RobotoBoldFont = roboto_bold;
 const size_t g_RobotoBoldFontSize = roboto_bold_size;
 
-} // namespace SCION_RESOURCES::CoreFonts
+} // namespace Scion::Resources::CoreFonts

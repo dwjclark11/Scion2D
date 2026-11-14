@@ -1,15 +1,22 @@
 #pragma once
+
 #include "Vertex.h"
-#include <glm/glm.hpp>
+
+#include <array>
+#include <cstddef>
+#include <string>
+
 #include <glad/glad.h>
-#include <map>
+#include <glm/glm.hpp>
+#include <stb_truetype.h>
 
 namespace Scion::Rendering
 {
+
 struct FontGlyph
 {
-	Vertex min;
-	Vertex max;
+	Vertex min{};
+	Vertex max{};
 };
 
 struct PaddingInfo
@@ -21,37 +28,39 @@ struct PaddingInfo
 class Font
 {
   public:
-	Font( GLuint fontAtlasID, int width, int height, float fontSize, void* data, float fontAscent = 0.f,
-		  const std::string& sFilename = "" );
+	static constexpr int FirstCharacter{ 32 };
+	static constexpr std::size_t CharacterCount{ 96 };
+	using BakedCharacters = std::array<stbtt_bakedchar, CharacterCount>;
+
+	// Takes ownership of the OpenGL texture. The baked glyph data is stored by value.
+	Font( GLuint fontAtlasID, int width, int height, float fontSize, BakedCharacters bakedCharacters,
+		  float fontAscent = 0.f, std::string filename = {} );
 	~Font();
 
-	FontGlyph GetGlyph( char c, glm::vec2& pos );
-	void GetNextCharPos( char c, glm::vec2& pos );
-	const PaddingInfo& GetPaddingInfoForChar( char c ) const;
+	Font( const Font& ) = delete;
+	Font& operator=( const Font& ) = delete;
+	Font( Font&& ) = delete;
+	Font& operator=( Font&& ) = delete;
 
-	inline const GLuint GetFontAtlasID() const { return m_FontAtlasID; }
-	inline const float GetFontSize() const { return m_FontSize; }
-	inline const PaddingInfo& AveragePaddingInfo() const { return m_AveragePadding; }
-	inline const std::string& GetFilename() const { return m_sFilename; }
+	[[nodiscard]] FontGlyph GetGlyph( char c, glm::vec2& pos ) const;
+	void GetNextCharPos( char c, glm::vec2& pos ) const;
+	[[nodiscard]] const PaddingInfo& GetPaddingInfoForChar( char c ) const noexcept;
+
+	[[nodiscard]] GLuint GetFontAtlasID() const noexcept { return m_FontAtlasID; }
+	[[nodiscard]] float GetFontSize() const noexcept { return m_FontSize; }
+	[[nodiscard]] const PaddingInfo& AveragePaddingInfo() const noexcept { return m_AveragePadding; }
+	[[nodiscard]] const std::string& GetFilename() const noexcept { return m_sFilename; }
 
   private:
-	/* Opengl texture Id */
-	GLuint m_FontAtlasID;
-	/* The width of the font atlas */
-	int m_Width;
-	/* The height of the font atlas */
-	int m_Height;
-	/* The desired max size of the font. */
-	float m_FontSize;
-	/* Distance from the baseline to highest point in a glyph, in pixels. */
-	float m_FontAscent;
-	/* The underlying stbtt_bakedchar data. */
-	void* m_pData;
-	/* The average padding of all characters. */
-	PaddingInfo m_AveragePadding;
-	/* Map of each character and their padding info. */
-	std::map<char, PaddingInfo> m_mapPaddingInfo;
-	/* Filename of font if loaded from a file. */
-	std::string m_sFilename;
+	GLuint m_FontAtlasID{};
+	int m_Width{};
+	int m_Height{};
+	float m_FontSize{};
+	float m_FontAscent{};
+	BakedCharacters m_BakedCharacters{};
+	PaddingInfo m_AveragePadding{};
+	std::array<PaddingInfo, CharacterCount> m_PaddingInfo{};
+	std::string m_sFilename{};
 };
+
 } // namespace Scion::Rendering

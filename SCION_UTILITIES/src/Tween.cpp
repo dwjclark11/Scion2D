@@ -58,193 +58,267 @@ using EasingFunction = std::function<float( float, float, float, float )>;
 // clang-format off
 
 // Linear has no easing. Just a linear change.
-constexpr auto Linear =
-[]( float current, float start, float change, float duration )
+inline constexpr auto Linear =
+[]( float current, float start, float change, float duration ) -> float
 {
 	return change * current / duration + start;
 };
 
 // Quadratic easing: t^2
-constexpr auto EaseQuadIn = 
-[]( float current, float start, float change, float duration )
+inline constexpr auto EaseQuadIn =
+[]( float current, float start, float change, float duration ) -> float
 {
-	return change * (current /= duration) * current + start;
+	const float t = current / duration;
+	return change * t * t + start;
 };
 
 // Quadratic easing: t^2
-constexpr auto EaseQuadOut = 
-[]( float current, float start, float change, float duration )
+inline constexpr auto EaseQuadOut =
+[]( float current, float start, float change, float duration ) -> float
 {
-	return -change * (current /= duration) * ( current - 2.f ) + start;
+	const float t = current / duration;
+	return -change * t * ( t - 2.f ) + start;
 };
 
 // Quadratic easing: t^2
-constexpr auto EaseQuadInOut = 
-[]( float current, float start, float change, float duration )
+inline constexpr auto EaseQuadInOut =
+[]( float current, float start, float change, float duration ) -> float
 {
-	if ((current /= duration/2.f) < 1.f)
-		return change /2.f *current*current + start;
+	float t = current / ( duration / 2.f );
 
-	return -change / 2.f * ((--current) * (current - 2.f) - 1.f) + start;
+	if ( t < 1.f )
+	{
+		return change / 2.f * t * t + start;
+	}
+
+	t -= 1.f;
+	return -change / 2.f * ( t * ( t - 2.f ) - 1.f ) + start;
 };
 
-// Sinusodial easing: sin(t) 
-constexpr auto SineIn =
-[]( float current, float start, float change, float duration )
+// Sinusodial easing: sin(t)
+inline constexpr auto SineIn =
+[]( float current, float start, float change, float duration ) -> float
 {
-	return -change * sin((current / duration) * SCION_MATH::PIOver2) + change + start;
+	return -change * std::cos( ( current / duration ) * static_cast<float>( SCION_MATH::PIOver2 ) ) + change + start;
 };
 
-// Sinusodial easing: sin(t) 
-constexpr auto SineOut =
-[]( float current, float start, float change, float duration )
+// Sinusodial easing: sin(t)
+inline constexpr auto SineOut =
+[]( float current, float start, float change, float duration ) -> float
 {
-	return change * sin((current / duration) * SCION_MATH::PIOver2) + start;
+	return change * std::sin( ( current / duration ) * static_cast<float>( SCION_MATH::PIOver2 ) ) + start;
 };
 
-// Sinusodial easing: sin(t) 
-constexpr auto SineInOut =
-[]( float current, float start, float change, float duration )
+// Sinusodial easing: sin(t)
+inline constexpr auto SineInOut =
+[]( float current, float start, float change, float duration ) -> float
 {
-	return -change / 2.f * (cos(SCION_MATH::PI * current / duration) - 1.f) + start;
+	return -change / 2.f * ( std::cos( static_cast<float>( SCION_MATH::PI ) * current / duration ) - 1.f ) + start;
 };
 
 // Elastic easing: [IN] - Oscillates around the start position.
-constexpr auto ElasticIn = 
-[]( float current, float start, float change, float duration )
+inline constexpr auto ElasticIn =
+[]( float current, float start, float change, float duration ) -> float
 {
-	if (current == 0.f)
+	if ( current <= 0.f )
+	{
 		return start;
-	if ((current /= duration) == 1.f)
+	}
+
+	float t = current / duration;
+
+	if ( t >= 1.f )
+	{
 		return start + change;
+	}
 
-	float p = duration * 0.3f;
-	float a = change;
-	float s = p / 4.f;
+	const float p = duration * 0.3f;
+	const float s = p / 4.f;
 
-	return -(a * powf(2.f, -10 * (current-=1.f)) * sinf((current * duration - s) * SCION_MATH::TwoPI / p)) + start;
+	t -= 1.f;
+
+	return -( change * std::pow( 2.f, 10.f * t )
+		* std::sin( ( t * duration - s ) * static_cast<float>( SCION_MATH::TwoPI ) / p ) ) + start;
 };
 
 // Elastic easing: [OUT] - Oscillates around the end position.
-constexpr auto ElasticOut =
-[]( float current, float start, float change, float duration )
+inline constexpr auto ElasticOut =
+[]( float current, float start, float change, float duration ) -> float
 {
-	if (current == 0.f)
+	if ( current <= 0.f )
+	{
 		return start;
-	if ((current /= duration) == 1.f)
+	}
+
+	const float t = current / duration;
+
+	if ( t >= 1.f )
+	{
 		return start + change;
+	}
 
-	float p = duration * 0.3f;
-	float a = change;
-	float s = p / 4.f;
+	const float p = duration * 0.3f;
+	const float s = p / 4.f;
 
-	return -(a * powf(2.f, -10.f * current) * sinf((current * duration - s) * SCION_MATH::TwoPI / p)) + change + start;
+	return change * std::pow( 2.f, -10.f * t )
+		* std::sin( ( t * duration - s ) * static_cast<float>( SCION_MATH::TwoPI ) / p ) + change + start;
 };
 
 // Elastic easing: [IN-OUT] - Oscillates around the end position.
-constexpr auto ElasticInOut =
-[]( float current, float start, float change, float duration )
+inline constexpr auto ElasticInOut =
+[]( float current, float start, float change, float duration ) -> float
 {
-	if (current == 0.f)
+	if ( current <= 0.f )
+	{
 		return start;
-	if ((current /= duration/2.f) == 2.f)
+	}
+
+	float t = current / ( duration / 2.f );
+
+	if ( t >= 2.f )
+	{
 		return start + change;
+	}
 
-	float p = duration * 0.3f * 1.5f;
-	float a = change;
-	float s = p / 4.f;
+	const float p = duration * 0.3f * 1.5f;
+	const float s = p / 4.f;
 
-	if (current < 1.f)
-		return -0.5f * (a * powf(2.f, -10.f * (current-=1.f)) * sinf((current * duration - s) * SCION_MATH::TwoPI / p)) + start;
+	t -= 1.f;
 
-	return (a * powf(2.f, -10.f * (current -= 1.f)) * sinf((current * duration - s) * SCION_MATH::TwoPI / p)) * 0.5f + change + start;
+	if ( t < 0.f )
+	{
+		return -0.5f * ( change * std::pow( 2.f, 10.f * t )
+			* std::sin( ( t * duration - s ) * static_cast<float>( SCION_MATH::TwoPI ) / p ) ) + start;
+	}
+
+	return change * std::pow( 2.f, -10.f * t )
+		* std::sin( ( t * duration - s ) * static_cast<float>( SCION_MATH::TwoPI ) / p ) * 0.5f + change + start;
 };
 
 // Exponential easing: 2^t
-constexpr auto ExponentialIn =
-[](float current, float start, float change, float duration)
+inline constexpr auto ExponentialIn =
+[]( float current, float start, float change, float duration ) -> float
 {
-	if (current == 0.f)
-		return start + change;
-
-	return change * powf(2, -10 * (current / duration - 1.f)) + start;
-};
-
-// Exponential easing: 2^t
-constexpr auto ExponentialOut =
-[](float current, float start, float change, float duration)
-{
-	if (current == duration)
-		return start + change;
-
-	return change * (-powf(2, -10 * current / duration) + 1.f) + start;
-};
-
-// Exponential easing: 2^t
-constexpr auto ExponentialInOut =
-[](float current, float start, float change, float duration)
-{
-	if (current == 0.f)
+	if ( current <= 0.f )
+	{
 		return start;
+	}
 
-	if (current == duration)
+	return change * std::pow( 2.f, 10.f * ( current / duration - 1.f ) ) + start;
+};
+
+// Exponential easing: 2^t
+inline constexpr auto ExponentialOut =
+[]( float current, float start, float change, float duration ) -> float
+{
+	if ( current >= duration )
+	{
 		return start + change;
+	}
 
-	if ((current /= duration / 2.f) < 1.f)
-		return change / 2.f * powf(2, -10 * (current - 1.f)) + start;
-
-	return change / 2.f * (-powf(2, -10 * --current) + 2.f) + start;
+	return change * ( -std::pow( 2.f, -10.f * current / duration ) + 1.f ) + start;
 };
 
-constexpr auto BounceIn = 
-[](float current, float start, float change, float duration)
+// Exponential easing: 2^t
+inline constexpr auto ExponentialInOut =
+[]( float current, float start, float change, float duration ) -> float
 {
-	SCION_ERROR("EASE_IN_BOUNCE, has not been implemented.");
-	// TODO:
-	return 0.f;
+	if ( current <= 0.f )
+	{
+		return start;
+	}
+
+	if ( current >= duration )
+	{
+		return start + change;
+	}
+
+	float t = current / ( duration / 2.f );
+
+	if ( t < 1.f )
+	{
+		return change / 2.f * std::pow( 2.f, 10.f * ( t - 1.f ) ) + start;
+	}
+
+	t -= 1.f;
+	return change / 2.f * ( -std::pow( 2.f, -10.f * t ) + 2.f ) + start;
 };
 
-constexpr auto BounceOut =
-[](float current, float start, float change, float duration)
+// Bounce easing: [OUT] - Four parabolic segments. Must stay above BounceIn and BounceInOut.
+inline constexpr auto BounceOut =
+[]( float current, float start, float change, float duration ) -> float
 {
-	SCION_ERROR("EASE_OUT_BOUNCE, has not been implemented.");
-	// TODO:
-	return 0.f;
+	float t = current / duration;
+
+	if ( t < 1.f / 2.75f )
+	{
+		return change * ( 7.5625f * t * t ) + start;
+	}
+
+	if ( t < 2.f / 2.75f )
+	{
+		t -= 1.5f / 2.75f;
+		return change * ( 7.5625f * t * t + 0.75f ) + start;
+	}
+
+	if ( t < 2.5f / 2.75f )
+	{
+		t -= 2.25f / 2.75f;
+		return change * ( 7.5625f * t * t + 0.9375f ) + start;
+	}
+
+	t -= 2.625f / 2.75f;
+	return change * ( 7.5625f * t * t + 0.984375f ) + start;
 };
 
-constexpr auto BounceInOut =
-[](float current, float start, float change, float duration)
+// Bounce easing: [IN]
+inline constexpr auto BounceIn =
+[]( float current, float start, float change, float duration ) -> float
 {
-	SCION_ERROR("EASE_IN_OUT_BOUNCE, has not been implemented.");
-	// TODO:
-	return 0.f;
+	return change - BounceOut( duration - current, 0.f, change, duration ) + start;
+};
+
+// Bounce easing: [IN-OUT]
+inline constexpr auto BounceInOut =
+[]( float current, float start, float change, float duration ) -> float
+{
+	if ( current < duration / 2.f )
+	{
+		return BounceIn( current * 2.f, 0.f, change, duration ) * 0.5f + start;
+	}
+
+	return BounceOut( current * 2.f - duration, 0.f, change, duration ) * 0.5f + change * 0.5f + start;
 };
 
 // Circular easing: sqrt(1-t^2)
-constexpr auto CircularIn =
-[](float current, float start, float change, float duration)
+inline constexpr auto CircularIn =
+[]( float current, float start, float change, float duration ) -> float
 {
-	SCION_ERROR("EASE_IN_CIRC, has not been implemented.");
-	// TODO:
-	return 0.f;
+	const float t = current / duration;
+	return -change * ( std::sqrt( std::max( 0.f, 1.f - t * t ) ) - 1.f ) + start;
 };
 
 // Circular easing: sqrt(1-t^2)
-constexpr auto CircularOut =
-[](float current, float start, float change, float duration)
+inline constexpr auto CircularOut =
+[]( float current, float start, float change, float duration ) -> float
 {
-	SCION_ERROR("EASE_OUT_CIRC, has not been implemented.");
-	// TODO:
-	return 0.f;
+	const float t = current / duration - 1.f;
+	return change * std::sqrt( std::max( 0.f, 1.f - t * t ) ) + start;
 };
 
 // Circular easing: sqrt(1-t^2)
-constexpr auto CircularInOut = 
-[](float current, float start, float change, float duration)
+inline constexpr auto CircularInOut =
+[]( float current, float start, float change, float duration ) -> float
 {
-	SCION_ERROR("EASE_IN_OUT_CIRC, has not been implemented.");
-	// TODO:
-	return 0.f;
+	float t = current / ( duration / 2.f );
+
+	if ( t < 1.f )
+	{
+		return -change / 2.f * ( std::sqrt( std::max( 0.f, 1.f - t * t ) ) - 1.f ) + start;
+	}
+
+	t -= 2.f;
+	return change / 2.f * ( std::sqrt( std::max( 0.f, 1.f - t * t ) ) + 1.f ) + start;
 };
 
 std::unordered_map<EEasingFunc, EasingFunction> g_mapEasingFunctions = {

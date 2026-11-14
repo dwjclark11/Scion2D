@@ -2,7 +2,7 @@
 #include "Core/ECS/Components/AllComponents.h"
 #include <Rendering/Core/Camera2D.h>
 
-namespace SCION_RESOURCES
+namespace Scion::Resources
 {
 class AssetManager;
 }
@@ -83,7 +83,7 @@ std::tuple<int, int> ConvertWorldPosToIsoCoords( const glm::vec2& position, cons
  */
 std::tuple<float, float> GetTextBlockSize( const Scion::Core::ECS::TextComponent& textComp,
 										   const Scion::Core::ECS::TransformComponent& transform,
-										   SCION_RESOURCES::AssetManager& assetManager );
+										   Scion::Resources::AssetManager& assetManager );
 
 /**
  * @brief Resets the dirty flags on all necessary components in the registry.

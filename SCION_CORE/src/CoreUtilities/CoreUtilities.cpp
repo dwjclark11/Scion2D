@@ -124,7 +124,7 @@ std::tuple<int, int> ConvertWorldPosToIsoCoords( const glm::vec2& position, cons
 
 std::tuple<float, float> GetTextBlockSize( const Scion::Core::ECS::TextComponent& textComp,
 										   const Scion::Core::ECS::TransformComponent& transform,
-										   SCION_RESOURCES::AssetManager& assetManager )
+										   Scion::Resources::AssetManager& assetManager )
 {
 	const auto& pFont = assetManager.GetFont( textComp.sFontName );
 	if ( !pFont )

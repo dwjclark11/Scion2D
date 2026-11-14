@@ -22,7 +22,7 @@
 namespace fs = std::filesystem;
 using namespace std::chrono_literals;
 
-namespace SCION_RESOURCES
+namespace Scion::Resources
 {
 AssetManager::AssetManager( bool bEnableFilewatcher )
 	: m_bFileWatcherRunning{ bEnableFilewatcher }
@@ -725,10 +725,9 @@ void AssetManager::ReloadTexture( const std::string& sTextureName )
 	auto pNewTexture =
 		Scion::Rendering::TextureLoader::Create( pTexture->GetType(), pTexture->GetPath(), pTexture->IsTileset() );
 
-	pTexture = std::move(pNewTexture);
+	pTexture = std::move( pNewTexture );
 	SCION_LOG( "Reloaded texture: {}", sTextureName );
 }
-
 
 void AssetManager::ReloadFont( const std::string& sFontName )
 {
@@ -763,7 +762,92 @@ void AssetManager::ReloadFont( const std::string& sFontName )
 
 void AssetManager::ReloadShader( const std::string& sShaderName )
 {
-	// TODO:
+	// Shader watch params use the convention sAssetName = shaderName + "_vert"
+	// or shaderName + "_frag". Strip the suffix to find the base shader name.
+	// We reload the full shader (both vert and frag) whenever either file changes.
+
+	// Derive the base shader name by stripping the _vert / _frag suffix.
+	std::string sBaseShaderName = sShaderName;
+	bool bHasSuffix = false;
+
+	if ( sShaderName.ends_with( "_vert" ) )
+	{
+		sBaseShaderName = sShaderName.substr( 0, sShaderName.size() - 5 );
+		bHasSuffix = true;
+	}
+	else if ( sShaderName.ends_with( "_frag" ) )
+	{
+		sBaseShaderName = sShaderName.substr( 0, sShaderName.size() - 5 );
+		bHasSuffix = true;
+	}
+
+	if ( !bHasSuffix )
+	{
+		SCION_WARN( "AssetManager::ReloadShader -- unexpected shader watch name [{}]. "
+				  "Expected <name>_vert or <name>_frag.",
+				  sShaderName );
+		return;
+	}
+
+	// Find the vert and frag watch params for this shader.
+	auto vertParamItr = std::ranges::find_if(
+		m_FilewatchParams, [ & ]( const auto& param ) { return param.sAssetName == sBaseShaderName + "_vert"; } );
+
+	auto fragParamItr = std::ranges::find_if(
+		m_FilewatchParams, [ & ]( const auto& param ) { return param.sAssetName == sBaseShaderName + "_frag"; } );
+
+	if ( vertParamItr == m_FilewatchParams.end() || fragParamItr == m_FilewatchParams.end() )
+	{
+		SCION_ERROR( "AssetManager::ReloadShader -- could not find both watch params for [{}].", sBaseShaderName );
+		return;
+	}
+
+	const std::string sVertPath = vertParamItr->sFilepath;
+	const std::string sFragPath = fragParamItr->sFilepath;
+
+	// Find the existing shader to check whether it is an engine shader.
+	auto shaderItr = m_mapShader.find( sBaseShaderName );
+	if ( shaderItr == m_mapShader.end() )
+	{
+		SCION_ERROR( "AssetManager::ReloadShader -- shader [{}] not in map.", sBaseShaderName );
+		return;
+	}
+
+	const bool bIsEngineShader = shaderItr->second->IsEngineShader();
+
+	// Compile the new shader before removing the old one so we do not
+	// end up with no shader at all on a compile failure.
+	auto pNewShader = Scion::Rendering::ShaderLoader::Create( sVertPath, sFragPath );
+	if ( !pNewShader )
+	{
+		SCION_ERROR( "AssetManager::ReloadShader -- recompile failed for [{}]. Keeping old shader.", sBaseShaderName );
+		return;
+	}
+
+	if ( bIsEngineShader )
+		pNewShader->SetAsEngineShader();
+
+	// Swap in the new shader.
+	m_mapShader[ sBaseShaderName ] = std::move( pNewShader );
+
+	// Update lastWrite on both watch params so the watcher does not
+	// immediately flag them dirty again on the next tick.
+	fs::path vertPath{ sVertPath };
+	fs::path fragPath{ sFragPath };
+
+	if ( fs::exists( vertPath ) )
+		vertParamItr->lastWrite = fs::last_write_time( vertPath );
+	if ( fs::exists( fragPath ) )
+		fragParamItr->lastWrite = fs::last_write_time( fragPath );
+
+	// Clear the dirty flag on the counterpart param so both
+	// vert and frag dirty flags are consumed by one reload.
+	if ( sShaderName.ends_with( "_vert" ) )
+		fragParamItr->bDirty = false;
+	else
+		vertParamItr->bDirty = false;
+
+	SCION_LOG( "AssetManager: Reloaded shader [{}].", sBaseShaderName );
 }
 
-} // namespace SCION_RESOURCES
+} // namespace Scion::Resources

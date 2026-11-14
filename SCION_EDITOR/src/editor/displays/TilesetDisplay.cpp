@@ -81,7 +81,6 @@ void TilesetDisplay::Draw()
 		return;
 	}
 
-	ImGuiIO& io = ImGui::GetIO();
 	bool bMouseHeld{ ImGui::IsMouseDown( ImGuiMouseButton_Left ) };
 	bool bMouseReleased{ ImGui::IsMouseReleased( ImGuiMouseButton_Left ) };
 

@@ -32,6 +32,7 @@ Shader::Shader( GLuint program, const std::string vertexPath, const std::string&
 	: m_ShaderProgramID{ program }
 	, m_sVertexPath{ vertexPath }
 	, m_sFragmentPath{ fragmentPath }
+	, m_bEngineShader{ false }
 {
 }
 

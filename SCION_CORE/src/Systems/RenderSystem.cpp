@@ -18,7 +18,7 @@
 
 using namespace Scion::Core::ECS;
 using namespace Scion::Rendering;
-using namespace SCION_RESOURCES;
+using namespace Scion::Resources;
 
 namespace Scion::Core::Systems
 {

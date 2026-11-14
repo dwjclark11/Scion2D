@@ -27,7 +27,7 @@ class Audio;
 enum class AudioType;
 } // namespace Scion::Sounds
 
-namespace SCION_RESOURCES
+namespace Scion::Resources
 {
 
 class AssetManager
@@ -187,7 +187,8 @@ class AssetManager
 	 * @param An enum of the asset type.
 	 * @return Returns true if the name was changed successfully, false otherwise.
 	 */
-	bool ChangeAssetName( const std::string& sOldName, const std::string& sNewName, Scion::Utilities::AssetType eAssetType );
+	bool ChangeAssetName( const std::string& sOldName, const std::string& sNewName,
+						  Scion::Utilities::AssetType eAssetType );
 
 	/*
 	 * @brief Checks to see if the asset exists.
@@ -262,4 +263,4 @@ class AssetManager
 	std::mutex m_CallbackMutex;
 	std::shared_mutex m_AssetMutex;
 };
-} // namespace SCION_RESOURCES
+} // namespace Scion::Resources

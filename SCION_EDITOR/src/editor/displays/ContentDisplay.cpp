@@ -67,7 +67,7 @@ void ContentDisplay::Draw()
 	}
 
 	const auto& windowWidth = ImGui::GetWindowWidth();
-	int numCols = windowWidth / 128;
+	int numCols = static_cast<int>( windowWidth / 128 );
 
 	if ( numCols == 0 )
 	{

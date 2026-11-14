@@ -17,7 +17,7 @@
 #include <Logger/Logger.h>
 
 using namespace Scion::Core::ECS;
-using namespace SCION_RESOURCES;
+using namespace Scion::Resources;
 
 namespace Scion::Core::Systems
 {

@@ -33,6 +33,8 @@ class Shader
 	void Disable() const;
 
 	inline const GLuint ShaderProgramID() const { return m_ShaderProgramID; }
+	inline const bool IsEngineShader() const { return m_bEngineShader; }
+	inline void SetAsEngineShader() { m_bEngineShader = true; }
 
   private:
 	GLuint GetUniformLocation( const std::string& uniformName );
@@ -41,6 +43,7 @@ class Shader
 	GLuint m_ShaderProgramID;
 	std::string m_sVertexPath;
 	std::string m_sFragmentPath;
+	bool m_bEngineShader;
 
 	std::unordered_map<std::string, GLuint> m_UniformLocationMap;
 };
