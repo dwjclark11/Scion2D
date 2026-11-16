@@ -409,11 +409,41 @@ Scion::Core::Prefab* AssetManager::GetPrefab( const std::string& sPrefabName )
 	return prefabItr->second.get();
 }
 
-#ifdef IN_SCION_EDITOR
-
 bool AssetManager::AddCursor( const std::string& sCursorName, const std::string& sCursorPath )
 {
-	return false;
+	if ( m_mapCursors.contains( sCursorName ) )
+	{
+		SCION_ERROR( "Failed to add Cursor [{}] - Already exists.", sCursorName );
+		return false;
+	}
+
+	SDL_IOStream* pStream = SDL_IOFromFile( sCursorPath.c_str(), "rb" );
+	if ( !pStream )
+	{
+		SCION_ERROR( "Failed to open Cursor file [{}] - [{}]", sCursorPath, SDL_GetError() );
+		return false;
+	}
+
+	// SDL closes the stream automatically when closeio is true.
+	SDL_Surface* pSurface = SDL_LoadPNG_IO( pStream, true );
+	if ( !pSurface )
+	{
+		SCION_ERROR( "Failed to load Cursor image [{}] - [{}]", sCursorPath, SDL_GetError() );
+		return false;
+	}
+
+	SDL_Cursor* pCursor = SDL_CreateColorCursor( pSurface, pSurface->w / 2, pSurface->h / 2 );
+
+	// The cursor no longer needs the original surface.
+	SDL_DestroySurface( pSurface );
+
+	if ( !pCursor )
+	{
+		SCION_ERROR( "Failed to create Cursor [{}] - [{}]", sCursorName, SDL_GetError() );
+		return false;
+	}
+
+	return m_mapCursors.emplace( sCursorName, MakeSharedFromSDLType<Cursor>( pCursor ) ).second;
 }
 
 bool AssetManager::AddCursorFromMemory( const std::string& sCursorName, unsigned char* cursorData, size_t dataSize )
@@ -462,8 +492,6 @@ SDL_Cursor* AssetManager::GetCursor( const std::string& sCursorName )
 
 	return cursorItr->second.get();
 }
-
-#endif
 
 std::vector<std::string> AssetManager::GetAssetKeyNames( Scion::Utilities::AssetType eAssetType ) const
 {

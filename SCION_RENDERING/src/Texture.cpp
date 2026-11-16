@@ -1,4 +1,5 @@
 #include "Rendering/Essentials/Texture.h"
+#include <sol/sol.hpp>
 
 namespace Scion::Rendering
 {
@@ -32,4 +33,19 @@ void Texture::Destroy()
 {
 	glDeleteTextures( 1, &m_TextureID );
 }
+
+void Texture::CreateLuaBind( sol::state& lua )
+{
+	lua.new_usertype<Texture>( "Texture",
+							   sol::no_constructor,
+							   "enable",
+							   &Texture::Bind,
+							   "disable",
+							   &Texture::Unbind,
+							   "width",
+							   &Texture::GetWidth,
+							   "height",
+							   &Texture::GetHeight );
+}
+
 } // namespace Scion::Rendering

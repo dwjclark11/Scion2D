@@ -46,9 +46,8 @@ void AbstractTool::CheckOutOfBounds( const Scion::Core::Canvas& canvas )
 	}
 	else
 	{
-		const auto& canvas = m_pCurrentScene->GetCanvas();
 		int xNumTiles = canvas.height / canvas.tileWidth - 1;
-		int yNumTiles = canvas.width / ( canvas.tileHeight * 2.f ) - 1;
+		int yNumTiles = static_cast<int>( canvas.width / ( canvas.tileHeight * 2.f ) - 1 );
 		if ( m_GridCoords.x >= 0 && m_GridCoords.y >= 0 && m_GridCoords.x <= xNumTiles && m_GridCoords.y <= yNumTiles )
 		{
 			m_bOutOfBounds = false;

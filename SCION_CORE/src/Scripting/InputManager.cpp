@@ -330,7 +330,7 @@ void InputManager::CreateLuaInputBindings( sol::state& lua, Scion::Core::ECS::Re
 			return gamepad->IsBtnPressed( btn );
 		},
 		"getAxisPosition",
-		[ & ]( int index, int axis ) {
+		[ & ]( int index, Uint8 axis ) {
 			auto gamepad = inputManager.GetController( index );
 			if ( !gamepad )
 			{

@@ -8,6 +8,8 @@
 
 #include <Rendering/Essentials/Font.h>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 using namespace Scion::Core::ECS;
 
 namespace Scion::Core

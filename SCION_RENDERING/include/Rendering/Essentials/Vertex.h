@@ -57,10 +57,10 @@ struct Vertex
 
 struct CircleVertex
 {
-	glm::vec2 position;
-	glm::vec2 uvs;
-	Color color;
-	float lineThickness;
+	glm::vec2 position{ 0.f };
+	glm::vec2 uvs{ 0.f };
+	Color color{};
+	float lineThickness{ 1.f };
 };
 
 struct PickingVertex
@@ -69,6 +69,12 @@ struct PickingVertex
 	glm::vec2 uvs{ 0.f };
 	Color color{};
 	uint32_t uid{ 0 };
+};
+
+struct ShapeVertex
+{
+	glm::vec2 position{ 0.f };
+	Color color{ .r = 255, .g = 255, .b = 255, .a = 255 };
 };
 
 } // namespace Scion::Rendering

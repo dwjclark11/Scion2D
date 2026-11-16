@@ -2,6 +2,9 @@
 #include "Core/Resources/AssetManager.h"
 #include "Core/ECS/MainRegistry.h"
 #include <Rendering/Essentials/Primitives.h>
+#include <Rendering/Essentials/Shader.h>
+#include <Rendering/Essentials/Texture.h>
+#include <Rendering/Buffers/Framebuffer.h>
 #include <Rendering/Core/Camera2D.h>
 #include <Rendering/Core/Renderer.h>
 #include "Core/ECS/Registry.h"
@@ -10,54 +13,14 @@
 using namespace Scion::Rendering;
 using namespace Scion::Resources;
 
-void Scion::Core::Scripting::RendererBinder::CreateRenderingBind( sol::state& lua, Scion::Core::ECS::Registry& registry )
+namespace Scion::Core::Scripting
+{
+
+void RendererBinder::CreateRenderingBind( sol::state& lua, Scion::Core::ECS::Registry& registry )
 {
 	// Get the Asset Manager
 	auto& mainRegistry = MAIN_REGISTRY();
 	auto& assetManager = mainRegistry.GetAssetManager();
-
-	// Primitives Bind
-	lua.new_usertype<Line>( "Line",
-							sol::call_constructor,
-							sol::factories( []( const glm::vec2& p1, const glm::vec2& p2, const Color& color ) {
-								return Line{ .p1 = p1, .p2 = p2, .color = color };
-							} ),
-							"p1",
-							&Line::p1,
-							"p2",
-							&Line::p2,
-							"color",
-							&Line::color );
-
-	lua.new_usertype<Rect>(
-		"Rect",
-		sol::call_constructor,
-		sol::factories( []( const glm::vec2& position, float width, float height, const Color& color ) {
-			return Rect{ .position = position, .width = width, .height = height, .color = color };
-		} ),
-		"position",
-		&Rect::position,
-		"width",
-		&Rect::width,
-		"height",
-		&Rect::height,
-		"color",
-		&Rect::color );
-
-	lua.new_usertype<Circle>(
-		"Circle",
-		sol::call_constructor,
-		sol::factories( []( const glm::vec2& position, float lineThickness, float radius, const Color& color ) {
-			return Circle{ .position = position, .lineThickness = lineThickness, .radius = radius, .color = color };
-		} ),
-		"position",
-		&Circle::position,
-		"lineThickness",
-		&Circle::lineThickness,
-		"radius",
-		&Circle::radius,
-		"color",
-		&Circle::color );
 
 	lua.new_usertype<Text>(
 		"Text",
@@ -85,36 +48,12 @@ void Scion::Core::Scripting::RendererBinder::CreateRenderingBind( sol::state& lu
 		"color",
 		&Text::color );
 
-	// Bind the renderer
 	auto& renderer = mainRegistry.GetContext<std::unique_ptr<Renderer>>();
 	if ( !renderer )
 	{
 		SCION_ERROR( "Failed to bind the Renderer to Lua! Not in the registry context!" );
 		return;
 	}
-
-	lua.set_function( "DrawRect",
-					  sol::overload( [ & ]( const Rect& rect ) { renderer->DrawRect( rect ); },
-									 [ & ]( const glm::vec2& position, float width, float height, const Color& color ) {
-										 renderer->DrawRect( position, width, height, color );
-									 } ) );
-
-	lua.set_function( "DrawLine",
-					  sol::overload( [ & ]( const Line& line ) { renderer->DrawLine( line ); },
-									 [ & ]( const glm::vec2& p1, const glm::vec2& p2, const Color& color ) {
-										 renderer->DrawLine( p1, p2, color );
-									 } ) );
-
-	lua.set_function(
-		"DrawCircle",
-		sol::overload( [ & ]( const Circle& circle ) { renderer->DrawCircle( circle ); },
-					   [ & ]( const glm::vec2& pos, float lineThickness, float radius, const Color& color ) {
-						   renderer->DrawCircle( pos, radius, color, lineThickness );
-					   } ) );
-
-	lua.set_function( "DrawFilledRect", [ & ]( const Rect& rect ) { renderer->DrawFilledRect( rect ); } );
-
-	lua.set_function( "DrawText", [ & ]( const Text& text ) { renderer->DrawText2D( text ); } );
 
 	auto& camera = registry.GetContext<std::unique_ptr<Camera2D>>();
 	if ( !camera )
@@ -123,26 +62,11 @@ void Scion::Core::Scripting::RendererBinder::CreateRenderingBind( sol::state& lu
 		return;
 	}
 
-	// Bind The Camera!
-	lua.new_usertype<Camera2D>(
-		"Camera",
-		sol::no_constructor,
-		"get",
-		[ & ] { return *camera; },
-		"position",
-		[ & ] { return camera->GetPosition(); },
-		"setPosition",
-		[ & ]( const glm::vec2 newPosition ) { camera->SetPosition( newPosition ); },
-		"scale",
-		[ & ] { return camera->GetScale(); },
-		"setScale",
-		[ & ]( float scale ) { camera->SetScale( scale ); },
-		"getWorldCoords",
-		[ & ]( const glm::vec2& screenCoords ) { return camera->ScreenCoordsToWorld( screenCoords ); },
-		"getScreenCoords",
-		[ & ]( const glm::vec2& worldCoords ) { return camera->WorldCoordsToScreen( worldCoords ); },
-		"width",
-		[ & ] { return camera->GetWidth(); },
-		"height",
-		[ & ] { return camera->GetHeight(); } );
+	Renderer::CreateLuaBind( lua, *renderer );
+	Camera2D::CreateLuaBind( lua, *camera );
+	Shader::CreateLuaBind( lua );
+	Texture::CreateLuaBind( lua );
+	Framebuffer::CreateLuaBind( lua );
 }
+
+} // namespace Scion::Core::Scripting

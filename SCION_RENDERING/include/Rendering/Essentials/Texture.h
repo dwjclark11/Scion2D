@@ -2,6 +2,11 @@
 #include <glad/glad.h>
 #include <string>
 
+namespace sol
+{
+class state;
+}
+
 namespace Scion::Rendering
 {
 class Texture
@@ -40,6 +45,8 @@ class Texture
 	* Only use this if texture is no longer needed.
 	*/
 	void Destroy();
+
+	static void CreateLuaBind( sol::state& lua );
 
   private:
 	GLuint m_TextureID;

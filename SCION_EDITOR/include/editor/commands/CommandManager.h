@@ -3,7 +3,6 @@
 #include "cmds/CreateTileToolCmds.h"
 #include "cmds/RectToolCmds.h"
 #include "cmds/TileCmds.h"
-// TODO: add other commands as necessary
 
 namespace Scion::Editor
 {

@@ -19,6 +19,8 @@ GridSystem::GridSystem()
 {
 }
 
+GridSystem::~GridSystem() = default;
+
 void GridSystem::Update( Scion::Core::Scene& currentScene, Scion::Rendering::Camera2D& camera )
 {
 	if ( currentScene.GetMapType() == EMapType::IsoGrid )

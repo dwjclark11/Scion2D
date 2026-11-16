@@ -4,6 +4,7 @@
 #include <Rendering/Utils/OpenGLDebugger.h>
 #include <Rendering/Core/Renderer.h>
 #include <Rendering/Essentials/PickingTexture.h>
+#include "Rendering/Essentials/Texture.h"
 
 #include <Logger/Logger.h>
 #include <Logger/CrashLogger.h>

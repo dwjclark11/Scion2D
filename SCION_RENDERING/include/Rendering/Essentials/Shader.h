@@ -4,6 +4,11 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+namespace sol
+{
+class state;
+}
+
 namespace Scion::Rendering
 {
 class Shader
@@ -35,6 +40,8 @@ class Shader
 	inline const GLuint ShaderProgramID() const { return m_ShaderProgramID; }
 	inline const bool IsEngineShader() const { return m_bEngineShader; }
 	inline void SetAsEngineShader() { m_bEngineShader = true; }
+
+	static void CreateLuaBind( sol::state& lua );
 
   private:
 	GLuint GetUniformLocation( const std::string& uniformName );

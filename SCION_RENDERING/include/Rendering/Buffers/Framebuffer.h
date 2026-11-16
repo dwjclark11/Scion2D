@@ -2,10 +2,15 @@
 #include <glad/glad.h>
 #include <memory>
 
-#include "Rendering/Essentials/Texture.h"
+namespace sol
+{
+class state;
+}
 
 namespace Scion::Rendering
 {
+
+class Texture;
 
 class Framebuffer
 {
@@ -20,11 +25,14 @@ class Framebuffer
 	// Resizing
 	void Resize( int width, int height );
 	void CheckResize();
+	const GLuint GetTextureID() const;
 
 	inline const GLuint GetID() const { return m_FboID; }
-	inline const GLuint GetTextureID() const { return m_pTexture ? m_pTexture->GetID() : 0; }
 	inline const int Width() const { return m_Width; }
 	inline const int Height() const { return m_Height; }
+	inline const bool IsActive() const { return m_bActive; }
+
+	static void CreateLuaBind( sol::state& lua );
 
   private:
 	bool Initialize();
@@ -38,6 +46,7 @@ class Framebuffer
 	int m_Height;
 	bool m_bShouldResize;
 	bool m_bUseRbo;
+	bool m_bActive;
 };
 
 } // namespace Scion::Rendering

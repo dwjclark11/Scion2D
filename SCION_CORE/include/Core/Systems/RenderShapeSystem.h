@@ -3,8 +3,7 @@
 namespace Scion::Rendering
 {
 class Camera2D;
-class RectBatchRenderer;
-class CircleBatchRenderer;
+class ShapeRenderer;
 } // namespace Scion::Rendering
 
 namespace Scion::Core::ECS
@@ -17,12 +16,11 @@ namespace Scion::Core::Systems
 class RenderShapeSystem
 {
   private:
-	std::unique_ptr<Scion::Rendering::RectBatchRenderer> m_pRectRenderer;
-	std::unique_ptr<Scion::Rendering::CircleBatchRenderer> m_pCircleRenderer;
+	std::unique_ptr<Scion::Rendering::ShapeRenderer> m_pShapeRenderer;
 
   public:
 	RenderShapeSystem();
-	~RenderShapeSystem() = default;
+	~RenderShapeSystem();
 
 	void Update( Scion::Core::ECS::Registry& registry, Scion::Rendering::Camera2D& camera );
 };

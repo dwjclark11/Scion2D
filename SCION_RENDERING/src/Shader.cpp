@@ -1,6 +1,8 @@
 #include "Rendering/Essentials/Shader.h"
-#include <iostream>
 #include <Logger/Logger.h>
+
+#include <sol/sol.hpp>
+
 namespace Scion::Rendering
 {
 
@@ -105,6 +107,45 @@ void Shader::Enable() const
 void Shader::Disable() const
 {
 	glUseProgram( 0 );
+}
+
+void Shader::CreateLuaBind( sol::state& lua )
+{
+	lua.new_usertype<Shader>(
+		"Shader",
+		sol::no_constructor,
+		"enable",
+		&Shader::Enable,
+		"disable",
+		&Shader::Disable,
+		"setUniform",
+		sol::overload( []( Shader& shader,
+						   const std::string& sUniformName,
+						   bool val ) { shader.SetUniformInt( sUniformName, val ); },
+					   []( Shader& shader, const std::string& sUniformName, int val ) {
+						   shader.SetUniformInt( sUniformName, val );
+					   },
+					   []( Shader& shader, const std::string& sUniformName, float val ) {
+						   shader.SetUniformFloat( sUniformName, val );
+					   },
+					   []( Shader& shader, const std::string& sUniformName, float x, float y ) {
+						   shader.SetUniformVec2( sUniformName, x, y );
+					   },
+					   []( Shader& shader, const std::string& sUniformName, const glm::vec2& val ) {
+						   shader.SetUniformVec2( sUniformName, val );
+					   },
+					   []( Shader& shader, const std::string& sUniformName, float x, float y, float z ) {
+						   shader.SetUniformVec3( sUniformName, x, y, z );
+					   },
+					   []( Shader& shader, const std::string& sUniformName, const glm::vec3& val ) {
+						   shader.SetUniformVec3( sUniformName, val );
+					   },
+					   []( Shader& shader, const std::string& sUniformName, float x, float y, float z, float w ) {
+						   shader.SetUniformVec4( sUniformName, x, y, z, w );
+					   },
+					   []( Shader& shader, const std::string& sUniformName, const glm::vec4& val ) {
+						   shader.SetUniformVec4( sUniformName, val );
+					   } ) );
 }
 
 } // namespace Scion::Rendering

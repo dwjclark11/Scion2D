@@ -2,6 +2,7 @@
 #include "Rendering/Buffers/Framebuffer.h"
 #include "Rendering/Core/Camera2D.h"
 #include "Rendering/Core/Renderer.h"
+#include "Rendering/Essentials/Texture.h"
 #include "Core/ECS/MainRegistry.h"
 #include "Core/ECS/Components/AllComponents.h"
 #include "Core/Systems/AnimationSystem.h"

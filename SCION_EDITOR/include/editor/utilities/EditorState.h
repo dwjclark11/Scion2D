@@ -26,7 +26,6 @@ enum class EDisplay : uint64_t
 	ObjectDetails		= 1 << 11,
 	ProfilerDisplay		= 1 << 12
 
-	// TODO: add more displays
 };
 
 // clang-format on

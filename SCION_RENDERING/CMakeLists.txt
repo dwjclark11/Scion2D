@@ -1,53 +1,22 @@
-add_library(SCION_RENDERING
-    "include/Rendering/Utils/OpenGLDebugger.h"
-    "src/OpenGLDebugger.cpp"
 
-    "include/Rendering/Buffers/Framebuffer.h"
-    "src/Framebuffer.cpp"
+file( GLOB_RECURSE RENDERING_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp )
 
-    "include/Rendering/Core/Batcher.h"
-    "include/Rendering/Core/BatchRenderer.h"
-    "src/BatchRenderer.cpp"
-    "include/Rendering/Core/Camera2D.h"
-    "src/Camera2D.cpp"
-    "include/Rendering/Core/CircleBatchRenderer.h"
-    "src/CircleBatchRenderer.cpp"
-    "include/Rendering/Core/LineBatchRenderer.h"
-    "src/LineBatchRenderer.cpp"
-    "include/Rendering/Core/RectBatchRenderer.h"
-    "src/RectBatchRenderer.cpp"
-    "include/Rendering/Core/Renderer.h"
-    "src/Renderer.cpp"
-    "include/Rendering/Core/TextBatchRenderer.h"
-    "src/TextBatchRenderer.cpp"
-
-    "include/Rendering/Essentials/BatchTypes.h"
-    "include/Rendering/Essentials/Font.h"
-    "src/Font.cpp"
-    "include/Rendering/Essentials/FontLoader.h"
-    "src/FontLoader.cpp"
-    "include/Rendering/Essentials/Primitives.h"
-    "include/Rendering/Essentials/Shader.h"
-    "src/Shader.cpp"
-    "include/Rendering/Essentials/ShaderLoader.h"
-    "src/ShaderLoader.cpp"
-    "include/Rendering/Essentials/Texture.h"
-    "src/Texture.cpp"
-    "include/Rendering/Essentials/TextureLoader.h"
-    "src/TextureLoader.cpp"
-    "include/Rendering/Essentials/Vertex.h"
-	"include/Rendering/Essentials/PickingTexture.h"
-	"src/PickingTexture.cpp"
-	"include/Rendering/Core/PickingBatchRenderer.h"
-	"src/PickingBatchRenderer.cpp"
- "include/Rendering/Essentials/IconInfo.h")
+add_library(SCION_RENDERING ${RENDERING_SRC} )
 
 target_include_directories(
-    SCION_RENDERING PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    SCION_RENDERING PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+	PRIVATE ${SOL2_INCLUDE_DIRS}
+)
 
 target_link_libraries(SCION_RENDERING
-    PRIVATE SCION_LOGGER
-    PUBLIC glm::glm glad::glad soil2)
+    PRIVATE
+	SCION_LOGGER
+    glm::glm
+	glad::glad
+	soil2
+	sol2::sol2
+	${LUA_LIBRARIES}
+)
 
 target_compile_options(
     SCION_RENDERING PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)

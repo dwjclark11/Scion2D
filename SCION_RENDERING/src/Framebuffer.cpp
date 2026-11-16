@@ -1,6 +1,9 @@
 #include "Rendering/Buffers/Framebuffer.h"
 #include <Logger/Logger.h>
 #include "Rendering/Essentials/TextureLoader.h"
+#include "Rendering/Essentials/Texture.h"
+
+#include <sol/sol.hpp>
 
 namespace Scion::Rendering
 {
@@ -107,4 +110,29 @@ void Framebuffer::CheckResize()
 	Initialize();
 	m_bShouldResize = false;
 }
+
+const GLuint Framebuffer::GetTextureID() const
+{
+	return m_pTexture ? m_pTexture->GetID() : 0;
+}
+
+void Framebuffer::CreateLuaBind(sol::state& lua)
+{
+	// clang-format off
+
+	lua.new_usertype<Framebuffer>(
+		"Framebuffer",
+		sol::no_constructor,
+		"width", sol::readonly(&Framebuffer::Width),
+		"height", sol::readonly(&Framebuffer::Height),
+		"id", &Framebuffer::GetID,
+		"textureID", &Framebuffer::GetTextureID,
+		"bind", &Framebuffer::Bind,
+		"unbind", &Framebuffer::Unbind,
+		"resize", &Framebuffer::Resize
+	);
+
+	// clang-format on
+}
+
 } // namespace Scion::Rendering

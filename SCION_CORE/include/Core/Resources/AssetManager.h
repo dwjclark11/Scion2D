@@ -141,12 +141,9 @@ class AssetManager
 
 	Scion::Core::Prefab* GetPrefab( const std::string& sPrefabName );
 
-#ifdef IN_SCION_EDITOR
 	bool AddCursor( const std::string& sCursorName, const std::string& sCursorPath );
 	bool AddCursorFromMemory( const std::string& sCursorName, unsigned char* cursorData, size_t dataSize );
-
 	SDL_Cursor* GetCursor( const std::string& sCursorName );
-#endif
 
 	inline const std::unordered_map<std::string, std::unique_ptr<Scion::Rendering::Texture>>& GetAllTextures() const
 	{
@@ -252,9 +249,7 @@ class AssetManager
 	std::unordered_map<std::string, std::unique_ptr<Scion::Sounds::Audio>> m_mapAudio{};
 	std::unordered_map<std::string, std::unique_ptr<Scion::Core::Prefab>> m_mapPrefabs{};
 
-#ifdef IN_SCION_EDITOR
-	std::map<std::string, Cursor> m_mapCursors;
-#endif
+	std::unordered_map<std::string, Cursor> m_mapCursors;
 
 	std::vector<AssetWatchParams> m_FilewatchParams;
 

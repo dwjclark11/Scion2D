@@ -17,8 +17,8 @@ class GridSystem
 {
   public:
 	GridSystem();
-	~GridSystem() = default;
-
+	~GridSystem();
+	
 	void Update( Scion::Core::Scene& currentScene, Scion::Rendering::Camera2D& camera );
 
   private:

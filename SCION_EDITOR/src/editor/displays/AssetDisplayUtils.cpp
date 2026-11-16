@@ -72,8 +72,7 @@ class AssetModalCreator
 		case Scion::Utilities::AssetType::FONT: {
 			SCION_ASSERT( assetParams.optbSdfFont && assetParams.optFontSize && "These must be set when adding fonts" );
 
-			return assetManager.AddFont(
-				assetParams.sAssetName, assetParams.sFilepath, *assetParams.optFontSize );
+			return assetManager.AddFont( assetParams.sAssetName, assetParams.sFilepath, *assetParams.optFontSize );
 		}
 		case Scion::Utilities::AssetType::SOUNDFX: {
 			return assetManager.AddAudio(
@@ -303,11 +302,12 @@ class AssetModalCreator
 				{
 					if ( eAssetType != Scion::Utilities::AssetType::SHADER )
 					{
-						if ( fs::exists( fs::path{ sCheckFilepath } ) )
+						std::error_code ec;
+						if ( fs::exists( fs::path{ sCheckFilepath }, ec ) )
 						{
 							if ( !AddAssetBasedOnType( m_AddAssetParams ) )
 							{
-								SCION_ERROR( "Failed to add new texture!" );
+								SCION_ERROR( "Failed to add new asset." );
 							}
 
 							m_AddAssetParams = {};
@@ -316,17 +316,18 @@ class AssetModalCreator
 						}
 						else
 						{
-							// TODO: Add filepath error!
+							SCION_ERROR( "Failed to add new asset: {}", ec.message() );
 						}
 					}
 					else
 					{
-						if ( fs::exists( fs::path{ *m_AddAssetParams.optVertPath } ) &&
-							 fs::exists( fs::path{ *m_AddAssetParams.optFragPath } ) )
+						std::error_code ec;
+						if ( fs::exists( fs::path{ *m_AddAssetParams.optVertPath }, ec ) &&
+							 fs::exists( fs::path{ *m_AddAssetParams.optFragPath }, ec ) )
 						{
 							if ( !AddAssetBasedOnType( m_AddAssetParams ) )
 							{
-								SCION_ERROR( "Failed to add new texture!" );
+								SCION_ERROR( "Failed to add new asset." );
 							}
 
 							m_AddAssetParams = {};
@@ -335,7 +336,7 @@ class AssetModalCreator
 						}
 						else
 						{
-							// TODO: Add filepath error!
+							SCION_ERROR( "Failed to add new asset: {}", ec.message() );
 						}
 					}
 				}
